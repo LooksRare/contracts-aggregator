@@ -19,6 +19,11 @@ const config: HardhatUserConfig = {
   networks: {
     hardhat: {
       allowUnlimitedContractSize: false,
+      forking: {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        url: process.env.ETH_RPC_URL!,
+        blockNumber: 15282897,
+      },
       hardfork: "berlin", // Berlin is used (temporarily) to avoid issues with coverage
       mining: {
         auto: true,
