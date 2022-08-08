@@ -31,60 +31,9 @@ describe("Aggregator", () => {
   });
 
   it("Should be able to handle OpenSea trades (fulfillAdvancedOrder)", async function () {
-    const tokenId = "2518";
-    const advancedOrder = {
-      parameters: {
-        offerer: "0x7a277cf6e2f3704425195caae4148848c29ff815",
-        zone: "0x004C00500000aD104D7DBd00e3ae0A5C00560C00",
-        offer: [
-          {
-            itemType: "2",
-            token: bayc.address,
-            identifierOrCriteria: tokenId,
-            startAmount: "1",
-            endAmount: "1",
-          },
-        ],
-        consideration: [
-          {
-            itemType: "0",
-            token: "0x0000000000000000000000000000000000000000",
-            identifierOrCriteria: "0",
-            startAmount: "79800000000000000000",
-            endAmount: "79800000000000000000",
-            recipient: "0x7a277cf6e2f3704425195caae4148848c29ff815",
-          },
-          {
-            itemType: "0",
-            token: "0x0000000000000000000000000000000000000000",
-            identifierOrCriteria: "0",
-            startAmount: "2100000000000000000",
-            endAmount: "2100000000000000000",
-            recipient: "0x8De9C5A032463C561423387a9648c5C7BCC5BC90",
-          },
-          {
-            itemType: "0",
-            token: "0x0000000000000000000000000000000000000000",
-            identifierOrCriteria: "0",
-            startAmount: "2100000000000000000",
-            endAmount: "2100000000000000000",
-            recipient: "0xA858DDc0445d8131daC4d1DE01f834ffcbA52Ef1",
-          },
-        ],
-        orderType: 2,
-        startTime: "1659797236",
-        endTime: "1662475636",
-        zoneHash: "0x0000000000000000000000000000000000000000000000000000000000000000",
-        salt: "70769720963177607",
-        conduitKey: "0x0000007b02230091a7ed01230072f7006a004d60a8d4e71d599b8104250f0000",
-        totalOriginalConsiderationItems: 3,
-      },
-      numerator: 1,
-      denominator: 1,
-      signature:
-        "0x27deb8f1923b96693d8d5e1bf9304207e31b9cb49e588e8df5b3926b7547ba444afafe429fb2a17b4b97544d8383f3ad886fc15cab5a91382a56f9d65bb3dc231c",
-      extraData: "0x",
-    };
+    const advancedOrder = JSON.parse(
+      await fs.readFileSync(path.join(__dirname, "./fixtures/bayc-2518-order.json"), { encoding: "utf8", flag: "r" })
+    );
 
     const abi = JSON.parse(
       await fs.readFileSync(path.join(__dirname, "../../abis/SeaportInterface.json"), { encoding: "utf8", flag: "r" })
@@ -108,6 +57,6 @@ describe("Aggregator", () => {
     await tx.wait();
 
     expect(await bayc.balanceOf(buyer.address)).to.equal(1);
-    expect(await bayc.ownerOf(tokenId)).to.equal(buyer.address);
+    expect(await bayc.ownerOf(2518)).to.equal(buyer.address);
   });
 });
