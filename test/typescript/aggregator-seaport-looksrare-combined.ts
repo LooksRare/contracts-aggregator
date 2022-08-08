@@ -85,15 +85,14 @@ describe("Aggregator", () => {
     const tokenIdOne = 4251;
     const tokenIdTwo = 6026;
 
-    const minPercentageToAskOne = 9550;
-    const minPercentageToAskTwo = 9550;
+    const minPercentageToAsk = 9550;
 
     const takerBidOne = {
       isOrderAsk: false,
       taker: proxy.address,
       price: price,
       tokenId: tokenIdOne,
-      minPercentageToAsk: minPercentageToAskOne,
+      minPercentageToAsk,
       params: "0x",
     };
 
@@ -102,7 +101,7 @@ describe("Aggregator", () => {
       taker: proxy.address,
       price: price,
       tokenId: tokenIdTwo,
-      minPercentageToAsk: minPercentageToAskTwo,
+      minPercentageToAsk,
       params: "0x",
     };
 
@@ -122,7 +121,7 @@ describe("Aggregator", () => {
       nonce: 209,
       startTime: 1659529911,
       endTime: 1662121755,
-      minPercentageToAsk: minPercentageToAskOne,
+      minPercentageToAsk,
       params: "0x",
       v: expandedSignatureOne.v,
       r: expandedSignatureOne.r,
@@ -145,7 +144,7 @@ describe("Aggregator", () => {
       nonce: 1,
       startTime: 1659977872,
       endTime: 1660064095,
-      minPercentageToAsk: minPercentageToAskTwo,
+      minPercentageToAsk,
       params: "0x",
       v: expandedSignatureTwo.v,
       r: expandedSignatureTwo.r,
