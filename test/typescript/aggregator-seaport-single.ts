@@ -6,6 +6,7 @@ import { ethers } from "hardhat";
 import { BAYC, FULFILLER_CONDUIT_KEY, SEAPORT } from "../constants";
 import * as fs from "fs";
 import * as path from "path";
+import getAbi from "./utils/get-abi";
 
 describe("Aggregator", () => {
   let aggregator: Contract;
@@ -35,9 +36,7 @@ describe("Aggregator", () => {
       await fs.readFileSync(path.join(__dirname, "./fixtures/bayc-2518-order.json"), { encoding: "utf8", flag: "r" })
     );
 
-    const abi = JSON.parse(
-      await fs.readFileSync(path.join(__dirname, "../../abis/SeaportInterface.json"), { encoding: "utf8", flag: "r" })
-    );
+    const abi = await getAbi("SeaportInterface.json");
     const seaportInterface = new ethers.utils.Interface(abi);
 
     const calldata = seaportInterface.encodeFunctionData("fulfillAdvancedOrder", [

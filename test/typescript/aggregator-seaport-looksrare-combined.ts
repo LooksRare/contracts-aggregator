@@ -5,6 +5,7 @@ import { ethers } from "hardhat";
 import { BAYC, FULFILLER_CONDUIT_KEY, LOOKSRARE_STRATEGY_FIXED_PRICE, SEAPORT, WETH } from "../constants";
 import * as fs from "fs";
 import * as path from "path";
+import getAbi from "./utils/get-abi";
 
 describe("Aggregator", () => {
   let aggregator: Contract;
@@ -65,9 +66,7 @@ describe("Aggregator", () => {
       ],
     ];
 
-    const seaportAbi = JSON.parse(
-      await fs.readFileSync(path.join(__dirname, "../../abis/SeaportInterface.json"), { encoding: "utf8", flag: "r" })
-    );
+    const seaportAbi = await getAbi("SeaportInterface.json");
     const seaportInterface = new ethers.utils.Interface(seaportAbi);
 
     const calldata = seaportInterface.encodeFunctionData("fulfillAvailableAdvancedOrders", [
@@ -151,9 +150,7 @@ describe("Aggregator", () => {
       s: expandedSignatureTwo.s,
     };
 
-    const looksRareAbi = JSON.parse(
-      await fs.readFileSync(path.join(__dirname, "../../abis/LooksRareV1Proxy.json"), { encoding: "utf8", flag: "r" })
-    );
+    const looksRareAbi = await getAbi("LooksRareV1Proxy.json");
     const iface = new ethers.utils.Interface(looksRareAbi);
 
     const calldataLooksRare = iface.encodeFunctionData("buyWithETH", [
