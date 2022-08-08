@@ -19,7 +19,7 @@ describe("Aggregator", () => {
     await proxy.deployed();
 
     // LooksRareV1Proxy buyWithETH
-    await aggregator.addFunction("0x96792461", proxy.address);
+    await aggregator.addFunction(proxy.address, "0x96792461");
 
     [buyer] = await ethers.getSigners();
 
@@ -120,7 +120,9 @@ describe("Aggregator", () => {
     ]);
 
     const totalValue = priceOne.add(priceTwo);
-    const tx = await aggregator.buyWithETH([{ data: calldata, value: totalValue }], { value: totalValue });
+    const tx = await aggregator.buyWithETH([{ proxy: proxy.address, data: calldata, value: totalValue }], {
+      value: totalValue,
+    });
     await tx.wait();
 
     expect(await bayc.balanceOf(aggregator.address)).to.equal(0);

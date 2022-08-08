@@ -7,11 +7,12 @@ import "hardhat/console.sol";
 
 contract Aggregator is OwnableTwoSteps {
     struct TradeData {
+        address proxy;
         bytes data;
         uint256 value;
     }
 
-    mapping(bytes4 => address) private tradeFunctions;
+    mapping(address => mapping(bytes4 => bool)) private proxyFunctionSelectors;
 
     event FunctionAdded(address indexed proxy, bytes4 selector);
     event FunctionRemoved(address indexed proxy, bytes4 selector);
@@ -28,8 +29,8 @@ contract Aggregator is OwnableTwoSteps {
                 selector := calldataload(data.offset)
             }
 
-            address proxy = tradeFunctions[selector];
-            if (proxy == address(0)) revert InvalidFunction();
+            address proxy = tradeData[i].proxy;
+            if (!proxyFunctionSelectors[proxy][selector]) revert InvalidFunction();
 
             (bool success, bytes memory returnData) = proxy.call{value: tradeData[i].value}(data);
             // proxy.call{value: tradeData[i].value}(data);
@@ -49,14 +50,13 @@ contract Aggregator is OwnableTwoSteps {
         }
     }
 
-    function addFunction(bytes4 selector, address proxy) external onlyOwner {
-        tradeFunctions[selector] = proxy;
+    function addFunction(address proxy, bytes4 selector) external onlyOwner {
+        proxyFunctionSelectors[proxy][selector] = true;
         emit FunctionAdded(proxy, selector);
     }
 
-    function removeFunction(bytes4 selector) external onlyOwner {
-        address proxy = tradeFunctions[selector];
-        delete tradeFunctions[selector];
+    function removeFunction(address proxy, bytes4 selector) external onlyOwner {
+        delete proxyFunctionSelectors[proxy][selector];
         emit FunctionRemoved(proxy, selector);
     }
 }
