@@ -3,9 +3,8 @@ import { expect } from "chai";
 import { Contract } from "ethers";
 import { ethers } from "hardhat";
 import { BAYC, FULFILLER_CONDUIT_KEY, LOOKSRARE_STRATEGY_FIXED_PRICE, SEAPORT, WETH } from "../constants";
-import * as fs from "fs";
-import * as path from "path";
 import getAbi from "./utils/get-abi";
+import getFixture from "./utils/get-fixture";
 
 describe("Aggregator", () => {
   let aggregator: Contract;
@@ -39,13 +38,8 @@ describe("Aggregator", () => {
   });
 
   it("Should be able to handle LooksRare/OpenSea trades together", async function () {
-    const orderOne = JSON.parse(
-      await fs.readFileSync(path.join(__dirname, "./fixtures/bayc-2518-order.json"), { encoding: "utf8", flag: "r" })
-    );
-
-    const orderTwo = JSON.parse(
-      await fs.readFileSync(path.join(__dirname, "./fixtures/bayc-8498-order.json"), { encoding: "utf8", flag: "r" })
-    );
+    const orderOne = getFixture("bayc-2518-order.json");
+    const orderTwo = getFixture("bayc-8498-order.json");
 
     const offerFulfillments = [[{ orderIndex: 0, itemIndex: 0 }], [{ orderIndex: 1, itemIndex: 0 }]];
 
