@@ -8,6 +8,7 @@ describe("Aggregator", () => {
   let aggregator: Contract;
   let bayc: Contract;
   let buyer: SignerWithAddress;
+  const seaport = "0x00000000006c3852cbef3e08e8df289169ede581";
 
   beforeEach(async () => {
     const Aggregator = await ethers.getContractFactory("Aggregator");
@@ -15,7 +16,7 @@ describe("Aggregator", () => {
     await aggregator.deployed();
 
     // Seaport 1.1 fulfillBasicOrder
-    await aggregator.addFunction("0xfb0f3ee1", "0x00000000006c3852cbef3e08e8df289169ede581");
+    await aggregator.addFunction(seaport, "0xfb0f3ee1");
 
     [buyer] = await ethers.getSigners();
 
@@ -28,35 +29,35 @@ describe("Aggregator", () => {
   });
 
   it("Should be able to handle OpenSea trades (fulfillBasicOrder)", async function () {
-    const price = ethers.utils.parseEther("81.75");
+    const price = ethers.utils.parseEther("84");
 
     const basicOrderParameters = {
       offerToken: bayc.address,
-      offerIdentifier: "3939",
+      offerIdentifier: "2518",
       offerAmount: "1",
       considerationToken: "0x0000000000000000000000000000000000000000",
       considerationIdentifier: "0",
-      // considerationAmount: price,
-      considerationAmount: "77662500000000000000",
-      offerer: "0xaf0f4479af9df756b9b2c69b463214b9a3346443",
+      considerationAmount: "79800000000000000000",
+      offerer: "0x7a277cf6e2f3704425195caae4148848c29ff815",
       zone: "0x004C00500000aD104D7DBd00e3ae0A5C00560C00",
       zoneHash: "0x0000000000000000000000000000000000000000000000000000000000000000",
-      salt: "69803129318312405",
+      salt: "70769720963177607",
       offererConduitKey: "0x0000007b02230091a7ed01230072f7006a004d60a8d4e71d599b8104250f0000",
-      fulfillerConduitKey: "0x0000000000000000000000000000000000000000000000000000000000000000",
-      startTime: "1659635910",
-      endTime: "1660089258",
+      // fulfillerConduitKey: "0x0000000000000000000000000000000000000000000000000000000000000000",
+      fulfillerConduitKey: "0x0000007b02230091a7ed01230072f7006a004d60a8d4e71d599b8104250f0000",
+      startTime: "1659797236",
+      endTime: "1662475636",
       basicOrderType: 2,
       signature:
-        "0x54e1632c656462f23e349fdf12fef25fb91008592544b4b3d9c2a694b55fbc6433e97d0d8258f8b3309513ee150f6cacd12cde0b4c793bc21e42b286959be4651c",
+        "0x27deb8f1923b96693d8d5e1bf9304207e31b9cb49e588e8df5b3926b7547ba444afafe429fb2a17b4b97544d8383f3ad886fc15cab5a91382a56f9d65bb3dc231c",
       totalOriginalAdditionalRecipients: 2,
       additionalRecipients: [
         {
-          amount: "2043750000000000000",
+          amount: "2100000000000000000",
           recipient: "0x8De9C5A032463C561423387a9648c5C7BCC5BC90",
         },
         {
-          amount: "2043750000000000000",
+          amount: "2100000000000000000",
           recipient: "0xA858DDc0445d8131daC4d1DE01f834ffcbA52Ef1",
         },
       ],
@@ -68,10 +69,10 @@ describe("Aggregator", () => {
 
     const calldata = seaportInterface.encodeFunctionData("fulfillBasicOrder", [basicOrderParameters]);
 
-    const tx = await aggregator.buyWithETH([{ data: calldata, value: price }], { value: price });
+    const tx = await aggregator.buyWithETH([{ proxy: seaport, data: calldata, value: price }], { value: price });
     await tx.wait();
 
     expect(await bayc.balanceOf(buyer.address)).to.equal(1);
-    expect(await bayc.ownerOf(3939)).to.equal(buyer.address);
+    expect(await bayc.ownerOf(basicOrderParameters.offerIdentifier)).to.equal(buyer.address);
   });
 });
