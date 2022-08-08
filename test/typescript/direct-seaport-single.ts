@@ -2,7 +2,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { Contract } from "ethers";
 import { ethers } from "hardhat";
-import { BAYC, FULFILLER_CONDUIT_KEY, SEAPORT, ZONE_HASH } from "../constants";
+import { BAYC, FULFILLER_CONDUIT_KEY, OPENSEA_FEES, SEAPORT, ZONE_HASH } from "../constants";
 
 describe("Seaport fulfillBasicOrder", () => {
   let bayc: Contract;
@@ -43,7 +43,7 @@ describe("Seaport fulfillBasicOrder", () => {
       additionalRecipients: [
         {
           amount: "2100000000000000000",
-          recipient: "0x8De9C5A032463C561423387a9648c5C7BCC5BC90",
+          recipient: OPENSEA_FEES,
         },
         {
           amount: "2100000000000000000",
