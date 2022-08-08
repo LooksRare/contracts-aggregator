@@ -3,6 +3,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { Contract } from "ethers";
 import { ethers } from "hardhat";
+import { BAYC, SEAPORT } from "../constants";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -10,7 +11,6 @@ describe("Aggregator", () => {
   let aggregator: Contract;
   let bayc: Contract;
   let buyer: SignerWithAddress;
-  const seaport = "0x00000000006c3852cbef3e08e8df289169ede581";
 
   beforeEach(async () => {
     const Aggregator = await ethers.getContractFactory("Aggregator");
@@ -18,7 +18,7 @@ describe("Aggregator", () => {
     await aggregator.deployed();
 
     // Seaport 1.1 fulfillAdvancedOrder
-    await aggregator.addFunction(seaport, "0xe7acab24");
+    await aggregator.addFunction(SEAPORT, "0xe7acab24");
 
     [buyer] = await ethers.getSigners();
 
@@ -27,7 +27,7 @@ describe("Aggregator", () => {
       ethers.utils.parseEther("200").toHexString().replace("0x0", "0x"),
     ]);
 
-    bayc = await ethers.getContractAt("IERC721", "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d");
+    bayc = await ethers.getContractAt("IERC721", BAYC);
   });
 
   it("Should be able to handle OpenSea trades (fulfillAdvancedOrder)", async function () {
@@ -103,7 +103,7 @@ describe("Aggregator", () => {
     const price = ethers.utils.parseEther("84");
     const tx = await aggregator
       .connect(buyer)
-      .buyWithETH([{ proxy: seaport, data: calldata, value: price }], { value: price });
+      .buyWithETH([{ proxy: SEAPORT, data: calldata, value: price }], { value: price });
 
     await tx.wait();
 

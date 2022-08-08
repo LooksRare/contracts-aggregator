@@ -2,6 +2,7 @@ import { expect } from "chai";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { Contract } from "ethers";
 import { ethers } from "hardhat";
+import { BAYC } from "../constants";
 
 describe("Aggregator", () => {
   let aggregator: Contract;
@@ -28,7 +29,7 @@ describe("Aggregator", () => {
       ethers.utils.parseEther("200").toHexString().replace("0x0", "0x"),
     ]);
 
-    bayc = await ethers.getContractAt("IERC721", "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d");
+    bayc = await ethers.getContractAt("IERC721", BAYC);
   });
 
   it("Should be able to handle LooksRare V1 trades (matchAskWithTakerBidUsingETHAndWETH)", async function () {

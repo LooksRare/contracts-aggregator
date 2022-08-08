@@ -2,11 +2,11 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { Contract } from "ethers";
 import { ethers } from "hardhat";
+import { BAYC, SEAPORT } from "../constants";
 
 describe("Seaport fulfillBasicOrder", () => {
   let bayc: Contract;
   let buyer: SignerWithAddress;
-  const seaport = "0x00000000006c3852cbef3e08e8df289169ede581";
 
   beforeEach(async () => {
     [buyer] = await ethers.getSigners();
@@ -16,7 +16,7 @@ describe("Seaport fulfillBasicOrder", () => {
       ethers.utils.parseEther("200").toHexString().replace("0x0", "0x"),
     ]);
 
-    bayc = await ethers.getContractAt("IERC721", "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d");
+    bayc = await ethers.getContractAt("IERC721", BAYC);
   });
 
   it("Should be able to handle OpenSea trades (fulfillBasicOrder)", async function () {
@@ -52,7 +52,7 @@ describe("Seaport fulfillBasicOrder", () => {
       ],
     };
 
-    const seaportInstance = await ethers.getContractAt("SeaportInterface", seaport);
+    const seaportInstance = await ethers.getContractAt("SeaportInterface", SEAPORT);
 
     const price = ethers.utils.parseEther("84");
     const tx = await seaportInstance.connect(buyer).fulfillBasicOrder(basicOrderParameters, { value: price });
