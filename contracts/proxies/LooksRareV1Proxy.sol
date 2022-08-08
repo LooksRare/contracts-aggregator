@@ -39,7 +39,7 @@ contract LooksRareV1Proxy {
         ILooksRareV1.MakerOrder calldata makerAsk,
         address recipient
     ) private {
-        try MARKETPLACE.matchAskWithTakerBidUsingETHAndWETH{value: takerBid.price}(takerBid, makerAsk) {
+        try MARKETPLACE.matchAskWithTakerBidUsingETHAndWETH{value: makerAsk.price}(takerBid, makerAsk) {
             // TODO: handle CryptoPunks/Mooncats
             if (IERC165(makerAsk.collection).supportsInterface(INTERFACE_ID_ERC721)) {
                 IERC721(makerAsk.collection).transferFrom(address(this), recipient, makerAsk.tokenId);
