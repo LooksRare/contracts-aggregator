@@ -3,8 +3,6 @@ pragma solidity 0.8.14;
 
 import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
 
-import "hardhat/console.sol";
-
 contract Aggregator is OwnableTwoSteps {
     struct TradeData {
         address proxy;
@@ -35,13 +33,8 @@ contract Aggregator is OwnableTwoSteps {
             (bool success, bytes memory returnData) = proxy.call{value: tradeData[i].value}(data);
             // proxy.call{value: tradeData[i].value}(data);
 
-            console.log("We have called Seaport");
-
             if (!success) {
-                console.log("And it failed");
                 if (returnData.length > 0) {
-                    console.log("And there is return data");
-                    console.logBytes(returnData);
                     assembly {
                         let returnDataSize := mload(returnData)
                         revert(add(32, returnData), returnDataSize)
