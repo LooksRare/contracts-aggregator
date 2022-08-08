@@ -44,3 +44,15 @@ npx prettier '**/*.{json,sol,md}' --write
 npx solhint 'contracts/**/*.sol'
 npx solhint 'contracts/**/*.sol' --fix
 ```
+
+### Running tests for each marketplace
+
+Each test file requires a different block number as I retrieve the listings in different days.
+To keep it easy for now, just provide the block number so that the listing is still valid.
+
+There is probably a better way to do this and we can re-visit later.
+
+```shell
+FORKED_BLOCK_NUMBER=15300884 npx hardhat test test/typescript/aggregator-seaport-single.ts
+FORKED_BLOCK_NUMBER= npx hardhat test test/typescript/aggregator-looksrare-v1-single.ts
+```
