@@ -1,4 +1,3 @@
-// import { expect } from "chai";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { Contract } from "ethers";
@@ -21,9 +20,10 @@ describe("Seaport fulfillBasicOrder", () => {
   });
 
   it("Should be able to handle OpenSea trades (fulfillBasicOrder)", async function () {
+    const tokenId = "2518";
     const basicOrderParameters = {
       offerToken: bayc.address,
-      offerIdentifier: "2518",
+      offerIdentifier: tokenId,
       offerAmount: "1",
       considerationToken: "0x0000000000000000000000000000000000000000",
       considerationIdentifier: "0",
@@ -59,6 +59,6 @@ describe("Seaport fulfillBasicOrder", () => {
     await tx.wait();
 
     expect(await bayc.balanceOf(buyer.address)).to.equal(1);
-    expect(await bayc.ownerOf(basicOrderParameters.offerIdentifier)).to.equal(buyer.address);
+    expect(await bayc.ownerOf(tokenId)).to.equal(buyer.address);
   });
 });
