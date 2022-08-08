@@ -2,7 +2,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { Contract } from "ethers";
 import { ethers } from "hardhat";
-import { BAYC, LOOKSRARE_STRATEGY_FIXED_PRICE, SEAPORT } from "../constants";
+import { BAYC, LOOKSRARE_STRATEGY_FIXED_PRICE, SEAPORT, WETH } from "../constants";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -120,7 +120,7 @@ describe("Aggregator", () => {
       tokenId: tokenIdOne,
       amount: 1,
       strategy: LOOKSRARE_STRATEGY_FIXED_PRICE,
-      currency: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      currency: WETH,
       nonce: 209,
       startTime: 1659529911,
       endTime: 1662121755,
@@ -143,7 +143,7 @@ describe("Aggregator", () => {
       tokenId: tokenIdTwo,
       amount: 1,
       strategy: LOOKSRARE_STRATEGY_FIXED_PRICE,
-      currency: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      currency: WETH,
       nonce: 1,
       startTime: 1659977872,
       endTime: 1660064095,
