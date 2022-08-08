@@ -87,7 +87,7 @@ describe("Aggregator", () => {
     };
 
     const abi = JSON.parse(
-      await fs.readFileSync(path.join(__dirname, "Seaport.json"), { encoding: "utf8", flag: "r" })
+      await fs.readFileSync(path.join(__dirname, "../../abis/SeaportInterface.json"), { encoding: "utf8", flag: "r" })
     );
     const seaportInterface = new ethers.utils.Interface(abi);
 
