@@ -3,7 +3,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { Contract } from "ethers";
 import { ethers } from "hardhat";
-import { BAYC, SEAPORT } from "../constants";
+import { BAYC, LOOKSRARE_STRATEGY_FIXED_PRICE, SEAPORT } from "../constants";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -83,8 +83,7 @@ describe("Aggregator", () => {
       2,
     ]);
 
-    const priceOne = ethers.utils.parseEther("84");
-    const priceTwo = ethers.utils.parseEther("84");
+    const price = ethers.utils.parseEther("84");
 
     const tokenIdOne = 4251;
     const tokenIdTwo = 6026;
@@ -95,7 +94,7 @@ describe("Aggregator", () => {
     const takerBidOne = {
       isOrderAsk: false,
       taker: proxy.address,
-      price: priceOne,
+      price: price,
       tokenId: tokenIdOne,
       minPercentageToAsk: minPercentageToAskOne,
       params: "0x",
@@ -104,7 +103,7 @@ describe("Aggregator", () => {
     const takerBidTwo = {
       isOrderAsk: false,
       taker: proxy.address,
-      price: priceTwo,
+      price: price,
       tokenId: tokenIdTwo,
       minPercentageToAsk: minPercentageToAskTwo,
       params: "0x",
@@ -117,11 +116,11 @@ describe("Aggregator", () => {
     const makerAskOne = {
       isOrderAsk: true,
       signer: "0xe51416eF43f4820Aaa2b36ddD9CfE1278106190f",
-      collection: "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D",
-      price: priceOne,
+      collection: BAYC,
+      price: price,
       tokenId: tokenIdOne,
       amount: 1,
-      strategy: "0x56244Bb70CbD3EA9Dc8007399F61dFC065190031",
+      strategy: LOOKSRARE_STRATEGY_FIXED_PRICE,
       currency: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       nonce: 209,
       startTime: 1659529911,
@@ -140,11 +139,11 @@ describe("Aggregator", () => {
     const makerAskTwo = {
       isOrderAsk: true,
       signer: "0xB1Ef9318e27116ca1d97466FEf76ba66496dd558",
-      collection: "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D",
-      price: priceTwo,
+      collection: BAYC,
+      price: price,
       tokenId: tokenIdTwo,
       amount: 1,
-      strategy: "0x56244Bb70CbD3EA9Dc8007399F61dFC065190031",
+      strategy: LOOKSRARE_STRATEGY_FIXED_PRICE,
       currency: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       nonce: 1,
       startTime: 1659977872,

@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { Contract } from "ethers";
 import { ethers } from "hardhat";
-import { BAYC } from "../constants";
+import { BAYC, LOOKSRARE_STRATEGY_FIXED_PRICE, WETH } from "../constants";
 
 describe("Aggregator", () => {
   let aggregator: Contract;
@@ -67,12 +67,12 @@ describe("Aggregator", () => {
     const makerAskOne = {
       isOrderAsk: true,
       signer: "0x2137213d50207Edfd92bCf4CF7eF9E491A155357",
-      collection: "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D",
+      collection: BAYC,
       price: priceOne,
       tokenId: tokenIdOne,
       amount: 1,
-      strategy: "0x56244Bb70CbD3EA9Dc8007399F61dFC065190031",
-      currency: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      strategy: LOOKSRARE_STRATEGY_FIXED_PRICE,
+      currency: WETH,
       nonce: 0,
       startTime: 1659632508,
       endTime: 1662186976,
@@ -90,12 +90,12 @@ describe("Aggregator", () => {
     const makerAskTwo = {
       isOrderAsk: true,
       signer: "0xaf0f4479aF9Df756b9b2c69B463214B9a3346443",
-      collection: "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D",
+      collection: BAYC,
       price: priceTwo,
       tokenId: tokenIdTwo,
       amount: 1,
-      strategy: "0x56244Bb70CbD3EA9Dc8007399F61dFC065190031",
-      currency: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      strategy: LOOKSRARE_STRATEGY_FIXED_PRICE,
+      currency: WETH,
       nonce: 50,
       startTime: 1659484473,
       endTime: 1660089268,
