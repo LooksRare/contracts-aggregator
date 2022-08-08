@@ -4,20 +4,12 @@ import { expect } from "chai";
 import { Contract } from "ethers";
 import { ethers } from "hardhat";
 
-describe("Aggregator", () => {
-  let aggregator: Contract;
+describe("Seaport fulfillBasicOrder", () => {
   let bayc: Contract;
   let buyer: SignerWithAddress;
   const seaport = "0x00000000006c3852cbef3e08e8df289169ede581";
 
   beforeEach(async () => {
-    const Aggregator = await ethers.getContractFactory("Aggregator");
-    aggregator = await Aggregator.deploy();
-    await aggregator.deployed();
-
-    // Seaport 1.1 fulfillBasicOrder
-    await aggregator.addFunction(seaport, "0xfb0f3ee1");
-
     [buyer] = await ethers.getSigners();
 
     await ethers.provider.send("hardhat_setBalance", [
@@ -60,16 +52,9 @@ describe("Aggregator", () => {
       ],
     };
 
-    const seaportInterface = new ethers.utils.Interface([
-      "function fulfillBasicOrder(tuple(address considerationToken, uint256 considerationIdentifier, uint256 considerationAmount, address offerer, address zone, address offerToken, uint256 offerIdentifier, uint256 offerAmount, uint8 basicOrderType, uint256 startTime, uint256 endTime, bytes32 zoneHash, uint256 salt, bytes32 offererConduitKey, bytes32 fulfillerConduitKey, uint256 totalOriginalAdditionalRecipients, tuple(uint256 amount, address recipient)[] additionalRecipients, bytes signature)) payable returns (bool)",
-    ]);
-
-    const calldata = seaportInterface.encodeFunctionData("fulfillBasicOrder", [basicOrderParameters]);
-
     const seaportInstance = await ethers.getContractAt("SeaportInterface", seaport);
 
     const price = ethers.utils.parseEther("84");
-    // const tx = await aggregator.connect(buyer).buyWithETH([{ proxy: seaport, data: calldata, value: price }], { value: price });
     const tx = await seaportInstance.connect(buyer).fulfillBasicOrder(basicOrderParameters, { value: price });
     await tx.wait();
 

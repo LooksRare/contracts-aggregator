@@ -120,9 +120,11 @@ describe("Aggregator", () => {
     ]);
 
     const totalValue = priceOne.add(priceTwo);
-    const tx = await aggregator.buyWithETH([{ proxy: proxy.address, data: calldata, value: totalValue }], {
-      value: totalValue,
-    });
+    const tx = await aggregator
+      .connect(buyer)
+      .buyWithETH([{ proxy: proxy.address, data: calldata, value: totalValue }], {
+        value: totalValue,
+      });
     await tx.wait();
 
     expect(await bayc.balanceOf(aggregator.address)).to.equal(0);

@@ -19,6 +19,7 @@ const config: HardhatUserConfig = {
   networks: {
     hardhat: {
       allowUnlimitedContractSize: false,
+      chainId: Number(process.env.HARDHAT_CHAIN_ID) || 31337,
       forking: {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         url: process.env.ETH_RPC_URL!,
