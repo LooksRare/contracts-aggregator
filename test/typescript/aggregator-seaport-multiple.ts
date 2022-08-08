@@ -17,8 +17,8 @@ describe("Aggregator", () => {
     aggregator = await Aggregator.deploy();
     await aggregator.deployed();
 
-    // Seaport 1.1 fulfillAvailableOrders
-    await aggregator.addFunction(SEAPORT, "0xed98a574");
+    // Seaport 1.1 fulfillAvailableAdvancedOrders
+    await aggregator.addFunction(SEAPORT, "0x87201b41");
 
     [buyer] = await ethers.getSigners();
 
@@ -65,11 +65,13 @@ describe("Aggregator", () => {
 
     const fulfillerConduitKey = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
-    const calldata = seaportInterface.encodeFunctionData("fulfillAvailableOrders", [
+    const calldata = seaportInterface.encodeFunctionData("fulfillAvailableAdvancedOrders", [
       [orderOne, orderTwo],
+      [],
       offerFulfillments,
       considerationFulfillments,
       fulfillerConduitKey,
+      buyer.address,
       2,
     ]);
 
@@ -80,11 +82,8 @@ describe("Aggregator", () => {
 
     await tx.wait();
 
-    // expect(await bayc.balanceOf(buyer.address)).to.equal(2);
-    // expect(await bayc.ownerOf(2518)).to.equal(buyer.address);
-    // expect(await bayc.ownerOf(8498)).to.equal(buyer.address);
-    expect(await bayc.balanceOf(aggregator.address)).to.equal(2);
-    expect(await bayc.ownerOf(2518)).to.equal(aggregator.address);
-    expect(await bayc.ownerOf(8498)).to.equal(aggregator.address);
+    expect(await bayc.balanceOf(buyer.address)).to.equal(2);
+    expect(await bayc.ownerOf(2518)).to.equal(buyer.address);
+    expect(await bayc.ownerOf(8498)).to.equal(buyer.address);
   });
 });
