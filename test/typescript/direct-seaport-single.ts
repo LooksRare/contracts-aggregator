@@ -2,7 +2,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { Contract } from "ethers";
 import { ethers } from "hardhat";
-import { BAYC, SEAPORT } from "../constants";
+import { BAYC, FULFILLER_CONDUIT_KEY, SEAPORT } from "../constants";
 
 describe("Seaport fulfillBasicOrder", () => {
   let bayc: Contract;
@@ -33,7 +33,7 @@ describe("Seaport fulfillBasicOrder", () => {
       zoneHash: "0x0000000000000000000000000000000000000000000000000000000000000000",
       salt: "70769720963177607",
       offererConduitKey: "0x0000007b02230091a7ed01230072f7006a004d60a8d4e71d599b8104250f0000",
-      fulfillerConduitKey: "0x0000000000000000000000000000000000000000000000000000000000000000",
+      fulfillerConduitKey: FULFILLER_CONDUIT_KEY,
       startTime: "1659797236",
       endTime: "1662475636",
       basicOrderType: 2,

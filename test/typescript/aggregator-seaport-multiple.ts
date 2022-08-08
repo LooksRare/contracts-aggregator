@@ -3,7 +3,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { Contract } from "ethers";
 import { ethers } from "hardhat";
-import { BAYC, SEAPORT } from "../constants";
+import { BAYC, FULFILLER_CONDUIT_KEY, SEAPORT } from "../constants";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -63,14 +63,12 @@ describe("Aggregator", () => {
     );
     const seaportInterface = new ethers.utils.Interface(abi);
 
-    const fulfillerConduitKey = "0x0000000000000000000000000000000000000000000000000000000000000000";
-
     const calldata = seaportInterface.encodeFunctionData("fulfillAvailableAdvancedOrders", [
       [orderOne, orderTwo],
       [],
       offerFulfillments,
       considerationFulfillments,
-      fulfillerConduitKey,
+      FULFILLER_CONDUIT_KEY,
       buyer.address,
       2,
     ]);
