@@ -65,10 +65,10 @@ describe("Aggregator", () => {
       ],
     ];
 
-    const abi = JSON.parse(
+    const seaportAbi = JSON.parse(
       await fs.readFileSync(path.join(__dirname, "../../abis/SeaportInterface.json"), { encoding: "utf8", flag: "r" })
     );
-    const seaportInterface = new ethers.utils.Interface(abi);
+    const seaportInterface = new ethers.utils.Interface(seaportAbi);
 
     const fulfillerConduitKey = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
@@ -154,13 +154,10 @@ describe("Aggregator", () => {
       s: expandedSignatureTwo.s,
     };
 
-    const iface = new ethers.utils.Interface([
-      `function buyWithETH(
-        tuple(bool isOrderAsk, address taker, uint256 price, uint256 tokenId, uint256 minPercentageToAsk, bytes params)[] takerBids,
-        tuple(bool isOrderAsk, address signer, address collection, uint256 price, uint256 tokenId, uint256 amount, address strategy, address currency, uint256 nonce, uint256 startTime, uint256 endTime, uint256 minPercentageToAsk, bytes params, uint8 v, bytes32 r, bytes32 s)[] makerAsks,
-        address recipient
-      ) payable`,
-    ]);
+    const looksRareAbi = JSON.parse(
+      await fs.readFileSync(path.join(__dirname, "../../abis/LooksRareV1Proxy.json"), { encoding: "utf8", flag: "r" })
+    );
+    const iface = new ethers.utils.Interface(looksRareAbi);
 
     const calldataLooksRare = iface.encodeFunctionData("buyWithETH", [
       [takerBidOne, takerBidTwo],
