@@ -3,6 +3,8 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { Contract } from "ethers";
 import { ethers } from "hardhat";
 import { BAYC, LOOKSRARE_STRATEGY_FIXED_PRICE, WETH } from "../constants";
+import * as fs from "fs";
+import * as path from "path";
 
 describe("Aggregator", () => {
   let aggregator: Contract;
@@ -106,13 +108,10 @@ describe("Aggregator", () => {
       s: expandedSignatureTwo.s,
     };
 
-    const iface = new ethers.utils.Interface([
-      `function buyWithETH(
-        tuple(bool isOrderAsk, address taker, uint256 price, uint256 tokenId, uint256 minPercentageToAsk, bytes params)[] takerBids,
-        tuple(bool isOrderAsk, address signer, address collection, uint256 price, uint256 tokenId, uint256 amount, address strategy, address currency, uint256 nonce, uint256 startTime, uint256 endTime, uint256 minPercentageToAsk, bytes params, uint8 v, bytes32 r, bytes32 s)[] makerAsks,
-        address recipient
-      ) payable`,
-    ]);
+    const abi = JSON.parse(
+      await fs.readFileSync(path.join(__dirname, "../../abis/LooksRareV1Proxy.json"), { encoding: "utf8", flag: "r" })
+    );
+    const iface = new ethers.utils.Interface(abi);
 
     const calldata = iface.encodeFunctionData("buyWithETH", [
       [takerBidOne, takerBidTwo],
