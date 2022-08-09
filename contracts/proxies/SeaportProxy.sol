@@ -95,7 +95,7 @@ contract SeaportProxy {
 
         CriteriaResolver[] memory criteriaResolver = new CriteriaResolver[](0);
 
-        MARKETPLACE.fulfillAvailableAdvancedOrders(
+        MARKETPLACE.fulfillAvailableAdvancedOrders{value: msg.value}(
             advancedOrders,
             criteriaResolver,
             extraDataStruct.offerFulfillments,

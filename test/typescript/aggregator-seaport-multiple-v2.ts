@@ -61,7 +61,17 @@ describe("Aggregator", () => {
       ],
     ];
 
-    const price = ethers.utils.parseEther("168.78");
+    const priceOne = orderOne.parameters.consideration.reduce(
+      (sum: number, item: any) => ethers.BigNumber.from(item.endAmount).add(sum),
+      0
+    );
+
+    const priceTwo = orderTwo.parameters.consideration.reduce(
+      (sum: number, item: any) => ethers.BigNumber.from(item.endAmount).add(sum),
+      0
+    );
+
+    const price = priceOne.add(priceTwo);
     const abiCoder = ethers.utils.defaultAbiCoder;
     const extraDataSchema = [
       `
@@ -94,10 +104,7 @@ describe("Aggregator", () => {
             collection: orderOne.parameters.offer[0].token,
             tokenId: orderOne.parameters.offer[0].identifierOrCriteria,
             amount: 1,
-            price: orderOne.parameters.consideration.reduce(
-              (sum: number, item: any) => ethers.BigNumber.from(item.endAmount).add(sum),
-              0
-            ),
+            price: priceOne,
             currency: orderOne.parameters.consideration[0].token,
             startTime: orderOne.parameters.startTime,
             endTime: orderOne.parameters.endTime,
@@ -109,10 +116,7 @@ describe("Aggregator", () => {
             collection: orderTwo.parameters.offer[0].token,
             tokenId: orderTwo.parameters.offer[0].identifierOrCriteria,
             amount: 1,
-            price: orderTwo.parameters.consideration.reduce(
-              (sum: number, item: any) => ethers.BigNumber.from(item.endAmount).add(sum),
-              0
-            ),
+            price: priceTwo,
             currency: orderTwo.parameters.consideration[0].token,
             startTime: orderTwo.parameters.startTime,
             endTime: orderTwo.parameters.endTime,
