@@ -3,8 +3,6 @@ import { expect } from "chai";
 import { Contract } from "ethers";
 import { ethers } from "hardhat";
 import { BAYC, FULFILLER_CONDUIT_KEY, SEAPORT } from "../constants";
-import * as fs from "fs";
-import * as path from "path";
 import getAbi from "./utils/get-abi";
 import getSignature from "./utils/get-signature";
 import getFixture from "./utils/get-fixture";
