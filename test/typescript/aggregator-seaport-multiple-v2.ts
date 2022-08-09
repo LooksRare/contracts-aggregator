@@ -41,6 +41,23 @@ describe("Aggregator", () => {
   const combineConsiderationAmount = (consideration: Array<any>) =>
     consideration.reduce((sum: number, item: any) => BigNumber.from(item.endAmount).add(sum), 0);
 
+  const getOrderJson = (listing: any, price: BigNumber, recipient: string) => {
+    const order = {
+      price,
+      recipient,
+      signer: listing.parameters.offerer,
+      collection: listing.parameters.offer[0].token,
+      tokenId: listing.parameters.offer[0].identifierOrCriteria,
+      amount: 1,
+      currency: listing.parameters.consideration[0].token,
+      startTime: listing.parameters.startTime,
+      endTime: listing.parameters.endTime,
+      signature: listing.signature,
+    };
+
+    return order;
+  };
+
   it("Should be able to handle OpenSea trades (fulfillAvailableAdvancedOrders)", async function () {
     const orderOne = getFixture("bayc-2518-order.json");
     const orderTwo = getFixture("bayc-8498-order.json");
@@ -93,32 +110,7 @@ describe("Aggregator", () => {
         proxy: proxy.address,
         selector: functionSelector,
         value: price,
-        orders: [
-          {
-            signer: orderOne.parameters.offerer,
-            recipient: buyer.address,
-            collection: orderOne.parameters.offer[0].token,
-            tokenId: orderOne.parameters.offer[0].identifierOrCriteria,
-            amount: 1,
-            price: priceOne,
-            currency: orderOne.parameters.consideration[0].token,
-            startTime: orderOne.parameters.startTime,
-            endTime: orderOne.parameters.endTime,
-            signature: orderOne.signature,
-          },
-          {
-            signer: orderTwo.parameters.offerer,
-            recipient: buyer.address,
-            collection: orderTwo.parameters.offer[0].token,
-            tokenId: orderTwo.parameters.offer[0].identifierOrCriteria,
-            amount: 1,
-            price: priceTwo,
-            currency: orderTwo.parameters.consideration[0].token,
-            startTime: orderTwo.parameters.startTime,
-            endTime: orderTwo.parameters.endTime,
-            signature: orderTwo.signature,
-          },
-        ],
+        orders: [getOrderJson(orderOne, priceOne, buyer.address), getOrderJson(orderTwo, priceTwo, buyer.address)],
         ordersExtraData: [
           abiCoder.encode(orderExtraDataSchema, [
             {
