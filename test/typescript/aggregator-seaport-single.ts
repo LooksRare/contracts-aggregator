@@ -7,6 +7,7 @@ import * as fs from "fs";
 import * as path from "path";
 import getAbi from "./utils/get-abi";
 import getSignature from "./utils/get-signature";
+import getFixture from "./utils/get-fixture";
 
 describe("Aggregator", () => {
   let aggregator: Contract;
@@ -32,9 +33,7 @@ describe("Aggregator", () => {
   });
 
   it("Should be able to handle OpenSea trades (fulfillAdvancedOrder)", async function () {
-    const advancedOrder = JSON.parse(
-      await fs.readFileSync(path.join(__dirname, "./fixtures/bayc-2518-order.json"), { encoding: "utf8", flag: "r" })
-    );
+    const advancedOrder = getFixture("bayc-2518-order.json");
 
     const abi = await getAbi("SeaportInterface.json");
     const seaportInterface = new ethers.utils.Interface(abi);
