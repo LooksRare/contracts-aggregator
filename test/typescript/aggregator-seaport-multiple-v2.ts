@@ -94,6 +94,21 @@ describe("Aggregator", () => {
             endTime: orderOne.parameters.endTime,
             signature: orderOne.signature,
           },
+          {
+            signer: orderTwo.parameters.offerer,
+            recipient: buyer.address,
+            collection: orderTwo.parameters.offer[0].token,
+            tokenId: orderTwo.parameters.offer[0].identifierOrCriteria,
+            amount: 1,
+            price: orderTwo.parameters.consideration.reduce(
+              (sum: number, item: any) => ethers.BigNumber.from(item.endAmount).add(sum),
+              0
+            ),
+            currency: orderTwo.parameters.consideration[0].token,
+            startTime: orderTwo.parameters.startTime,
+            endTime: orderTwo.parameters.endTime,
+            signature: orderTwo.signature,
+          },
         ],
         ordersExtraData: [
           abiCoder.encode(orderExtraDataSchema, [
@@ -104,6 +119,19 @@ describe("Aggregator", () => {
               salt: orderOne.parameters.salt,
               conduitKey: orderOne.parameters.conduitKey,
               recipients: orderOne.parameters.consideration.map((item: any) => ({
+                recipient: item.recipient,
+                amount: item.endAmount,
+              })),
+            },
+          ]),
+          abiCoder.encode(orderExtraDataSchema, [
+            {
+              orderType: orderTwo.parameters.orderType,
+              zone: orderTwo.parameters.zone,
+              zoneHash: orderTwo.parameters.zoneHash,
+              salt: orderTwo.parameters.salt,
+              conduitKey: orderTwo.parameters.conduitKey,
+              recipients: orderTwo.parameters.consideration.map((item: any) => ({
                 recipient: item.recipient,
                 amount: item.endAmount,
               })),
