@@ -3,8 +3,8 @@ pragma solidity 0.8.14;
 
 import {SeaportInterface} from "../interfaces/SeaportInterface.sol";
 import {BasicOrder} from "../libraries/OrderStructs.sol";
-import {AdvancedOrder, CriteriaResolver, OrderParameters, OfferItem, ConsiderationItem, FulfillmentComponent} from "../lib/ConsiderationStructs.sol";
-import {ItemType, OrderType} from "../lib/ConsiderationEnums.sol";
+import {AdvancedOrder, CriteriaResolver, OrderParameters, OfferItem, ConsiderationItem, FulfillmentComponent} from "../libraries/ConsiderationStructs.sol";
+import {ItemType, OrderType} from "../libraries/ConsiderationEnums.sol";
 
 import "hardhat/console.sol";
 
