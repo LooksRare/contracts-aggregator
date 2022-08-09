@@ -2,7 +2,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { Contract } from "ethers";
 import { ethers } from "hardhat";
-import { BAYC, FULFILLER_CONDUIT_KEY, SEAPORT } from "../constants";
+import { BAYC } from "../constants";
 import getAbi from "./utils/get-abi";
 import getFixture from "./utils/get-fixture";
 
