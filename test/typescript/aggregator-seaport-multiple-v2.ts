@@ -3,8 +3,8 @@ import { expect } from "chai";
 import { BigNumber, Contract } from "ethers";
 import { ethers } from "hardhat";
 import { BAYC } from "../constants";
-import getAbi from "./utils/get-abi";
 import getFixture from "./utils/get-fixture";
+import getSignature from "./utils/get-signature";
 
 describe("Aggregator", () => {
   let aggregator: Contract;
@@ -22,10 +22,7 @@ describe("Aggregator", () => {
     proxy = await SeaportProxy.deploy();
     await proxy.deployed();
 
-    const abi = await getAbi("SeaportProxy.json");
-    const iface = new ethers.utils.Interface(abi);
-    const fragment = iface.getFunction("buyWithETH");
-    functionSelector = iface.getSighash(fragment);
+    functionSelector = await getSignature("SeaportProxy.json", "buyWithETH");
     await aggregator.addFunction(proxy.address, functionSelector);
 
     [buyer] = await ethers.getSigners();

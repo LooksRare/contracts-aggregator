@@ -3,7 +3,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { Contract } from "ethers";
 import { ethers } from "hardhat";
 import { BAYC, LOOKSRARE_STRATEGY_FIXED_PRICE, WETH } from "../constants";
-import getAbi from "./utils/get-abi";
+import getSignature from "./utils/get-signature";
 
 describe("LooksRareAggregator", () => {
   let aggregator: Contract;
@@ -21,10 +21,7 @@ describe("LooksRareAggregator", () => {
     proxy = await LooksRareV2Proxy.deploy();
     await proxy.deployed();
 
-    const abi = await getAbi("LooksRareV2Proxy.json");
-    const iface = new ethers.utils.Interface(abi);
-    const fragment = iface.getFunction("buyWithETH");
-    functionSelector = iface.getSighash(fragment);
+    functionSelector = await getSignature("LooksRareV2Proxy.json", "buyWithETH");
     await aggregator.addFunction(proxy.address, functionSelector);
 
     [buyer] = await ethers.getSigners();
