@@ -6,6 +6,7 @@ import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {BasicOrder} from "../libraries/OrderStructs.sol";
+import {SignatureSplitter} from "../libraries/SignatureSplitter.sol";
 
 contract LooksRareV2Proxy {
     enum ItemType {
@@ -23,7 +24,6 @@ contract LooksRareV2Proxy {
     bytes4 constant INTERFACE_ID_ERC1155 = 0xd9b67a26;
 
     error InvalidOrderLength();
-    error InvalidSignature();
     error UnrecognizedTokenInterface();
     error ZeroAddress();
 
@@ -69,7 +69,7 @@ contract LooksRareV2Proxy {
             makerAsk.startTime = order.startTime;
             makerAsk.endTime = order.endTime;
 
-            (uint8 v, bytes32 r, bytes32 s) = splitSignature(order.signature);
+            (uint8 v, bytes32 r, bytes32 s) = SignatureSplitter.splitSignature(order.signature);
             makerAsk.v = v;
             makerAsk.r = r;
             makerAsk.s = s;
@@ -145,32 +145,5 @@ contract LooksRareV2Proxy {
         bytes memory
     ) public virtual returns (bytes4) {
         return this.onERC1155BatchReceived.selector;
-    }
-
-    // TODO: move to a library
-    function splitSignature(bytes memory sig)
-        private
-        pure
-        returns (
-            uint8,
-            bytes32,
-            bytes32
-        )
-    {
-        if (sig.length != 65) revert InvalidSignature();
-
-        bytes32 r;
-        bytes32 s;
-        uint8 v;
-        assembly {
-            // first 32 bytes, after the length prefix
-            r := mload(add(sig, 32))
-            // second 32 bytes
-            s := mload(add(sig, 64))
-            // final byte (first byte of the next 32 bytes)
-            v := byte(0, mload(add(sig, 96)))
-        }
-
-        return (v, r, s);
     }
 }
