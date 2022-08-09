@@ -1,6 +1,6 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
-import { Contract } from "ethers";
+import { BigNumber, Contract } from "ethers";
 import { ethers } from "hardhat";
 import { BAYC } from "../constants";
 import getAbi from "./utils/get-abi";
@@ -38,6 +38,9 @@ describe("Aggregator", () => {
     bayc = await ethers.getContractAt("IERC721", BAYC);
   });
 
+  const combineConsiderationAmount = (consideration: Array<any>) =>
+    consideration.reduce((sum: number, item: any) => BigNumber.from(item.endAmount).add(sum), 0);
+
   it("Should be able to handle OpenSea trades (fulfillAvailableAdvancedOrders)", async function () {
     const orderOne = getFixture("bayc-2518-order.json");
     const orderTwo = getFixture("bayc-8498-order.json");
@@ -61,17 +64,10 @@ describe("Aggregator", () => {
       ],
     ];
 
-    const priceOne = orderOne.parameters.consideration.reduce(
-      (sum: number, item: any) => ethers.BigNumber.from(item.endAmount).add(sum),
-      0
-    );
-
-    const priceTwo = orderTwo.parameters.consideration.reduce(
-      (sum: number, item: any) => ethers.BigNumber.from(item.endAmount).add(sum),
-      0
-    );
-
+    const priceOne = combineConsiderationAmount(orderOne.parameters.consideration);
+    const priceTwo = combineConsiderationAmount(orderTwo.parameters.consideration);
     const price = priceOne.add(priceTwo);
+
     const abiCoder = ethers.utils.defaultAbiCoder;
     const extraDataSchema = [
       `
