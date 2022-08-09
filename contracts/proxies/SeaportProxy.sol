@@ -61,23 +61,21 @@ contract SeaportProxy {
             parameters.totalOriginalConsiderationItems = recipientsLength;
 
             OfferItem[] memory offer = new OfferItem[](1);
-            offer[0].itemType = ItemType(2); // TODO: Support ERC-1155
+            offer[0].itemType = ItemType.ERC721; // TODO: Support ERC-1155
             offer[0].token = orders[i].collection;
             offer[0].identifierOrCriteria = orders[i].tokenId;
             offer[0].startAmount = orders[i].amount;
             offer[0].endAmount = orders[i].amount;
-
             parameters.offer = offer;
 
             ConsiderationItem[] memory consideration = new ConsiderationItem[](recipientsLength);
             for (uint256 j; j < recipientsLength; ) {
-                ConsiderationItem memory considerationItem;
-                considerationItem.itemType = ItemType(0); // TODO: dynamic?
-                considerationItem.token = address(0);
-                considerationItem.identifierOrCriteria = 0;
-                considerationItem.startAmount = orderExtraData.recipients[j].amount;
-                considerationItem.endAmount = orderExtraData.recipients[j].amount;
-                considerationItem.recipient = payable(orderExtraData.recipients[j].recipient);
+                consideration[j].itemType = ItemType.NATIVE; // TODO: dynamic?
+                consideration[j].token = address(0);
+                consideration[j].identifierOrCriteria = 0;
+                consideration[j].startAmount = orderExtraData.recipients[j].amount;
+                consideration[j].endAmount = orderExtraData.recipients[j].amount;
+                consideration[j].recipient = payable(orderExtraData.recipients[j].recipient);
 
                 unchecked {
                     ++j;

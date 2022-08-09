@@ -71,7 +71,16 @@ describe("Aggregator", () => {
       )`,
     ];
     const orderExtraDataSchema = [
-      "tuple(uint8 orderType, address zone, bytes32 zoneHash, uint256 salt, bytes32 conduitKey, tuple(address recipient, uint256 amount)[] recipients) orderExtraData",
+      `
+      tuple(
+        uint8 orderType,
+        address zone,
+        bytes32 zoneHash,
+        uint256 salt,
+        bytes32 conduitKey,
+        tuple(address recipient, uint256 amount)[] recipients
+      ) orderExtraData
+      `,
     ];
     const tradeData = [
       {
