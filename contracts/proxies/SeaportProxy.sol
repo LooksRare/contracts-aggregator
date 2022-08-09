@@ -23,7 +23,7 @@ contract SeaportProxy {
     }
 
     struct OrderExtraData {
-        uint8 orderType;
+        OrderType orderType;
         address zone;
         bytes32 zoneHash;
         uint256 salt;
@@ -55,7 +55,7 @@ contract SeaportProxy {
             parameters.zoneHash = orderExtraData.zoneHash;
             parameters.salt = orderExtraData.salt;
             parameters.conduitKey = orderExtraData.conduitKey;
-            parameters.orderType = OrderType(orderExtraData.orderType);
+            parameters.orderType = orderExtraData.orderType;
             parameters.startTime = orders[i].startTime;
             parameters.endTime = orders[i].endTime;
             parameters.totalOriginalConsiderationItems = recipientsLength;
