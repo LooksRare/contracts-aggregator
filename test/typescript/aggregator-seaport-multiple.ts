@@ -5,6 +5,7 @@ import { ethers } from "hardhat";
 import { BAYC, FULFILLER_CONDUIT_KEY, SEAPORT } from "../constants";
 import getAbi from "./utils/get-abi";
 import getFixture from "./utils/get-fixture";
+import getSignature from "./utils/get-signature";
 
 describe("Aggregator", () => {
   let aggregator: Contract;
@@ -16,8 +17,8 @@ describe("Aggregator", () => {
     aggregator = await Aggregator.deploy();
     await aggregator.deployed();
 
-    // Seaport 1.1 fulfillAvailableAdvancedOrders
-    await aggregator.addFunction(SEAPORT, "0x87201b41");
+    const functionSelector = getSignature("SeaportInterface.json", "fulfillAvailableAdvancedOrders");
+    await aggregator.addFunction(SEAPORT, functionSelector);
 
     [buyer] = await ethers.getSigners();
 

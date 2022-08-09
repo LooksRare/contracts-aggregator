@@ -5,6 +5,7 @@ import { ethers } from "hardhat";
 import { BAYC, FULFILLER_CONDUIT_KEY, LOOKSRARE_STRATEGY_FIXED_PRICE, SEAPORT, WETH } from "../constants";
 import getAbi from "./utils/get-abi";
 import getFixture from "./utils/get-fixture";
+import getSignature from "./utils/get-signature";
 
 describe("Aggregator", () => {
   let aggregator: Contract;
@@ -21,11 +22,11 @@ describe("Aggregator", () => {
     proxy = await LooksRareV1Proxy.deploy();
     await proxy.deployed();
 
-    // LooksRareV1Proxy buyWithETH
-    await aggregator.addFunction(proxy.address, "0x96792461");
+    const looksRareSelector = getSignature("LooksRareV1Proxy.json", "buyWithETH");
+    await aggregator.addFunction(proxy.address, looksRareSelector);
 
-    // Seaport 1.1 fulfillAvailableAdvancedOrders
-    await aggregator.addFunction(SEAPORT, "0x87201b41");
+    const seaportSelector = getSignature("SeaportInterface.json", "fulfillAvailableAdvancedOrders");
+    await aggregator.addFunction(SEAPORT, seaportSelector);
 
     [buyer] = await ethers.getSigners();
 

@@ -5,6 +5,7 @@ import { ethers } from "hardhat";
 import { BAYC, LOOKSRARE_STRATEGY_FIXED_PRICE, WETH } from "../constants";
 import * as fs from "fs";
 import * as path from "path";
+import getSignature from "./utils/get-signature";
 
 describe("Aggregator", () => {
   let aggregator: Contract;
@@ -21,8 +22,8 @@ describe("Aggregator", () => {
     proxy = await LooksRareV1Proxy.deploy();
     await proxy.deployed();
 
-    // LooksRareV1Proxy buyWithETH
-    await aggregator.addFunction(proxy.address, "0x96792461");
+    const functionSelector = getSignature("LooksRareV1Proxy.json", "buyWithETH");
+    await aggregator.addFunction(proxy.address, functionSelector);
 
     [buyer] = await ethers.getSigners();
 

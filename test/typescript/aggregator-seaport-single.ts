@@ -6,6 +6,7 @@ import { BAYC, FULFILLER_CONDUIT_KEY, SEAPORT } from "../constants";
 import * as fs from "fs";
 import * as path from "path";
 import getAbi from "./utils/get-abi";
+import getSignature from "./utils/get-signature";
 
 describe("Aggregator", () => {
   let aggregator: Contract;
@@ -17,8 +18,8 @@ describe("Aggregator", () => {
     aggregator = await Aggregator.deploy();
     await aggregator.deployed();
 
-    // Seaport 1.1 fulfillAdvancedOrder
-    await aggregator.addFunction(SEAPORT, "0xe7acab24");
+    const functionSelector = getSignature("SeaportInterface.json", "fulfillAdvancedOrder");
+    await aggregator.addFunction(SEAPORT, functionSelector);
 
     [buyer] = await ethers.getSigners();
 
