@@ -8,27 +8,13 @@ import {BasicOrder} from "./libraries/OrderStructs.sol";
 import "hardhat/console.sol";
 
 contract LooksRareAggregator is OwnableTwoSteps {
-    // struct SeaportRecipient {
-    //   address recipient;
-    //   uint256 amount;
-    // }
-
-    // should item type be calculated using IERC165?
-    // struct SeaportData {
-    //   uint8 orderType;
-    //   address zone;
-    //   bytes32 zoneHash;
-    //   uint256 salt;
-    //   bytes32 conduitKey;
-    //   SeaportRecipient[] recipients;
-    // }
-
     struct TradeData {
         address proxy;
         bytes4 selector;
         uint256 value;
         BasicOrder[] orders;
-        bytes[] extraData;
+        bytes[] ordersExtraData;
+        bytes extraData;
     }
 
     mapping(address => mapping(bytes4 => bool)) private proxyFunctionSelectors;
@@ -46,8 +32,15 @@ contract LooksRareAggregator is OwnableTwoSteps {
             if (!proxyFunctionSelectors[proxy][selector]) revert InvalidFunction();
 
             (bool success, bytes memory returnData) = proxy.call{value: tradeData[i].value}(
-                abi.encodeWithSelector(selector, tradeData[i].orders, tradeData[i].extraData)
+                abi.encodeWithSelector(
+                    selector,
+                    tradeData[i].orders,
+                    tradeData[i].ordersExtraData,
+                    tradeData[i].extraData
+                )
             );
+
+            console.logBytes(returnData);
 
             unchecked {
                 ++i;

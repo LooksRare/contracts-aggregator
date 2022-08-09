@@ -14,7 +14,7 @@ contract LooksRareV2Proxy {
         ERC721,
         ERC1155
     }
-    struct ExtraData {
+    struct OrderExtraData {
         address strategy;
         uint256 nonce;
         uint256 minPercentageToAsk;
@@ -29,9 +29,13 @@ contract LooksRareV2Proxy {
     error UnrecognizedTokenInterface();
     error ZeroAddress();
 
-    function buyWithETH(BasicOrder[] calldata orders, bytes[] calldata extraData) external payable {
+    function buyWithETH(
+        BasicOrder[] calldata orders,
+        bytes[] calldata ordersExtraData,
+        bytes memory
+    ) external payable {
         uint256 ordersLength = orders.length;
-        if (ordersLength == 0 || ordersLength != extraData.length) revert InvalidOrderLength();
+        if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();
         for (uint256 i; i < ordersLength; ) {
             if (orders[i].recipient == address(0)) revert ZeroAddress();
 
@@ -51,7 +55,7 @@ contract LooksRareV2Proxy {
                 revert UnrecognizedTokenInterface();
             }
 
-            ExtraData memory extraDataStruct = abi.decode(extraData[i], (ExtraData));
+            OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
 
             ILooksRareV1.MakerOrder memory makerAsk;
             makerAsk.isOrderAsk = true;
@@ -60,9 +64,9 @@ contract LooksRareV2Proxy {
             makerAsk.tokenId = order.tokenId;
             makerAsk.price = order.price;
             makerAsk.amount = amount;
-            makerAsk.strategy = extraDataStruct.strategy;
-            makerAsk.nonce = extraDataStruct.nonce;
-            makerAsk.minPercentageToAsk = extraDataStruct.minPercentageToAsk;
+            makerAsk.strategy = orderExtraData.strategy;
+            makerAsk.nonce = orderExtraData.nonce;
+            makerAsk.minPercentageToAsk = orderExtraData.minPercentageToAsk;
             makerAsk.currency = order.currency;
             makerAsk.startTime = order.startTime;
             makerAsk.endTime = order.endTime;
@@ -77,7 +81,7 @@ contract LooksRareV2Proxy {
             takerBid.taker = address(this);
             takerBid.price = order.price;
             takerBid.tokenId = order.tokenId;
-            takerBid.minPercentageToAsk = extraDataStruct.minPercentageToAsk;
+            takerBid.minPercentageToAsk = orderExtraData.minPercentageToAsk;
 
             _matchSingleOrder(takerBid, makerAsk, order.recipient, itemType);
 

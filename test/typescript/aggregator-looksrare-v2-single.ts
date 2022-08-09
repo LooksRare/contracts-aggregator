@@ -82,10 +82,11 @@ describe("LooksRareAggregator", () => {
               "0x146a8f500fea9cde68c339da9abe8654ffb60c5a80506532e3500d1edba687640519093ff36ab3a728c961fc763d6e6a107ed823cfa5bd45182cab8029dab5d21b",
           },
         ],
-        extraData: [
+        ordersExtraData: [
           abiCoder.encode(extraDataSchema, [LOOKSRARE_STRATEGY_FIXED_PRICE, 0, 9550]),
           abiCoder.encode(extraDataSchema, [LOOKSRARE_STRATEGY_FIXED_PRICE, 50, 8500]),
         ],
+        extraData: "0x",
       },
     ];
 
