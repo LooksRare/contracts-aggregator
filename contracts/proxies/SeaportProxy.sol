@@ -32,6 +32,7 @@ contract SeaportProxy {
     }
 
     error InvalidOrderLength();
+    error InvalidRecipient();
 
     function buyWithETH(
         BasicOrder[] calldata orders,
@@ -39,8 +40,11 @@ contract SeaportProxy {
         bytes calldata extraData
     ) external payable {
         uint256 ordersLength = orders.length;
-        address recipient = orders[0].recipient;
         if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();
+
+        address recipient = orders[0].recipient;
+        // Since Seaport supports custom recipient, the recipient should not be the proxy.
+        if (recipient == address(this)) revert InvalidRecipient();
 
         AdvancedOrder[] memory advancedOrders = new AdvancedOrder[](ordersLength);
         ExtraData memory extraDataStruct = abi.decode(extraData, (ExtraData));
