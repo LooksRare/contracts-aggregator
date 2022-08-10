@@ -101,4 +101,63 @@ describe("Aggregator", () => {
     expect(await moodie.ownerOf(5536)).to.equal(buyer.address);
     expect(await moodie.ownerOf(1915)).to.equal(buyer.address);
   });
+
+  it("is able to refund extra ETH paid (trickled down to SeaportProxy)", async function () {
+    const maxCostOne = BigNumber.from("221649999999999993");
+    const maxCostTwo = BigNumber.from("221650000000000000");
+    const price = maxCostOne.add(maxCostTwo);
+
+    const { HashZero, AddressZero } = ethers.constants;
+    const tradeData = [
+      {
+        proxy: proxy.address,
+        selector: functionSelector,
+        value: price,
+        orders: [
+          {
+            signer: AddressZero,
+            recipient: buyer.address,
+            collection: "0x0f23939ee95350f26d9c1b818ee0cc1c8fd2b99d",
+            tokenIds: [5536],
+            amounts: [1],
+            price: maxCostOne,
+            currency: AddressZero,
+            startTime: 0,
+            endTime: 0,
+            signature: HashZero,
+          },
+          {
+            signer: AddressZero,
+            recipient: buyer.address,
+            collection: "0x4d1ffe3eb76f15d1f7651adf322e1f5a6e5c7552",
+            tokenIds: [1915],
+            amounts: [1],
+            price: maxCostTwo,
+            currency: AddressZero,
+            startTime: 0,
+            endTime: 0,
+            signature: HashZero,
+          },
+        ],
+        ordersExtraData: [HashZero, HashZero],
+        extraData: HashZero,
+      },
+    ];
+
+    const buyerBalanceBefore = await ethers.provider.getBalance(buyer.address);
+
+    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, { value: price });
+    await tx.wait();
+    const receipt = await ethers.provider.getTransactionReceipt(tx.hash);
+    const gasUsed = receipt.gasUsed;
+    const txFee = gasUsed.mul(tx.gasPrice);
+
+    expect(await moodie.balanceOf(buyer.address)).to.equal(2);
+    expect(await moodie.ownerOf(5536)).to.equal(buyer.address);
+    expect(await moodie.ownerOf(1915)).to.equal(buyer.address);
+    expect(await ethers.provider.getBalance(aggregator.address)).to.equal(0);
+    expect(await ethers.provider.getBalance(proxy.address)).to.equal(0);
+    const buyerBalanceAfter = await ethers.provider.getBalance(buyer.address);
+    expect(buyerBalanceBefore.sub(buyerBalanceAfter).sub(txFee)).to.equal(price);
+  });
 });
