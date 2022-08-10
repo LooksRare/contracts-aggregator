@@ -5,8 +5,9 @@ import {SeaportInterface} from "../interfaces/SeaportInterface.sol";
 import {BasicOrder} from "../libraries/OrderStructs.sol";
 import {AdvancedOrder, CriteriaResolver, OrderParameters, OfferItem, ConsiderationItem, FulfillmentComponent} from "../libraries/ConsiderationStructs.sol";
 import {ItemType, OrderType} from "../libraries/ConsiderationEnums.sol";
+import {LowLevelETH} from "../lowLevelCallers/LowLevelETH.sol";
 
-contract SeaportProxy {
+contract SeaportProxy is LowLevelETH {
     SeaportInterface constant MARKETPLACE = SeaportInterface(0x00000000006c3852cbEf3e08E8dF289169EdE581);
 
     struct Recipient {
@@ -108,5 +109,9 @@ contract SeaportProxy {
                 ordersLength
             )
         {} catch {}
+    }
+
+    receive() external payable {
+        _transferETH(tx.origin, msg.value);
     }
 }

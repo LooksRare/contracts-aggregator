@@ -154,7 +154,7 @@ describe("Aggregator", () => {
     expect(await bayc.ownerOf(8498)).to.equal(buyer.address);
   });
 
-  it("is able to refund extra ETH paid", async function () {
+  it("is able to refund extra ETH paid (not trickled down to SeaportProxy)", async function () {
     const orderOne = getFixture("bayc-2518-order.json");
     const orderTwo = getFixture("bayc-8498-order.json");
 
@@ -189,5 +189,44 @@ describe("Aggregator", () => {
     expect(await ethers.provider.getBalance(aggregator.address)).to.equal(0);
     const buyerBalanceAfter = await ethers.provider.getBalance(buyer.address);
     expect(buyerBalanceBefore.sub(buyerBalanceAfter).sub(txFee)).to.equal(price);
+  });
+
+  it("is able to refund extra ETH paid (trickled down to SeaportProxy)", async function () {
+    const orderOne = getFixture("bayc-2518-order.json");
+    const orderTwo = getFixture("bayc-8498-order.json");
+
+    // ~15 ETH higher than the actual price.
+    const priceOne = ethers.utils.parseEther("99");
+    const priceTwo = ethers.utils.parseEther("99");
+    const price = priceOne.add(priceTwo);
+
+    const abiCoder = ethers.utils.defaultAbiCoder;
+    const tradeData = [
+      {
+        proxy: proxy.address,
+        selector: functionSelector,
+        value: price,
+        orders: [getOrderJson(orderOne, priceOne, buyer.address), getOrderJson(orderTwo, priceTwo, buyer.address)],
+        ordersExtraData: [getOrderExtraData(orderOne), getOrderExtraData(orderTwo)],
+        extraData: abiCoder.encode(extraDataSchema, [{ offerFulfillments, considerationFulfillments }]),
+      },
+    ];
+
+    const buyerBalanceBefore = await ethers.provider.getBalance(buyer.address);
+
+    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, { value: price });
+    await tx.wait();
+    const receipt = await ethers.provider.getTransactionReceipt(tx.hash);
+    const gasUsed = receipt.gasUsed;
+    const txFee = gasUsed.mul(tx.gasPrice);
+
+    expect(await bayc.balanceOf(buyer.address)).to.equal(2);
+    expect(await bayc.ownerOf(2518)).to.equal(buyer.address);
+    expect(await bayc.ownerOf(8498)).to.equal(buyer.address);
+    expect(await ethers.provider.getBalance(aggregator.address)).to.equal(0);
+    const buyerBalanceAfter = await ethers.provider.getBalance(buyer.address);
+    const actualPriceOne = combineConsiderationAmount(orderOne.parameters.consideration);
+    const actualPriceTwo = combineConsiderationAmount(orderTwo.parameters.consideration);
+    expect(buyerBalanceBefore.sub(buyerBalanceAfter).sub(txFee)).to.equal(actualPriceOne.add(actualPriceTwo));
   });
 });
