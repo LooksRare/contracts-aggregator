@@ -3,6 +3,7 @@ import { expect } from "chai";
 import { BigNumber, Contract } from "ethers";
 import { ethers, network } from "hardhat";
 import { MOODIE } from "../constants";
+import calculateTxFee from "./utils/calculate-tx-fee";
 import getSignature from "./utils/get-signature";
 
 describe("Aggregator", () => {
@@ -148,9 +149,7 @@ describe("Aggregator", () => {
 
     const tx = await aggregator.connect(buyer).buyWithETH(tradeData, { value: price });
     await tx.wait();
-    const receipt = await ethers.provider.getTransactionReceipt(tx.hash);
-    const gasUsed = receipt.gasUsed;
-    const txFee = gasUsed.mul(tx.gasPrice);
+    const txFee = await calculateTxFee(tx);
 
     expect(await moodie.balanceOf(buyer.address)).to.equal(2);
     expect(await moodie.ownerOf(5536)).to.equal(buyer.address);

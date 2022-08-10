@@ -4,6 +4,7 @@ import { Contract } from "ethers";
 import { ethers, network } from "hardhat";
 import { BAYC, LOOKSRARE_STRATEGY_FIXED_PRICE, WETH } from "../constants";
 import getSignature from "./utils/get-signature";
+import calculateTxFee from "./utils/calculate-tx-fee";
 
 describe("LooksRareAggregator", () => {
   let aggregator: Contract;
@@ -166,9 +167,7 @@ describe("LooksRareAggregator", () => {
 
     const tx = await aggregator.connect(buyer).buyWithETH(tradeData, { value: totalValue.add(oneEther) });
     await tx.wait();
-    const receipt = await ethers.provider.getTransactionReceipt(tx.hash);
-    const gasUsed = receipt.gasUsed;
-    const txFee = gasUsed.mul(tx.gasPrice);
+    const txFee = await calculateTxFee(tx);
 
     expect(await bayc.balanceOf(aggregator.address)).to.equal(0);
     expect(await bayc.balanceOf(buyer.address)).to.equal(2);

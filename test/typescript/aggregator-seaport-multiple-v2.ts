@@ -5,6 +5,7 @@ import { ethers, network } from "hardhat";
 import { BAYC } from "../constants";
 import getFixture from "./utils/get-fixture";
 import getSignature from "./utils/get-signature";
+import calculateTxFee from "./utils/calculate-tx-fee";
 
 describe("Aggregator", () => {
   let aggregator: Contract;
@@ -179,9 +180,7 @@ describe("Aggregator", () => {
 
     const tx = await aggregator.connect(buyer).buyWithETH(tradeData, { value: price.add(oneEther) });
     await tx.wait();
-    const receipt = await ethers.provider.getTransactionReceipt(tx.hash);
-    const gasUsed = receipt.gasUsed;
-    const txFee = gasUsed.mul(tx.gasPrice);
+    const txFee = await calculateTxFee(tx);
 
     expect(await bayc.balanceOf(buyer.address)).to.equal(2);
     expect(await bayc.ownerOf(2518)).to.equal(buyer.address);
@@ -216,9 +215,7 @@ describe("Aggregator", () => {
 
     const tx = await aggregator.connect(buyer).buyWithETH(tradeData, { value: price });
     await tx.wait();
-    const receipt = await ethers.provider.getTransactionReceipt(tx.hash);
-    const gasUsed = receipt.gasUsed;
-    const txFee = gasUsed.mul(tx.gasPrice);
+    const txFee = await calculateTxFee(tx);
 
     expect(await bayc.balanceOf(buyer.address)).to.equal(2);
     expect(await bayc.ownerOf(2518)).to.equal(buyer.address);
