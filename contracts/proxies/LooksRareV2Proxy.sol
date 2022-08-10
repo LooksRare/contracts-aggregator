@@ -47,7 +47,7 @@ contract LooksRareV2Proxy {
                 amount = 1;
                 itemType = ItemType.ERC721;
             } else if (IERC165(order.collection).supportsInterface(INTERFACE_ID_ERC1155)) {
-                amount = order.amount;
+                amount = order.amounts[0];
                 itemType = ItemType.ERC1155;
             } else {
                 revert UnrecognizedTokenInterface();
@@ -59,7 +59,7 @@ contract LooksRareV2Proxy {
             makerAsk.isOrderAsk = true;
             makerAsk.signer = order.signer;
             makerAsk.collection = order.collection;
-            makerAsk.tokenId = order.tokenId;
+            makerAsk.tokenId = order.tokenIds[0];
             makerAsk.price = order.price;
             makerAsk.amount = amount;
             makerAsk.strategy = orderExtraData.strategy;
@@ -78,7 +78,7 @@ contract LooksRareV2Proxy {
             takerBid.isOrderAsk = false;
             takerBid.taker = address(this);
             takerBid.price = order.price;
-            takerBid.tokenId = order.tokenId;
+            takerBid.tokenId = order.tokenIds[0];
             takerBid.minPercentageToAsk = orderExtraData.minPercentageToAsk;
 
             _matchSingleOrder(takerBid, makerAsk, order.recipient, itemType);

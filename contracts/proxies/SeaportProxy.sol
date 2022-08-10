@@ -66,9 +66,9 @@ contract SeaportProxy is LowLevelETH {
             OfferItem[] memory offer = new OfferItem[](1);
             offer[0].itemType = ItemType.ERC721; // TODO: Support ERC-1155
             offer[0].token = orders[i].collection;
-            offer[0].identifierOrCriteria = orders[i].tokenId;
-            offer[0].startAmount = orders[i].amount;
-            offer[0].endAmount = orders[i].amount;
+            offer[0].identifierOrCriteria = orders[i].tokenIds[0];
+            offer[0].startAmount = orders[i].amounts[0];
+            offer[0].endAmount = orders[i].amounts[0];
             parameters.offer = offer;
 
             ConsiderationItem[] memory consideration = new ConsiderationItem[](recipientsLength);
