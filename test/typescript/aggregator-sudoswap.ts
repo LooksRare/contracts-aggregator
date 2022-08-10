@@ -106,7 +106,7 @@ describe("Aggregator", () => {
   it("is able to refund extra ETH paid (trickled down to SeaportProxy)", async function () {
     const maxCostOne = BigNumber.from("221649999999999993");
     const maxCostTwo = BigNumber.from("221650000000000000");
-    const price = maxCostOne.add(maxCostTwo);
+    const price = ethers.utils.parseEther("1");
 
     const { HashZero, AddressZero } = ethers.constants;
     const tradeData = [
@@ -121,7 +121,7 @@ describe("Aggregator", () => {
             collection: "0x0f23939ee95350f26d9c1b818ee0cc1c8fd2b99d",
             tokenIds: [5536],
             amounts: [1],
-            price: maxCostOne,
+            price: maxCostOne.mul(2),
             currency: AddressZero,
             startTime: 0,
             endTime: 0,
@@ -133,7 +133,7 @@ describe("Aggregator", () => {
             collection: "0x4d1ffe3eb76f15d1f7651adf322e1f5a6e5c7552",
             tokenIds: [1915],
             amounts: [1],
-            price: maxCostTwo,
+            price: maxCostTwo.mul(2),
             currency: AddressZero,
             startTime: 0,
             endTime: 0,
@@ -157,6 +157,6 @@ describe("Aggregator", () => {
     expect(await ethers.provider.getBalance(aggregator.address)).to.equal(0);
     expect(await ethers.provider.getBalance(proxy.address)).to.equal(0);
     const buyerBalanceAfter = await ethers.provider.getBalance(buyer.address);
-    expect(buyerBalanceBefore.sub(buyerBalanceAfter).sub(txFee)).to.equal(price);
+    expect(buyerBalanceBefore.sub(buyerBalanceAfter).sub(txFee)).to.equal(maxCostOne.add(maxCostTwo));
   });
 });
