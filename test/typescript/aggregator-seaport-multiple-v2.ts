@@ -1,7 +1,7 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { BigNumber, Contract } from "ethers";
-import { ethers } from "hardhat";
+import { ethers, network } from "hardhat";
 import { BAYC } from "../constants";
 import getFixture from "./utils/get-fixture";
 import getSignature from "./utils/get-signature";
@@ -32,6 +32,25 @@ describe("Aggregator", () => {
     `,
   ];
 
+  const offerFulfillments = [[{ orderIndex: 0, itemIndex: 0 }], [{ orderIndex: 1, itemIndex: 0 }]];
+
+  const considerationFulfillments = [
+    // seller one
+    [{ orderIndex: 0, itemIndex: 0 }],
+    // seller two
+    [{ orderIndex: 1, itemIndex: 0 }],
+    // OpenSea: Fees
+    [
+      { orderIndex: 0, itemIndex: 1 },
+      { orderIndex: 1, itemIndex: 1 },
+    ],
+    // royalty
+    [
+      { orderIndex: 0, itemIndex: 2 },
+      { orderIndex: 1, itemIndex: 2 },
+    ],
+  ];
+
   beforeEach(async () => {
     const Aggregator = await ethers.getContractFactory("LooksRareAggregator");
     aggregator = await Aggregator.deploy();
@@ -52,6 +71,20 @@ describe("Aggregator", () => {
     ]);
 
     bayc = await ethers.getContractAt("IERC721", BAYC);
+  });
+
+  afterEach(async () => {
+    await network.provider.request({
+      method: "hardhat_reset",
+      params: [
+        {
+          forking: {
+            jsonRpcUrl: process.env.ETH_RPC_URL,
+            blockNumber: Number(process.env.FORKED_BLOCK_NUMBER),
+          },
+        },
+      ],
+    });
   });
 
   const combineConsiderationAmount = (consideration: Array<any>) =>
@@ -95,24 +128,35 @@ describe("Aggregator", () => {
     const orderOne = getFixture("bayc-2518-order.json");
     const orderTwo = getFixture("bayc-8498-order.json");
 
-    const offerFulfillments = [[{ orderIndex: 0, itemIndex: 0 }], [{ orderIndex: 1, itemIndex: 0 }]];
+    const priceOne = combineConsiderationAmount(orderOne.parameters.consideration);
+    const priceTwo = combineConsiderationAmount(orderTwo.parameters.consideration);
+    const price = priceOne.add(priceTwo);
 
-    const considerationFulfillments = [
-      // seller one
-      [{ orderIndex: 0, itemIndex: 0 }],
-      // seller two
-      [{ orderIndex: 1, itemIndex: 0 }],
-      // OpenSea: Fees
-      [
-        { orderIndex: 0, itemIndex: 1 },
-        { orderIndex: 1, itemIndex: 1 },
-      ],
-      // royalty
-      [
-        { orderIndex: 0, itemIndex: 2 },
-        { orderIndex: 1, itemIndex: 2 },
-      ],
+    const abiCoder = ethers.utils.defaultAbiCoder;
+    const tradeData = [
+      {
+        proxy: proxy.address,
+        selector: functionSelector,
+        value: price,
+        orders: [getOrderJson(orderOne, priceOne, buyer.address), getOrderJson(orderTwo, priceTwo, buyer.address)],
+        ordersExtraData: [getOrderExtraData(orderOne), getOrderExtraData(orderTwo)],
+        extraData: abiCoder.encode(extraDataSchema, [{ offerFulfillments, considerationFulfillments }]),
+      },
     ];
+
+    const tx = await aggregator
+      .connect(buyer)
+      .buyWithETH(tradeData, { value: price.add(ethers.utils.parseEther("1")) });
+    await tx.wait();
+
+    expect(await bayc.balanceOf(buyer.address)).to.equal(2);
+    expect(await bayc.ownerOf(2518)).to.equal(buyer.address);
+    expect(await bayc.ownerOf(8498)).to.equal(buyer.address);
+  });
+
+  it("is able to refund extra ETH paid", async function () {
+    const orderOne = getFixture("bayc-2518-order.json");
+    const orderTwo = getFixture("bayc-8498-order.json");
 
     const priceOne = combineConsiderationAmount(orderOne.parameters.consideration);
     const priceTwo = combineConsiderationAmount(orderTwo.parameters.consideration);
@@ -130,11 +174,20 @@ describe("Aggregator", () => {
       },
     ];
 
-    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, { value: price });
+    const buyerBalanceBefore = await ethers.provider.getBalance(buyer.address);
+    const oneEther = ethers.utils.parseEther("1");
+
+    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, { value: price.add(oneEther) });
     await tx.wait();
+    const receipt = await ethers.provider.getTransactionReceipt(tx.hash);
+    const gasUsed = receipt.gasUsed;
+    const txFee = gasUsed.mul(tx.gasPrice);
 
     expect(await bayc.balanceOf(buyer.address)).to.equal(2);
     expect(await bayc.ownerOf(2518)).to.equal(buyer.address);
     expect(await bayc.ownerOf(8498)).to.equal(buyer.address);
+    expect(await ethers.provider.getBalance(aggregator.address)).to.equal(0);
+    const buyerBalanceAfter = await ethers.provider.getBalance(buyer.address);
+    expect(buyerBalanceBefore.sub(buyerBalanceAfter).sub(txFee)).to.equal(price);
   });
 });

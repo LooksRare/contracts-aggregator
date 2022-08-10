@@ -4,10 +4,11 @@ pragma solidity 0.8.14;
 import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
 import {LooksRareV2Proxy} from "./proxies/LooksRareV2Proxy.sol";
 import {BasicOrder} from "./libraries/OrderStructs.sol";
+import {LowLevelETH} from "./lowLevelCallers/LowLevelETH.sol";
 
 import "hardhat/console.sol";
 
-contract LooksRareAggregator is OwnableTwoSteps {
+contract LooksRareAggregator is OwnableTwoSteps, LowLevelETH {
     struct TradeData {
         address proxy;
         bytes4 selector;
@@ -46,6 +47,8 @@ contract LooksRareAggregator is OwnableTwoSteps {
                 ++i;
             }
         }
+
+        _returnETHIfAny(msg.sender);
     }
 
     function addFunction(address proxy, bytes4 selector) external onlyOwner {
