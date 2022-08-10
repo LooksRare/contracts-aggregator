@@ -12,6 +12,25 @@ describe("Aggregator", () => {
   let bayc: Contract;
   let buyer: SignerWithAddress;
   let functionSelector: string;
+  const extraDataSchema = [
+    `
+    tuple(
+      tuple(uint256 orderIndex, uint256 itemIndex)[][] offerFulfillments,
+      tuple(uint256 orderIndex, uint256 itemIndex)[][] considerationFulfillments
+    )`,
+  ];
+  const orderExtraDataSchema = [
+    `
+    tuple(
+      uint8 orderType,
+      address zone,
+      bytes32 zoneHash,
+      uint256 salt,
+      bytes32 conduitKey,
+      tuple(address recipient, uint256 amount)[] recipients
+    ) orderExtraData
+    `,
+  ];
 
   beforeEach(async () => {
     const Aggregator = await ethers.getContractFactory("LooksRareAggregator");
@@ -55,6 +74,23 @@ describe("Aggregator", () => {
     return order;
   };
 
+  const getOrderExtraData = (order: any): string => {
+    const abiCoder = ethers.utils.defaultAbiCoder;
+    return abiCoder.encode(orderExtraDataSchema, [
+      {
+        orderType: order.parameters.orderType,
+        zone: order.parameters.zone,
+        zoneHash: order.parameters.zoneHash,
+        salt: order.parameters.salt,
+        conduitKey: order.parameters.conduitKey,
+        recipients: order.parameters.consideration.map((item: any) => ({
+          recipient: item.recipient,
+          amount: item.endAmount,
+        })),
+      },
+    ]);
+  };
+
   it("Should be able to handle OpenSea trades (fulfillAvailableAdvancedOrders)", async function () {
     const orderOne = getFixture("bayc-2518-order.json");
     const orderTwo = getFixture("bayc-8498-order.json");
@@ -83,59 +119,13 @@ describe("Aggregator", () => {
     const price = priceOne.add(priceTwo);
 
     const abiCoder = ethers.utils.defaultAbiCoder;
-    const extraDataSchema = [
-      `
-      tuple(
-        tuple(uint256 orderIndex, uint256 itemIndex)[][] offerFulfillments,
-        tuple(uint256 orderIndex, uint256 itemIndex)[][] considerationFulfillments
-      )`,
-    ];
-    const orderExtraDataSchema = [
-      `
-      tuple(
-        uint8 orderType,
-        address zone,
-        bytes32 zoneHash,
-        uint256 salt,
-        bytes32 conduitKey,
-        tuple(address recipient, uint256 amount)[] recipients
-      ) orderExtraData
-      `,
-    ];
     const tradeData = [
       {
         proxy: proxy.address,
         selector: functionSelector,
         value: price,
         orders: [getOrderJson(orderOne, priceOne, buyer.address), getOrderJson(orderTwo, priceTwo, buyer.address)],
-        ordersExtraData: [
-          abiCoder.encode(orderExtraDataSchema, [
-            {
-              orderType: orderOne.parameters.orderType,
-              zone: orderOne.parameters.zone,
-              zoneHash: orderOne.parameters.zoneHash,
-              salt: orderOne.parameters.salt,
-              conduitKey: orderOne.parameters.conduitKey,
-              recipients: orderOne.parameters.consideration.map((item: any) => ({
-                recipient: item.recipient,
-                amount: item.endAmount,
-              })),
-            },
-          ]),
-          abiCoder.encode(orderExtraDataSchema, [
-            {
-              orderType: orderTwo.parameters.orderType,
-              zone: orderTwo.parameters.zone,
-              zoneHash: orderTwo.parameters.zoneHash,
-              salt: orderTwo.parameters.salt,
-              conduitKey: orderTwo.parameters.conduitKey,
-              recipients: orderTwo.parameters.consideration.map((item: any) => ({
-                recipient: item.recipient,
-                amount: item.endAmount,
-              })),
-            },
-          ]),
-        ],
+        ordersExtraData: [getOrderExtraData(orderOne), getOrderExtraData(orderTwo)],
         extraData: abiCoder.encode(extraDataSchema, [{ offerFulfillments, considerationFulfillments }]),
       },
     ];
