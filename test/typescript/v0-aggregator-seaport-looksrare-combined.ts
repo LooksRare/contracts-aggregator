@@ -81,23 +81,18 @@ describe("Aggregator", () => {
 
     const minPercentageToAsk = 9550;
 
-    const takerBidOne = {
+    const takerBid = {
       isOrderAsk: false,
       taker: proxy.address,
       price,
-      tokenId: tokenIdOne,
       minPercentageToAsk,
       params: "0x",
     };
 
-    const takerBidTwo = {
-      isOrderAsk: false,
-      taker: proxy.address,
-      price,
-      tokenId: tokenIdTwo,
-      minPercentageToAsk,
-      params: "0x",
-    };
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    const takerBidOne = { ...takerBid, tokenId: tokenIdOne };
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    const takerBidTwo = { ...takerBid, tokenId: tokenIdTwo };
 
     const signatureOne =
       "0xc34d0d9cd04a7004e5d5838c75f4d53860cbd44287beac0bdd513245d6818f6e5d4c0bbce5ce1eb7dba919e277733c1b59f08fed99385d6bc6bc1af053f39fb001";
