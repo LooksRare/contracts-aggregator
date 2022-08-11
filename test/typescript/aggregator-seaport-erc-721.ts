@@ -50,7 +50,7 @@ describe("Aggregator", () => {
     return order;
   };
 
-  const getOrderExtraData = (order: any): string => {
+  const getOrderExtraData = (order: Order): string => {
     const abiCoder = ethers.utils.defaultAbiCoder;
     return abiCoder.encode(
       [SEAPORT_ORDER_EXTRA_DATA_SCHEMA],
