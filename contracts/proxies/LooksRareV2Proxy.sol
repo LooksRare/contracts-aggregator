@@ -6,13 +6,10 @@ import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {BasicOrder} from "../libraries/OrderStructs.sol";
+import {CollectionType} from "../libraries/OrderEnums.sol";
 import {SignatureSplitter} from "../libraries/SignatureSplitter.sol";
 
 contract LooksRareV2Proxy {
-    enum ItemType {
-        ERC721,
-        ERC1155
-    }
     struct OrderExtraData {
         address strategy;
         uint256 nonce;
@@ -20,11 +17,8 @@ contract LooksRareV2Proxy {
     }
 
     ILooksRareV1 constant MARKETPLACE = ILooksRareV1(0x59728544B08AB483533076417FbBB2fD0B17CE3a);
-    bytes4 constant INTERFACE_ID_ERC721 = 0x80ac58cd;
-    bytes4 constant INTERFACE_ID_ERC1155 = 0xd9b67a26;
 
     error InvalidOrderLength();
-    error UnrecognizedTokenInterface();
     error ZeroAddress();
 
     function buyWithETH(
@@ -37,21 +31,7 @@ contract LooksRareV2Proxy {
         for (uint256 i; i < ordersLength; ) {
             if (orders[i].recipient == address(0)) revert ZeroAddress();
 
-            uint256 amount;
-            ItemType itemType;
-
             BasicOrder memory order = orders[i];
-
-            // TODO: handle CryptoPunks/Mooncats
-            if (IERC165(order.collection).supportsInterface(INTERFACE_ID_ERC721)) {
-                amount = 1;
-                itemType = ItemType.ERC721;
-            } else if (IERC165(order.collection).supportsInterface(INTERFACE_ID_ERC1155)) {
-                amount = order.amounts[0];
-                itemType = ItemType.ERC1155;
-            } else {
-                revert UnrecognizedTokenInterface();
-            }
 
             OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
 
@@ -61,7 +41,7 @@ contract LooksRareV2Proxy {
             makerAsk.collection = order.collection;
             makerAsk.tokenId = order.tokenIds[0];
             makerAsk.price = order.price;
-            makerAsk.amount = amount;
+            makerAsk.amount = order.amounts[0];
             makerAsk.strategy = orderExtraData.strategy;
             makerAsk.nonce = orderExtraData.nonce;
             makerAsk.minPercentageToAsk = orderExtraData.minPercentageToAsk;
@@ -81,7 +61,7 @@ contract LooksRareV2Proxy {
             takerBid.tokenId = order.tokenIds[0];
             takerBid.minPercentageToAsk = orderExtraData.minPercentageToAsk;
 
-            _matchSingleOrder(takerBid, makerAsk, order.recipient, itemType);
+            _matchSingleOrder(takerBid, makerAsk, order.recipient, order.collectionType);
 
             unchecked {
                 ++i;
@@ -93,13 +73,13 @@ contract LooksRareV2Proxy {
         ILooksRareV1.TakerOrder memory takerBid,
         ILooksRareV1.MakerOrder memory makerAsk,
         address recipient,
-        ItemType itemType
+        CollectionType collectionType
     ) private {
         try MARKETPLACE.matchAskWithTakerBidUsingETHAndWETH{value: makerAsk.price}(takerBid, makerAsk) {
             // TODO: handle CryptoPunks/Mooncats
-            if (itemType == ItemType.ERC721) {
+            if (collectionType == CollectionType.ERC721) {
                 IERC721(makerAsk.collection).transferFrom(address(this), recipient, makerAsk.tokenId);
-            } else if (itemType == ItemType.ERC1155) {
+            } else if (collectionType == CollectionType.ERC1155) {
                 IERC1155(makerAsk.collection).safeTransferFrom(
                     address(this),
                     recipient,
