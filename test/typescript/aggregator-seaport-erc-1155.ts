@@ -1,13 +1,14 @@
 import { expect } from "chai";
 import { BigNumber } from "ethers";
 import { ethers } from "hardhat";
-import { SEAPORT_EXTRA_DATA_SCHEMA, SEAPORT_ORDER_EXTRA_DATA_SCHEMA } from "../constants";
+import { SEAPORT_EXTRA_DATA_SCHEMA } from "../constants";
 import getFixture from "./utils/get-fixture";
 import calculateTxFee from "./utils/calculate-tx-fee";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import deploySeaportFixture from "./fixtures/deploy-seaport-fixture";
 import Consideration from "./interfaces/consideration";
-import Order from "./interfaces/order";
+import getSeaportOrderExtraData from "./utils/get-seaport-order-extra-data";
+import getSeaportOrderJson from "./utils/get-seaport-order-json";
 
 describe("Aggregator", () => {
   const offerFulfillments = [[{ orderIndex: 0, itemIndex: 0 }], [{ orderIndex: 1, itemIndex: 0 }]];
@@ -32,44 +33,6 @@ describe("Aggregator", () => {
   const combineConsiderationAmount = (consideration: Array<any>): BigNumber =>
     consideration.reduce((sum: number, item: Consideration) => BigNumber.from(item.endAmount).add(sum), 0);
 
-  const getOrderJson = (listing: Order, price: BigNumber, recipient: string) => {
-    const order = {
-      price,
-      recipient,
-      signer: listing.parameters.offerer,
-      collection: listing.parameters.offer[0].token,
-      collectionType: 1,
-      tokenIds: [listing.parameters.offer[0].identifierOrCriteria],
-      amounts: [1],
-      currency: listing.parameters.consideration[0].token,
-      startTime: listing.parameters.startTime,
-      endTime: listing.parameters.endTime,
-      signature: listing.signature,
-    };
-
-    return order;
-  };
-
-  const getOrderExtraData = (order: Order): string => {
-    const abiCoder = ethers.utils.defaultAbiCoder;
-    return abiCoder.encode(
-      [SEAPORT_ORDER_EXTRA_DATA_SCHEMA],
-      [
-        {
-          orderType: order.parameters.orderType,
-          zone: order.parameters.zone,
-          zoneHash: order.parameters.zoneHash,
-          salt: order.parameters.salt,
-          conduitKey: order.parameters.conduitKey,
-          recipients: order.parameters.consideration.map((item: Consideration) => ({
-            recipient: item.recipient,
-            amount: item.endAmount,
-          })),
-        },
-      ]
-    );
-  };
-
   it("Should be able to handle OpenSea trades (fulfillAvailableAdvancedOrders)", async function () {
     const { aggregator, buyer, proxy, functionSelector, cityDao } = await loadFixture(deploySeaportFixture);
 
@@ -87,8 +50,11 @@ describe("Aggregator", () => {
         proxy: proxy.address,
         selector: functionSelector,
         value: price,
-        orders: [getOrderJson(orderOne, priceOne, buyer.address), getOrderJson(orderTwo, priceTwo, buyer.address)],
-        ordersExtraData: [getOrderExtraData(orderOne), getOrderExtraData(orderTwo)],
+        orders: [
+          getSeaportOrderJson(orderOne, priceOne, buyer.address),
+          getSeaportOrderJson(orderTwo, priceTwo, buyer.address),
+        ],
+        ordersExtraData: [getSeaportOrderExtraData(orderOne), getSeaportOrderExtraData(orderTwo)],
         extraData: abiCoder.encode([SEAPORT_EXTRA_DATA_SCHEMA], [{ offerFulfillments, considerationFulfillments }]),
       },
     ];
@@ -118,8 +84,11 @@ describe("Aggregator", () => {
         proxy: proxy.address,
         selector: functionSelector,
         value: price,
-        orders: [getOrderJson(orderOne, priceOne, buyer.address), getOrderJson(orderTwo, priceTwo, buyer.address)],
-        ordersExtraData: [getOrderExtraData(orderOne), getOrderExtraData(orderTwo)],
+        orders: [
+          getSeaportOrderJson(orderOne, priceOne, buyer.address),
+          getSeaportOrderJson(orderTwo, priceTwo, buyer.address),
+        ],
+        ordersExtraData: [getSeaportOrderExtraData(orderOne), getSeaportOrderExtraData(orderTwo)],
         extraData: abiCoder.encode([SEAPORT_EXTRA_DATA_SCHEMA], [{ offerFulfillments, considerationFulfillments }]),
       },
     ];
@@ -156,8 +125,11 @@ describe("Aggregator", () => {
         proxy: proxy.address,
         selector: functionSelector,
         value: price,
-        orders: [getOrderJson(orderOne, priceOne, buyer.address), getOrderJson(orderTwo, priceTwo, buyer.address)],
-        ordersExtraData: [getOrderExtraData(orderOne), getOrderExtraData(orderTwo)],
+        orders: [
+          getSeaportOrderJson(orderOne, priceOne, buyer.address),
+          getSeaportOrderJson(orderTwo, priceTwo, buyer.address),
+        ],
+        ordersExtraData: [getSeaportOrderExtraData(orderOne), getSeaportOrderExtraData(orderTwo)],
         extraData: abiCoder.encode([SEAPORT_EXTRA_DATA_SCHEMA], [{ offerFulfillments, considerationFulfillments }]),
       },
     ];
