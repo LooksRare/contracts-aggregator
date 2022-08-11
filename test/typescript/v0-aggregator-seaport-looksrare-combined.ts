@@ -98,20 +98,25 @@ describe("Aggregator", () => {
       "0xc34d0d9cd04a7004e5d5838c75f4d53860cbd44287beac0bdd513245d6818f6e5d4c0bbce5ce1eb7dba919e277733c1b59f08fed99385d6bc6bc1af053f39fb001";
     const expandedSignatureOne = ethers.utils.splitSignature(signatureOne);
 
-    const makerAskOne = {
+    const makerAsk = {
       isOrderAsk: true,
-      signer: "0xe51416eF43f4820Aaa2b36ddD9CfE1278106190f",
       collection: BAYC,
       price,
-      tokenId: tokenIdOne,
       amount: 1,
       strategy: LOOKSRARE_STRATEGY_FIXED_PRICE,
       currency: WETH,
+      minPercentageToAsk,
+      params: "0x",
+    };
+
+    const makerAskOne = {
+      // eslint-disable-next-line node/no-unsupported-features/es-syntax
+      ...makerAsk,
+      signer: "0xe51416eF43f4820Aaa2b36ddD9CfE1278106190f",
+      tokenId: tokenIdOne,
       nonce: 209,
       startTime: 1659529911,
       endTime: 1662121755,
-      minPercentageToAsk,
-      params: "0x",
       v: expandedSignatureOne.v,
       r: expandedSignatureOne.r,
       s: expandedSignatureOne.s,
@@ -122,19 +127,13 @@ describe("Aggregator", () => {
     const expandedSignatureTwo = ethers.utils.splitSignature(signatureTwo);
 
     const makerAskTwo = {
-      isOrderAsk: true,
+      // eslint-disable-next-line node/no-unsupported-features/es-syntax
+      ...makerAsk,
       signer: "0xB1Ef9318e27116ca1d97466FEf76ba66496dd558",
-      collection: BAYC,
-      price,
       tokenId: tokenIdTwo,
-      amount: 1,
-      strategy: LOOKSRARE_STRATEGY_FIXED_PRICE,
-      currency: WETH,
       nonce: 1,
       startTime: 1659977872,
       endTime: 1660064095,
-      minPercentageToAsk,
-      params: "0x",
       v: expandedSignatureTwo.v,
       r: expandedSignatureTwo.r,
       s: expandedSignatureTwo.s,
