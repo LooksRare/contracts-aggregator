@@ -1,57 +1,16 @@
 import { expect } from "chai";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { Contract } from "ethers";
-import { ethers, network } from "hardhat";
+import { ethers } from "hardhat";
 import { BAYC, LOOKSRARE_STRATEGY_FIXED_PRICE, WETH } from "../constants";
-import getSignature from "./utils/get-signature";
 import calculateTxFee from "./utils/calculate-tx-fee";
+import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
+import deployLooksRareFixture from "./fixtures/deploy-looksrare-fixture";
 
 describe("LooksRareAggregator", () => {
-  let aggregator: Contract;
-  let proxy: Contract;
-  let bayc: Contract;
-  let buyer: SignerWithAddress;
-  let functionSelector: string;
-
   const extraDataSchema = ["address", "uint256", "uint256"];
 
-  beforeEach(async () => {
-    const Aggregator = await ethers.getContractFactory("LooksRareAggregator");
-    aggregator = await Aggregator.deploy();
-    await aggregator.deployed();
-
-    const LooksRareV2Proxy = await ethers.getContractFactory("LooksRareV2Proxy");
-    proxy = await LooksRareV2Proxy.deploy();
-    await proxy.deployed();
-
-    functionSelector = await getSignature("LooksRareV2Proxy.json", "buyWithETH");
-    await aggregator.addFunction(proxy.address, functionSelector);
-
-    [buyer] = await ethers.getSigners();
-
-    await ethers.provider.send("hardhat_setBalance", [
-      buyer.address,
-      ethers.utils.parseEther("200").toHexString().replace("0x0", "0x"),
-    ]);
-
-    bayc = await ethers.getContractAt("IERC721", BAYC);
-  });
-
-  afterEach(async () => {
-    await network.provider.request({
-      method: "hardhat_reset",
-      params: [
-        {
-          forking: {
-            jsonRpcUrl: process.env.ETH_RPC_URL,
-            blockNumber: Number(process.env.FORKED_BLOCK_NUMBER),
-          },
-        },
-      ],
-    });
-  });
-
   it("Should be able to handle LooksRare V2 trades (matchAskWithTakerBidUsingETHAndWETH)", async function () {
+    const { aggregator, proxy, functionSelector, buyer, bayc } = await loadFixture(deployLooksRareFixture);
+
     const abiCoder = ethers.utils.defaultAbiCoder;
 
     const priceOne = ethers.utils.parseEther("81.8");
@@ -114,6 +73,8 @@ describe("LooksRareAggregator", () => {
   });
 
   it("is able to refund extra ETH paid", async function () {
+    const { aggregator, proxy, functionSelector, buyer, bayc } = await loadFixture(deployLooksRareFixture);
+
     const abiCoder = ethers.utils.defaultAbiCoder;
 
     const priceOne = ethers.utils.parseEther("81.8");
