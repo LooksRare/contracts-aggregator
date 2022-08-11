@@ -16,7 +16,6 @@ contract SeaportProxy is LowLevelETH {
         uint256 amount;
     }
 
-    // should item type be calculated using IERC165?
     struct ExtraData {
         FulfillmentComponent[][] offerFulfillments;
         FulfillmentComponent[][] considerationFulfillments;
