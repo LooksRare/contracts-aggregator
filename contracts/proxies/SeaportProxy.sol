@@ -75,7 +75,7 @@ contract SeaportProxy is LowLevelETH {
 
             ConsiderationItem[] memory consideration = new ConsiderationItem[](recipientsLength);
             for (uint256 j; j < recipientsLength; ) {
-                consideration[j].itemType = ItemType.NATIVE; // TODO: dynamic?
+                consideration[j].itemType = ItemType.NATIVE;
                 consideration[j].token = address(0);
                 consideration[j].identifierOrCriteria = 0;
                 consideration[j].startAmount = orderExtraData.recipients[j].amount;
