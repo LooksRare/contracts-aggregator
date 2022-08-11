@@ -1,12 +1,12 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
-import { IERC721, LooksRareAggregator, LooksRareV2Proxy } from "../../../typechain";
+import { IERC721, LooksRareAggregator, LooksRareProxy } from "../../../typechain";
 import getSignature from "../utils/get-signature";
 import { BAYC } from "../../constants";
 
 interface LooksRareFixture {
   aggregator: LooksRareAggregator;
-  proxy: LooksRareV2Proxy;
+  proxy: LooksRareProxy;
   buyer: SignerWithAddress;
   functionSelector: string;
   bayc: IERC721;
@@ -17,11 +17,11 @@ export default async function deployLooksRareFixture(): Promise<LooksRareFixture
   const aggregator = await Aggregator.deploy();
   await aggregator.deployed();
 
-  const LooksRareV2Proxy = await ethers.getContractFactory("LooksRareV2Proxy");
-  const proxy = await LooksRareV2Proxy.deploy();
+  const LooksRareProxy = await ethers.getContractFactory("LooksRareProxy");
+  const proxy = await LooksRareProxy.deploy();
   await proxy.deployed();
 
-  const functionSelector = await getSignature("LooksRareV2Proxy.json", "buyWithETH");
+  const functionSelector = await getSignature("LooksRareProxy.json", "buyWithETH");
   await aggregator.addFunction(proxy.address, functionSelector);
 
   const [buyer] = await ethers.getSigners();

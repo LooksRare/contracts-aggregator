@@ -2,7 +2,7 @@
 pragma solidity 0.8.14;
 
 import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
-import {LooksRareV2Proxy} from "./proxies/LooksRareV2Proxy.sol";
+import {LooksRareProxy} from "./proxies/LooksRareProxy.sol";
 import {BasicOrder} from "./libraries/OrderStructs.sol";
 import {LowLevelETH} from "./lowLevelCallers/LowLevelETH.sol";
 

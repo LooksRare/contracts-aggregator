@@ -9,7 +9,7 @@ import {BasicOrder} from "../libraries/OrderStructs.sol";
 import {CollectionType} from "../libraries/OrderEnums.sol";
 import {SignatureSplitter} from "../libraries/SignatureSplitter.sol";
 
-contract LooksRareV2Proxy {
+contract LooksRareProxy {
     struct OrderExtraData {
         address strategy;
         uint256 nonce;
