@@ -3,7 +3,7 @@ pragma solidity 0.8.14;
 
 import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
 
-contract Aggregator is OwnableTwoSteps {
+contract V0Aggregator is OwnableTwoSteps {
     struct TradeData {
         address proxy;
         bytes data;

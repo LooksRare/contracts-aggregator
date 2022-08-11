@@ -54,8 +54,8 @@ There is probably a better way to do this and we can re-visit later.
 
 ```shell
 FORKED_BLOCK_NUMBER=15320038 npx hardhat test test/typescript/aggregator-seaport-erc-1155.ts
-FORKED_BLOCK_NUMBER=15302889 npx hardhat test test/typescript/aggregator-seaport-looksrare-combined.ts
 FORKED_BLOCK_NUMBER=15300884 npx hardhat test test/typescript/direct-seaport-single.ts
-FORKED_BLOCK_NUMBER=15300884 npx hardhat test test/typescript/aggregator-seaport-single.ts
-FORKED_BLOCK_NUMBER=15282897 npx hardhat test test/typescript/aggregator-looksrare-v1-single.ts
+FORKED_BLOCK_NUMBER=15302889 npx hardhat test test/typescript/v0-aggregator-seaport-looksrare-combined.ts
+FORKED_BLOCK_NUMBER=15300884 npx hardhat test test/typescript/v0-aggregator-seaport-single.ts
+FORKED_BLOCK_NUMBER=15282897 npx hardhat test test/typescript/v0-aggregator-looksrare-single.ts
 ```

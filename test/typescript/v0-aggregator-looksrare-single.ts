@@ -7,14 +7,14 @@ import * as fs from "fs";
 import * as path from "path";
 import getSignature from "./utils/get-signature";
 
-describe("Aggregator", () => {
+describe("V0Aggregator", () => {
   let aggregator: Contract;
   let proxy: Contract;
   let bayc: Contract;
   let buyer: SignerWithAddress;
 
   beforeEach(async () => {
-    const Aggregator = await ethers.getContractFactory("Aggregator");
+    const Aggregator = await ethers.getContractFactory("V0Aggregator");
     aggregator = await Aggregator.deploy();
     await aggregator.deployed();
 

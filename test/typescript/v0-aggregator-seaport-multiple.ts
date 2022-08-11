@@ -13,7 +13,7 @@ describe("Aggregator", () => {
   let buyer: SignerWithAddress;
 
   beforeEach(async () => {
-    const Aggregator = await ethers.getContractFactory("Aggregator");
+    const Aggregator = await ethers.getContractFactory("V0Aggregator");
     aggregator = await Aggregator.deploy();
     await aggregator.deployed();
 
