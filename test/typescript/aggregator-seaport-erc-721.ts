@@ -2,7 +2,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { BigNumber, Contract } from "ethers";
 import { ethers, network } from "hardhat";
-import { BAYC } from "../constants";
+import { BAYC, SEAPORT, SEAPORT_EXTRA_DATA_SCHEMA, SEAPORT_ORDER_EXTRA_DATA_SCHEMA } from "../constants";
 import getFixture from "./utils/get-fixture";
 import getSignature from "./utils/get-signature";
 import calculateTxFee from "./utils/calculate-tx-fee";
@@ -13,25 +13,6 @@ describe("Aggregator", () => {
   let bayc: Contract;
   let buyer: SignerWithAddress;
   let functionSelector: string;
-  const extraDataSchema = [
-    `
-    tuple(
-      tuple(uint256 orderIndex, uint256 itemIndex)[][] offerFulfillments,
-      tuple(uint256 orderIndex, uint256 itemIndex)[][] considerationFulfillments
-    )`,
-  ];
-  const orderExtraDataSchema = [
-    `
-    tuple(
-      uint8 orderType,
-      address zone,
-      bytes32 zoneHash,
-      uint256 salt,
-      bytes32 conduitKey,
-      tuple(address recipient, uint256 amount)[] recipients
-    ) orderExtraData
-    `,
-  ];
 
   const offerFulfillments = [[{ orderIndex: 0, itemIndex: 0 }], [{ orderIndex: 1, itemIndex: 0 }]];
 
@@ -111,19 +92,22 @@ describe("Aggregator", () => {
 
   const getOrderExtraData = (order: any): string => {
     const abiCoder = ethers.utils.defaultAbiCoder;
-    return abiCoder.encode(orderExtraDataSchema, [
-      {
-        orderType: order.parameters.orderType,
-        zone: order.parameters.zone,
-        zoneHash: order.parameters.zoneHash,
-        salt: order.parameters.salt,
-        conduitKey: order.parameters.conduitKey,
-        recipients: order.parameters.consideration.map((item: any) => ({
-          recipient: item.recipient,
-          amount: item.endAmount,
-        })),
-      },
-    ]);
+    return abiCoder.encode(
+      [SEAPORT_ORDER_EXTRA_DATA_SCHEMA],
+      [
+        {
+          orderType: order.parameters.orderType,
+          zone: order.parameters.zone,
+          zoneHash: order.parameters.zoneHash,
+          salt: order.parameters.salt,
+          conduitKey: order.parameters.conduitKey,
+          recipients: order.parameters.consideration.map((item: any) => ({
+            recipient: item.recipient,
+            amount: item.endAmount,
+          })),
+        },
+      ]
+    );
   };
 
   it("Should be able to handle OpenSea trades (fulfillAvailableAdvancedOrders)", async function () {
@@ -142,7 +126,7 @@ describe("Aggregator", () => {
         value: price,
         orders: [getOrderJson(orderOne, priceOne, buyer.address), getOrderJson(orderTwo, priceTwo, buyer.address)],
         ordersExtraData: [getOrderExtraData(orderOne), getOrderExtraData(orderTwo)],
-        extraData: abiCoder.encode(extraDataSchema, [{ offerFulfillments, considerationFulfillments }]),
+        extraData: abiCoder.encode([SEAPORT_EXTRA_DATA_SCHEMA], [{ offerFulfillments, considerationFulfillments }]),
       },
     ];
 
@@ -172,7 +156,7 @@ describe("Aggregator", () => {
         value: price,
         orders: [getOrderJson(orderOne, priceOne, buyer.address), getOrderJson(orderTwo, priceTwo, buyer.address)],
         ordersExtraData: [getOrderExtraData(orderOne), getOrderExtraData(orderTwo)],
-        extraData: abiCoder.encode(extraDataSchema, [{ offerFulfillments, considerationFulfillments }]),
+        extraData: abiCoder.encode([SEAPORT_EXTRA_DATA_SCHEMA], [{ offerFulfillments, considerationFulfillments }]),
       },
     ];
 
@@ -209,7 +193,7 @@ describe("Aggregator", () => {
         value: price,
         orders: [getOrderJson(orderOne, priceOne, buyer.address), getOrderJson(orderTwo, priceTwo, buyer.address)],
         ordersExtraData: [getOrderExtraData(orderOne), getOrderExtraData(orderTwo)],
-        extraData: abiCoder.encode(extraDataSchema, [{ offerFulfillments, considerationFulfillments }]),
+        extraData: abiCoder.encode([SEAPORT_EXTRA_DATA_SCHEMA], [{ offerFulfillments, considerationFulfillments }]),
       },
     ];
 

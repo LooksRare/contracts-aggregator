@@ -7,3 +7,21 @@ export const OPENSEA_FEES = "0x8De9C5A032463C561423387a9648c5C7BCC5BC90";
 export const SEAPORT = "0x00000000006c3852cbef3e08e8df289169ede581";
 export const WETH = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
 export const ZONE_HASH = "0x0000000000000000000000000000000000000000000000000000000000000000";
+
+export const SEAPORT_EXTRA_DATA_SCHEMA = `
+  tuple(
+    tuple(uint256 orderIndex, uint256 itemIndex)[][] offerFulfillments,
+    tuple(uint256 orderIndex, uint256 itemIndex)[][] considerationFulfillments
+  )
+`;
+
+export const SEAPORT_ORDER_EXTRA_DATA_SCHEMA = `
+  tuple(
+    uint8 orderType,
+    address zone,
+    bytes32 zoneHash,
+    uint256 salt,
+    bytes32 conduitKey,
+    tuple(address recipient, uint256 amount)[] recipients
+  ) orderExtraData
+`;
