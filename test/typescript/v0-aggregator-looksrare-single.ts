@@ -18,11 +18,11 @@ describe("V0Aggregator", () => {
     aggregator = await Aggregator.deploy();
     await aggregator.deployed();
 
-    const LooksRareV1Proxy = await ethers.getContractFactory("LooksRareV1Proxy");
-    proxy = await LooksRareV1Proxy.deploy();
+    const V0LooksRareProxy = await ethers.getContractFactory("V0LooksRareProxy");
+    proxy = await V0LooksRareProxy.deploy();
     await proxy.deployed();
 
-    const functionSelector = getSignature("LooksRareV1Proxy.json", "buyWithETH");
+    const functionSelector = getSignature("V0LooksRareProxy.json", "buyWithETH");
     await aggregator.addFunction(proxy.address, functionSelector);
 
     [buyer] = await ethers.getSigners();
@@ -110,7 +110,7 @@ describe("V0Aggregator", () => {
     };
 
     const abi = JSON.parse(
-      await fs.readFileSync(path.join(__dirname, "../../abis/LooksRareV1Proxy.json"), { encoding: "utf8", flag: "r" })
+      await fs.readFileSync(path.join(__dirname, "../../abis/V0LooksRareProxy.json"), { encoding: "utf8", flag: "r" })
     );
     const iface = new ethers.utils.Interface(abi);
 
