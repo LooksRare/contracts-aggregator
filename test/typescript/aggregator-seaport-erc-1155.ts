@@ -6,6 +6,8 @@ import getFixture from "./utils/get-fixture";
 import calculateTxFee from "./utils/calculate-tx-fee";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import deploySeaportFixture from "./fixtures/deploy-seaport-fixture";
+import Consideration from "./interfaces/consideration";
+import Order from "./interfaces/order";
 
 describe("Aggregator", () => {
   const offerFulfillments = [[{ orderIndex: 0, itemIndex: 0 }], [{ orderIndex: 1, itemIndex: 0 }]];
@@ -27,10 +29,10 @@ describe("Aggregator", () => {
     ],
   ];
 
-  const combineConsiderationAmount = (consideration: Array<any>) =>
-    consideration.reduce((sum: number, item: any) => BigNumber.from(item.endAmount).add(sum), 0);
+  const combineConsiderationAmount = (consideration: Array<any>): BigNumber =>
+    consideration.reduce((sum: number, item: Consideration) => BigNumber.from(item.endAmount).add(sum), 0);
 
-  const getOrderJson = (listing: any, price: BigNumber, recipient: string) => {
+  const getOrderJson = (listing: Order, price: BigNumber, recipient: string) => {
     const order = {
       price,
       recipient,
@@ -59,7 +61,7 @@ describe("Aggregator", () => {
           zoneHash: order.parameters.zoneHash,
           salt: order.parameters.salt,
           conduitKey: order.parameters.conduitKey,
-          recipients: order.parameters.consideration.map((item: any) => ({
+          recipients: order.parameters.consideration.map((item: Consideration) => ({
             recipient: item.recipient,
             amount: item.endAmount,
           })),
