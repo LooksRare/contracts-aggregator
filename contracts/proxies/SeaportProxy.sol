@@ -110,6 +110,11 @@ contract SeaportProxy is LowLevelETH {
         {} catch {}
     }
 
+    /**
+     * @dev If fulfillAvailableAdvancedOrders fails, the ETH paid to Seaport
+     *      is refunded to the proxy contract. The proxy then has to refund
+     *      the ETH back to the user.
+     */
     receive() external payable {
         _transferETH(tx.origin, msg.value);
     }
