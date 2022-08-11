@@ -8,6 +8,12 @@ import {LowLevelETH} from "./lowLevelCallers/LowLevelETH.sol";
 
 import "hardhat/console.sol";
 
+/**
+ * @title LooksRareAggregator
+ * @notice This contract allows NFT sweepers to buy NFTs from different marketplaces
+ *         by passing high-level structs + low-level bytes as calldata.
+ * @author LooksRare protocol team (👀,💎)
+ */
 contract LooksRareAggregator is OwnableTwoSteps, LowLevelETH {
     struct TradeData {
         address proxy;

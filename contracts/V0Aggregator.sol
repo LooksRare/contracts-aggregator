@@ -3,6 +3,12 @@ pragma solidity 0.8.14;
 
 import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
 
+/**
+ * @title V0Aggregator
+ * @notice This contract allows NFT sweepers to buy NFTs from different marketplaces
+ *         by passing bytes as calldata.
+ * @author LooksRare protocol team (👀,💎)
+ */
 contract V0Aggregator is OwnableTwoSteps {
     struct TradeData {
         address proxy;
