@@ -97,6 +97,7 @@ describe("Aggregator", () => {
       recipient,
       signer: listing.parameters.offerer,
       collection: listing.parameters.offer[0].token,
+      collectionType: 0,
       tokenIds: [listing.parameters.offer[0].identifierOrCriteria],
       amounts: [1],
       currency: listing.parameters.consideration[0].token,

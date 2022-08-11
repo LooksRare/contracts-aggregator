@@ -3,6 +3,7 @@ pragma solidity 0.8.14;
 
 import {SeaportInterface} from "../interfaces/SeaportInterface.sol";
 import {BasicOrder} from "../libraries/OrderStructs.sol";
+import {CollectionType} from "../libraries/OrderEnums.sol";
 import {AdvancedOrder, CriteriaResolver, OrderParameters, OfferItem, ConsiderationItem, FulfillmentComponent} from "../libraries/ConsiderationStructs.sol";
 import {ItemType, OrderType} from "../libraries/ConsiderationEnums.sol";
 import {LowLevelETH} from "../lowLevelCallers/LowLevelETH.sol";
@@ -64,7 +65,8 @@ contract SeaportProxy is LowLevelETH {
             parameters.totalOriginalConsiderationItems = recipientsLength;
 
             OfferItem[] memory offer = new OfferItem[](1);
-            offer[0].itemType = ItemType.ERC721; // TODO: Support ERC-1155
+            // Seaport enums start with NATIVE and ERC20 so plus 2
+            offer[0].itemType = ItemType(uint8(orders[i].collectionType) + 2);
             offer[0].token = orders[i].collection;
             offer[0].identifierOrCriteria = orders[i].tokenIds[0];
             offer[0].startAmount = orders[i].amounts[0];
