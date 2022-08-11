@@ -1,14 +1,13 @@
 import { expect } from "chai";
-import { BigNumber } from "ethers";
 import { ethers } from "hardhat";
 import { SEAPORT_EXTRA_DATA_SCHEMA } from "../constants";
 import getFixture from "./utils/get-fixture";
 import calculateTxFee from "./utils/calculate-tx-fee";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import deploySeaportFixture from "./fixtures/deploy-seaport-fixture";
-import Consideration from "./interfaces/consideration";
 import getSeaportOrderExtraData from "./utils/get-seaport-order-extra-data";
 import getSeaportOrderJson from "./utils/get-seaport-order-json";
+import combineConsiderationAmount from "./utils/combine-consideration-amount";
 
 describe("Aggregator", () => {
   const offerFulfillments = [[{ orderIndex: 0, itemIndex: 0 }], [{ orderIndex: 1, itemIndex: 0 }]];
@@ -29,9 +28,6 @@ describe("Aggregator", () => {
       { orderIndex: 1, itemIndex: 2 },
     ],
   ];
-
-  const combineConsiderationAmount = (consideration: Array<any>): BigNumber =>
-    consideration.reduce((sum: number, item: Consideration) => BigNumber.from(item.endAmount).add(sum), 0);
 
   it("Should be able to handle OpenSea trades (fulfillAvailableAdvancedOrders)", async function () {
     const { aggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(deploySeaportFixture);
