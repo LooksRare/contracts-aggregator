@@ -1,19 +1,13 @@
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
-import { BigNumber, Contract } from "ethers";
-import { ethers, network } from "hardhat";
-import { BAYC, SEAPORT, SEAPORT_EXTRA_DATA_SCHEMA, SEAPORT_ORDER_EXTRA_DATA_SCHEMA } from "../constants";
+import { BigNumber } from "ethers";
+import { ethers } from "hardhat";
+import { SEAPORT_EXTRA_DATA_SCHEMA, SEAPORT_ORDER_EXTRA_DATA_SCHEMA } from "../constants";
 import getFixture from "./utils/get-fixture";
-import getSignature from "./utils/get-signature";
 import calculateTxFee from "./utils/calculate-tx-fee";
+import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
+import deploySeaportFixture from "./fixtures/deploy-seaport-fixture";
 
 describe("Aggregator", () => {
-  let aggregator: Contract;
-  let proxy: Contract;
-  let bayc: Contract;
-  let buyer: SignerWithAddress;
-  let functionSelector: string;
-
   const offerFulfillments = [[{ orderIndex: 0, itemIndex: 0 }], [{ orderIndex: 1, itemIndex: 0 }]];
 
   const considerationFulfillments = [
@@ -32,42 +26,6 @@ describe("Aggregator", () => {
       { orderIndex: 1, itemIndex: 2 },
     ],
   ];
-
-  beforeEach(async () => {
-    const Aggregator = await ethers.getContractFactory("LooksRareAggregator");
-    aggregator = await Aggregator.deploy();
-    await aggregator.deployed();
-
-    const SeaportProxy = await ethers.getContractFactory("SeaportProxy");
-    proxy = await SeaportProxy.deploy();
-    await proxy.deployed();
-
-    functionSelector = await getSignature("SeaportProxy.json", "buyWithETH");
-    await aggregator.addFunction(proxy.address, functionSelector);
-
-    [buyer] = await ethers.getSigners();
-
-    await ethers.provider.send("hardhat_setBalance", [
-      buyer.address,
-      ethers.utils.parseEther("200").toHexString().replace("0x0", "0x"),
-    ]);
-
-    bayc = await ethers.getContractAt("IERC721", BAYC);
-  });
-
-  afterEach(async () => {
-    await network.provider.request({
-      method: "hardhat_reset",
-      params: [
-        {
-          forking: {
-            jsonRpcUrl: process.env.ETH_RPC_URL,
-            blockNumber: Number(process.env.FORKED_BLOCK_NUMBER),
-          },
-        },
-      ],
-    });
-  });
 
   const combineConsiderationAmount = (consideration: Array<any>) =>
     consideration.reduce((sum: number, item: any) => BigNumber.from(item.endAmount).add(sum), 0);
@@ -111,6 +69,8 @@ describe("Aggregator", () => {
   };
 
   it("Should be able to handle OpenSea trades (fulfillAvailableAdvancedOrders)", async function () {
+    const { aggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(deploySeaportFixture);
+
     const orderOne = getFixture("bayc-2518-order.json");
     const orderTwo = getFixture("bayc-8498-order.json");
 
@@ -141,6 +101,8 @@ describe("Aggregator", () => {
   });
 
   it("is able to refund extra ETH paid (not trickled down to SeaportProxy)", async function () {
+    const { aggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(deploySeaportFixture);
+
     const orderOne = getFixture("bayc-2518-order.json");
     const orderTwo = getFixture("bayc-8498-order.json");
 
@@ -177,6 +139,8 @@ describe("Aggregator", () => {
   });
 
   it("is able to refund extra ETH paid (trickled down to SeaportProxy)", async function () {
+    const { aggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(deploySeaportFixture);
+
     const orderOne = getFixture("bayc-2518-order.json");
     const orderTwo = getFixture("bayc-8498-order.json");
 
