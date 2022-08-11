@@ -177,9 +177,10 @@ describe("Aggregator", () => {
     ];
 
     const buyerBalanceBefore = await ethers.provider.getBalance(buyer.address);
-    const oneEther = ethers.utils.parseEther("1");
 
-    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, { value: price.add(oneEther) });
+    const tx = await aggregator
+      .connect(buyer)
+      .buyWithETH(tradeData, { value: price.add(ethers.constants.WeiPerEther) });
     await tx.wait();
     const txFee = await calculateTxFee(tx);
 
@@ -194,9 +195,9 @@ describe("Aggregator", () => {
     const orderOne = orders[0].protocol_data;
     const orderTwo = orders[1].protocol_data;
 
-    const oneEther = ethers.utils.parseEther("1");
-    const priceOne = oneEther;
-    const priceTwo = oneEther;
+    const { WeiPerEther } = ethers.constants;
+    const priceOne = WeiPerEther;
+    const priceTwo = WeiPerEther;
     const price = priceOne.add(priceTwo);
 
     const abiCoder = ethers.utils.defaultAbiCoder;
