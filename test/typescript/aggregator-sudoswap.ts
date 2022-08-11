@@ -1,55 +1,13 @@
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
-import { BigNumber, Contract } from "ethers";
-import { ethers, network } from "hardhat";
-import { MOODIE } from "../constants";
+import { BigNumber } from "ethers";
+import { ethers } from "hardhat";
+import deploySudoswapFixture from "./fixtures/deploy-sudoswap-fixture";
 import calculateTxFee from "./utils/calculate-tx-fee";
-import getSignature from "./utils/get-signature";
 
 describe("Aggregator", () => {
-  let aggregator: Contract;
-  let proxy: Contract;
-  let moodie: Contract;
-  let buyer: SignerWithAddress;
-  let functionSelector: string;
-
-  beforeEach(async () => {
-    const Aggregator = await ethers.getContractFactory("LooksRareAggregator");
-    aggregator = await Aggregator.deploy();
-    await aggregator.deployed();
-
-    const SudoswapProxy = await ethers.getContractFactory("SudoswapProxy");
-    proxy = await SudoswapProxy.deploy();
-    await proxy.deployed();
-
-    functionSelector = await getSignature("SudoswapProxy.json", "buyWithETH");
-    await aggregator.addFunction(proxy.address, functionSelector);
-
-    [buyer] = await ethers.getSigners();
-
-    await ethers.provider.send("hardhat_setBalance", [
-      buyer.address,
-      ethers.utils.parseEther("200").toHexString().replace("0x0", "0x"),
-    ]);
-
-    moodie = await ethers.getContractAt("IERC721", MOODIE);
-  });
-
-  afterEach(async () => {
-    await network.provider.request({
-      method: "hardhat_reset",
-      params: [
-        {
-          forking: {
-            jsonRpcUrl: process.env.ETH_RPC_URL,
-            blockNumber: Number(process.env.FORKED_BLOCK_NUMBER),
-          },
-        },
-      ],
-    });
-  });
-
   it("Should be able to handle Sudoswap trades", async function () {
+    const { aggregator, proxy, buyer, functionSelector, moodie } = await loadFixture(deploySudoswapFixture);
     // This is the function to call to get the price to pay on mainnet.
     // (error, , , pairCost, ) = swapList[i].swapInfo.pair.getBuyNFTQuote(
     //   swapList[i].swapInfo.numItems
@@ -106,6 +64,7 @@ describe("Aggregator", () => {
   });
 
   it("is able to refund extra ETH paid (trickled down to SeaportProxy)", async function () {
+    const { aggregator, proxy, buyer, functionSelector, moodie } = await loadFixture(deploySudoswapFixture);
     const maxCostOne = BigNumber.from("221649999999999993");
     const maxCostTwo = BigNumber.from("221650000000000000");
     const price = ethers.utils.parseEther("1");
