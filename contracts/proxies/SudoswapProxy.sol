@@ -16,6 +16,8 @@ contract SudoswapProxy {
             orders.length
         );
 
+        address recipient = orders[0].recipient;
+
         for (uint256 i; i < orders.length; ) {
             ISudoswapRouter.RobustPairSwapSpecific memory robustPairSwapSpecific;
             ISudoswapRouter.PairSwapSpecific memory pairSwapSpecific;
@@ -31,6 +33,6 @@ contract SudoswapProxy {
                 ++i;
             }
         }
-        ROUTER.robustSwapETHForSpecificNFTs{value: msg.value}(swapList, payable(tx.origin), tx.origin, block.timestamp);
+        ROUTER.robustSwapETHForSpecificNFTs{value: msg.value}(swapList, payable(recipient), recipient, block.timestamp);
     }
 }

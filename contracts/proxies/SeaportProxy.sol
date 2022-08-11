@@ -104,7 +104,7 @@ contract SeaportProxy is LowLevelETH {
                 extraDataStruct.offerFulfillments,
                 extraDataStruct.considerationFulfillments,
                 bytes32(0),
-                recipient, // TODO: Should we just use the first one or...?
+                recipient,
                 ordersLength
             )
         {} catch {}
