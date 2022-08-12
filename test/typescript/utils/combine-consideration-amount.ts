@@ -1,6 +1,9 @@
 import Consideration from "../interfaces/consideration";
-import { BigNumber } from "ethers";
+import { BigNumber, constants } from "ethers";
 
-export default function combineConsiderationAmount(consideration: Array<any>): BigNumber {
-  return consideration.reduce((sum: BigNumber, item: Consideration) => BigNumber.from(item.endAmount).add(sum), 0);
+export default function combineConsiderationAmount(consideration: Array<Consideration>): BigNumber {
+  return consideration.reduce(
+    (sum: BigNumber, item: Consideration) => BigNumber.from(item.endAmount).add(sum),
+    constants.Zero
+  );
 }
