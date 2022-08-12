@@ -6,6 +6,7 @@ import {
   LOOKSRARE_STRATEGY_FIXED_PRICE,
   SEAPORT_CONSIDERATION_FULFILLMENTS_ONE_ORDER,
   SEAPORT_EXTRA_DATA_SCHEMA,
+  SEAPORT_OFFER_FULFILLMENT_ONE_ITEM,
   WETH,
 } from "../constants";
 import getFixture from "./utils/get-fixture";
@@ -18,8 +19,6 @@ import deployMultipleMarketFixtures from "./fixtures/deploy-multple-markets-fixt
 import calculateTxFee from "./utils/calculate-tx-fee";
 
 describe("Aggregator", () => {
-  const offerFulfillments = [[{ orderIndex: 0, itemIndex: 0 }]];
-
   it("Should be able to handle conflicted orders", async function () {
     const { getBalance } = ethers.provider;
     const tokenId = 9314;
@@ -49,7 +48,12 @@ describe("Aggregator", () => {
         ordersExtraData: [getSeaportOrderExtraData(seaportOrder)],
         extraData: abiCoder.encode(
           [SEAPORT_EXTRA_DATA_SCHEMA],
-          [{ offerFulfillments, considerationFulfillments: SEAPORT_CONSIDERATION_FULFILLMENTS_ONE_ORDER }]
+          [
+            {
+              offerFulfillments: SEAPORT_OFFER_FULFILLMENT_ONE_ITEM,
+              considerationFulfillments: SEAPORT_CONSIDERATION_FULFILLMENTS_ONE_ORDER,
+            },
+          ]
         ),
       },
       {

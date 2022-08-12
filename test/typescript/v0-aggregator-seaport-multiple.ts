@@ -7,6 +7,7 @@ import {
   FULFILLER_CONDUIT_KEY,
   SEAPORT,
   SEAPORT_CONSIDERATION_FULFILLMENTS_TWO_ORDERS_SAME_COLLECTION,
+  SEAPORT_OFFER_FULFILLMENT_TWO_ITEMS,
 } from "../constants";
 import getAbi from "./utils/get-abi";
 import getFixture from "./utils/get-fixture";
@@ -39,15 +40,13 @@ describe("Aggregator", () => {
     const orderOne = getFixture("bayc-2518-order.json");
     const orderTwo = getFixture("bayc-8498-order.json");
 
-    const offerFulfillments = [[{ orderIndex: 0, itemIndex: 0 }], [{ orderIndex: 1, itemIndex: 0 }]];
-
     const abi = await getAbi("SeaportInterface.json");
     const seaportInterface = new ethers.utils.Interface(abi);
 
     const calldata = seaportInterface.encodeFunctionData("fulfillAvailableAdvancedOrders", [
       [orderOne, orderTwo],
       [],
-      offerFulfillments,
+      SEAPORT_OFFER_FULFILLMENT_TWO_ITEMS,
       SEAPORT_CONSIDERATION_FULFILLMENTS_TWO_ORDERS_SAME_COLLECTION,
       FULFILLER_CONDUIT_KEY,
       buyer.address,

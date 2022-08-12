@@ -7,6 +7,7 @@ import {
   SEAPORT_EXTRA_DATA_SCHEMA,
   SEAPORT_CONSIDERATION_FULFILLMENTS_ONE_ORDER,
   WETH,
+  SEAPORT_OFFER_FULFILLMENT_ONE_ITEM,
 } from "../constants";
 import getFixture from "./utils/get-fixture";
 import getSeaportOrderExtraData from "./utils/get-seaport-order-extra-data";
@@ -17,8 +18,6 @@ import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import deployMultipleMarketFixtures from "./fixtures/deploy-multple-markets-fixture";
 
 describe("Aggregator", () => {
-  const offerFulfillments = [[{ orderIndex: 0, itemIndex: 0 }]];
-
   it("Should be able to handle trades from multiple markets", async function () {
     const { AddressZero, HashZero } = ethers.constants;
     const {
@@ -52,7 +51,12 @@ describe("Aggregator", () => {
         ordersExtraData: [getSeaportOrderExtraData(seaportOrder)],
         extraData: abiCoder.encode(
           [SEAPORT_EXTRA_DATA_SCHEMA],
-          [{ offerFulfillments, considerationFulfillments: SEAPORT_CONSIDERATION_FULFILLMENTS_ONE_ORDER }]
+          [
+            {
+              offerFulfillments: SEAPORT_OFFER_FULFILLMENT_ONE_ITEM,
+              considerationFulfillments: SEAPORT_CONSIDERATION_FULFILLMENTS_ONE_ORDER,
+            },
+          ]
         ),
       },
       {

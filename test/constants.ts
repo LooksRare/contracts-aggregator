@@ -28,6 +28,13 @@ export const SEAPORT_ORDER_EXTRA_DATA_SCHEMA = `
 
 export const LOOKSRARE_EXTRA_DATA_SCHEMA = ["address", "uint256", "uint256"];
 
+export const SEAPORT_OFFER_FULFILLMENT_ONE_ITEM = [[{ orderIndex: 0, itemIndex: 0 }]];
+
+export const SEAPORT_OFFER_FULFILLMENT_TWO_ITEMS = [
+  [{ orderIndex: 0, itemIndex: 0 }],
+  [{ orderIndex: 1, itemIndex: 0 }],
+];
+
 export const SEAPORT_CONSIDERATION_FULFILLMENTS_ONE_ORDER = [
   // seller one
   [{ orderIndex: 0, itemIndex: 0 }],

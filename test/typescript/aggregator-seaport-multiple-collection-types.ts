@@ -3,6 +3,7 @@ import { ethers } from "hardhat";
 import {
   SEAPORT_CONSIDERATION_FULFILLMENTS_TWO_ORDERS_DIFFERENT_COLLECTIONS,
   SEAPORT_EXTRA_DATA_SCHEMA,
+  SEAPORT_OFFER_FULFILLMENT_TWO_ITEMS,
 } from "../constants";
 import getFixture from "./utils/get-fixture";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
@@ -12,8 +13,6 @@ import getSeaportOrderJson from "./utils/get-seaport-order-json";
 import combineConsiderationAmount from "./utils/combine-consideration-amount";
 
 describe("Aggregator", () => {
-  const offerFulfillments = [[{ orderIndex: 0, itemIndex: 0 }], [{ orderIndex: 1, itemIndex: 0 }]];
-
   it("Should be able to handle multiple collections and multiple collection types", async function () {
     const { aggregator, buyer, proxy, functionSelector, bayc, cityDao } = await loadFixture(deploySeaportFixture);
 
@@ -40,7 +39,7 @@ describe("Aggregator", () => {
           [SEAPORT_EXTRA_DATA_SCHEMA],
           [
             {
-              offerFulfillments,
+              offerFulfillments: SEAPORT_OFFER_FULFILLMENT_TWO_ITEMS,
               considerationFulfillments: SEAPORT_CONSIDERATION_FULFILLMENTS_TWO_ORDERS_DIFFERENT_COLLECTIONS,
             },
           ]
