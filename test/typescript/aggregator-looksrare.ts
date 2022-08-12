@@ -1,13 +1,11 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { BAYC, LOOKSRARE_STRATEGY_FIXED_PRICE, WETH } from "../constants";
+import { BAYC, LOOKSRARE_EXTRA_DATA_SCHEMA, LOOKSRARE_STRATEGY_FIXED_PRICE, WETH } from "../constants";
 import calculateTxFee from "./utils/calculate-tx-fee";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import deployLooksRareFixture from "./fixtures/deploy-looksrare-fixture";
 
 describe("LooksRareAggregator", () => {
-  const extraDataSchema = ["address", "uint256", "uint256"];
-
   it("Should be able to handle LooksRare V2 trades (matchAskWithTakerBidUsingETHAndWETH)", async function () {
     const { aggregator, proxy, functionSelector, buyer, bayc } = await loadFixture(deployLooksRareFixture);
 
@@ -56,8 +54,8 @@ describe("LooksRareAggregator", () => {
           },
         ],
         ordersExtraData: [
-          abiCoder.encode(extraDataSchema, [LOOKSRARE_STRATEGY_FIXED_PRICE, 0, 9550]),
-          abiCoder.encode(extraDataSchema, [LOOKSRARE_STRATEGY_FIXED_PRICE, 50, 8500]),
+          abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [LOOKSRARE_STRATEGY_FIXED_PRICE, 0, 9550]),
+          abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [LOOKSRARE_STRATEGY_FIXED_PRICE, 50, 8500]),
         ],
         extraData: "0x",
       },
@@ -120,8 +118,8 @@ describe("LooksRareAggregator", () => {
           },
         ],
         ordersExtraData: [
-          abiCoder.encode(extraDataSchema, [LOOKSRARE_STRATEGY_FIXED_PRICE, 0, 9550]),
-          abiCoder.encode(extraDataSchema, [LOOKSRARE_STRATEGY_FIXED_PRICE, 50, 8500]),
+          abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [LOOKSRARE_STRATEGY_FIXED_PRICE, 0, 9550]),
+          abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [LOOKSRARE_STRATEGY_FIXED_PRICE, 50, 8500]),
         ],
         extraData: "0x",
       },

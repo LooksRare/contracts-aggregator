@@ -47,6 +47,7 @@ contract LooksRareAggregator is OwnableTwoSteps, LowLevelETH {
                 )
             );
 
+            console.log(success);
             console.logBytes(returnData);
 
             unchecked {

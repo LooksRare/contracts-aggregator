@@ -25,3 +25,5 @@ export const SEAPORT_ORDER_EXTRA_DATA_SCHEMA = `
     tuple(address recipient, uint256 amount)[] recipients
   ) orderExtraData
 `;
+
+export const LOOKSRARE_EXTRA_DATA_SCHEMA = ["address", "uint256", "uint256"];
