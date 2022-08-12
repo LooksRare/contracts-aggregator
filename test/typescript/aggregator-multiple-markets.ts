@@ -5,6 +5,7 @@ import {
   LOOKSRARE_EXTRA_DATA_SCHEMA,
   LOOKSRARE_STRATEGY_FIXED_PRICE,
   SEAPORT_EXTRA_DATA_SCHEMA,
+  SEAPORT_CONSIDERATION_FULFILLMENTS_ONE_ORDER,
   WETH,
 } from "../constants";
 import getFixture from "./utils/get-fixture";
@@ -17,15 +18,6 @@ import deployMultipleMarketFixtures from "./fixtures/deploy-multple-markets-fixt
 
 describe("Aggregator", () => {
   const offerFulfillments = [[{ orderIndex: 0, itemIndex: 0 }]];
-
-  const considerationFulfillments = [
-    // seller one
-    [{ orderIndex: 0, itemIndex: 0 }],
-    // OpenSea: Fees
-    [{ orderIndex: 0, itemIndex: 1 }],
-    // royalty
-    [{ orderIndex: 0, itemIndex: 2 }],
-  ];
 
   it("Should be able to handle trades from multiple markets", async function () {
     const { AddressZero, HashZero } = ethers.constants;
@@ -58,7 +50,10 @@ describe("Aggregator", () => {
         value: seaportPrice,
         orders: [getSeaportOrderJson(seaportOrder, seaportPrice, buyer.address)],
         ordersExtraData: [getSeaportOrderExtraData(seaportOrder)],
-        extraData: abiCoder.encode([SEAPORT_EXTRA_DATA_SCHEMA], [{ offerFulfillments, considerationFulfillments }]),
+        extraData: abiCoder.encode(
+          [SEAPORT_EXTRA_DATA_SCHEMA],
+          [{ offerFulfillments, considerationFulfillments: SEAPORT_CONSIDERATION_FULFILLMENTS_ONE_ORDER }]
+        ),
       },
       {
         proxy: looksRareProxy.address,

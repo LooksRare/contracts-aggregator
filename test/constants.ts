@@ -27,3 +27,45 @@ export const SEAPORT_ORDER_EXTRA_DATA_SCHEMA = `
 `;
 
 export const LOOKSRARE_EXTRA_DATA_SCHEMA = ["address", "uint256", "uint256"];
+
+export const SEAPORT_CONSIDERATION_FULFILLMENTS_ONE_ORDER = [
+  // seller one
+  [{ orderIndex: 0, itemIndex: 0 }],
+  // OpenSea: Fees
+  [{ orderIndex: 0, itemIndex: 1 }],
+  // royalty
+  [{ orderIndex: 0, itemIndex: 2 }],
+];
+
+export const SEAPORT_CONSIDERATION_FULFILLMENTS_TWO_ORDERS_SAME_COLLECTION = [
+  // seller one
+  [{ orderIndex: 0, itemIndex: 0 }],
+  // seller two
+  [{ orderIndex: 1, itemIndex: 0 }],
+  // OpenSea: Fees
+  [
+    { orderIndex: 0, itemIndex: 1 },
+    { orderIndex: 1, itemIndex: 1 },
+  ],
+  // royalty
+  [
+    { orderIndex: 0, itemIndex: 2 },
+    { orderIndex: 1, itemIndex: 2 },
+  ],
+];
+
+export const SEAPORT_CONSIDERATION_FULFILLMENTS_TWO_ORDERS_DIFFERENT_COLLECTIONS = [
+  // seller one
+  [{ orderIndex: 0, itemIndex: 0 }],
+  // seller two
+  [{ orderIndex: 1, itemIndex: 0 }],
+  // OpenSea: Fees
+  [
+    { orderIndex: 0, itemIndex: 1 },
+    { orderIndex: 1, itemIndex: 1 },
+  ],
+  // royalty one
+  [{ orderIndex: 0, itemIndex: 2 }],
+  // royalty two
+  [{ orderIndex: 1, itemIndex: 2 }],
+];

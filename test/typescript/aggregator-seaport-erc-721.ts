@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { SEAPORT_EXTRA_DATA_SCHEMA } from "../constants";
+import { SEAPORT_CONSIDERATION_FULFILLMENTS_TWO_ORDERS_SAME_COLLECTION, SEAPORT_EXTRA_DATA_SCHEMA } from "../constants";
 import getFixture from "./utils/get-fixture";
 import calculateTxFee from "./utils/calculate-tx-fee";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
@@ -11,23 +11,6 @@ import combineConsiderationAmount from "./utils/combine-consideration-amount";
 
 describe("Aggregator", () => {
   const offerFulfillments = [[{ orderIndex: 0, itemIndex: 0 }], [{ orderIndex: 1, itemIndex: 0 }]];
-
-  const considerationFulfillments = [
-    // seller one
-    [{ orderIndex: 0, itemIndex: 0 }],
-    // seller two
-    [{ orderIndex: 1, itemIndex: 0 }],
-    // OpenSea: Fees
-    [
-      { orderIndex: 0, itemIndex: 1 },
-      { orderIndex: 1, itemIndex: 1 },
-    ],
-    // royalty
-    [
-      { orderIndex: 0, itemIndex: 2 },
-      { orderIndex: 1, itemIndex: 2 },
-    ],
-  ];
 
   it("Should be able to handle OpenSea trades (fulfillAvailableAdvancedOrders)", async function () {
     const { aggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(deploySeaportFixture);
@@ -50,7 +33,15 @@ describe("Aggregator", () => {
           getSeaportOrderJson(orderTwo, priceTwo, buyer.address),
         ],
         ordersExtraData: [getSeaportOrderExtraData(orderOne), getSeaportOrderExtraData(orderTwo)],
-        extraData: abiCoder.encode([SEAPORT_EXTRA_DATA_SCHEMA], [{ offerFulfillments, considerationFulfillments }]),
+        extraData: abiCoder.encode(
+          [SEAPORT_EXTRA_DATA_SCHEMA],
+          [
+            {
+              offerFulfillments,
+              considerationFulfillments: SEAPORT_CONSIDERATION_FULFILLMENTS_TWO_ORDERS_SAME_COLLECTION,
+            },
+          ]
+        ),
       },
     ];
 
@@ -85,7 +76,15 @@ describe("Aggregator", () => {
           getSeaportOrderJson(orderTwo, priceTwo, buyer.address),
         ],
         ordersExtraData: [getSeaportOrderExtraData(orderOne), getSeaportOrderExtraData(orderTwo)],
-        extraData: abiCoder.encode([SEAPORT_EXTRA_DATA_SCHEMA], [{ offerFulfillments, considerationFulfillments }]),
+        extraData: abiCoder.encode(
+          [SEAPORT_EXTRA_DATA_SCHEMA],
+          [
+            {
+              offerFulfillments,
+              considerationFulfillments: SEAPORT_CONSIDERATION_FULFILLMENTS_TWO_ORDERS_SAME_COLLECTION,
+            },
+          ]
+        ),
       },
     ];
 
@@ -127,7 +126,15 @@ describe("Aggregator", () => {
           getSeaportOrderJson(orderTwo, priceTwo, buyer.address),
         ],
         ordersExtraData: [getSeaportOrderExtraData(orderOne), getSeaportOrderExtraData(orderTwo)],
-        extraData: abiCoder.encode([SEAPORT_EXTRA_DATA_SCHEMA], [{ offerFulfillments, considerationFulfillments }]),
+        extraData: abiCoder.encode(
+          [SEAPORT_EXTRA_DATA_SCHEMA],
+          [
+            {
+              offerFulfillments,
+              considerationFulfillments: SEAPORT_CONSIDERATION_FULFILLMENTS_TWO_ORDERS_SAME_COLLECTION,
+            },
+          ]
+        ),
       },
     ];
 

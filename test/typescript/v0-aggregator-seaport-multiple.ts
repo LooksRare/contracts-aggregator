@@ -2,7 +2,12 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { Contract } from "ethers";
 import { ethers } from "hardhat";
-import { BAYC, FULFILLER_CONDUIT_KEY, SEAPORT } from "../constants";
+import {
+  BAYC,
+  FULFILLER_CONDUIT_KEY,
+  SEAPORT,
+  SEAPORT_CONSIDERATION_FULFILLMENTS_TWO_ORDERS_SAME_COLLECTION,
+} from "../constants";
 import getAbi from "./utils/get-abi";
 import getFixture from "./utils/get-fixture";
 import getSignature from "./utils/get-signature";
@@ -36,23 +41,6 @@ describe("Aggregator", () => {
 
     const offerFulfillments = [[{ orderIndex: 0, itemIndex: 0 }], [{ orderIndex: 1, itemIndex: 0 }]];
 
-    const considerationFulfillments = [
-      // seller one
-      [{ orderIndex: 0, itemIndex: 0 }],
-      // seller two
-      [{ orderIndex: 1, itemIndex: 0 }],
-      // OpenSea: Fees
-      [
-        { orderIndex: 0, itemIndex: 1 },
-        { orderIndex: 1, itemIndex: 1 },
-      ],
-      // royalty
-      [
-        { orderIndex: 0, itemIndex: 2 },
-        { orderIndex: 1, itemIndex: 2 },
-      ],
-    ];
-
     const abi = await getAbi("SeaportInterface.json");
     const seaportInterface = new ethers.utils.Interface(abi);
 
@@ -60,7 +48,7 @@ describe("Aggregator", () => {
       [orderOne, orderTwo],
       [],
       offerFulfillments,
-      considerationFulfillments,
+      SEAPORT_CONSIDERATION_FULFILLMENTS_TWO_ORDERS_SAME_COLLECTION,
       FULFILLER_CONDUIT_KEY,
       buyer.address,
       2,
