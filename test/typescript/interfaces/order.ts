@@ -1,5 +1,6 @@
 import Offer from "./offer";
 import Consideration from "./consideration";
+import { BytesLike } from "ethers";
 
 interface Parameters {
   offerer: string;
@@ -9,9 +10,9 @@ interface Parameters {
   orderType: number;
   startTime: number;
   endTime: number;
-  zoneHash: string;
+  zoneHash: BytesLike;
   salt: string;
-  conduitKey: string;
+  conduitKey: BytesLike;
   totalOriginalConsiderationItems: number;
 }
 
