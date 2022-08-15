@@ -26,10 +26,6 @@ contract X2Y2Proxy is TokenReceiverProxy {
         Market.Fee[] fees;
     }
 
-    // TODO: make a BaseProxy / IProxy
-    error InvalidOrderLength();
-    error ZeroAddress();
-
     function buyWithETH(
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,

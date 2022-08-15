@@ -18,9 +18,6 @@ contract LooksRareProxy is TokenReceiverProxy {
 
     ILooksRareV1 constant MARKETPLACE = ILooksRareV1(0x59728544B08AB483533076417FbBB2fD0B17CE3a);
 
-    error InvalidOrderLength();
-    error ZeroAddress();
-
     function buyWithETH(
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,

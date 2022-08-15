@@ -7,8 +7,9 @@ import {CollectionType} from "../libraries/OrderEnums.sol";
 import {AdvancedOrder, CriteriaResolver, OrderParameters, OfferItem, ConsiderationItem, FulfillmentComponent} from "../libraries/ConsiderationStructs.sol";
 import {ItemType, OrderType} from "../libraries/ConsiderationEnums.sol";
 import {LowLevelETH} from "../lowLevelCallers/LowLevelETH.sol";
+import {IProxy} from "./IProxy.sol";
 
-contract SeaportProxy is LowLevelETH {
+contract SeaportProxy is LowLevelETH, IProxy {
     SeaportInterface constant MARKETPLACE = SeaportInterface(0x00000000006c3852cbEf3e08E8dF289169EdE581);
 
     struct Recipient {
@@ -30,9 +31,6 @@ contract SeaportProxy is LowLevelETH {
         Recipient[] recipients;
     }
 
-    error InvalidOrderLength();
-    error InvalidRecipient();
-
     function buyWithETH(
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,
@@ -44,6 +42,7 @@ contract SeaportProxy is LowLevelETH {
         address recipient = orders[0].recipient;
         // Since Seaport supports custom recipient, the recipient should not be the proxy.
         if (recipient == address(this)) revert InvalidRecipient();
+        if (recipient == address(0)) revert ZeroAddress();
 
         AdvancedOrder[] memory advancedOrders = new AdvancedOrder[](ordersLength);
         ExtraData memory extraDataStruct = abi.decode(extraData, (ExtraData));
