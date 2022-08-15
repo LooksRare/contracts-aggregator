@@ -1,13 +1,16 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
-import { IERC721, LooksRareAggregator, X2Y2Proxy } from "../../../typechain";
-import { BAYC } from "../../constants";
+import { IERC1155, IERC721, LooksRareAggregator, X2Y2Proxy } from "../../../typechain";
+import { BAYC, PARALLEL } from "../../constants";
+import getSignature from "../utils/get-signature";
 
 interface X2Y2Fixture {
   aggregator: LooksRareAggregator;
+  functionSelector: string;
   proxy: X2Y2Proxy;
   buyer: SignerWithAddress;
   bayc: IERC721;
+  parallel: IERC1155;
 }
 
 export default async function deployX2Y2Fixture(): Promise<X2Y2Fixture> {
@@ -16,10 +19,19 @@ export default async function deployX2Y2Fixture(): Promise<X2Y2Fixture> {
   await aggregator.deployed();
 
   const X2Y2Proxy = await ethers.getContractFactory("X2Y2Proxy");
-  const proxy = await X2Y2Proxy.deploy();
-  await proxy.deployed();
+  const proxyPlaceholder = await X2Y2Proxy.deploy();
+  await proxyPlaceholder.deployed();
 
-  const [buyer] = await ethers.getSigners();
+  const [buyer, predefinedProxy] = await ethers.getSigners();
+
+  const proxyCode = await ethers.provider.getCode(proxyPlaceholder.address);
+
+  await ethers.provider.send("hardhat_setCode", [predefinedProxy.address, proxyCode]);
+
+  const functionSelector = await getSignature("X2Y2Proxy.json", "buyWithETH");
+  await aggregator.addFunction(predefinedProxy.address, functionSelector);
+
+  const proxy = X2Y2Proxy.attach(predefinedProxy.address);
 
   await ethers.provider.send("hardhat_setBalance", [
     buyer.address,
@@ -27,6 +39,7 @@ export default async function deployX2Y2Fixture(): Promise<X2Y2Fixture> {
   ]);
 
   const bayc = await ethers.getContractAt("IERC721", BAYC);
+  const parallel = await ethers.getContractAt("IERC1155", PARALLEL);
 
-  return { aggregator, proxy, buyer, bayc };
+  return { aggregator, functionSelector, proxy, buyer, bayc, parallel };
 }

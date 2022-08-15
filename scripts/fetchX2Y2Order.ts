@@ -31,16 +31,16 @@ const stringifyOrder = (runInput: RunInput): string => {
   return JSON.stringify({
     orders: runInput.orders.map((order) => {
       return {
-        salt: order.salt,
+        salt: order.salt.toString(),
         user: order.user,
-        network: order.network,
-        intent: order.intent,
-        delegateType: order.delegateType,
-        deadline: order.deadline,
+        network: order.network.toString(),
+        intent: order.intent.toString(),
+        delegateType: order.delegateType.toString(),
+        deadline: order.deadline.toString(),
         currency: order.currency,
         dataMask: order.dataMask,
         items: order.items.map((item) => {
-          return { price: item.price, data: item.data };
+          return { price: item.price.toString(), data: item.data };
         }),
         r: order.r,
         s: order.s,
@@ -51,25 +51,25 @@ const stringifyOrder = (runInput: RunInput): string => {
     details: runInput.details.map((detail) => {
       return {
         op: detail.op,
-        orderIdx: detail.orderIdx,
-        itemIdx: detail.itemIdx,
-        price: detail.price,
+        orderIdx: detail.orderIdx.toString(),
+        itemIdx: detail.itemIdx.toString(),
+        price: detail.price.toString(),
         itemHash: detail.itemHash,
         executionDelegate: detail.executionDelegate,
         dataReplacement: detail.dataReplacement,
-        bidIncentivePct: detail.bidIncentivePct,
-        aucMinIncrementPct: detail.aucMinIncrementPct,
-        aucIncDurationSecs: detail.aucIncDurationSecs,
+        bidIncentivePct: detail.bidIncentivePct.toString(),
+        aucMinIncrementPct: detail.aucMinIncrementPct.toString(),
+        aucIncDurationSecs: detail.aucIncDurationSecs.toString(),
         fees: detail.fees.map((fee) => {
-          return { percentage: fee.percentage, to: fee.to };
+          return { percentage: fee.percentage.toString(), to: fee.to };
         }),
       };
     }),
     shared: {
-      salt: runInput.shared.salt,
-      deadline: runInput.shared.deadline,
-      amountToEth: runInput.shared.amountToEth,
-      amountToWeth: runInput.shared.amountToWeth,
+      salt: runInput.shared.salt.toString(),
+      deadline: runInput.shared.deadline.toString(),
+      amountToEth: runInput.shared.amountToEth.toString(),
+      amountToWeth: runInput.shared.amountToWeth.toString(),
       user: runInput.shared.user,
       canFail: runInput.shared.canFail,
     },
@@ -80,11 +80,14 @@ const stringifyOrder = (runInput: RunInput): string => {
 };
 
 async function main() {
+  // BAYC ERC-721
   const tokenIdOne = "2674";
   const tokenIdTwo = "2491";
+  // Parallel ERC-1155
   const tokenIdThree = "10511";
   const tokenIdFour = "10327";
-  const [buyer] = await ethers.getSigners();
+
+  const [, proxy] = await ethers.getSigners();
 
   const x2y2Client = axios.create({
     baseURL: "https://api.x2y2.org",
@@ -100,16 +103,16 @@ async function main() {
   const ordersTwo = ordersTwoResponse.data;
   const orderTwo = ordersTwo.data[0];
 
-  const ordersThreeResponse = await x2y2Client.get(`/v1/orders?contract=${PARALLEL}&token_id=${tokenIdThree}&limit=2`);
+  const ordersThreeResponse = await x2y2Client.get(`/v1/orders?contract=${PARALLEL}&token_id=${tokenIdThree}&limit=1`);
   const ordersThree = ordersThreeResponse.data;
   const orderThree = ordersThree.data[0];
 
-  const ordersFourResponse = await x2y2Client.get(`/v1/orders?contract=${PARALLEL}&token_id=${tokenIdFour}&limit=2`);
+  const ordersFourResponse = await x2y2Client.get(`/v1/orders?contract=${PARALLEL}&token_id=${tokenIdFour}&limit=1`);
   const ordersFour = ordersFourResponse.data;
   const orderFour = ordersFour.data[0];
 
   const signResponse = await x2y2Client.post("/api/orders/sign", {
-    caller: buyer.address,
+    caller: proxy.address,
     op: 1, // OP_COMPLETE_SELL_OFFER
     amountToEth: "0",
     amountToWeth: "0",
@@ -120,7 +123,7 @@ async function main() {
   });
 
   const signResponseTwo = await x2y2Client.post("/api/orders/sign", {
-    caller: buyer.address,
+    caller: proxy.address,
     op: 1, // OP_COMPLETE_SELL_OFFER
     amountToEth: "0",
     amountToWeth: "0",

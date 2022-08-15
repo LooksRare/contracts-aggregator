@@ -6,8 +6,6 @@ import {LooksRareProxy} from "./proxies/LooksRareProxy.sol";
 import {BasicOrder} from "./libraries/OrderStructs.sol";
 import {LowLevelETH} from "./lowLevelCallers/LowLevelETH.sol";
 
-import "hardhat/console.sol";
-
 /**
  * @title LooksRareAggregator
  * @notice This contract allows NFT sweepers to buy NFTs from different marketplaces
@@ -47,8 +45,14 @@ contract LooksRareAggregator is OwnableTwoSteps, LowLevelETH {
                 )
             );
 
-            console.log(success);
-            console.logBytes(returnData);
+            if (!success) {
+                if (returnData.length > 0) {
+                    assembly {
+                        let returnDataSize := mload(returnData)
+                        revert(add(32, returnData), returnDataSize)
+                    }
+                } else {}
+            }
 
             unchecked {
                 ++i;

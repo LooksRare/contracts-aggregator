@@ -6,6 +6,8 @@ import {BasicOrder} from "../libraries/OrderStructs.sol";
 import {Market} from "../libraries/MarketConsts.sol";
 import {SignatureSplitter} from "../libraries/SignatureSplitter.sol";
 
+import "hardhat/console.sol";
+
 contract X2Y2Proxy {
     IX2Y2Run public constant MARKETPLACE = IX2Y2Run(0x74312363e45DCaBA76c59ec49a7Aa8A65a67EeD3);
 
@@ -13,12 +15,12 @@ contract X2Y2Proxy {
         uint256 salt;
         bytes itemData;
         address executionDelegate;
-        Market.Fee[] fees;
         uint256 inputSalt;
         uint256 inputDeadline;
         uint8 inputV;
         bytes32 inputR;
         bytes32 inputS;
+        Market.Fee[] fees;
     }
 
     // TODO: make a BaseProxy / IProxy
@@ -37,7 +39,40 @@ contract X2Y2Proxy {
             if (orders[i].recipient == address(0)) revert ZeroAddress();
             OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
             _executeOrder(orders[i], orderExtraData);
+
+            unchecked {
+                ++i;
+            }
         }
+    }
+
+    function onERC721Received(
+        address,
+        address,
+        uint256,
+        bytes calldata
+    ) external pure returns (bytes4) {
+        return this.onERC721Received.selector;
+    }
+
+    function onERC1155Received(
+        address,
+        address,
+        uint256,
+        uint256,
+        bytes memory
+    ) public virtual returns (bytes4) {
+        return this.onERC1155Received.selector;
+    }
+
+    function onERC1155BatchReceived(
+        address,
+        address,
+        uint256[] memory,
+        uint256[] memory,
+        bytes memory
+    ) public virtual returns (bytes4) {
+        return this.onERC1155BatchReceived.selector;
     }
 
     function _executeOrder(BasicOrder calldata order, OrderExtraData memory orderExtraData) private {
@@ -56,41 +91,55 @@ contract X2Y2Proxy {
         runInput.shared.user = address(this);
         runInput.shared.canFail = false;
 
-        runInput.orders[0].salt = orderExtraData.salt;
-        runInput.orders[0].user = order.signer;
-        runInput.orders[0].network = block.chainid;
-        runInput.orders[0].intent = Market.INTENT_SELL;
+        Market.Order[] memory x2y2Orders = new Market.Order[](1);
+        x2y2Orders[0].salt = orderExtraData.salt;
+        x2y2Orders[0].user = order.signer;
+        x2y2Orders[0].network = 1;
+        // runInput.orders[0].network = block.chainid;
+        x2y2Orders[0].intent = Market.INTENT_SELL;
         // X2Y2 enums start with INVALID so plus 1
-        runInput.orders[0].delegateType = uint256(order.collectionType) + 1;
-        runInput.orders[0].deadline = order.endTime;
-        runInput.orders[0].currency = order.currency;
-        runInput.orders[0].dataMask = "0x";
-        runInput.orders[0].signVersion = Market.SIGN_V1;
+        x2y2Orders[0].delegateType = uint256(order.collectionType) + 1;
+        x2y2Orders[0].deadline = order.endTime;
+        x2y2Orders[0].currency = order.currency;
+        // x2y2Orders[0].dataMask = "0x";
+        x2y2Orders[0].signVersion = Market.SIGN_V1;
 
-        runInput.orders[0].items[0].price = order.price;
-        runInput.orders[0].items[0].data = orderExtraData.itemData;
+        Market.OrderItem[] memory items = new Market.OrderItem[](1);
+        items[0].price = order.price;
+        items[0].data = orderExtraData.itemData;
+        x2y2Orders[0].items = items;
 
-        runInput.details[0].op = Market.Op.COMPLETE_SELL_OFFER;
-        runInput.details[0].bidIncentivePct = 0;
-        runInput.details[0].aucMinIncrementPct = 0;
-        runInput.details[0].aucIncDurationSecs = 0;
-        runInput.details[0].executionDelegate = orderExtraData.executionDelegate;
-        runInput.details[0].dataReplacement = "0x";
-        runInput.details[0].orderIdx = 0;
-        runInput.details[0].itemIdx = 0;
-        runInput.details[0].price = order.price;
-        runInput.details[0].itemHash = _hashItem(runInput.orders[0], runInput.orders[0].items[0]);
-        runInput.details[0].fees = orderExtraData.fees;
+        runInput.orders = x2y2Orders;
+
+        Market.SettleDetail[] memory settleDetails = new Market.SettleDetail[](1);
+        settleDetails[0].op = Market.Op.COMPLETE_SELL_OFFER;
+        settleDetails[0].bidIncentivePct = 0;
+        settleDetails[0].aucMinIncrementPct = 0;
+        settleDetails[0].aucIncDurationSecs = 0;
+        settleDetails[0].executionDelegate = orderExtraData.executionDelegate;
+        // settleDetails[0].dataReplacement = "0x";
+        settleDetails[0].orderIdx = 0;
+        settleDetails[0].itemIdx = 0;
+        settleDetails[0].price = order.price;
+        settleDetails[0].itemHash = _hashItem(runInput.orders[0], runInput.orders[0].items[0]);
+        settleDetails[0].fees = orderExtraData.fees;
+        runInput.details = settleDetails;
 
         (uint8 v, bytes32 r, bytes32 s) = SignatureSplitter.splitSignature(order.signature);
         runInput.orders[0].r = r;
         runInput.orders[0].s = s;
         runInput.orders[0].v = v;
 
-        try MARKETPLACE.run{value: order.price}(runInput) {} catch {}
+        MARKETPLACE.run{value: order.price}(runInput);
+        // try MARKETPLACE.run{value: order.price}(runInput) {
+        //     console.log("did it hit this?");
+        // } catch (bytes memory err) {
+        //     console.log("FAILED!!!!");
+        //     console.logBytes(err);
+        // }
     }
 
-    function _hashItem(Market.Order memory order, Market.OrderItem memory item) private view returns (bytes32) {
+    function _hashItem(Market.Order memory order, Market.OrderItem memory item) private pure returns (bytes32) {
         return
             keccak256(
                 abi.encode(
