@@ -69,7 +69,7 @@ contract X2Y2Proxy is TokenReceiverProxy {
         x2y2Orders[0].delegateType = uint256(order.collectionType) + 1;
         x2y2Orders[0].deadline = order.endTime;
         x2y2Orders[0].currency = order.currency;
-        // x2y2Orders[0].dataMask = "0x";
+        // dataMask default is 0 bytes
         x2y2Orders[0].signVersion = Market.SIGN_V1;
 
         Market.OrderItem[] memory items = new Market.OrderItem[](1);
