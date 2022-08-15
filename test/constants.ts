@@ -27,6 +27,20 @@ export const SEAPORT_ORDER_EXTRA_DATA_SCHEMA = `
   ) orderExtraData
 `;
 
+export const X2Y2_ORDER_EXTRA_DATA_SCHEMA = `
+  tuple(
+    uint256 salt,
+    bytes itemData,
+    address executionDelegate,
+    uint256 inputSalt,
+    uint256 inputDeadline,
+    uint8 inputV,
+    bytes32 inputR,
+    bytes32 inputS,
+    tuple(uint256 percentage, address to)[] fees
+  ) orderExtraData
+`;
+
 export const LOOKSRARE_EXTRA_DATA_SCHEMA = ["address", "uint256", "uint256"];
 
 export const SEAPORT_OFFER_FULFILLMENT_ONE_ITEM = [[{ orderIndex: 0, itemIndex: 0 }]];

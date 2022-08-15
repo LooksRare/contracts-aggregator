@@ -3,7 +3,7 @@ import * as path from "path";
 import { ethers } from "hardhat";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import deployX2Y2Fixture from "./fixtures/deploy-x2y2-fixture";
-import { BAYC, PARALLEL } from "../constants";
+import { BAYC, PARALLEL, X2Y2_ORDER_EXTRA_DATA_SCHEMA } from "../constants";
 import { BigNumber } from "ethers";
 import { expect } from "chai";
 
@@ -25,21 +25,7 @@ describe("LooksRareAggregator", () => {
   const getX2Y2ExtraData = (order: any): string => {
     const abiCoder = ethers.utils.defaultAbiCoder;
     return abiCoder.encode(
-      [
-        `
-        tuple(
-          uint256 salt,
-          bytes itemData,
-          address executionDelegate,
-          uint256 inputSalt,
-          uint256 inputDeadline,
-          uint8 inputV,
-          bytes32 inputR,
-          bytes32 inputS,
-          tuple(uint256 percentage, address to)[] fees
-        ) orderExtraData
-        `,
-      ],
+      [X2Y2_ORDER_EXTRA_DATA_SCHEMA],
       [
         {
           salt: BigNumber.from(order.orders[0].salt),
