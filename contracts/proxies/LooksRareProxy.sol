@@ -58,7 +58,7 @@ contract LooksRareProxy is TokenReceiverProxy {
             takerBid.tokenId = order.tokenIds[0];
             takerBid.minPercentageToAsk = orderExtraData.minPercentageToAsk;
 
-            _matchSingleOrder(takerBid, makerAsk, order.recipient, order.collectionType);
+            _executeSingleOrder(takerBid, makerAsk, order.recipient, order.collectionType);
 
             unchecked {
                 ++i;
@@ -66,7 +66,7 @@ contract LooksRareProxy is TokenReceiverProxy {
         }
     }
 
-    function _matchSingleOrder(
+    function _executeSingleOrder(
         ILooksRareV1.TakerOrder memory takerBid,
         ILooksRareV1.MakerOrder memory makerAsk,
         address recipient,

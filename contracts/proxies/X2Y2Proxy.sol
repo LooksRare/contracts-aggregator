@@ -37,7 +37,7 @@ contract X2Y2Proxy is TokenReceiverProxy {
         for (uint256 i; i < ordersLength; ) {
             if (orders[i].recipient == address(0)) revert ZeroAddress();
             OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
-            _executeOrder(orders[i], orderExtraData);
+            _executeSingleOrder(orders[i], orderExtraData);
 
             unchecked {
                 ++i;
@@ -45,7 +45,7 @@ contract X2Y2Proxy is TokenReceiverProxy {
         }
     }
 
-    function _executeOrder(BasicOrder calldata order, OrderExtraData memory orderExtraData) private {
+    function _executeSingleOrder(BasicOrder calldata order, OrderExtraData memory orderExtraData) private {
         if (order.recipient == address(0)) revert ZeroAddress();
 
         Market.RunInput memory runInput;
