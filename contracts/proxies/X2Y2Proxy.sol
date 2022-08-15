@@ -8,7 +8,6 @@ import {BasicOrder} from "../libraries/OrderStructs.sol";
 import {Market} from "../libraries/MarketConsts.sol";
 import {SignatureSplitter} from "../libraries/SignatureSplitter.sol";
 import {CollectionType} from "../libraries/OrderEnums.sol";
-import "hardhat/console.sol";
 
 contract X2Y2Proxy {
     IX2Y2Run public constant MARKETPLACE = IX2Y2Run(0x74312363e45DCaBA76c59ec49a7Aa8A65a67EeD3);
@@ -86,18 +85,16 @@ contract X2Y2Proxy {
         runInput.s = orderExtraData.inputS;
         runInput.v = orderExtraData.inputV;
 
+        // amountToEth and amountToWeth default is 0
         runInput.shared.salt = orderExtraData.inputSalt;
         runInput.shared.deadline = orderExtraData.inputDeadline;
-        runInput.shared.amountToEth = 0;
-        runInput.shared.amountToWeth = 0;
         runInput.shared.user = address(this);
         runInput.shared.canFail = false;
 
         Market.Order[] memory x2y2Orders = new Market.Order[](1);
         x2y2Orders[0].salt = orderExtraData.salt;
         x2y2Orders[0].user = order.signer;
-        x2y2Orders[0].network = 1;
-        // runInput.orders[0].network = block.chainid;
+        x2y2Orders[0].network = block.chainid;
         x2y2Orders[0].intent = Market.INTENT_SELL;
         // X2Y2 enums start with INVALID so plus 1
         x2y2Orders[0].delegateType = uint256(order.collectionType) + 1;
@@ -115,13 +112,9 @@ contract X2Y2Proxy {
 
         Market.SettleDetail[] memory settleDetails = new Market.SettleDetail[](1);
         settleDetails[0].op = Market.Op.COMPLETE_SELL_OFFER;
-        settleDetails[0].bidIncentivePct = 0;
-        settleDetails[0].aucMinIncrementPct = 0;
-        settleDetails[0].aucIncDurationSecs = 0;
+        // bidIncentivePct/aucMinIncrementPct/aucIncDurationSecs default is 0
         settleDetails[0].executionDelegate = orderExtraData.executionDelegate;
-        // settleDetails[0].dataReplacement = "0x";
-        settleDetails[0].orderIdx = 0;
-        settleDetails[0].itemIdx = 0;
+        // dataReplacement/orderIdx/itemIdx default is 0
         settleDetails[0].price = order.price;
         settleDetails[0].itemHash = _hashItem(runInput.orders[0], runInput.orders[0].items[0]);
         settleDetails[0].fees = orderExtraData.fees;
@@ -144,10 +137,7 @@ contract X2Y2Proxy {
                     "0x"
                 );
             }
-        } catch (bytes memory err) {
-            console.log("FAILED!!!!");
-            console.logBytes(err);
-        }
+        } catch (bytes memory err) {}
     }
 
     function _hashItem(Market.Order memory order, Market.OrderItem memory item) private pure returns (bytes32) {
