@@ -66,9 +66,9 @@ describe("LooksRareAggregator", () => {
     // BLOCK 15346990
 
     const tokenIdOne = "2674";
-    // const tokenIdTwo = "2491";
-    // const tokenIdThree = "10327";
-    // const tokenIdFour = "10511";
+    const tokenIdTwo = "2491";
+    const tokenIdThree = "10327";
+    const tokenIdFour = "10511";
 
     const orderOne = JSON.parse(
       fs.readFileSync(path.join(__dirname, `/fixtures/x2y2-bayc-${tokenIdOne}-run-input.json`), {
@@ -77,34 +77,33 @@ describe("LooksRareAggregator", () => {
       })
     );
 
-    // const orderTwo = JSON.parse(
-    //   fs.readFileSync(path.join(__dirname, `/fixtures/x2y2-bayc-${tokenIdTwo}-run-input.json`), {
-    //     encoding: "utf8",
-    //     flag: "r",
-    //   })
-    // );
+    const orderTwo = JSON.parse(
+      fs.readFileSync(path.join(__dirname, `/fixtures/x2y2-bayc-${tokenIdTwo}-run-input.json`), {
+        encoding: "utf8",
+        flag: "r",
+      })
+    );
 
-    // const orderThree = JSON.parse(
-    //   fs.readFileSync(path.join(__dirname, `/fixtures/x2y2-parallel-${tokenIdThree}-run-input.json`), {
-    //     encoding: "utf8",
-    //     flag: "r",
-    //   })
-    // );
+    const orderThree = JSON.parse(
+      fs.readFileSync(path.join(__dirname, `/fixtures/x2y2-parallel-${tokenIdThree}-run-input.json`), {
+        encoding: "utf8",
+        flag: "r",
+      })
+    );
 
-    // const orderFour = JSON.parse(
-    //   fs.readFileSync(path.join(__dirname, `/fixtures/x2y2-parallel-${tokenIdFour}-run-input.json`), {
-    //     encoding: "utf8",
-    //     flag: "r",
-    //   })
-    // );
+    const orderFour = JSON.parse(
+      fs.readFileSync(path.join(__dirname, `/fixtures/x2y2-parallel-${tokenIdFour}-run-input.json`), {
+        encoding: "utf8",
+        flag: "r",
+      })
+    );
 
     const priceOne = BigNumber.from(orderOne.details[0].price);
-    // const priceTwo = BigNumber.from(orderTwo.details[0].price);
-    // const priceThree = BigNumber.from(orderThree.details[0].price);
-    // const priceFour = BigNumber.from(orderFour.details[0].price);
+    const priceTwo = BigNumber.from(orderTwo.details[0].price);
+    const priceThree = BigNumber.from(orderThree.details[0].price);
+    const priceFour = BigNumber.from(orderFour.details[0].price);
 
-    // const totalValue = priceOne.add(priceTwo).add(priceThree).add(priceFour);
-    const totalValue = priceOne;
+    const totalValue = priceOne.add(priceTwo).add(priceThree).add(priceFour);
 
     await aggregator.buyWithETH(
       [
@@ -126,51 +125,51 @@ describe("LooksRareAggregator", () => {
               endTime: BigNumber.from(orderOne.orders[0].deadline),
               signature: joinSignature(orderOne.orders[0]),
             },
-            // {
-            //   price: priceTwo,
-            //   recipient: buyer.address,
-            //   signer: orderTwo.orders[0].user,
-            //   collection: BAYC,
-            //   collectionType: 0,
-            //   tokenIds: [tokenIdTwo],
-            //   amounts: [1],
-            //   currency: AddressZero,
-            //   startTime: 0,
-            //   endTime: orderTwo.orders[0].deadline,
-            //   signature: joinSignature(orderTwo.orders[0]),
-            // },
-            // {
-            //   price: priceThree,
-            //   recipient: buyer.address,
-            //   signer: orderThree.orders[0].user,
-            //   collection: PARALLEL,
-            //   collectionType: 1,
-            //   tokenIds: [tokenIdThree],
-            //   amounts: [1],
-            //   currency: AddressZero,
-            //   startTime: 0,
-            //   endTime: orderThree.orders[0].deadline,
-            //   signature: joinSignature(orderThree.orders[0]),
-            // },
-            // {
-            //   price: priceFour,
-            //   recipient: buyer.address,
-            //   signer: orderFour.orders[0].user,
-            //   collection: PARALLEL,
-            //   collectionType: 1,
-            //   tokenIds: [tokenIdFour],
-            //   amounts: [1],
-            //   currency: AddressZero,
-            //   startTime: 0,
-            //   endTime: orderFour.orders[0].deadline,
-            //   signature: joinSignature(orderFour.orders[0]),
-            // },
+            {
+              price: priceTwo,
+              recipient: buyer.address,
+              signer: orderTwo.orders[0].user,
+              collection: BAYC,
+              collectionType: 0,
+              tokenIds: [tokenIdTwo],
+              amounts: [1],
+              currency: AddressZero,
+              startTime: 0,
+              endTime: orderTwo.orders[0].deadline,
+              signature: joinSignature(orderTwo.orders[0]),
+            },
+            {
+              price: priceThree,
+              recipient: buyer.address,
+              signer: orderThree.orders[0].user,
+              collection: PARALLEL,
+              collectionType: 1,
+              tokenIds: [tokenIdThree],
+              amounts: [1],
+              currency: AddressZero,
+              startTime: 0,
+              endTime: orderThree.orders[0].deadline,
+              signature: joinSignature(orderThree.orders[0]),
+            },
+            {
+              price: priceFour,
+              recipient: buyer.address,
+              signer: orderFour.orders[0].user,
+              collection: PARALLEL,
+              collectionType: 1,
+              tokenIds: [tokenIdFour],
+              amounts: [1],
+              currency: AddressZero,
+              startTime: 0,
+              endTime: orderFour.orders[0].deadline,
+              signature: joinSignature(orderFour.orders[0]),
+            },
           ],
           ordersExtraData: [
             getX2Y2ExtraData(orderOne),
-            // getX2Y2ExtraData(orderTwo),
-            // getX2Y2ExtraData(orderThree),
-            // getX2Y2ExtraData(orderFour),
+            getX2Y2ExtraData(orderTwo),
+            getX2Y2ExtraData(orderThree),
+            getX2Y2ExtraData(orderFour),
           ],
           extraData: ethers.constants.HashZero,
         },
@@ -178,11 +177,11 @@ describe("LooksRareAggregator", () => {
       { value: totalValue }
     );
 
-    // expect(await bayc.balanceOf(buyer.address)).to.equal(2);
+    expect(await bayc.balanceOf(buyer.address)).to.equal(2);
     expect(await bayc.ownerOf(tokenIdOne)).to.equal(buyer.address);
-    // expect(await bayc.ownerOf(tokenIdTwo)).to.equal(buyer.address);
+    expect(await bayc.ownerOf(tokenIdTwo)).to.equal(buyer.address);
 
-    // expect(await parallel.balanceOf(buyer.address, tokenIdThree)).to.equal(1);
-    // expect(await parallel.balanceOf(buyer.address, tokenIdFour)).to.equal(1);
+    expect(await parallel.balanceOf(buyer.address, tokenIdThree)).to.equal(1);
+    expect(await parallel.balanceOf(buyer.address, tokenIdFour)).to.equal(1);
   });
 });
