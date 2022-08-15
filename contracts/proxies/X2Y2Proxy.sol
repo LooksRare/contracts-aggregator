@@ -14,14 +14,11 @@ contract X2Y2Proxy {
         bytes itemData;
         address executionDelegate;
         Market.Fee[] fees;
-    }
-
-    struct ExtraData {
-        uint256 salt;
-        uint256 deadline;
-        uint8 v;
-        bytes32 r;
-        bytes32 s;
+        uint256 inputSalt;
+        uint256 inputDeadline;
+        uint8 inputV;
+        bytes32 inputR;
+        bytes32 inputS;
     }
 
     // TODO: make a BaseProxy / IProxy
@@ -31,79 +28,69 @@ contract X2Y2Proxy {
     function buyWithETH(
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,
-        bytes calldata extraData
+        bytes calldata
     ) external payable {
         uint256 ordersLength = orders.length;
         if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();
 
+        for (uint256 i; i < ordersLength; ) {
+            if (orders[i].recipient == address(0)) revert ZeroAddress();
+            OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
+            _executeOrder(orders[i], orderExtraData);
+        }
+    }
+
+    function _executeOrder(BasicOrder calldata order, OrderExtraData memory orderExtraData) private {
+        if (order.recipient == address(0)) revert ZeroAddress();
+
         Market.RunInput memory runInput;
 
-        ExtraData memory extraDataStruct = abi.decode(extraData, (ExtraData));
+        runInput.r = orderExtraData.inputR;
+        runInput.s = orderExtraData.inputS;
+        runInput.v = orderExtraData.inputV;
 
-        runInput.r = extraDataStruct.r;
-        runInput.s = extraDataStruct.s;
-        runInput.v = extraDataStruct.v;
-
-        runInput.shared.salt = extraDataStruct.salt;
-        runInput.shared.deadline = extraDataStruct.deadline;
+        runInput.shared.salt = orderExtraData.inputSalt;
+        runInput.shared.deadline = orderExtraData.inputDeadline;
         runInput.shared.amountToEth = 0;
         runInput.shared.amountToWeth = 0;
         runInput.shared.user = address(this);
         runInput.shared.canFail = false;
 
-        Market.Order[] memory x2y2Orders = new Market.Order[](ordersLength);
-        Market.SettleDetail[] memory details = new Market.SettleDetail[](ordersLength);
+        runInput.orders[0].salt = orderExtraData.salt;
+        runInput.orders[0].user = order.signer;
+        runInput.orders[0].network = block.chainid;
+        runInput.orders[0].intent = Market.INTENT_SELL;
+        // X2Y2 enums start with INVALID so plus 1
+        runInput.orders[0].delegateType = uint256(order.collectionType) + 1;
+        runInput.orders[0].deadline = order.endTime;
+        runInput.orders[0].currency = order.currency;
+        runInput.orders[0].dataMask = "0x";
+        runInput.orders[0].signVersion = Market.SIGN_V1;
 
-        for (uint256 i; i < ordersLength; ) {
-            if (orders[i].recipient == address(0)) revert ZeroAddress();
+        runInput.orders[0].items[0].price = order.price;
+        runInput.orders[0].items[0].data = orderExtraData.itemData;
 
-            BasicOrder memory order = orders[i];
+        runInput.details[0].op = Market.Op.COMPLETE_SELL_OFFER;
+        runInput.details[0].bidIncentivePct = 0;
+        runInput.details[0].aucMinIncrementPct = 0;
+        runInput.details[0].aucIncDurationSecs = 0;
+        runInput.details[0].executionDelegate = orderExtraData.executionDelegate;
+        runInput.details[0].dataReplacement = "0x";
+        runInput.details[0].orderIdx = 0;
+        runInput.details[0].itemIdx = 0;
+        runInput.details[0].price = order.price;
+        runInput.details[0].itemHash = _hashItem(runInput.orders[0], runInput.orders[0].items[0]);
+        runInput.details[0].fees = orderExtraData.fees;
 
-            OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
+        (uint8 v, bytes32 r, bytes32 s) = SignatureSplitter.splitSignature(order.signature);
+        runInput.orders[0].r = r;
+        runInput.orders[0].s = s;
+        runInput.orders[0].v = v;
 
-            x2y2Orders[i].salt = orderExtraData.salt;
-            x2y2Orders[i].user = orders[i].signer;
-            x2y2Orders[i].network = block.chainid;
-            x2y2Orders[i].intent = Market.INTENT_SELL;
-            // X2Y2 enums start with INVALID so plus 1
-            x2y2Orders[i].delegateType = uint256(orders[i].collectionType) + 1;
-            x2y2Orders[i].deadline = orders[i].endTime;
-            x2y2Orders[i].currency = address(0);
-            x2y2Orders[i].dataMask = "0x";
-            x2y2Orders[i].signVersion = Market.SIGN_V1;
-            Market.OrderItem[] memory items = new Market.OrderItem[](1);
-            items[0].price = orders[i].price;
-            items[0].data = orderExtraData.itemData;
-            x2y2Orders[i].items = items;
-
-            details[i].op = Market.Op.COMPLETE_SELL_OFFER;
-            details[i].bidIncentivePct = 0;
-            details[i].aucMinIncrementPct = 0;
-            details[i].aucIncDurationSecs = 0;
-            details[i].executionDelegate = orderExtraData.executionDelegate;
-            details[i].dataReplacement = "0x";
-            details[i].orderIdx = 0;
-            details[i].itemIdx = 0;
-            details[i].price = orders[i].price;
-            details[i].itemHash = _hashItem(x2y2Orders[i], items[0]);
-            details[i].fees = orderExtraData.fees;
-
-            (uint8 v, bytes32 r, bytes32 s) = SignatureSplitter.splitSignature(order.signature);
-            x2y2Orders[i].r = r;
-            x2y2Orders[i].s = s;
-            x2y2Orders[i].v = v;
-        }
-
-        runInput.orders = x2y2Orders;
-        runInput.details = details;
+        try MARKETPLACE.run{value: order.price}(runInput) {} catch {}
     }
 
-    function _hashItem(Market.Order memory order, Market.OrderItem memory item)
-        internal
-        view
-        virtual
-        returns (bytes32)
-    {
+    function _hashItem(Market.Order memory order, Market.OrderItem memory item) private view returns (bytes32) {
         return
             keccak256(
                 abi.encode(

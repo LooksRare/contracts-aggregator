@@ -1,35 +1,17 @@
 {
   "orders": [
     {
-      "salt": {
-        "type": "BigNumber",
-        "hex": "0x5ea7d3d98571d2a5722ba93fe53089ab"
-      },
+      "salt": { "type": "BigNumber", "hex": "0x5ea7d3d98571d2a5722ba93fe53089ab" },
       "user": "0xCeE749F1CFc66cd3FB57CEfDe8A9c5999FbE7b8F",
-      "network": {
-        "type": "BigNumber",
-        "hex": "0x01"
-      },
-      "intent": {
-        "type": "BigNumber",
-        "hex": "0x01"
-      },
-      "delegateType": {
-        "type": "BigNumber",
-        "hex": "0x01"
-      },
-      "deadline": {
-        "type": "BigNumber",
-        "hex": "0x62fd925c"
-      },
+      "network": { "type": "BigNumber", "hex": "0x01" },
+      "intent": { "type": "BigNumber", "hex": "0x01" },
+      "delegateType": { "type": "BigNumber", "hex": "0x01" },
+      "deadline": { "type": "BigNumber", "hex": "0x62fd925c" },
       "currency": "0x0000000000000000000000000000000000000000",
       "dataMask": "0x",
       "items": [
         {
-          "price": {
-            "type": "BigNumber",
-            "hex": "0x041e6f2f70d22e0000"
-          },
+          "price": { "type": "BigNumber", "hex": "0x041e6f2f70d22e0000" },
           "data": "0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000001000000000000000000000000bc4ca0eda7647a8ab7c2061c2e118a18a936f13d0000000000000000000000000000000000000000000000000000000000000a72"
         }
       ],
@@ -42,72 +24,30 @@
   "details": [
     {
       "op": 1,
-      "orderIdx": {
-        "type": "BigNumber",
-        "hex": "0x00"
-      },
-      "itemIdx": {
-        "type": "BigNumber",
-        "hex": "0x00"
-      },
-      "price": {
-        "type": "BigNumber",
-        "hex": "0x041e6f2f70d22e0000"
-      },
+      "orderIdx": { "type": "BigNumber", "hex": "0x00" },
+      "itemIdx": { "type": "BigNumber", "hex": "0x00" },
+      "price": { "type": "BigNumber", "hex": "0x041e6f2f70d22e0000" },
       "itemHash": "0xdbc9bbb87fee2955628b64d660138d12f7a0bab7f3875668ee585ee192768952",
       "executionDelegate": "0xF849de01B080aDC3A814FaBE1E2087475cF2E354",
       "dataReplacement": "0x",
-      "bidIncentivePct": {
-        "type": "BigNumber",
-        "hex": "0x00"
-      },
-      "aucMinIncrementPct": {
-        "type": "BigNumber",
-        "hex": "0x00"
-      },
-      "aucIncDurationSecs": {
-        "type": "BigNumber",
-        "hex": "0x00"
-      },
+      "bidIncentivePct": { "type": "BigNumber", "hex": "0x00" },
+      "aucMinIncrementPct": { "type": "BigNumber", "hex": "0x00" },
+      "aucIncDurationSecs": { "type": "BigNumber", "hex": "0x00" },
       "fees": [
-        {
-          "percentage": {
-            "type": "BigNumber",
-            "hex": "0x1388"
-          },
-          "to": "0xD823C605807cC5E6Bd6fC0d7e4eEa50d3e2d66cd"
-        },
-        {
-          "percentage": {
-            "type": "BigNumber",
-            "hex": "0x61a8"
-          },
-          "to": "0xA858DDc0445d8131daC4d1DE01f834ffcbA52Ef1"
-        }
+        { "percentage": { "type": "BigNumber", "hex": "0x1388" }, "to": "0xD823C605807cC5E6Bd6fC0d7e4eEa50d3e2d66cd" },
+        { "percentage": { "type": "BigNumber", "hex": "0x61a8" }, "to": "0xA858DDc0445d8131daC4d1DE01f834ffcbA52Ef1" }
       ]
     }
   ],
   "shared": {
-    "salt": {
-      "type": "BigNumber",
-      "hex": "0x02b5ae9239d982"
-    },
-    "deadline": {
-      "type": "BigNumber",
-      "hex": "0x62fa4495"
-    },
-    "amountToEth": {
-      "type": "BigNumber",
-      "hex": "0x00"
-    },
-    "amountToWeth": {
-      "type": "BigNumber",
-      "hex": "0x00"
-    },
+    "salt": { "type": "BigNumber", "hex": "0x027f2f3e57999c" },
+    "deadline": { "type": "BigNumber", "hex": "0x62fa88b0" },
+    "amountToEth": { "type": "BigNumber", "hex": "0x00" },
+    "amountToWeth": { "type": "BigNumber", "hex": "0x00" },
     "user": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
     "canFail": false
   },
   "v": 27,
-  "r": "0xe0d03f66e4ceed63e024d3e001b3675db7d69284186b52deefbd5de247002e00",
-  "s": "0x1b9a4e0227d36055bcbf9c323c27218e46539bdd72ddc9b802c0f46092db9719"
+  "r": "0x87283d9441a13b2d664c95fa3f8a324749bbb6b8e4d5b84f5c8b8798165fd9cf",
+  "s": "0x5798253dbb60ca637e21f2abc1d355913b0ff8bf7fa3f2c222563cf7927f5d2a"
 }
