@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.14;
 
+import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {IX2Y2Run} from "../interfaces/IX2Y2Run.sol";
 import {BasicOrder} from "../libraries/OrderStructs.sol";
 import {Market} from "../libraries/MarketConsts.sol";
 import {SignatureSplitter} from "../libraries/SignatureSplitter.sol";
-
+import {CollectionType} from "../libraries/OrderEnums.sol";
 import "hardhat/console.sol";
 
 contract X2Y2Proxy {
@@ -130,13 +132,22 @@ contract X2Y2Proxy {
         runInput.orders[0].s = s;
         runInput.orders[0].v = v;
 
-        MARKETPLACE.run{value: order.price}(runInput);
-        // try MARKETPLACE.run{value: order.price}(runInput) {
-        //     console.log("did it hit this?");
-        // } catch (bytes memory err) {
-        //     console.log("FAILED!!!!");
-        //     console.logBytes(err);
-        // }
+        try MARKETPLACE.run{value: order.price}(runInput) {
+            if (order.collectionType == CollectionType.ERC721) {
+                IERC721(order.collection).transferFrom(address(this), order.recipient, order.tokenIds[0]);
+            } else if (order.collectionType == CollectionType.ERC1155) {
+                IERC1155(order.collection).safeTransferFrom(
+                    address(this),
+                    order.recipient,
+                    order.tokenIds[0],
+                    order.amounts[0],
+                    "0x"
+                );
+            }
+        } catch (bytes memory err) {
+            console.log("FAILED!!!!");
+            console.logBytes(err);
+        }
     }
 
     function _hashItem(Market.Order memory order, Market.OrderItem memory item) private pure returns (bytes32) {
