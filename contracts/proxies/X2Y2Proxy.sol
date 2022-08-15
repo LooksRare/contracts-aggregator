@@ -9,26 +9,11 @@ import {SignatureSplitter} from "../libraries/SignatureSplitter.sol";
 contract X2Y2Proxy {
     IX2Y2Run public constant MARKETPLACE = IX2Y2Run(0x74312363e45DCaBA76c59ec49a7Aa8A65a67EeD3);
 
-    // uint256 delegateType;
-    // bytes dataMask;
-    // OrderItem[] items;
     struct OrderExtraData {
         uint256 salt;
-        bytes dataMask;
         bytes itemData;
-
-        // Market.Op op;
-        // uint256 orderIdx;
-        // uint256 itemIdx;
-        // uint256 price;
-        // bytes32 itemHash;
-        // address executionDelegate;
-        // // IDelegate executionDelegate;
-        // bytes dataReplacement;
-        // uint256 bidIncentivePct;
-        // uint256 aucMinIncrementPct;
-        // uint256 aucIncDurationSecs;
-        // Market.Fee[] fees;
+        address executionDelegate;
+        Market.Fee[] fees;
     }
 
     struct ExtraData {
@@ -59,15 +44,12 @@ contract X2Y2Proxy {
         runInput.s = extraDataStruct.s;
         runInput.v = extraDataStruct.v;
 
-        Market.SettleShared memory settledShared;
-        settledShared.salt = extraDataStruct.salt;
-        settledShared.deadline = extraDataStruct.deadline;
-        settledShared.amountToEth = 0;
-        settledShared.amountToWeth = 0;
-        settledShared.user = address(this);
-        settledShared.canFail = false;
-
-        runInput.shared = settledShared;
+        runInput.shared.salt = extraDataStruct.salt;
+        runInput.shared.deadline = extraDataStruct.deadline;
+        runInput.shared.amountToEth = 0;
+        runInput.shared.amountToWeth = 0;
+        runInput.shared.user = address(this);
+        runInput.shared.canFail = false;
 
         Market.Order[] memory x2y2Orders = new Market.Order[](ordersLength);
         Market.SettleDetail[] memory details = new Market.SettleDetail[](ordersLength);
@@ -79,34 +61,62 @@ contract X2Y2Proxy {
 
             OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
 
-            Market.Order memory x2y2Order;
-            x2y2Order.salt = orderExtraData.salt;
-            x2y2Order.user = orders[i].signer;
-            x2y2Order.network = block.chainid;
-            x2y2Order.intent = Market.INTENT_SELL;
+            x2y2Orders[i].salt = orderExtraData.salt;
+            x2y2Orders[i].user = orders[i].signer;
+            x2y2Orders[i].network = block.chainid;
+            x2y2Orders[i].intent = Market.INTENT_SELL;
             // X2Y2 enums start with INVALID so plus 1
-            x2y2Order.delegateType = uint256(orders[i].collectionType) + 1;
-            x2y2Order.deadline = orders[i].endTime;
-            x2y2Order.currency = address(0);
-            x2y2Order.dataMask = orderExtraData.dataMask;
-            x2y2Order.signVersion = Market.SIGN_V1;
-            Market.OrderItem[] memory items = new Market.OrderItem[](orders[i].tokenIds.length);
-            for (uint256 j; j < orders[i].tokenIds.length; ) {
-                Market.OrderItem memory item;
-                item.price = orders[i].price;
-                unchecked {
-                    ++j;
-                }
-            }
-            x2y2Orders.items = items;
+            x2y2Orders[i].delegateType = uint256(orders[i].collectionType) + 1;
+            x2y2Orders[i].deadline = orders[i].endTime;
+            x2y2Orders[i].currency = address(0);
+            x2y2Orders[i].dataMask = "0x";
+            x2y2Orders[i].signVersion = Market.SIGN_V1;
+            Market.OrderItem[] memory items = new Market.OrderItem[](1);
+            items[0].price = orders[i].price;
+            items[0].data = orderExtraData.itemData;
+            x2y2Orders[i].items = items;
+
+            details[i].op = Market.Op.COMPLETE_SELL_OFFER;
+            details[i].bidIncentivePct = 0;
+            details[i].aucMinIncrementPct = 0;
+            details[i].aucIncDurationSecs = 0;
+            details[i].executionDelegate = orderExtraData.executionDelegate;
+            details[i].dataReplacement = "0x";
+            details[i].orderIdx = 0;
+            details[i].itemIdx = 0;
+            details[i].price = orders[i].price;
+            details[i].itemHash = _hashItem(x2y2Orders[i], items[0]);
+            details[i].fees = orderExtraData.fees;
 
             (uint8 v, bytes32 r, bytes32 s) = SignatureSplitter.splitSignature(order.signature);
-            x2y2Order.r = extraDataStruct.r;
-            x2y2Order.s = extraDataStruct.s;
-            x2y2Order.v = extraDataStruct.v;
+            x2y2Orders[i].r = r;
+            x2y2Orders[i].s = s;
+            x2y2Orders[i].v = v;
         }
 
         runInput.orders = x2y2Orders;
         runInput.details = details;
+    }
+
+    function _hashItem(Market.Order memory order, Market.OrderItem memory item)
+        internal
+        view
+        virtual
+        returns (bytes32)
+    {
+        return
+            keccak256(
+                abi.encode(
+                    order.salt,
+                    order.user,
+                    order.network,
+                    order.intent,
+                    order.delegateType,
+                    order.deadline,
+                    order.currency,
+                    order.dataMask,
+                    item
+                )
+            );
     }
 }
