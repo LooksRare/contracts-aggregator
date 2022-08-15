@@ -9,7 +9,9 @@ import {Market} from "../libraries/MarketConsts.sol";
 import {SignatureSplitter} from "../libraries/SignatureSplitter.sol";
 import {CollectionType} from "../libraries/OrderEnums.sol";
 
-contract X2Y2Proxy {
+import {TokenReceiverProxy} from "./TokenReceiverProxy.sol";
+
+contract X2Y2Proxy is TokenReceiverProxy {
     IX2Y2Run public constant MARKETPLACE = IX2Y2Run(0x74312363e45DCaBA76c59ec49a7Aa8A65a67EeD3);
 
     struct OrderExtraData {
@@ -45,35 +47,6 @@ contract X2Y2Proxy {
                 ++i;
             }
         }
-    }
-
-    function onERC721Received(
-        address,
-        address,
-        uint256,
-        bytes calldata
-    ) external pure returns (bytes4) {
-        return this.onERC721Received.selector;
-    }
-
-    function onERC1155Received(
-        address,
-        address,
-        uint256,
-        uint256,
-        bytes memory
-    ) public virtual returns (bytes4) {
-        return this.onERC1155Received.selector;
-    }
-
-    function onERC1155BatchReceived(
-        address,
-        address,
-        uint256[] memory,
-        uint256[] memory,
-        bytes memory
-    ) public virtual returns (bytes4) {
-        return this.onERC1155BatchReceived.selector;
     }
 
     function _executeOrder(BasicOrder calldata order, OrderExtraData memory orderExtraData) private {
@@ -126,18 +99,14 @@ contract X2Y2Proxy {
         runInput.orders[0].v = v;
 
         try MARKETPLACE.run{value: order.price}(runInput) {
-            if (order.collectionType == CollectionType.ERC721) {
-                IERC721(order.collection).transferFrom(address(this), order.recipient, order.tokenIds[0]);
-            } else if (order.collectionType == CollectionType.ERC1155) {
-                IERC1155(order.collection).safeTransferFrom(
-                    address(this),
-                    order.recipient,
-                    order.tokenIds[0],
-                    order.amounts[0],
-                    "0x"
-                );
-            }
-        } catch (bytes memory err) {}
+            _transferTokenToRecipient(
+                order.collectionType,
+                order.recipient,
+                order.collection,
+                order.tokenIds[0],
+                order.amounts[0]
+            );
+        } catch {}
     }
 
     function _hashItem(Market.Order memory order, Market.OrderItem memory item) private pure returns (bytes32) {

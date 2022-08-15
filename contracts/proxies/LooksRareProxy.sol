@@ -2,14 +2,14 @@
 pragma solidity 0.8.14;
 
 import "../interfaces/ILooksRareV1.sol";
-import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {BasicOrder} from "../libraries/OrderStructs.sol";
 import {CollectionType} from "../libraries/OrderEnums.sol";
 import {SignatureSplitter} from "../libraries/SignatureSplitter.sol";
+import {TokenReceiverProxy} from "./TokenReceiverProxy.sol";
 
-contract LooksRareProxy {
+contract LooksRareProxy is TokenReceiverProxy {
     struct OrderExtraData {
         address strategy;
         uint256 nonce;
@@ -76,18 +76,13 @@ contract LooksRareProxy {
         CollectionType collectionType
     ) private {
         try MARKETPLACE.matchAskWithTakerBidUsingETHAndWETH{value: makerAsk.price}(takerBid, makerAsk) {
-            // TODO: handle CryptoPunks/Mooncats
-            if (collectionType == CollectionType.ERC721) {
-                IERC721(makerAsk.collection).transferFrom(address(this), recipient, makerAsk.tokenId);
-            } else if (collectionType == CollectionType.ERC1155) {
-                IERC1155(makerAsk.collection).safeTransferFrom(
-                    address(this),
-                    recipient,
-                    makerAsk.tokenId,
-                    makerAsk.amount,
-                    "0x"
-                );
-            }
+            _transferTokenToRecipient(
+                collectionType,
+                recipient,
+                makerAsk.collection,
+                makerAsk.tokenId,
+                makerAsk.amount
+            );
         } catch (bytes memory returnData) {
             if (returnData.length > 0) {
                 assembly {
@@ -96,34 +91,5 @@ contract LooksRareProxy {
                 }
             } else {}
         }
-    }
-
-    function onERC721Received(
-        address,
-        address,
-        uint256,
-        bytes calldata
-    ) external pure returns (bytes4) {
-        return this.onERC721Received.selector;
-    }
-
-    function onERC1155Received(
-        address,
-        address,
-        uint256,
-        uint256,
-        bytes memory
-    ) public virtual returns (bytes4) {
-        return this.onERC1155Received.selector;
-    }
-
-    function onERC1155BatchReceived(
-        address,
-        address,
-        uint256[] memory,
-        uint256[] memory,
-        bytes memory
-    ) public virtual returns (bytes4) {
-        return this.onERC1155BatchReceived.selector;
     }
 }
