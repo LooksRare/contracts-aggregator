@@ -16,8 +16,8 @@ describe("Aggregator", () => {
   it("Should be able to handle multiple collections and multiple collection types", async function () {
     const { aggregator, buyer, proxy, functionSelector, bayc, cityDao } = await loadFixture(deploySeaportFixture);
 
-    const cityDaoOrders = getFixture("city-dao-orders.json");
-    const orderOne = getFixture("bayc-6092-order.json");
+    const cityDaoOrders = getFixture("seaport", "city-dao-orders.json");
+    const orderOne = getFixture("seaport", "bayc-6092-order.json");
     const orderTwo = cityDaoOrders[1].protocol_data;
 
     const priceOne = combineConsiderationAmount(orderOne.parameters.consideration);

@@ -1,11 +1,10 @@
-import * as fs from "fs";
-import * as path from "path";
 import { ethers } from "hardhat";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import deployX2Y2Fixture from "./fixtures/deploy-x2y2-fixture";
 import { BAYC, PARALLEL, X2Y2_ORDER_EXTRA_DATA_SCHEMA } from "../constants";
 import { BigNumber } from "ethers";
 import { expect } from "chai";
+import getFixture from "./utils/get-fixture";
 
 describe("LooksRareAggregator", () => {
   const joinSignature = (order: any): string => {
@@ -56,33 +55,10 @@ describe("LooksRareAggregator", () => {
     const tokenIdThree = "10327";
     const tokenIdFour = "10511";
 
-    const orderOne = JSON.parse(
-      fs.readFileSync(path.join(__dirname, `/fixtures/x2y2/bayc-${tokenIdOne}-run-input.json`), {
-        encoding: "utf8",
-        flag: "r",
-      })
-    );
-
-    const orderTwo = JSON.parse(
-      fs.readFileSync(path.join(__dirname, `/fixtures/x2y2/bayc-${tokenIdTwo}-run-input.json`), {
-        encoding: "utf8",
-        flag: "r",
-      })
-    );
-
-    const orderThree = JSON.parse(
-      fs.readFileSync(path.join(__dirname, `/fixtures/x2y2/parallel-${tokenIdThree}-run-input.json`), {
-        encoding: "utf8",
-        flag: "r",
-      })
-    );
-
-    const orderFour = JSON.parse(
-      fs.readFileSync(path.join(__dirname, `/fixtures/x2y2/parallel-${tokenIdFour}-run-input.json`), {
-        encoding: "utf8",
-        flag: "r",
-      })
-    );
+    const orderOne = getFixture("x2y2", `bayc-${tokenIdOne}-run-input.json`);
+    const orderTwo = getFixture("x2y2", `bayc-${tokenIdTwo}-run-input.json`);
+    const orderThree = getFixture("x2y2", `parallel-${tokenIdThree}-run-input.json`);
+    const orderFour = getFixture("x2y2", `parallel-${tokenIdFour}-run-input.json`);
 
     const priceOne = BigNumber.from(orderOne.details[0].price);
     const priceTwo = BigNumber.from(orderTwo.details[0].price);

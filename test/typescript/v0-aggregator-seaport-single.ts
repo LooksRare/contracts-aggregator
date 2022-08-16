@@ -31,7 +31,7 @@ describe("Aggregator", () => {
   });
 
   it("Should be able to handle OpenSea trades (fulfillAdvancedOrder)", async function () {
-    const advancedOrder = getFixture("bayc-2518-order.json");
+    const advancedOrder = getFixture("seaport", "bayc-2518-order.json");
 
     const abi = await getAbi("SeaportInterface.json");
     const seaportInterface = new ethers.utils.Interface(abi);

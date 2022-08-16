@@ -17,8 +17,8 @@ describe("Aggregator", () => {
   it("Should be able to handle OpenSea trades (fulfillAvailableAdvancedOrders)", async function () {
     const { aggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(deploySeaportFixture);
 
-    const orderOne = getFixture("bayc-2518-order.json");
-    const orderTwo = getFixture("bayc-8498-order.json");
+    const orderOne = getFixture("seaport", "bayc-2518-order.json");
+    const orderTwo = getFixture("seaport", "bayc-8498-order.json");
 
     const priceOne = combineConsiderationAmount(orderOne.parameters.consideration);
     const priceTwo = combineConsiderationAmount(orderTwo.parameters.consideration);
@@ -60,8 +60,8 @@ describe("Aggregator", () => {
   it("is able to refund extra ETH paid (not trickled down to SeaportProxy)", async function () {
     const { aggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(deploySeaportFixture);
 
-    const orderOne = getFixture("bayc-2518-order.json");
-    const orderTwo = getFixture("bayc-8498-order.json");
+    const orderOne = getFixture("seaport", "bayc-2518-order.json");
+    const orderTwo = getFixture("seaport", "bayc-8498-order.json");
 
     const priceOne = combineConsiderationAmount(orderOne.parameters.consideration);
     const priceTwo = combineConsiderationAmount(orderTwo.parameters.consideration);
@@ -109,8 +109,8 @@ describe("Aggregator", () => {
   it("is able to refund extra ETH paid (trickled down to SeaportProxy)", async function () {
     const { aggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(deploySeaportFixture);
 
-    const orderOne = getFixture("bayc-2518-order.json");
-    const orderTwo = getFixture("bayc-8498-order.json");
+    const orderOne = getFixture("seaport", "bayc-2518-order.json");
+    const orderTwo = getFixture("seaport", "bayc-8498-order.json");
 
     // ~15 ETH higher than the actual price.
     const priceOne = ethers.utils.parseEther("99");

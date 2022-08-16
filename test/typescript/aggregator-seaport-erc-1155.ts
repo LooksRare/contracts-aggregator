@@ -17,7 +17,7 @@ describe("Aggregator", () => {
   it("Should be able to handle OpenSea trades (fulfillAvailableAdvancedOrders)", async function () {
     const { aggregator, buyer, proxy, functionSelector, cityDao } = await loadFixture(deploySeaportFixture);
 
-    const orders = getFixture("city-dao-orders.json");
+    const orders = getFixture("seaport", "city-dao-orders.json");
     const orderOne = orders[0].protocol_data;
     const orderTwo = orders[1].protocol_data;
 
@@ -59,7 +59,7 @@ describe("Aggregator", () => {
   it("is able to refund extra ETH paid (not trickled down to SeaportProxy)", async function () {
     const { aggregator, buyer, proxy, functionSelector, cityDao } = await loadFixture(deploySeaportFixture);
 
-    const orders = getFixture("city-dao-orders.json");
+    const orders = getFixture("seaport", "city-dao-orders.json");
     const orderOne = orders[0].protocol_data;
     const orderTwo = orders[1].protocol_data;
 
@@ -107,7 +107,7 @@ describe("Aggregator", () => {
   it("is able to refund extra ETH paid (trickled down to SeaportProxy)", async function () {
     const { aggregator, buyer, proxy, functionSelector, cityDao } = await loadFixture(deploySeaportFixture);
 
-    const orders = getFixture("city-dao-orders.json");
+    const orders = getFixture("seaport", "city-dao-orders.json");
     const orderOne = orders[0].protocol_data;
     const orderTwo = orders[1].protocol_data;
 
