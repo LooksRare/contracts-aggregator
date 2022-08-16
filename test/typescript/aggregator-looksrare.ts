@@ -75,10 +75,6 @@ describe("LooksRareAggregator", () => {
 
     const { getBalance } = ethers.provider;
 
-    // Because we are forking from the mainnet, the proxy address somehow already had a contract deployed to
-    // the same address with ether balance, causing our test (balance comparison) to fail.
-    await ethers.provider.send("hardhat_setBalance", [proxy.address, "0x0"]);
-
     const abiCoder = ethers.utils.defaultAbiCoder;
 
     const priceOne = ethers.utils.parseEther("81.8");
@@ -151,10 +147,6 @@ describe("LooksRareAggregator", () => {
 
     const { getBalance } = ethers.provider;
 
-    // Because we are forking from the mainnet, the proxy address somehow already had a contract deployed to
-    // the same address with ether balance, causing our test (balance comparison) to fail.
-    await ethers.provider.send("hardhat_setBalance", [proxy.address, "0x0"]);
-
     const abiCoder = ethers.utils.defaultAbiCoder;
 
     const priceOne = ethers.utils.parseEther("81.8");
@@ -208,10 +200,6 @@ describe("LooksRareAggregator", () => {
     const { aggregator, proxy, functionSelector, buyer, bayc } = await loadFixture(deployLooksRareFixture);
 
     const { getBalance } = ethers.provider;
-
-    // Because we are forking from the mainnet, the proxy address somehow already had a contract deployed to
-    // the same address with ether balance, causing our test (balance comparison) to fail.
-    await ethers.provider.send("hardhat_setBalance", [proxy.address, "0x0"]);
 
     const abiCoder = ethers.utils.defaultAbiCoder;
 

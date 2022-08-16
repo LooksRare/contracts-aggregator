@@ -153,10 +153,6 @@ describe("LooksRareAggregator", () => {
     const { AddressZero } = ethers.constants;
     const { getBalance } = ethers.provider;
 
-    // Because we are forking from the mainnet, the proxy address somehow already had a contract deployed to
-    // the same address with ether balance, causing our test (balance comparison) to fail.
-    await ethers.provider.send("hardhat_setBalance", [proxy.address, "0x0"]);
-
     // BLOCK 15346990
 
     const orderOne = getFixture("x2y2", `bayc-${tokenIdOne}-run-input.json`);
@@ -209,10 +205,6 @@ describe("LooksRareAggregator", () => {
 
     const { AddressZero } = ethers.constants;
     const { getBalance } = ethers.provider;
-
-    // Because we are forking from the mainnet, the proxy address somehow already had a contract deployed to
-    // the same address with ether balance, causing our test (balance comparison) to fail.
-    await ethers.provider.send("hardhat_setBalance", [proxy.address, "0x0"]);
 
     // BLOCK 15346990
 
