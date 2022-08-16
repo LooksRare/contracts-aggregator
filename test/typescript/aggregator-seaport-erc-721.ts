@@ -12,6 +12,7 @@ import deploySeaportFixture from "./fixtures/deploy-seaport-fixture";
 import getSeaportOrderExtraData from "./utils/get-seaport-order-extra-data";
 import getSeaportOrderJson from "./utils/get-seaport-order-json";
 import combineConsiderationAmount from "./utils/combine-consideration-amount";
+import validateSweepEvent from "./utils/validate-sweep-event";
 
 describe("Aggregator", () => {
   it("Should be able to handle OpenSea trades (fulfillAvailableAdvancedOrders)", async function () {
@@ -50,7 +51,9 @@ describe("Aggregator", () => {
     const tx = await aggregator
       .connect(buyer)
       .buyWithETH(tradeData, false, { value: price.add(ethers.utils.parseEther("1")) });
-    await tx.wait();
+    const receipt = await tx.wait();
+
+    validateSweepEvent(receipt, buyer.address, 1, 1);
 
     expect(await bayc.balanceOf(buyer.address)).to.equal(2);
     expect(await bayc.ownerOf(2518)).to.equal(buyer.address);
@@ -95,8 +98,10 @@ describe("Aggregator", () => {
     const tx = await aggregator
       .connect(buyer)
       .buyWithETH(tradeData, false, { value: price.add(ethers.constants.WeiPerEther) });
-    await tx.wait();
+    const receipt = await tx.wait();
     const txFee = await calculateTxFee(tx);
+
+    validateSweepEvent(receipt, buyer.address, 1, 1);
 
     expect(await bayc.balanceOf(buyer.address)).to.equal(2);
     expect(await bayc.ownerOf(2518)).to.equal(buyer.address);
@@ -143,8 +148,10 @@ describe("Aggregator", () => {
     const buyerBalanceBefore = await ethers.provider.getBalance(buyer.address);
 
     const tx = await aggregator.connect(buyer).buyWithETH(tradeData, false, { value: price });
-    await tx.wait();
+    const receipt = await tx.wait();
     const txFee = await calculateTxFee(tx);
+
+    validateSweepEvent(receipt, buyer.address, 1, 1);
 
     expect(await bayc.balanceOf(buyer.address)).to.equal(2);
     expect(await bayc.ownerOf(2518)).to.equal(buyer.address);

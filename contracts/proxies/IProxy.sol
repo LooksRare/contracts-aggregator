@@ -13,5 +13,5 @@ interface IProxy {
         bytes[] calldata ordersExtraData,
         bytes calldata extraData,
         bool isAtomic
-    ) external payable;
+    ) external payable returns (bool someExecuted);
 }

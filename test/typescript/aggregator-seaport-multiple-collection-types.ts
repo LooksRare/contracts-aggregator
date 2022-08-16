@@ -11,6 +11,7 @@ import deploySeaportFixture from "./fixtures/deploy-seaport-fixture";
 import getSeaportOrderExtraData from "./utils/get-seaport-order-extra-data";
 import getSeaportOrderJson from "./utils/get-seaport-order-json";
 import combineConsiderationAmount from "./utils/combine-consideration-amount";
+import validateSweepEvent from "./utils/validate-sweep-event";
 
 describe("Aggregator", () => {
   it("Should be able to handle multiple collections and multiple collection types", async function () {
@@ -48,7 +49,9 @@ describe("Aggregator", () => {
     ];
 
     const tx = await aggregator.connect(buyer).buyWithETH(tradeData, false, { value: price });
-    await tx.wait();
+    const receipt = await tx.wait();
+
+    validateSweepEvent(receipt, buyer.address, 1, 1);
 
     expect(await bayc.balanceOf(buyer.address)).to.equal(1);
     expect(await cityDao.balanceOf(buyer.address, 42)).to.equal(1);

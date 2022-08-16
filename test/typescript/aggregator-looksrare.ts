@@ -4,6 +4,7 @@ import { BAYC, LOOKSRARE_EXTRA_DATA_SCHEMA, LOOKSRARE_STRATEGY_FIXED_PRICE, WETH
 import calculateTxFee from "./utils/calculate-tx-fee";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import deployLooksRareFixture from "./fixtures/deploy-looksrare-fixture";
+import validateSweepEvent from "./utils/validate-sweep-event";
 
 describe("LooksRareAggregator", () => {
   const tokenIdOne = 7139;
@@ -62,7 +63,8 @@ describe("LooksRareAggregator", () => {
     ];
 
     const tx = await aggregator.connect(buyer).buyWithETH(tradeData, false, { value: totalValue });
-    await tx.wait();
+    const receipt = await tx.wait();
+    validateSweepEvent(receipt, buyer.address, 1, 1);
 
     expect(await bayc.balanceOf(aggregator.address)).to.equal(0);
     expect(await bayc.balanceOf(buyer.address)).to.equal(2);
@@ -129,8 +131,10 @@ describe("LooksRareAggregator", () => {
     const tx = await aggregator
       .connect(buyer)
       .buyWithETH(tradeData, false, { value: totalValue.add(ethers.constants.WeiPerEther) });
-    await tx.wait();
+    const receipt = await tx.wait();
     const txFee = await calculateTxFee(tx);
+
+    validateSweepEvent(receipt, buyer.address, 1, 1);
 
     expect(await bayc.balanceOf(aggregator.address)).to.equal(0);
     expect(await bayc.balanceOf(buyer.address)).to.equal(2);
@@ -184,8 +188,10 @@ describe("LooksRareAggregator", () => {
     const buyerBalanceBefore = await getBalance(buyer.address);
 
     const tx = await aggregator.connect(buyer).buyWithETH(tradeData, false, { value: totalValue });
-    await tx.wait();
+    const receipt = await tx.wait();
     const txFee = await calculateTxFee(tx);
+
+    validateSweepEvent(receipt, buyer.address, 1, 1);
 
     expect(await bayc.balanceOf(aggregator.address)).to.equal(0);
     expect(await bayc.balanceOf(buyer.address)).to.equal(1);

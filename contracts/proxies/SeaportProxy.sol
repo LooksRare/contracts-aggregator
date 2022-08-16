@@ -36,7 +36,7 @@ contract SeaportProxy is LowLevelETH, IProxy {
         bytes[] calldata ordersExtraData,
         bytes calldata extraData,
         bool
-    ) external payable override {
+    ) external payable override returns (bool) {
         uint256 ordersLength = orders.length;
         if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();
 
@@ -45,49 +45,12 @@ contract SeaportProxy is LowLevelETH, IProxy {
         if (recipient == address(this)) revert InvalidRecipient();
         if (recipient == address(0)) revert ZeroAddress();
 
-        AdvancedOrder[] memory advancedOrders = new AdvancedOrder[](ordersLength);
+        AdvancedOrder[] memory advancedOrders = new AdvancedOrder[](orders.length);
         ExtraData memory extraDataStruct = abi.decode(extraData, (ExtraData));
 
-        for (uint256 i; i < ordersLength; ) {
+        for (uint256 i; i < orders.length; ) {
             OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
-            uint256 recipientsLength = orderExtraData.recipients.length;
-
-            OrderParameters memory parameters;
-            {
-                parameters.offerer = orders[i].signer;
-                parameters.zone = orderExtraData.zone;
-                parameters.zoneHash = orderExtraData.zoneHash;
-                parameters.salt = orderExtraData.salt;
-                parameters.conduitKey = orderExtraData.conduitKey;
-                parameters.orderType = orderExtraData.orderType;
-                parameters.startTime = orders[i].startTime;
-                parameters.endTime = orders[i].endTime;
-                parameters.totalOriginalConsiderationItems = recipientsLength;
-
-                OfferItem[] memory offer = new OfferItem[](1);
-                // Seaport enums start with NATIVE and ERC20 so plus 2
-                offer[0].itemType = ItemType(uint8(orders[i].collectionType) + 2);
-                offer[0].token = orders[i].collection;
-                offer[0].identifierOrCriteria = orders[i].tokenIds[0];
-                offer[0].startAmount = orders[i].amounts[0];
-                offer[0].endAmount = orders[i].amounts[0];
-                parameters.offer = offer;
-            }
-
-            ConsiderationItem[] memory consideration = new ConsiderationItem[](recipientsLength);
-            for (uint256 j; j < recipientsLength; ) {
-                // We don't need to assign value to itemType/token/identifierOrCriteria as the default values are for ETH.
-                consideration[j].startAmount = orderExtraData.recipients[j].amount;
-                consideration[j].endAmount = orderExtraData.recipients[j].amount;
-                consideration[j].recipient = payable(orderExtraData.recipients[j].recipient);
-
-                unchecked {
-                    ++j;
-                }
-            }
-            parameters.consideration = consideration;
-
-            advancedOrders[i].parameters = parameters;
+            advancedOrders[i].parameters = _populateParameters(orders[i], orderExtraData);
             advancedOrders[i].numerator = 1;
             advancedOrders[i].denominator = 1;
             advancedOrders[i].signature = orders[i].signature;
@@ -110,6 +73,8 @@ contract SeaportProxy is LowLevelETH, IProxy {
             recipient,
             ordersLength
         );
+
+        return true;
     }
 
     /**
@@ -119,5 +84,45 @@ contract SeaportProxy is LowLevelETH, IProxy {
      */
     receive() external payable {
         _transferETH(tx.origin, msg.value);
+    }
+
+    function _populateParameters(BasicOrder calldata order, OrderExtraData memory orderExtraData)
+        private
+        pure
+        returns (OrderParameters memory parameters)
+    {
+        uint256 recipientsLength = orderExtraData.recipients.length;
+
+        parameters.offerer = order.signer;
+        parameters.zone = orderExtraData.zone;
+        parameters.zoneHash = orderExtraData.zoneHash;
+        parameters.salt = orderExtraData.salt;
+        parameters.conduitKey = orderExtraData.conduitKey;
+        parameters.orderType = orderExtraData.orderType;
+        parameters.startTime = order.startTime;
+        parameters.endTime = order.endTime;
+        parameters.totalOriginalConsiderationItems = recipientsLength;
+
+        OfferItem[] memory offer = new OfferItem[](1);
+        // Seaport enums start with NATIVE and ERC20 so plus 2
+        offer[0].itemType = ItemType(uint8(order.collectionType) + 2);
+        offer[0].token = order.collection;
+        offer[0].identifierOrCriteria = order.tokenIds[0];
+        offer[0].startAmount = order.amounts[0];
+        offer[0].endAmount = order.amounts[0];
+        parameters.offer = offer;
+
+        ConsiderationItem[] memory consideration = new ConsiderationItem[](recipientsLength);
+        for (uint256 j; j < recipientsLength; ) {
+            // We don't need to assign value to itemType/token/identifierOrCriteria as the default values are for ETH.
+            consideration[j].startAmount = orderExtraData.recipients[j].amount;
+            consideration[j].endAmount = orderExtraData.recipients[j].amount;
+            consideration[j].recipient = payable(orderExtraData.recipients[j].recipient);
+
+            unchecked {
+                ++j;
+            }
+        }
+        parameters.consideration = consideration;
     }
 }

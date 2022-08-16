@@ -24,9 +24,11 @@ contract LooksRareProxy is TokenReceiverProxy, LowLevelETH {
         bytes[] calldata ordersExtraData,
         bytes memory,
         bool isAtomic
-    ) external payable override {
+    ) external payable override returns (bool) {
         uint256 ordersLength = orders.length;
         if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();
+
+        uint256 executedCount;
         for (uint256 i; i < ordersLength; ) {
             if (orders[i].recipient == address(0)) revert ZeroAddress();
 
@@ -35,32 +37,38 @@ contract LooksRareProxy is TokenReceiverProxy, LowLevelETH {
             OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
 
             ILooksRareV1.MakerOrder memory makerAsk;
-            makerAsk.isOrderAsk = true;
-            makerAsk.signer = order.signer;
-            makerAsk.collection = order.collection;
-            makerAsk.tokenId = order.tokenIds[0];
-            makerAsk.price = order.price;
-            makerAsk.amount = order.amounts[0];
-            makerAsk.strategy = orderExtraData.strategy;
-            makerAsk.nonce = orderExtraData.nonce;
-            makerAsk.minPercentageToAsk = orderExtraData.minPercentageToAsk;
-            makerAsk.currency = order.currency;
-            makerAsk.startTime = order.startTime;
-            makerAsk.endTime = order.endTime;
+            {
+                makerAsk.isOrderAsk = true;
+                makerAsk.signer = order.signer;
+                makerAsk.collection = order.collection;
+                makerAsk.tokenId = order.tokenIds[0];
+                makerAsk.price = order.price;
+                makerAsk.amount = order.amounts[0];
+                makerAsk.strategy = orderExtraData.strategy;
+                makerAsk.nonce = orderExtraData.nonce;
+                makerAsk.minPercentageToAsk = orderExtraData.minPercentageToAsk;
+                makerAsk.currency = order.currency;
+                makerAsk.startTime = order.startTime;
+                makerAsk.endTime = order.endTime;
 
-            (uint8 v, bytes32 r, bytes32 s) = SignatureSplitter.splitSignature(order.signature);
-            makerAsk.v = v;
-            makerAsk.r = r;
-            makerAsk.s = s;
+                (uint8 v, bytes32 r, bytes32 s) = SignatureSplitter.splitSignature(order.signature);
+                makerAsk.v = v;
+                makerAsk.r = r;
+                makerAsk.s = s;
+            }
 
             ILooksRareV1.TakerOrder memory takerBid;
-            takerBid.isOrderAsk = false;
-            takerBid.taker = address(this);
-            takerBid.price = order.price;
-            takerBid.tokenId = order.tokenIds[0];
-            takerBid.minPercentageToAsk = orderExtraData.minPercentageToAsk;
+            {
+                takerBid.isOrderAsk = false;
+                takerBid.taker = address(this);
+                takerBid.price = order.price;
+                takerBid.tokenId = order.tokenIds[0];
+                takerBid.minPercentageToAsk = orderExtraData.minPercentageToAsk;
+            }
 
-            _executeSingleOrder(takerBid, makerAsk, order.recipient, order.collectionType, isAtomic);
+            if (_executeSingleOrder(takerBid, makerAsk, order.recipient, order.collectionType, isAtomic)) {
+                executedCount += 1;
+            }
 
             unchecked {
                 ++i;
@@ -68,6 +76,8 @@ contract LooksRareProxy is TokenReceiverProxy, LowLevelETH {
         }
 
         _returnETHIfAny(tx.origin);
+
+        return executedCount > 0;
     }
 
     function _executeSingleOrder(
@@ -76,7 +86,7 @@ contract LooksRareProxy is TokenReceiverProxy, LowLevelETH {
         address recipient,
         CollectionType collectionType,
         bool isAtomic
-    ) private {
+    ) private returns (bool executed) {
         if (isAtomic) {
             MARKETPLACE.matchAskWithTakerBidUsingETHAndWETH{value: makerAsk.price}(takerBid, makerAsk);
             _transferTokenToRecipient(
@@ -86,6 +96,7 @@ contract LooksRareProxy is TokenReceiverProxy, LowLevelETH {
                 makerAsk.tokenId,
                 makerAsk.amount
             );
+            executed = true;
         } else {
             try MARKETPLACE.matchAskWithTakerBidUsingETHAndWETH{value: makerAsk.price}(takerBid, makerAsk) {
                 _transferTokenToRecipient(
@@ -95,6 +106,7 @@ contract LooksRareProxy is TokenReceiverProxy, LowLevelETH {
                     makerAsk.tokenId,
                     makerAsk.amount
                 );
+                executed = true;
             } catch {}
         }
     }

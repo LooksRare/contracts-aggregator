@@ -13,7 +13,7 @@ contract SudoswapProxy is IProxy {
         bytes[] calldata,
         bytes memory,
         bool
-    ) external payable override {
+    ) external payable override returns (bool) {
         ISudoswapRouter.RobustPairSwapSpecific[] memory swapList = new ISudoswapRouter.RobustPairSwapSpecific[](
             orders.length
         );
@@ -38,5 +38,7 @@ contract SudoswapProxy is IProxy {
         // There is no need to do a try/catch here as there is only 1 external call
         // and if it fails the aggregator will catch it and decide whether to revert.
         ROUTER.robustSwapETHForSpecificNFTs{value: msg.value}(swapList, payable(recipient), recipient, block.timestamp);
+
+        return true;
     }
 }

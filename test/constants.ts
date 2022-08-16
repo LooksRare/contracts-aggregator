@@ -91,3 +91,5 @@ export const SEAPORT_CONSIDERATION_FULFILLMENTS_TWO_ORDERS_DIFFERENT_COLLECTIONS
   // royalty two
   [{ orderIndex: 1, itemIndex: 2 }],
 ];
+
+export const SWEEP_TOPIC = "0x3da7689974f13093359934c7f011f3c8cbe727f25892e588f8eef693942efa4c";

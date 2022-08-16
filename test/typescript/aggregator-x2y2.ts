@@ -7,6 +7,7 @@ import { expect } from "chai";
 import getFixture from "./utils/get-fixture";
 import { Fee, RunInput, X2Y2Order } from "./interfaces/x2y2";
 import calculateTxFee from "./utils/calculate-tx-fee";
+import validateSweepEvent from "./utils/validate-sweep-event";
 
 describe("LooksRareAggregator", () => {
   const tokenIdOne = "2674";
@@ -64,7 +65,7 @@ describe("LooksRareAggregator", () => {
 
     const totalValue = priceOne.add(priceTwo).add(priceThree).add(priceFour);
 
-    await aggregator.buyWithETH(
+    const tx = await aggregator.buyWithETH(
       [
         {
           proxy: proxy.address,
@@ -136,6 +137,8 @@ describe("LooksRareAggregator", () => {
       false,
       { value: totalValue }
     );
+    const receipt = await tx.wait();
+    validateSweepEvent(receipt, buyer.address, 1, 1);
 
     expect(await bayc.balanceOf(buyer.address)).to.equal(2);
     expect(await bayc.ownerOf(tokenIdOne)).to.equal(buyer.address);
@@ -189,8 +192,10 @@ describe("LooksRareAggregator", () => {
       false,
       { value: totalValue }
     );
-    await tx.wait();
+    const receipt = await tx.wait();
     const txFee = await calculateTxFee(tx);
+
+    validateSweepEvent(receipt, buyer.address, 1, 1);
 
     expect(await bayc.balanceOf(buyer.address)).to.equal(1);
     expect(await bayc.ownerOf(tokenIdOne)).to.equal(buyer.address);

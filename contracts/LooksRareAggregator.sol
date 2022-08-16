@@ -26,13 +26,14 @@ contract LooksRareAggregator is OwnableTwoSteps, LowLevelETH {
 
     event FunctionAdded(address indexed proxy, bytes4 selector);
     event FunctionRemoved(address indexed proxy, bytes4 selector);
+    event Sweep(address indexed sweeper, uint256 tradeCount, uint256 successCount);
 
     error InvalidFunction();
     error TradeExecutionFailed();
 
     function buyWithETH(TradeData[] calldata tradeData, bool isAtomic) external payable {
-        uint256 tradeCount = tradeData.length;
-        for (uint256 i; i < tradeCount; ) {
+        uint256 successCount;
+        for (uint256 i; i < tradeData.length; ) {
             address proxy = tradeData[i].proxy;
             bytes4 selector = tradeData[i].selector;
             if (!proxyFunctionSelectors[proxy][selector]) revert InvalidFunction();
@@ -47,7 +48,10 @@ contract LooksRareAggregator is OwnableTwoSteps, LowLevelETH {
                 )
             );
 
-            if (!success) {
+            if (success) {
+                bool someExecuted = abi.decode(returnData, (bool));
+                if (someExecuted) successCount += 1;
+            } else {
                 if (isAtomic) {
                     if (returnData.length > 0) {
                         assembly {
@@ -66,6 +70,8 @@ contract LooksRareAggregator is OwnableTwoSteps, LowLevelETH {
         }
 
         _returnETHIfAny(msg.sender);
+
+        emit Sweep(msg.sender, tradeData.length, successCount);
     }
 
     function addFunction(address proxy, bytes4 selector) external onlyOwner {

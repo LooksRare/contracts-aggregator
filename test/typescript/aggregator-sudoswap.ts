@@ -4,6 +4,7 @@ import { BigNumber } from "ethers";
 import { ethers } from "hardhat";
 import deploySudoswapFixture from "./fixtures/deploy-sudoswap-fixture";
 import calculateTxFee from "./utils/calculate-tx-fee";
+import validateSweepEvent from "./utils/validate-sweep-event";
 
 describe("Aggregator", () => {
   it("Should be able to handle Sudoswap trades", async function () {
@@ -56,7 +57,9 @@ describe("Aggregator", () => {
     ];
 
     const tx = await aggregator.connect(buyer).buyWithETH(tradeData, false, { value: price });
-    await tx.wait();
+    const receipt = await tx.wait();
+
+    validateSweepEvent(receipt, buyer.address, 1, 1);
 
     expect(await moodie.balanceOf(buyer.address)).to.equal(2);
     expect(await moodie.ownerOf(5536)).to.equal(buyer.address);
@@ -111,8 +114,10 @@ describe("Aggregator", () => {
     const buyerBalanceBefore = await ethers.provider.getBalance(buyer.address);
 
     const tx = await aggregator.connect(buyer).buyWithETH(tradeData, false, { value: price });
-    await tx.wait();
+    const receipt = await tx.wait();
     const txFee = await calculateTxFee(tx);
+
+    validateSweepEvent(receipt, buyer.address, 1, 1);
 
     expect(await moodie.balanceOf(buyer.address)).to.equal(2);
     expect(await moodie.ownerOf(5536)).to.equal(buyer.address);

@@ -17,6 +17,7 @@ import combineConsiderationAmount from "./utils/combine-consideration-amount";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import deployMultipleMarketFixtures from "./fixtures/deploy-multple-markets-fixture";
 import calculateTxFee from "./utils/calculate-tx-fee";
+import validateSweepEvent from "./utils/validate-sweep-event";
 
 describe("Aggregator", () => {
   it("Should be able to handle trades from multiple markets", async function () {
@@ -108,7 +109,8 @@ describe("Aggregator", () => {
     ];
 
     const tx = await aggregator.connect(buyer).buyWithETH(tradeData, false, { value: price });
-    await tx.wait();
+    const receipt = await tx.wait();
+    validateSweepEvent(receipt, buyer.address, 3, 3);
 
     expect(await bayc.balanceOf(buyer.address)).to.equal(3);
     expect(await bayc.ownerOf(6092)).to.equal(buyer.address);
@@ -210,8 +212,10 @@ describe("Aggregator", () => {
     const buyerBalanceBefore = await getBalance(buyer.address);
 
     const tx = await aggregator.connect(buyer).buyWithETH(tradeData, false, { value: price.mul(2) });
-    await tx.wait();
+    const receipt = await tx.wait();
     const txFee = await calculateTxFee(tx);
+
+    validateSweepEvent(receipt, buyer.address, 6, 3);
 
     expect(await bayc.balanceOf(buyer.address)).to.equal(3);
     expect(await bayc.ownerOf(6092)).to.equal(buyer.address);

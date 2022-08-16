@@ -31,14 +31,16 @@ contract X2Y2Proxy is TokenReceiverProxy, LowLevelETH {
         bytes[] calldata ordersExtraData,
         bytes calldata,
         bool isAtomic
-    ) external payable override {
+    ) external payable override returns (bool someExecuted) {
         uint256 ordersLength = orders.length;
         if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();
 
+        uint256 executedCount;
         for (uint256 i; i < ordersLength; ) {
             if (orders[i].recipient == address(0)) revert ZeroAddress();
             OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
-            _executeSingleOrder(orders[i], orderExtraData, isAtomic);
+            bool executed = _executeSingleOrder(orders[i], orderExtraData, isAtomic);
+            if (executed) executedCount += 1;
 
             unchecked {
                 ++i;
@@ -46,13 +48,15 @@ contract X2Y2Proxy is TokenReceiverProxy, LowLevelETH {
         }
 
         _returnETHIfAny(tx.origin);
+
+        someExecuted = executedCount > 0;
     }
 
     function _executeSingleOrder(
         BasicOrder calldata order,
         OrderExtraData memory orderExtraData,
         bool isAtomic
-    ) private {
+    ) private returns (bool executed) {
         if (order.recipient == address(0)) revert ZeroAddress();
 
         Market.RunInput memory runInput;
@@ -110,6 +114,7 @@ contract X2Y2Proxy is TokenReceiverProxy, LowLevelETH {
                 order.tokenIds[0],
                 order.amounts[0]
             );
+            executed = true;
         } else {
             try MARKETPLACE.run{value: order.price}(runInput) {
                 _transferTokenToRecipient(
@@ -119,6 +124,7 @@ contract X2Y2Proxy is TokenReceiverProxy, LowLevelETH {
                     order.tokenIds[0],
                     order.amounts[0]
                 );
+                executed = true;
             } catch {}
         }
     }
