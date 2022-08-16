@@ -5,9 +5,10 @@ import { BAYC, PARALLEL, X2Y2_ORDER_EXTRA_DATA_SCHEMA } from "../constants";
 import { BigNumber } from "ethers";
 import { expect } from "chai";
 import getFixture from "./utils/get-fixture";
+import { Fee, RunInput, X2Y2Order } from "./interfaces/x2y2";
 
 describe("LooksRareAggregator", () => {
-  const joinSignature = (order: any): string => {
+  const joinSignature = (order: X2Y2Order): string => {
     return ethers.utils.joinSignature({
       r: order.r,
       s: order.s,
@@ -16,12 +17,7 @@ describe("LooksRareAggregator", () => {
     });
   };
 
-  interface Fee {
-    percentage: BigNumber;
-    to: string;
-  }
-
-  const getX2Y2ExtraData = (order: any): string => {
+  const getX2Y2ExtraData = (order: RunInput): string => {
     const abiCoder = ethers.utils.defaultAbiCoder;
     return abiCoder.encode(
       [X2Y2_ORDER_EXTRA_DATA_SCHEMA],
