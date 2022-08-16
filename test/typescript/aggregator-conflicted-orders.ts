@@ -32,7 +32,7 @@ describe("Aggregator", () => {
       bayc,
     } = await loadFixture(deployMultipleMarketFixtures);
 
-    const seaportOrder = getFixture("bayc-9314-order.json");
+    const seaportOrder = getFixture("seaport", "bayc-9314-order.json");
 
     const seaportPrice = combineConsiderationAmount(seaportOrder.parameters.consideration);
     const looksRarePrice = ethers.utils.parseEther("87.95");

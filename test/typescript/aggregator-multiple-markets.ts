@@ -34,7 +34,7 @@ describe("Aggregator", () => {
     const sudoswapPair = await ethers.getContractAt("ISudoswapPair", "0xc44b755cb278b682de1Cb07c7B3D15C44be62c34");
     const sudoswapQuote = await sudoswapPair.getBuyNFTQuote(1);
 
-    const seaportOrder = getFixture("bayc-6092-order.json");
+    const seaportOrder = getFixture("seaport", "bayc-6092-order.json");
 
     const seaportPrice = combineConsiderationAmount(seaportOrder.parameters.consideration);
     const looksRarePrice = ethers.utils.parseEther("78.69");
