@@ -1,4 +1,4 @@
-import Consideration from "../interfaces/consideration";
+import Consideration from "../interfaces/seaport/consideration";
 import { BigNumber, constants } from "ethers";
 
 export default function combineConsiderationAmount(consideration: Array<Consideration>): BigNumber {

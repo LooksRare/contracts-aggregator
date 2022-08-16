@@ -1,4 +1,4 @@
-import SeaportOrder from "../interfaces/seaport-order";
+import SeaportOrder from "../interfaces/seaport/order";
 import { BigNumber } from "ethers";
 
 interface OrderJson {
