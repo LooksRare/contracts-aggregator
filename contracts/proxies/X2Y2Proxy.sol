@@ -58,7 +58,7 @@ contract X2Y2Proxy is TokenReceiverProxy {
         runInput.shared.salt = orderExtraData.inputSalt;
         runInput.shared.deadline = orderExtraData.inputDeadline;
         runInput.shared.user = address(this);
-        runInput.shared.canFail = false;
+        // canFail default is false
 
         Market.Order[] memory x2y2Orders = new Market.Order[](1);
         x2y2Orders[0].salt = orderExtraData.salt;
