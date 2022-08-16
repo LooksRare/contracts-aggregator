@@ -16,7 +16,7 @@ interface Parameters {
   totalOriginalConsiderationItems: number;
 }
 
-export default interface Order {
+export default interface SeaportOrder {
   parameters: Parameters;
   numerator: number;
   denominator: number;

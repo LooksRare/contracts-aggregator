@@ -1,4 +1,4 @@
-import Order from "../interfaces/order";
+import SeaportOrder from "../interfaces/seaport-order";
 import { BigNumber } from "ethers";
 
 interface OrderJson {
@@ -15,7 +15,7 @@ interface OrderJson {
   signature: string;
 }
 
-export default function getSeaportOrderJson(listing: Order, price: BigNumber, recipient: string): OrderJson {
+export default function getSeaportOrderJson(listing: SeaportOrder, price: BigNumber, recipient: string): OrderJson {
   const order = {
     price,
     recipient,
