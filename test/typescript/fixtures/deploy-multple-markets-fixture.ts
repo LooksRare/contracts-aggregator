@@ -25,12 +25,20 @@ export default async function deployLooksRareFixture(): Promise<MultipleMarketsF
   const looksRareProxy = await LooksRareProxy.deploy();
   await looksRareProxy.deployed();
 
+  // Because we are forking from the mainnet, the proxy address somehow already had a contract deployed to
+  // the same address with ether balance, causing our test (balance comparison) to fail.
+  await ethers.provider.send("hardhat_setBalance", [looksRareProxy.address, "0x0"]);
+
   const looksRareFunctionSelector = await getSignature("LooksRareProxy.json", "buyWithETH");
   await aggregator.addFunction(looksRareProxy.address, looksRareFunctionSelector);
 
   const SeaportProxy = await ethers.getContractFactory("SeaportProxy");
   const seaportProxy = await SeaportProxy.deploy();
   await seaportProxy.deployed();
+
+  // Because we are forking from the mainnet, the proxy address somehow already had a contract deployed to
+  // the same address with ether balance, causing our test (balance comparison) to fail.
+  await ethers.provider.send("hardhat_setBalance", [seaportProxy.address, "0x0"]);
 
   const seaportFunctionSelector = await getSignature("SeaportProxy.json", "buyWithETH");
   await aggregator.addFunction(seaportProxy.address, seaportFunctionSelector);
@@ -39,6 +47,10 @@ export default async function deployLooksRareFixture(): Promise<MultipleMarketsF
   const sudoswapProxy = await SudoswapProxy.deploy();
   await sudoswapProxy.deployed();
 
+  // Because we are forking from the mainnet, the proxy address somehow already had a contract deployed to
+  // the same address with ether balance, causing our test (balance comparison) to fail.
+  await ethers.provider.send("hardhat_setBalance", [sudoswapProxy.address, "0x0"]);
+
   const sudoswapFunctionSelector = await getSignature("SudoswapProxy.json", "buyWithETH");
   await aggregator.addFunction(sudoswapProxy.address, sudoswapFunctionSelector);
 
@@ -46,7 +58,7 @@ export default async function deployLooksRareFixture(): Promise<MultipleMarketsF
 
   await ethers.provider.send("hardhat_setBalance", [
     buyer.address,
-    ethers.utils.parseEther("300").toHexString().replace("0x0", "0x"),
+    ethers.utils.parseEther("600").toHexString().replace("0x0", "0x"),
   ]);
 
   const bayc = await ethers.getContractAt("IERC721", BAYC);
