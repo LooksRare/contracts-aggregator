@@ -8,8 +8,9 @@ import {BasicOrder} from "../libraries/OrderStructs.sol";
 import {CollectionType} from "../libraries/OrderEnums.sol";
 import {SignatureSplitter} from "../libraries/SignatureSplitter.sol";
 import {TokenReceiverProxy} from "./TokenReceiverProxy.sol";
+import {LowLevelETH} from "../lowLevelCallers/LowLevelETH.sol";
 
-contract LooksRareProxy is TokenReceiverProxy {
+contract LooksRareProxy is TokenReceiverProxy, LowLevelETH {
     struct OrderExtraData {
         address strategy;
         uint256 nonce;
@@ -21,8 +22,9 @@ contract LooksRareProxy is TokenReceiverProxy {
     function buyWithETH(
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,
-        bytes memory
-    ) external payable {
+        bytes memory,
+        bool isAtomic
+    ) external payable override {
         uint256 ordersLength = orders.length;
         if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();
         for (uint256 i; i < ordersLength; ) {
@@ -58,21 +60,25 @@ contract LooksRareProxy is TokenReceiverProxy {
             takerBid.tokenId = order.tokenIds[0];
             takerBid.minPercentageToAsk = orderExtraData.minPercentageToAsk;
 
-            _executeSingleOrder(takerBid, makerAsk, order.recipient, order.collectionType);
+            _executeSingleOrder(takerBid, makerAsk, order.recipient, order.collectionType, isAtomic);
 
             unchecked {
                 ++i;
             }
         }
+
+        _returnETHIfAny(tx.origin);
     }
 
     function _executeSingleOrder(
         ILooksRareV1.TakerOrder memory takerBid,
         ILooksRareV1.MakerOrder memory makerAsk,
         address recipient,
-        CollectionType collectionType
+        CollectionType collectionType,
+        bool isAtomic
     ) private {
-        try MARKETPLACE.matchAskWithTakerBidUsingETHAndWETH{value: makerAsk.price}(takerBid, makerAsk) {
+        if (isAtomic) {
+            MARKETPLACE.matchAskWithTakerBidUsingETHAndWETH{value: makerAsk.price}(takerBid, makerAsk);
             _transferTokenToRecipient(
                 collectionType,
                 recipient,
@@ -80,13 +86,16 @@ contract LooksRareProxy is TokenReceiverProxy {
                 makerAsk.tokenId,
                 makerAsk.amount
             );
-        } catch (bytes memory returnData) {
-            if (returnData.length > 0) {
-                assembly {
-                    let returnDataSize := mload(returnData)
-                    revert(add(32, returnData), returnDataSize)
-                }
-            } else {}
+        } else {
+            try MARKETPLACE.matchAskWithTakerBidUsingETHAndWETH{value: makerAsk.price}(takerBid, makerAsk) {
+                _transferTokenToRecipient(
+                    collectionType,
+                    recipient,
+                    makerAsk.collection,
+                    makerAsk.tokenId,
+                    makerAsk.amount
+                );
+            } catch {}
         }
     }
 }

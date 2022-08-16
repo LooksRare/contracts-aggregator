@@ -34,8 +34,9 @@ contract SeaportProxy is LowLevelETH, IProxy {
     function buyWithETH(
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,
-        bytes calldata extraData
-    ) external payable {
+        bytes calldata extraData,
+        bool
+    ) external payable override {
         uint256 ordersLength = orders.length;
         if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();
 
@@ -52,24 +53,26 @@ contract SeaportProxy is LowLevelETH, IProxy {
             uint256 recipientsLength = orderExtraData.recipients.length;
 
             OrderParameters memory parameters;
-            parameters.offerer = orders[i].signer;
-            parameters.zone = orderExtraData.zone;
-            parameters.zoneHash = orderExtraData.zoneHash;
-            parameters.salt = orderExtraData.salt;
-            parameters.conduitKey = orderExtraData.conduitKey;
-            parameters.orderType = orderExtraData.orderType;
-            parameters.startTime = orders[i].startTime;
-            parameters.endTime = orders[i].endTime;
-            parameters.totalOriginalConsiderationItems = recipientsLength;
+            {
+                parameters.offerer = orders[i].signer;
+                parameters.zone = orderExtraData.zone;
+                parameters.zoneHash = orderExtraData.zoneHash;
+                parameters.salt = orderExtraData.salt;
+                parameters.conduitKey = orderExtraData.conduitKey;
+                parameters.orderType = orderExtraData.orderType;
+                parameters.startTime = orders[i].startTime;
+                parameters.endTime = orders[i].endTime;
+                parameters.totalOriginalConsiderationItems = recipientsLength;
 
-            OfferItem[] memory offer = new OfferItem[](1);
-            // Seaport enums start with NATIVE and ERC20 so plus 2
-            offer[0].itemType = ItemType(uint8(orders[i].collectionType) + 2);
-            offer[0].token = orders[i].collection;
-            offer[0].identifierOrCriteria = orders[i].tokenIds[0];
-            offer[0].startAmount = orders[i].amounts[0];
-            offer[0].endAmount = orders[i].amounts[0];
-            parameters.offer = offer;
+                OfferItem[] memory offer = new OfferItem[](1);
+                // Seaport enums start with NATIVE and ERC20 so plus 2
+                offer[0].itemType = ItemType(uint8(orders[i].collectionType) + 2);
+                offer[0].token = orders[i].collection;
+                offer[0].identifierOrCriteria = orders[i].tokenIds[0];
+                offer[0].startAmount = orders[i].amounts[0];
+                offer[0].endAmount = orders[i].amounts[0];
+                parameters.offer = offer;
+            }
 
             ConsiderationItem[] memory consideration = new ConsiderationItem[](recipientsLength);
             for (uint256 j; j < recipientsLength; ) {
@@ -96,17 +99,17 @@ contract SeaportProxy is LowLevelETH, IProxy {
 
         CriteriaResolver[] memory criteriaResolver = new CriteriaResolver[](0);
 
-        try
-            MARKETPLACE.fulfillAvailableAdvancedOrders{value: msg.value}(
-                advancedOrders,
-                criteriaResolver,
-                extraDataStruct.offerFulfillments,
-                extraDataStruct.considerationFulfillments,
-                bytes32(0),
-                recipient,
-                ordersLength
-            )
-        {} catch {}
+        // There is no need to do a try/catch here as there is only 1 external call
+        // and if it fails the aggregator will catch it and decide whether to revert.
+        MARKETPLACE.fulfillAvailableAdvancedOrders{value: msg.value}(
+            advancedOrders,
+            criteriaResolver,
+            extraDataStruct.offerFulfillments,
+            extraDataStruct.considerationFulfillments,
+            bytes32(0),
+            recipient,
+            ordersLength
+        );
     }
 
     /**

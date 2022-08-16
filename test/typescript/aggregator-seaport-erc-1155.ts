@@ -50,7 +50,7 @@ describe("Aggregator", () => {
 
     const tx = await aggregator
       .connect(buyer)
-      .buyWithETH(tradeData, { value: price.add(ethers.utils.parseEther("1")) });
+      .buyWithETH(tradeData, false, { value: price.add(ethers.utils.parseEther("1")) });
     await tx.wait();
 
     expect(await cityDao.balanceOf(buyer.address, 42)).to.equal(2);
@@ -94,7 +94,7 @@ describe("Aggregator", () => {
 
     const tx = await aggregator
       .connect(buyer)
-      .buyWithETH(tradeData, { value: price.add(ethers.constants.WeiPerEther) });
+      .buyWithETH(tradeData, false, { value: price.add(ethers.constants.WeiPerEther) });
     await tx.wait();
     const txFee = await calculateTxFee(tx);
 
@@ -141,7 +141,7 @@ describe("Aggregator", () => {
 
     const buyerBalanceBefore = await ethers.provider.getBalance(buyer.address);
 
-    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, { value: price });
+    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, false, { value: price });
     await tx.wait();
     const txFee = await calculateTxFee(tx);
 

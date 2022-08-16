@@ -11,6 +11,7 @@ interface IProxy {
     function buyWithETH(
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,
-        bytes calldata
+        bytes calldata extraData,
+        bool isAtomic
     ) external payable;
 }

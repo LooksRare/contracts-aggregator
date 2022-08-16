@@ -6,8 +6,14 @@ import { BigNumber } from "ethers";
 import { expect } from "chai";
 import getFixture from "./utils/get-fixture";
 import { Fee, RunInput, X2Y2Order } from "./interfaces/x2y2";
+import calculateTxFee from "./utils/calculate-tx-fee";
 
 describe("LooksRareAggregator", () => {
+  const tokenIdOne = "2674";
+  const tokenIdTwo = "2491";
+  const tokenIdThree = "10327";
+  const tokenIdFour = "10511";
+
   const joinSignature = (order: X2Y2Order): string => {
     return ethers.utils.joinSignature({
       r: order.r,
@@ -45,11 +51,6 @@ describe("LooksRareAggregator", () => {
     const { AddressZero } = ethers.constants;
 
     // BLOCK 15346990
-
-    const tokenIdOne = "2674";
-    const tokenIdTwo = "2491";
-    const tokenIdThree = "10327";
-    const tokenIdFour = "10511";
 
     const orderOne = getFixture("x2y2", `bayc-${tokenIdOne}-run-input.json`);
     const orderTwo = getFixture("x2y2", `bayc-${tokenIdTwo}-run-input.json`);
@@ -132,6 +133,7 @@ describe("LooksRareAggregator", () => {
           extraData: ethers.constants.HashZero,
         },
       ],
+      false,
       { value: totalValue }
     );
 
@@ -141,5 +143,120 @@ describe("LooksRareAggregator", () => {
 
     expect(await parallel.balanceOf(buyer.address, tokenIdThree)).to.equal(1);
     expect(await parallel.balanceOf(buyer.address, tokenIdFour)).to.equal(1);
+  });
+
+  // Trying to crash the second trade by buying the same NFT twice, but the first trade should still go through
+  // and there should be a refund for the second trade.
+  it("Should be able to handle partial trades", async function () {
+    const { aggregator, proxy, functionSelector, buyer, bayc } = await loadFixture(deployX2Y2Fixture);
+
+    const { AddressZero } = ethers.constants;
+    const { getBalance } = ethers.provider;
+
+    // Because we are forking from the mainnet, the proxy address somehow already had a contract deployed to
+    // the same address with ether balance, causing our test (balance comparison) to fail.
+    await ethers.provider.send("hardhat_setBalance", [proxy.address, "0x0"]);
+
+    // BLOCK 15346990
+
+    const orderOne = getFixture("x2y2", `bayc-${tokenIdOne}-run-input.json`);
+    const priceOne = BigNumber.from(orderOne.details[0].price);
+    const totalValue = priceOne.add(priceOne);
+
+    const buyerBalanceBefore = await getBalance(buyer.address);
+
+    const orderOneJson = {
+      price: priceOne,
+      recipient: buyer.address,
+      signer: orderOne.orders[0].user,
+      collection: BAYC,
+      collectionType: 0,
+      tokenIds: [tokenIdOne],
+      amounts: [1],
+      currency: AddressZero,
+      startTime: 0,
+      endTime: BigNumber.from(orderOne.orders[0].deadline),
+      signature: joinSignature(orderOne.orders[0]),
+    };
+
+    const tx = await aggregator.buyWithETH(
+      [
+        {
+          proxy: proxy.address,
+          selector: functionSelector,
+          value: totalValue,
+          orders: [orderOneJson, orderOneJson],
+          ordersExtraData: [getX2Y2ExtraData(orderOne), getX2Y2ExtraData(orderOne)],
+          extraData: ethers.constants.HashZero,
+        },
+      ],
+      false,
+      { value: totalValue }
+    );
+    await tx.wait();
+    const txFee = await calculateTxFee(tx);
+
+    expect(await bayc.balanceOf(buyer.address)).to.equal(1);
+    expect(await bayc.ownerOf(tokenIdOne)).to.equal(buyer.address);
+    expect(await getBalance(aggregator.address)).to.equal(0);
+    expect(await getBalance(proxy.address)).to.equal(0);
+    const buyerBalanceAfter = await getBalance(buyer.address);
+    expect(buyerBalanceBefore.sub(buyerBalanceAfter).sub(txFee)).to.equal(priceOne);
+  });
+
+  it("Should be able to handle atomic trades", async function () {
+    const { aggregator, proxy, functionSelector, buyer, bayc } = await loadFixture(deployX2Y2Fixture);
+
+    const { AddressZero } = ethers.constants;
+    const { getBalance } = ethers.provider;
+
+    // Because we are forking from the mainnet, the proxy address somehow already had a contract deployed to
+    // the same address with ether balance, causing our test (balance comparison) to fail.
+    await ethers.provider.send("hardhat_setBalance", [proxy.address, "0x0"]);
+
+    // BLOCK 15346990
+
+    const orderOne = getFixture("x2y2", `bayc-${tokenIdOne}-run-input.json`);
+    const priceOne = BigNumber.from(orderOne.details[0].price);
+    const totalValue = priceOne.add(priceOne);
+
+    const buyerBalanceBefore = await getBalance(buyer.address);
+
+    const orderOneJson = {
+      price: priceOne,
+      recipient: buyer.address,
+      signer: orderOne.orders[0].user,
+      collection: BAYC,
+      collectionType: 0,
+      tokenIds: [tokenIdOne],
+      amounts: [1],
+      currency: AddressZero,
+      startTime: 0,
+      endTime: BigNumber.from(orderOne.orders[0].deadline),
+      signature: joinSignature(orderOne.orders[0]),
+    };
+
+    await expect(
+      aggregator.buyWithETH(
+        [
+          {
+            proxy: proxy.address,
+            selector: functionSelector,
+            value: totalValue,
+            orders: [orderOneJson, orderOneJson],
+            ordersExtraData: [getX2Y2ExtraData(orderOne), getX2Y2ExtraData(orderOne)],
+            extraData: ethers.constants.HashZero,
+          },
+        ],
+        true,
+        { value: totalValue }
+      )
+    ).to.be.revertedWith("order already exists");
+
+    expect(await bayc.balanceOf(buyer.address)).to.equal(0);
+    expect(await getBalance(aggregator.address)).to.equal(0);
+    expect(await getBalance(proxy.address)).to.equal(0);
+    const buyerBalanceAfter = await getBalance(buyer.address);
+    expect(buyerBalanceBefore.sub(buyerBalanceAfter)).to.be.lt(ethers.utils.parseEther("0.005"));
   });
 });

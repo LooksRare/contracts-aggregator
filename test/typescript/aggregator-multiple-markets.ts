@@ -106,7 +106,7 @@ describe("Aggregator", () => {
       },
     ];
 
-    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, { value: price });
+    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, false, { value: price });
     await tx.wait();
 
     expect(await bayc.balanceOf(buyer.address)).to.equal(3);

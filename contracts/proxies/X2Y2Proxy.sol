@@ -8,10 +8,10 @@ import {BasicOrder} from "../libraries/OrderStructs.sol";
 import {Market} from "../libraries/MarketConsts.sol";
 import {SignatureSplitter} from "../libraries/SignatureSplitter.sol";
 import {CollectionType} from "../libraries/OrderEnums.sol";
-
 import {TokenReceiverProxy} from "./TokenReceiverProxy.sol";
+import {LowLevelETH} from "../lowLevelCallers/LowLevelETH.sol";
 
-contract X2Y2Proxy is TokenReceiverProxy {
+contract X2Y2Proxy is TokenReceiverProxy, LowLevelETH {
     IX2Y2Run public constant MARKETPLACE = IX2Y2Run(0x74312363e45DCaBA76c59ec49a7Aa8A65a67EeD3);
 
     struct OrderExtraData {
@@ -29,23 +29,30 @@ contract X2Y2Proxy is TokenReceiverProxy {
     function buyWithETH(
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,
-        bytes calldata
-    ) external payable {
+        bytes calldata,
+        bool isAtomic
+    ) external payable override {
         uint256 ordersLength = orders.length;
         if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();
 
         for (uint256 i; i < ordersLength; ) {
             if (orders[i].recipient == address(0)) revert ZeroAddress();
             OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
-            _executeSingleOrder(orders[i], orderExtraData);
+            _executeSingleOrder(orders[i], orderExtraData, isAtomic);
 
             unchecked {
                 ++i;
             }
         }
+
+        _returnETHIfAny(tx.origin);
     }
 
-    function _executeSingleOrder(BasicOrder calldata order, OrderExtraData memory orderExtraData) private {
+    function _executeSingleOrder(
+        BasicOrder calldata order,
+        OrderExtraData memory orderExtraData,
+        bool isAtomic
+    ) private {
         if (order.recipient == address(0)) revert ZeroAddress();
 
         Market.RunInput memory runInput;
@@ -94,7 +101,8 @@ contract X2Y2Proxy is TokenReceiverProxy {
         runInput.orders[0].s = s;
         runInput.orders[0].v = v;
 
-        try MARKETPLACE.run{value: order.price}(runInput) {
+        if (isAtomic) {
+            MARKETPLACE.run{value: order.price}(runInput);
             _transferTokenToRecipient(
                 order.collectionType,
                 order.recipient,
@@ -102,7 +110,17 @@ contract X2Y2Proxy is TokenReceiverProxy {
                 order.tokenIds[0],
                 order.amounts[0]
             );
-        } catch {}
+        } else {
+            try MARKETPLACE.run{value: order.price}(runInput) {
+                _transferTokenToRecipient(
+                    order.collectionType,
+                    order.recipient,
+                    order.collection,
+                    order.tokenIds[0],
+                    order.amounts[0]
+                );
+            } catch {}
+        }
     }
 
     function _hashItem(Market.Order memory order, Market.OrderItem memory item) private pure returns (bytes32) {

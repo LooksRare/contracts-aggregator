@@ -55,7 +55,7 @@ describe("Aggregator", () => {
       },
     ];
 
-    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, { value: price });
+    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, false, { value: price });
     await tx.wait();
 
     expect(await moodie.balanceOf(buyer.address)).to.equal(2);
@@ -110,7 +110,7 @@ describe("Aggregator", () => {
 
     const buyerBalanceBefore = await ethers.provider.getBalance(buyer.address);
 
-    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, { value: price });
+    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, false, { value: price });
     await tx.wait();
     const txFee = await calculateTxFee(tx);
 

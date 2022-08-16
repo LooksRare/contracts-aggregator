@@ -28,8 +28,9 @@ contract LooksRareAggregator is OwnableTwoSteps, LowLevelETH {
     event FunctionRemoved(address indexed proxy, bytes4 selector);
 
     error InvalidFunction();
+    error TradeExecutionFailed();
 
-    function buyWithETH(TradeData[] calldata tradeData) external payable {
+    function buyWithETH(TradeData[] calldata tradeData, bool isAtomic) external payable {
         uint256 tradeCount = tradeData.length;
         for (uint256 i; i < tradeCount; ) {
             address proxy = tradeData[i].proxy;
@@ -41,17 +42,22 @@ contract LooksRareAggregator is OwnableTwoSteps, LowLevelETH {
                     selector,
                     tradeData[i].orders,
                     tradeData[i].ordersExtraData,
-                    tradeData[i].extraData
+                    tradeData[i].extraData,
+                    isAtomic
                 )
             );
 
             if (!success) {
-                if (returnData.length > 0) {
-                    assembly {
-                        let returnDataSize := mload(returnData)
-                        revert(add(32, returnData), returnDataSize)
+                if (isAtomic) {
+                    if (returnData.length > 0) {
+                        assembly {
+                            let returnDataSize := mload(returnData)
+                            revert(add(32, returnData), returnDataSize)
+                        }
+                    } else {
+                        revert TradeExecutionFailed();
                     }
-                } else {}
+                }
             }
 
             unchecked {
