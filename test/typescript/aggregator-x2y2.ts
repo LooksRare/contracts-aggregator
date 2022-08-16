@@ -57,28 +57,28 @@ describe("LooksRareAggregator", () => {
     const tokenIdFour = "10511";
 
     const orderOne = JSON.parse(
-      fs.readFileSync(path.join(__dirname, `/fixtures/x2y2-bayc-${tokenIdOne}-run-input.json`), {
+      fs.readFileSync(path.join(__dirname, `/fixtures/x2y2/bayc-${tokenIdOne}-run-input.json`), {
         encoding: "utf8",
         flag: "r",
       })
     );
 
     const orderTwo = JSON.parse(
-      fs.readFileSync(path.join(__dirname, `/fixtures/x2y2-bayc-${tokenIdTwo}-run-input.json`), {
+      fs.readFileSync(path.join(__dirname, `/fixtures/x2y2/bayc-${tokenIdTwo}-run-input.json`), {
         encoding: "utf8",
         flag: "r",
       })
     );
 
     const orderThree = JSON.parse(
-      fs.readFileSync(path.join(__dirname, `/fixtures/x2y2-parallel-${tokenIdThree}-run-input.json`), {
+      fs.readFileSync(path.join(__dirname, `/fixtures/x2y2/parallel-${tokenIdThree}-run-input.json`), {
         encoding: "utf8",
         flag: "r",
       })
     );
 
     const orderFour = JSON.parse(
-      fs.readFileSync(path.join(__dirname, `/fixtures/x2y2-parallel-${tokenIdFour}-run-input.json`), {
+      fs.readFileSync(path.join(__dirname, `/fixtures/x2y2/parallel-${tokenIdFour}-run-input.json`), {
         encoding: "utf8",
         flag: "r",
       })
