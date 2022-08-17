@@ -6,9 +6,20 @@ import {ICryptoPunks} from "../interfaces/ICryptoPunks.sol";
 import {IProxy} from "./IProxy.sol";
 import {LowLevelETH} from "../lowLevelCallers/LowLevelETH.sol";
 
+/**
+ * @title CryptoPunksProxy
+ * @notice This contract allows NFT sweepers to batch buy NFTs from CryptoPunks
+ *         by passing high-level structs + low-level bytes as calldata.
+ * @author LooksRare protocol team (👀,💎)
+ */
 contract CryptoPunksProxy is IProxy, LowLevelETH {
     ICryptoPunks constant CRYPTOPUNKS = ICryptoPunks(0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB);
 
+    /// @notice Execute CryptoPunks NFT sweeps in a single transaction
+    /// @dev Only the 1st argument orders and the 4th argument isAtomic are used
+    /// @param orders Orders to be executed by CryptoPunks
+    /// @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
+    /// @return Whether at least 1 out of N trades succeeded
     function buyWithETH(
         BasicOrder[] calldata orders,
         bytes[] calldata,
