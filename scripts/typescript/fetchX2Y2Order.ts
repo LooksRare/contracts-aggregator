@@ -1,8 +1,8 @@
 /* eslint-disable node/no-unpublished-import */
 import { ethers } from "hardhat";
 import axios from "axios";
-import { RunInput } from "../test/typescript/interfaces/x2y2";
-import { BAYC, PARALLEL } from "../test/constants";
+import { RunInput } from "../../test/typescript/interfaces/x2y2";
+import { BAYC, PARALLEL } from "../../test/constants";
 import * as fs from "fs";
 import * as path from "path";
 
