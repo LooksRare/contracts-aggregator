@@ -9,28 +9,39 @@ import {ItemType, OrderType} from "../libraries/seaport/ConsiderationEnums.sol";
 import {LowLevelETH} from "../lowLevelCallers/LowLevelETH.sol";
 import {IProxy} from "./IProxy.sol";
 
+/**
+ * @title SeaportProxy
+ * @notice This contract allows NFT sweepers to batch buy NFTs from Seaport
+ *         by passing high-level structs + low-level bytes as calldata.
+ * @author LooksRare protocol team (👀,💎)
+ */
 contract SeaportProxy is LowLevelETH, IProxy {
     SeaportInterface constant MARKETPLACE = SeaportInterface(0x00000000006c3852cbEf3e08E8dF289169EdE581);
 
     struct Recipient {
-        address recipient;
-        uint256 amount;
+        address recipient; // Sale proceed recipient, typically it is the address of seller/OpenSea Fees/royalty
+        uint256 amount; // Amount of ETH to send to the recipient
     }
 
     struct ExtraData {
-        FulfillmentComponent[][] offerFulfillments;
-        FulfillmentComponent[][] considerationFulfillments;
+        FulfillmentComponent[][] offerFulfillments; // Contains the order and item index of each offer item
+        FulfillmentComponent[][] considerationFulfillments; // Contains the order and item index of each consideration item
     }
 
     struct OrderExtraData {
-        OrderType orderType;
-        address zone;
-        bytes32 zoneHash;
-        uint256 salt;
-        bytes32 conduitKey;
-        Recipient[] recipients;
+        OrderType orderType; // Seaport order type
+        address zone; // A zone can cancel the order or restrict who can fulfill the order depending on the type
+        bytes32 zoneHash; // An arbitrary 32-byte value that will be supplied to the zone when fulfilling restricted orders that the zone can utilize when making a determination on whether to authorize the order
+        uint256 salt; // An arbitrary source of entropy for the order
+        bytes32 conduitKey; // A bytes32 value that indicates what conduit, if any, should be utilized as a source for token approvals when performing transfers
+        Recipient[] recipients; // Recipients of consideration items
     }
 
+    /// @notice Execute Seaport NFT sweeps in a single transaction
+    /// @dev The 4th argument isAtomic is not used because there is only 1 call to Seaport
+    /// @param orders Orders to be executed by Seaport
+    /// @param ordersExtraData Extra data for each order
+    /// @return Whether at least 1 out of N trades succeeded
     function buyWithETH(
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,

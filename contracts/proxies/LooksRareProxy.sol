@@ -25,9 +25,9 @@ contract LooksRareProxy is TokenReceiverProxy, LowLevelETH {
 
     ILooksRareV1 constant MARKETPLACE = ILooksRareV1(0x59728544B08AB483533076417FbBB2fD0B17CE3a);
 
-    /// @notice Execute NFT sweeps in different marketplaces in a single transaction
+    /// @notice Execute LooksRare NFT sweeps in a single transaction
     /// @dev The 3rd argument extraData is not used
-    /// @param orders Orders to be executed by the marketplace
+    /// @param orders Orders to be executed by LooksRare
     /// @param ordersExtraData Extra data for each order
     /// @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
     /// @return Whether at least 1 out of N trades succeeded
