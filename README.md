@@ -1,8 +1,13 @@
-# Solidity template
+# Aggregator
 
-This is a template for GitHub repos with Solidity smart contracts using Forge and Hardhat. This template is used by the LooksRare team for Solidity-based repos. Feel free to use or get inspired to build your own templates!
+This is an aggregator that allows NFT sweepers to buy NFTs from multiple sources in a single transaction (LooksRare, Seaport, X2Y2, Sudoswap, etc).
 
 ## About this repo
+
+### How to interact with the contracts
+
+LooksRareAggregator is the entrypoint for a batch transaction. Clients should submit a list of trade data for different marketplaces to the aggregator. However, it is only recommended when the trade data belongs to different marketplaces. It is cheaper to interact with the proxy (LooksRare, X2Y2, CryptoPunks) or even the marketplace directly (Seaport, Sudoswap) when the sweeping is only targeting one marketplace.
+Generally speaking, if the marketplace supports buying multiple NFTs at once, the client should avoid the proxy. Using a proxy is only beneficial if the marketplace does not support submitting multiple orders at once.
 
 ### Structure
 
