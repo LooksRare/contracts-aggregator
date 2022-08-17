@@ -17,8 +17,8 @@ contract LooksRareAggregator is OwnableTwoSteps, LowLevelETH {
         address proxy; // The marketplace proxy's address
         bytes4 selector; // The marketplace proxy's function selector
         uint256 value; // The amount of ETH passed to the proxy during the function call
-        BasicOrder[] orders; // An array of orders to be executed by the marketplace
-        bytes[] ordersExtraData; // Extra data per order, specific for each marketplace
+        BasicOrder[] orders; // Orders to be executed by the marketplace
+        bytes[] ordersExtraData; // Extra data for each order, specific for each marketplace
         bytes extraData; // Extra data specific for each marketplace
     }
 

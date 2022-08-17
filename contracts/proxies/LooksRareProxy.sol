@@ -10,15 +10,27 @@ import {SignatureSplitter} from "../libraries/SignatureSplitter.sol";
 import {TokenReceiverProxy} from "./TokenReceiverProxy.sol";
 import {LowLevelETH} from "../lowLevelCallers/LowLevelETH.sol";
 
+/**
+ * @title LooksRareProxy
+ * @notice This contract allows NFT sweepers to batch buy NFTs from LooksRare
+ *         by passing high-level structs + low-level bytes as calldata.
+ * @author LooksRare protocol team (👀,💎)
+ */
 contract LooksRareProxy is TokenReceiverProxy, LowLevelETH {
     struct OrderExtraData {
-        address strategy;
-        uint256 nonce;
-        uint256 minPercentageToAsk;
+        address strategy; // LooksRare execution strategy
+        uint256 nonce; // The maker's nonce
+        uint256 minPercentageToAsk; // The maker's minimum % to receive from the sale
     }
 
     ILooksRareV1 constant MARKETPLACE = ILooksRareV1(0x59728544B08AB483533076417FbBB2fD0B17CE3a);
 
+    /// @notice Execute NFT sweeps in different marketplaces in a single transaction
+    /// @dev The 3rd argument extraData is not used
+    /// @param orders Orders to be executed by the marketplace
+    /// @param ordersExtraData Extra data for each order
+    /// @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
+    /// @return Whether at least 1 out of N trades succeeded
     function buyWithETH(
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,
