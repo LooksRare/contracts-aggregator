@@ -11,27 +11,39 @@ import {CollectionType} from "../libraries/OrderEnums.sol";
 import {TokenReceiverProxy} from "./TokenReceiverProxy.sol";
 import {LowLevelETH} from "../lowLevelCallers/LowLevelETH.sol";
 
+/**
+ * @title X2Y2Proxy
+ * @notice This contract allows NFT sweepers to batch buy NFTs from X2Y2Proxy
+ *         by passing high-level structs + low-level bytes as calldata.
+ * @author LooksRare protocol team (👀,💎)
+ */
 contract X2Y2Proxy is TokenReceiverProxy, LowLevelETH {
     IX2Y2Run public constant MARKETPLACE = IX2Y2Run(0x74312363e45DCaBA76c59ec49a7Aa8A65a67EeD3);
 
     struct OrderExtraData {
-        uint256 salt;
-        bytes itemData;
-        address executionDelegate;
-        uint256 inputSalt;
-        uint256 inputDeadline;
-        uint8 inputV;
-        bytes32 inputR;
-        bytes32 inputS;
-        Market.Fee[] fees;
+        uint256 salt; // An arbitrary source of entropy for the order (per trade)
+        bytes itemData; // The data of the token to be traded (id, address, etc)
+        address executionDelegate; // The contract to execute the trade
+        uint256 inputSalt; // An arbitrary source of entropy for the order (for the whole order)
+        uint256 inputDeadline; // order deadline
+        uint8 inputV; // v parameter of the order signature signed by an authorized signer (not the seller)
+        bytes32 inputR; // r parameter of the order signature signed by an authorized signer (not the seller)
+        bytes32 inputS; // s parameter of the order signature signed by an authorized signer (not the seller)
+        Market.Fee[] fees; // An array of sales proceeds recipient and the % for each of them
     }
 
+    /// @notice Execute X2Y2 NFT sweeps in a single transaction
+    /// @dev The 3rd argument extraData is not used
+    /// @param orders Orders to be executed by Seaport
+    /// @param ordersExtraData Extra data for each order
+    /// @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
+    /// @return Whether at least 1 out of N trades succeeded
     function buyWithETH(
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,
         bytes calldata,
         bool isAtomic
-    ) external payable override returns (bool someExecuted) {
+    ) external payable override returns (bool) {
         uint256 ordersLength = orders.length;
         if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();
 
@@ -49,7 +61,7 @@ contract X2Y2Proxy is TokenReceiverProxy, LowLevelETH {
 
         _returnETHIfAny(tx.origin);
 
-        someExecuted = executedCount > 0;
+        return executedCount > 0;
     }
 
     function _executeSingleOrder(

@@ -19,7 +19,7 @@ contract SeaportProxy is LowLevelETH, IProxy {
     SeaportInterface constant MARKETPLACE = SeaportInterface(0x00000000006c3852cbEf3e08E8dF289169EdE581);
 
     struct Recipient {
-        address recipient; // Sale proceed recipient, typically it is the address of seller/OpenSea Fees/royalty
+        address recipient; // Sale proceeds recipient, typically it is the address of seller/OpenSea Fees/royalty
         uint256 amount; // Amount of ETH to send to the recipient
     }
 
