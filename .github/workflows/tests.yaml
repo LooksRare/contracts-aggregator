@@ -6,6 +6,10 @@ on:
     branches:
       - master
 
+env:
+  ETH_RPC_URL: https://rpc.ankr.com/eth
+  HARDHAT_CHAIN_ID: 1
+
 jobs:
   tests:
     runs-on: ubuntu-latest
@@ -37,20 +41,36 @@ jobs:
       - name: Compile code (Hardhat)
         run: yarn compile:force
       - name: Run CryptoPunks tests
-        run: FORKED_BLOCK_NUMBER=15358065 npx hardhat test test/typescript/aggregator-cryptopunks.ts
+        run: npx hardhat test test/typescript/aggregator-cryptopunks.ts
+        env:
+          FORKED_BLOCK_NUMBER: 15358065
       - name: Run X2Y2 tests
-        run: FORKED_BLOCK_NUMBER=15346990 npx hardhat test test/typescript/aggregator-x2y2.ts
+        run: npx hardhat test test/typescript/aggregator-x2y2.ts
+        env:
+          FORKED_BLOCK_NUMBER: 15346990
       - name: Run LooksRare tests
-        run: FORKED_BLOCK_NUMBER=15282897 npx hardhat test test/typescript/aggregator-looksrare.ts
+        run: npx hardhat test test/typescript/aggregator-looksrare.ts
+        env:
+          FORKED_BLOCK_NUMBER: 15282897
       - name: Run Seaport ERC-721 tests
-        run: FORKED_BLOCK_NUMBER=15300884 npx hardhat test test/typescript/aggregator-seaport-erc-721.ts
+        run: npx hardhat test test/typescript/aggregator-seaport-erc-721.ts
+        env:
+          FORKED_BLOCK_NUMBER: 15300884
       - name: Run Seaport ERC-1155 tests
-        run: FORKED_BLOCK_NUMBER=15320038 npx hardhat test test/typescript/aggregator-seaport-erc-1155.ts
+        run: npx hardhat test test/typescript/aggregator-seaport-erc-1155.ts
+        env:
+          FORKED_BLOCK_NUMBER: 15320038
       - name: Run Seaport multiple markets tests
-        run: FORKED_BLOCK_NUMBER=15323472 npx hardhat test test/typescript/aggregator-seaport-multiple-collection-types.ts
+        run: npx hardhat test test/typescript/aggregator-seaport-multiple-collection-types.ts
+        env:
+          FORKED_BLOCK_NUMBER: 15323472
       - name: Run conflicted orders tests
-        run: FORKED_BLOCK_NUMBER=15327113 npx hardhat test test/typescript/aggregator-conflicted-orders.ts
+        run: npx hardhat test test/typescript/aggregator-conflicted-orders.ts
+        env:
+          FORKED_BLOCK_NUMBER: 15327113
       - name: Run multiple markets tests
-        run: FORKED_BLOCK_NUMBER=15326566 npx hardhat test test/typescript/aggregator-multiple-markets.ts
+        run: npx hardhat test test/typescript/aggregator-multiple-markets.ts
+        env:
+          FORKED_BLOCK_NUMBER: 15326566
       - name: Run Solidity/Forge tests
         run: forge test
