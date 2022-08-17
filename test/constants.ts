@@ -32,9 +32,9 @@ export const X2Y2_ORDER_EXTRA_DATA_SCHEMA = `
   tuple(
     uint256 salt,
     bytes itemData,
-    address executionDelegate,
     uint256 inputSalt,
     uint256 inputDeadline,
+    address executionDelegate,
     uint8 inputV,
     bytes32 inputR,
     bytes32 inputS,

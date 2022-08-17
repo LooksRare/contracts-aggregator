@@ -23,9 +23,9 @@ contract X2Y2Proxy is TokenReceiverProxy, LowLevelETH {
     struct OrderExtraData {
         uint256 salt; // An arbitrary source of entropy for the order (per trade)
         bytes itemData; // The data of the token to be traded (id, address, etc)
-        address executionDelegate; // The contract to execute the trade
         uint256 inputSalt; // An arbitrary source of entropy for the order (for the whole order)
         uint256 inputDeadline; // order deadline
+        address executionDelegate; // The contract to execute the trade
         uint8 inputV; // v parameter of the order signature signed by an authorized signer (not the seller)
         bytes32 inputR; // r parameter of the order signature signed by an authorized signer (not the seller)
         bytes32 inputS; // s parameter of the order signature signed by an authorized signer (not the seller)

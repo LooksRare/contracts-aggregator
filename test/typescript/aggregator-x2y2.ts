@@ -32,9 +32,9 @@ describe("LooksRareAggregator", () => {
         {
           salt: BigNumber.from(order.orders[0].salt),
           itemData: order.orders[0].items[0].data,
-          executionDelegate: order.details[0].executionDelegate,
           inputSalt: BigNumber.from(order.shared.salt),
           inputDeadline: BigNumber.from(order.shared.deadline),
+          executionDelegate: order.details[0].executionDelegate,
           inputV: order.v,
           inputR: order.r,
           inputS: order.s,
