@@ -5,9 +5,19 @@ import {ISudoswapRouter} from "../interfaces/ISudoswapRouter.sol";
 import {BasicOrder} from "../libraries/OrderStructs.sol";
 import {IProxy} from "./IProxy.sol";
 
+/**
+ * @title SudoswapProxy
+ * @notice This contract allows NFT sweepers to batch buy NFTs from SudoswapProxy
+ *         by passing high-level structs + low-level bytes as calldata.
+ * @author LooksRare protocol team (👀,💎)
+ */
 contract SudoswapProxy is IProxy {
     ISudoswapRouter constant ROUTER = ISudoswapRouter(0x2B2e8cDA09bBA9660dCA5cB6233787738Ad68329);
 
+    /// @notice Execute Sudoswap NFT sweeps in a single transaction
+    /// @dev Only the 1st argument orders is used
+    /// @param orders Orders to be executed by Seaport
+    /// @return Whether at least 1 out of N trades succeeded
     function buyWithETH(
         BasicOrder[] calldata orders,
         bytes[] calldata,
