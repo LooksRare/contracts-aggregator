@@ -16,7 +16,13 @@ const decodeRunInput = (data: string): RunInput => {
   return ethers.utils.defaultAbiCoder.decode([runInputParamType], data)[0] as RunInput;
 };
 
-const writeToFile = (collection: string, tokenId: string, input: any): void => {
+interface InputData {
+  // eslint-disable-next-line camelcase
+  order_id: number;
+  input: string;
+}
+
+const writeToFile = (collection: string, tokenId: string, input: InputData): void => {
   const runInput = input ? decodeRunInput(input.input) : undefined;
 
   if (runInput) {
@@ -133,19 +139,18 @@ async function main() {
     ],
   });
 
-  // eslint-disable-next-line camelcase
-  const inputData = (signResponse.data.data ?? []) as { order_id: number; input: string }[];
+  const inputData = (signResponse.data.data ?? []) as InputData[];
   const inputOne = inputData.find((d) => d.order_id === orderOne.id);
   const inputTwo = inputData.find((d) => d.order_id === orderTwo.id);
-  writeToFile("bayc", tokenIdOne, inputOne);
-  writeToFile("bayc", tokenIdTwo, inputTwo);
+  writeToFile("bayc", tokenIdOne, inputOne as InputData);
+  writeToFile("bayc", tokenIdTwo, inputTwo as InputData);
 
   // eslint-disable-next-line camelcase
-  const inputDataTwo = (signResponseTwo.data.data ?? []) as { order_id: number; input: string }[];
+  const inputDataTwo = (signResponseTwo.data.data ?? []) as InputData[];
   const inputThree = inputDataTwo.find((d) => d.order_id === orderThree.id);
   const inputFour = inputDataTwo.find((d) => d.order_id === orderFour.id);
-  writeToFile("parallel", tokenIdThree, inputThree);
-  writeToFile("parallel", tokenIdFour, inputFour);
+  writeToFile("parallel", tokenIdThree, inputThree as InputData);
+  writeToFile("parallel", tokenIdFour, inputFour as InputData);
 
   // eslint-disable-next-line no-process-exit
   process.exit(0);
