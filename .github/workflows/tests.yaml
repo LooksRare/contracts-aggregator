@@ -36,7 +36,21 @@ jobs:
           version: nightly
       - name: Compile code (Hardhat)
         run: yarn compile:force
-      - name: Run TypeScript/Waffle tests
-        run: yarn test
+      - name: Run CryptoPunks tests
+        run: FORKED_BLOCK_NUMBER=15358065 npx hardhat test test/typescript/aggregator-cryptopunks.ts
+      - name: Run X2Y2 tests
+        run: FORKED_BLOCK_NUMBER=15346990 npx hardhat test test/typescript/aggregator-x2y2.ts
+      - name: Run LooksRare tests
+        run: FORKED_BLOCK_NUMBER=15282897 npx hardhat test test/typescript/aggregator-looksrare.ts
+      - name: Run Seaport ERC-721 tests
+        run: FORKED_BLOCK_NUMBER=15300884 npx hardhat test test/typescript/aggregator-seaport-erc-721.ts
+      - name: Run Seaport ERC-1155 tests
+        run: FORKED_BLOCK_NUMBER=15320038 npx hardhat test test/typescript/aggregator-seaport-erc-1155.ts
+      - name: Run Seaport multiple markets tests
+        run: FORKED_BLOCK_NUMBER=15323472 npx hardhat test test/typescript/aggregator-seaport-multiple-collection-types.ts
+      - name: Run conflicted orders tests
+        run: FORKED_BLOCK_NUMBER=15327113 npx hardhat test test/typescript/aggregator-conflicted-orders.ts
+      - name: Run multiple markets tests
+        run: FORKED_BLOCK_NUMBER=15326566 npx hardhat test test/typescript/aggregator-multiple-markets.ts
       - name: Run Solidity/Forge tests
         run: forge test
