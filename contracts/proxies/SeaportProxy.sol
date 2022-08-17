@@ -4,8 +4,8 @@ pragma solidity 0.8.14;
 import {SeaportInterface} from "../interfaces/SeaportInterface.sol";
 import {BasicOrder} from "../libraries/OrderStructs.sol";
 import {CollectionType} from "../libraries/OrderEnums.sol";
-import {AdvancedOrder, CriteriaResolver, OrderParameters, OfferItem, ConsiderationItem, FulfillmentComponent} from "../libraries/ConsiderationStructs.sol";
-import {ItemType, OrderType} from "../libraries/ConsiderationEnums.sol";
+import {AdvancedOrder, CriteriaResolver, OrderParameters, OfferItem, ConsiderationItem, FulfillmentComponent} from "../libraries/seaport/ConsiderationStructs.sol";
+import {ItemType, OrderType} from "../libraries/seaport/ConsiderationEnums.sol";
 import {LowLevelETH} from "../lowLevelCallers/LowLevelETH.sol";
 import {IProxy} from "./IProxy.sol";
 
