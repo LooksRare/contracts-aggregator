@@ -4,6 +4,8 @@ pragma solidity 0.8.14;
 
 import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
 import {LooksRareProxy} from "../../contracts/proxies/LooksRareProxy.sol";
+import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggregator.sol";
+import {BasicOrder} from "../../contracts/libraries/OrderStructs.sol";
 import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 
@@ -11,7 +13,7 @@ abstract contract TestParameters {
     address internal _notOwner = address(1);
 }
 
-contract LooksRareAggregatorTest is TestParameters, TestHelpers {
+contract LooksRareAggregatorTest is TestParameters, TestHelpers, ILooksRareAggregator {
     LooksRareAggregator aggregator;
     LooksRareProxy looksRareProxy;
 
@@ -23,7 +25,7 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers {
     function testAddFunction() public {
         assertTrue(!aggregator.supportsProxyFunction(address(looksRareProxy), LooksRareProxy.buyWithETH.selector));
         vm.expectEmit(true, true, false, true);
-        emit LooksRareAggregator.FunctionAdded(address(looksRareProxy), LooksRareProxy.buyWithETH.selector);
+        emit FunctionAdded(address(looksRareProxy), LooksRareProxy.buyWithETH.selector);
         aggregator.addFunction(address(looksRareProxy), LooksRareProxy.buyWithETH.selector);
         assertTrue(aggregator.supportsProxyFunction(address(looksRareProxy), LooksRareProxy.buyWithETH.selector));
     }
@@ -40,7 +42,7 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers {
         assertTrue(aggregator.supportsProxyFunction(address(looksRareProxy), LooksRareProxy.buyWithETH.selector));
 
         vm.expectEmit(true, true, false, true);
-        emit LooksRareAggregator.FunctionRemoved(address(looksRareProxy), LooksRareProxy.buyWithETH.selector);
+        emit FunctionRemoved(address(looksRareProxy), LooksRareProxy.buyWithETH.selector);
         aggregator.removeFunction(address(looksRareProxy), LooksRareProxy.buyWithETH.selector);
         assertTrue(!aggregator.supportsProxyFunction(address(looksRareProxy), LooksRareProxy.buyWithETH.selector));
     }

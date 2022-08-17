@@ -5,6 +5,7 @@ import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSte
 import {LooksRareProxy} from "./proxies/LooksRareProxy.sol";
 import {BasicOrder} from "./libraries/OrderStructs.sol";
 import {LowLevelETH} from "./lowLevelCallers/LowLevelETH.sol";
+import {ILooksRareAggregator} from "./interfaces/ILooksRareAggregator.sol";
 
 /**
  * @title LooksRareAggregator
@@ -12,37 +13,8 @@ import {LowLevelETH} from "./lowLevelCallers/LowLevelETH.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract LooksRareAggregator is OwnableTwoSteps, LowLevelETH {
-    struct TradeData {
-        address proxy; // The marketplace proxy's address
-        bytes4 selector; // The marketplace proxy's function selector
-        uint256 value; // The amount of ETH passed to the proxy during the function call
-        BasicOrder[] orders; // Orders to be executed by the marketplace
-        bytes[] ordersExtraData; // Extra data for each order, specific for each marketplace
-        bytes extraData; // Extra data specific for each marketplace
-    }
-
+contract LooksRareAggregator is OwnableTwoSteps, LowLevelETH, ILooksRareAggregator {
     mapping(address => mapping(bytes4 => bool)) private proxyFunctionSelectors;
-
-    /// @notice Emitted when a marketplace proxy's function is enabled.
-    /// @param proxy The marketplace proxy's address
-    /// @param selector The marketplace proxy's function selector
-    event FunctionAdded(address indexed proxy, bytes4 selector);
-
-    /// @notice Emitted when a marketplace proxy's function is disabled.
-    /// @param proxy The marketplace proxy's address
-    /// @param selector The marketplace proxy's function selector
-    event FunctionRemoved(address indexed proxy, bytes4 selector);
-
-    /// @notice Emitted when buyWithETH is complete
-    /// @param sweeper The address that submitted the transaction
-    /// @param tradeCount Total trade count
-    /// @param successCount Successful trade count (if only 1 out of N trades in
-    ///                     an order succeeds, it is consider successful)
-    event Sweep(address indexed sweeper, uint256 tradeCount, uint256 successCount);
-
-    error InvalidFunction();
-    error TradeExecutionFailed();
 
     /// @notice Execute NFT sweeps in different marketplaces in a single transaction
     /// @param tradeData Data object to be passed downstream to each marketplace's proxy for execution
