@@ -2,7 +2,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 import { IERC721, LooksRareAggregator, SudoswapProxy } from "../../../typechain";
 import getSignature from "../utils/get-signature";
-import { MOODIE } from "../../constants";
+import { MOODIE, SUDOSWAP } from "../../constants";
 
 interface SudoswapFixture {
   aggregator: LooksRareAggregator;
@@ -18,7 +18,7 @@ export default async function deploySudoswapFixture(): Promise<SudoswapFixture> 
   await aggregator.deployed();
 
   const SudoswapProxy = await ethers.getContractFactory("SudoswapProxy");
-  const proxy = await SudoswapProxy.deploy();
+  const proxy = await SudoswapProxy.deploy(SUDOSWAP);
   await proxy.deployed();
 
   const functionSelector = await getSignature("SudoswapProxy.json", "buyWithETH");

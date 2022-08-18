@@ -12,7 +12,11 @@ import {IProxy} from "./IProxy.sol";
  * @author LooksRare protocol team (👀,💎)
  */
 contract SudoswapProxy is IProxy {
-    ISudoswapRouter constant ROUTER = ISudoswapRouter(0x2B2e8cDA09bBA9660dCA5cB6233787738Ad68329);
+    ISudoswapRouter public router;
+
+    constructor(address _router) {
+        router = ISudoswapRouter(_router);
+    }
 
     /// @notice Execute Sudoswap NFT sweeps in a single transaction
     /// @dev Only the 1st argument orders is used
@@ -51,7 +55,7 @@ contract SudoswapProxy is IProxy {
         }
         // There is no need to do a try/catch here as there is only 1 external call
         // and if it fails the aggregator will catch it and decide whether to revert.
-        ROUTER.robustSwapETHForSpecificNFTs{value: msg.value}(swapList, payable(recipient), recipient, block.timestamp);
+        router.robustSwapETHForSpecificNFTs{value: msg.value}(swapList, payable(recipient), recipient, block.timestamp);
 
         return true;
     }

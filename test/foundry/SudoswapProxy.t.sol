@@ -9,6 +9,7 @@ import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 
 abstract contract TestParameters {
+    address internal constant SUDOSWAP = 0x2B2e8cDA09bBA9660dCA5cB6233787738Ad68329;
     address internal constant MOODIE = 0x0F23939EE95350F26D9C1B818Ee0Cc1C8Fd2b99D;
     address internal _buyer = address(1);
 }
@@ -17,7 +18,7 @@ contract SudoswapProxyTest is TestParameters, TestHelpers {
     SudoswapProxy sudoswapProxy;
 
     function setUp() public {
-        sudoswapProxy = new SudoswapProxy();
+        sudoswapProxy = new SudoswapProxy(SUDOSWAP);
         vm.deal(_buyer, 100 ether);
     }
 
