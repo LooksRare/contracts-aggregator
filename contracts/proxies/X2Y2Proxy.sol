@@ -3,7 +3,7 @@ pragma solidity 0.8.14;
 
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
-import {IX2Y2Run} from "../interfaces/IX2Y2Run.sol";
+import {IX2Y2} from "../interfaces/IX2Y2.sol";
 import {BasicOrder} from "../libraries/OrderStructs.sol";
 import {Market} from "../libraries/x2y2/MarketConsts.sol";
 import {SignatureSplitter} from "../libraries/SignatureSplitter.sol";
@@ -18,7 +18,7 @@ import {LowLevelETH} from "../lowLevelCallers/LowLevelETH.sol";
  * @author LooksRare protocol team (👀,💎)
  */
 contract X2Y2Proxy is TokenReceiverProxy, LowLevelETH {
-    IX2Y2Run public constant MARKETPLACE = IX2Y2Run(0x74312363e45DCaBA76c59ec49a7Aa8A65a67EeD3);
+    IX2Y2 public constant MARKETPLACE = IX2Y2(0x74312363e45DCaBA76c59ec49a7Aa8A65a67EeD3);
 
     struct OrderExtraData {
         uint256 salt; // An arbitrary source of entropy for the order (per trade)
