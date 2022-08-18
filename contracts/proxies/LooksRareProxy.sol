@@ -92,7 +92,7 @@ contract LooksRareProxy is TokenReceiverProxy, LowLevelETH {
             }
         }
 
-        _returnETHIfAny(tx.origin);
+        _returnETHIfAny();
 
         return executedCount > 0;
     }

@@ -63,7 +63,7 @@ contract X2Y2Proxy is TokenReceiverProxy, LowLevelETH {
             }
         }
 
-        _returnETHIfAny(tx.origin);
+        _returnETHIfAny();
 
         return executedCount > 0;
     }

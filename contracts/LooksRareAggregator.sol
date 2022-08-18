@@ -57,7 +57,7 @@ contract LooksRareAggregator is OwnableTwoSteps, LowLevelETH, ILooksRareAggregat
             }
         }
 
-        _returnETHIfAny(msg.sender);
+        _returnETHIfAny();
 
         emit Sweep(msg.sender, tradeData.length, successCount);
     }
@@ -86,4 +86,6 @@ contract LooksRareAggregator is OwnableTwoSteps, LowLevelETH, ILooksRareAggregat
     function supportsProxyFunction(address proxy, bytes4 selector) external view returns (bool) {
         return _proxyFunctionSelectors[proxy][selector];
     }
+
+    receive() external payable {}
 }

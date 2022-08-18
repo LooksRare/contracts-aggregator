@@ -29,10 +29,10 @@ contract LowLevelETH {
     /**
      * @notice Return ETH to sender if any is left in the payable call
      */
-    function _returnETHIfAny(address _to) internal {
+    function _returnETHIfAny() internal {
         assembly {
             if gt(selfbalance(), 0) {
-                let status := call(gas(), _to, selfbalance(), 0, 0, 0, 0)
+                let status := call(gas(), caller(), selfbalance(), 0, 0, 0, 0)
             }
         }
     }

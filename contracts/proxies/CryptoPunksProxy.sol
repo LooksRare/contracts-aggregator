@@ -55,7 +55,7 @@ contract CryptoPunksProxy is IProxy, LowLevelETH {
             }
         }
 
-        _returnETHIfAny(tx.origin);
+        _returnETHIfAny();
 
         return executedCount > 0;
     }
