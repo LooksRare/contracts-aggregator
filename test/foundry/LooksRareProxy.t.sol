@@ -11,16 +11,17 @@ import {TestHelpers} from "./TestHelpers.sol";
 
 abstract contract TestParameters {
     address internal constant BAYC = 0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D;
+    address internal constant LOOKSRARE_V1 = 0x59728544B08AB483533076417FbBB2fD0B17CE3a;
     address internal constant LOOKSRARE_STRATEGY_FIXED_PRICE = 0x56244Bb70CbD3EA9Dc8007399F61dFC065190031;
     address internal constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
-    address internal _buyer = address(1);
+    address internal constant _buyer = address(1);
 }
 
 contract LooksRareProxyTest is TestParameters, TestHelpers {
     LooksRareProxy looksRareProxy;
 
     function setUp() public {
-        looksRareProxy = new LooksRareProxy();
+        looksRareProxy = new LooksRareProxy(LOOKSRARE_V1);
         vm.deal(_buyer, 100 ether);
     }
 

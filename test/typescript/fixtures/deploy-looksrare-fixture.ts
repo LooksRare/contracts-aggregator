@@ -2,7 +2,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 import { IERC721, LooksRareAggregator, LooksRareProxy } from "../../../typechain";
 import getSignature from "../utils/get-signature";
-import { BAYC } from "../../constants";
+import { BAYC, LOOKSRARE_V1 } from "../../constants";
 
 interface LooksRareFixture {
   aggregator: LooksRareAggregator;
@@ -18,7 +18,7 @@ export default async function deployLooksRareFixture(): Promise<LooksRareFixture
   await aggregator.deployed();
 
   const LooksRareProxy = await ethers.getContractFactory("LooksRareProxy");
-  const proxy = await LooksRareProxy.deploy();
+  const proxy = await LooksRareProxy.deploy(LOOKSRARE_V1);
   await proxy.deployed();
 
   // Because we are forking from the mainnet, the proxy address somehow already had a contract deployed to

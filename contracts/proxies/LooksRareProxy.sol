@@ -24,7 +24,11 @@ contract LooksRareProxy is TokenReceiverProxy, LowLevelETH {
         uint256 minPercentageToAsk; // The maker's minimum % to receive from the sale
     }
 
-    ILooksRareExchange constant MARKETPLACE = ILooksRareExchange(0x59728544B08AB483533076417FbBB2fD0B17CE3a);
+    ILooksRareExchange public marketplace;
+
+    constructor(address _marketplace) {
+        marketplace = ILooksRareExchange(_marketplace);
+    }
 
     /// @notice Execute LooksRare NFT sweeps in a single transaction
     /// @dev The 3rd argument extraData is not used
@@ -101,7 +105,7 @@ contract LooksRareProxy is TokenReceiverProxy, LowLevelETH {
         bool isAtomic
     ) private returns (bool executed) {
         if (isAtomic) {
-            MARKETPLACE.matchAskWithTakerBidUsingETHAndWETH{value: makerAsk.price}(takerBid, makerAsk);
+            marketplace.matchAskWithTakerBidUsingETHAndWETH{value: makerAsk.price}(takerBid, makerAsk);
             _transferTokenToRecipient(
                 collectionType,
                 recipient,
@@ -111,7 +115,7 @@ contract LooksRareProxy is TokenReceiverProxy, LowLevelETH {
             );
             executed = true;
         } else {
-            try MARKETPLACE.matchAskWithTakerBidUsingETHAndWETH{value: makerAsk.price}(takerBid, makerAsk) {
+            try marketplace.matchAskWithTakerBidUsingETHAndWETH{value: makerAsk.price}(takerBid, makerAsk) {
                 _transferTokenToRecipient(
                     collectionType,
                     recipient,

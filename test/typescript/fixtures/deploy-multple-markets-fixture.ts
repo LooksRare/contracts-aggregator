@@ -2,7 +2,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 import { IERC721, LooksRareAggregator, LooksRareProxy, SeaportProxy, SudoswapProxy } from "../../../typechain";
 import getSignature from "../utils/get-signature";
-import { BAYC } from "../../constants";
+import { BAYC, LOOKSRARE_V1, SEAPORT } from "../../constants";
 
 interface MultipleMarketsFixture {
   aggregator: LooksRareAggregator;
@@ -22,7 +22,7 @@ export default async function deployLooksRareFixture(): Promise<MultipleMarketsF
   await aggregator.deployed();
 
   const LooksRareProxy = await ethers.getContractFactory("LooksRareProxy");
-  const looksRareProxy = await LooksRareProxy.deploy();
+  const looksRareProxy = await LooksRareProxy.deploy(LOOKSRARE_V1);
   await looksRareProxy.deployed();
 
   // Because we are forking from the mainnet, the proxy address somehow already had a contract deployed to
@@ -33,7 +33,7 @@ export default async function deployLooksRareFixture(): Promise<MultipleMarketsF
   await aggregator.addFunction(looksRareProxy.address, looksRareFunctionSelector);
 
   const SeaportProxy = await ethers.getContractFactory("SeaportProxy");
-  const seaportProxy = await SeaportProxy.deploy();
+  const seaportProxy = await SeaportProxy.deploy(SEAPORT);
   await seaportProxy.deployed();
 
   // Because we are forking from the mainnet, the proxy address somehow already had a contract deployed to

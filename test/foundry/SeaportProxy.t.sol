@@ -12,7 +12,7 @@ import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 
 abstract contract TestParameters {
-    address internal constant MARKETPLACE = 0x00000000006c3852cbEf3e08E8dF289169EdE581;
+    address internal constant SEAPORT = 0x00000000006c3852cbEf3e08E8dF289169EdE581;
     address internal constant BAYC = 0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D;
     address internal _buyer = address(1);
 }
@@ -21,7 +21,7 @@ contract SeaportProxyTest is TestParameters, TestHelpers {
     SeaportProxy seaportProxy;
 
     function setUp() public {
-        seaportProxy = new SeaportProxy(MARKETPLACE);
+        seaportProxy = new SeaportProxy(SEAPORT);
         vm.deal(_buyer, 100 ether);
     }
 

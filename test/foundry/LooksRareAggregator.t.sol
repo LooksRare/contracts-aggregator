@@ -10,7 +10,8 @@ import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSte
 import {TestHelpers} from "./TestHelpers.sol";
 
 abstract contract TestParameters {
-    address internal _notOwner = address(1);
+    address internal constant LOOKSRARE_V1 = 0x59728544B08AB483533076417FbBB2fD0B17CE3a;
+    address internal constant _notOwner = address(1);
 }
 
 contract LooksRareAggregatorTest is TestParameters, TestHelpers, ILooksRareAggregator {
@@ -19,7 +20,7 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, ILooksRareAggre
 
     function setUp() public {
         aggregator = new LooksRareAggregator();
-        looksRareProxy = new LooksRareProxy();
+        looksRareProxy = new LooksRareProxy(LOOKSRARE_V1);
     }
 
     function testAddFunction() public {
