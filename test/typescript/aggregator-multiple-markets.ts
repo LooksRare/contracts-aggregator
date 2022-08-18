@@ -227,7 +227,7 @@ describe("Aggregator", () => {
     expect(await getBalance(seaportProxy.address)).to.equal(0);
     expect(await getBalance(sudoswapProxy.address)).to.equal(0);
     const buyerBalanceAfter = await getBalance(buyer.address);
-    expect(buyerBalanceBefore.sub(buyerBalanceAfter).sub(txFee)).to.eq(price);
+    expect(buyerBalanceBefore.sub(buyerBalanceAfter).sub(txFee)).to.equal(price);
   });
 
   it("Should be able to handle atomic trades", async function () {
