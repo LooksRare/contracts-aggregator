@@ -18,7 +18,7 @@ import {LowLevelETH} from "../lowLevelCallers/LowLevelETH.sol";
  * @author LooksRare protocol team (👀,💎)
  */
 contract X2Y2Proxy is TokenReceiverProxy, LowLevelETH {
-    IX2Y2 public constant MARKETPLACE = IX2Y2(0x74312363e45DCaBA76c59ec49a7Aa8A65a67EeD3);
+    IX2Y2 public marketplace;
 
     struct OrderExtraData {
         uint256 salt; // An arbitrary source of entropy for the order (per trade)
@@ -30,6 +30,10 @@ contract X2Y2Proxy is TokenReceiverProxy, LowLevelETH {
         bytes32 inputR; // r parameter of the order signature signed by an authorized signer (not the seller)
         bytes32 inputS; // s parameter of the order signature signed by an authorized signer (not the seller)
         Market.Fee[] fees; // An array of sales proceeds recipient and the % for each of them
+    }
+
+    constructor(address _marketplace) {
+        marketplace = IX2Y2(_marketplace);
     }
 
     /// @notice Execute X2Y2 NFT sweeps in a single transaction
@@ -118,7 +122,7 @@ contract X2Y2Proxy is TokenReceiverProxy, LowLevelETH {
         runInput.orders[0].v = v;
 
         if (isAtomic) {
-            MARKETPLACE.run{value: order.price}(runInput);
+            marketplace.run{value: order.price}(runInput);
             _transferTokenToRecipient(
                 order.collectionType,
                 order.recipient,
@@ -128,7 +132,7 @@ contract X2Y2Proxy is TokenReceiverProxy, LowLevelETH {
             );
             executed = true;
         } else {
-            try MARKETPLACE.run{value: order.price}(runInput) {
+            try marketplace.run{value: order.price}(runInput) {
                 _transferTokenToRecipient(
                     order.collectionType,
                     order.recipient,

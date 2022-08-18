@@ -49,7 +49,7 @@ describe("LooksRareAggregator", () => {
   it("Should be able to handle X2Y2 trades", async function () {
     const { aggregator, proxy, functionSelector, buyer, bayc, parallel } = await loadFixture(deployX2Y2Fixture);
 
-    const { AddressZero } = ethers.constants;
+    const { AddressZero, HashZero } = ethers.constants;
 
     // BLOCK 15346990
 
@@ -131,7 +131,7 @@ describe("LooksRareAggregator", () => {
             getX2Y2ExtraData(orderThree),
             getX2Y2ExtraData(orderFour),
           ],
-          extraData: ethers.constants.HashZero,
+          extraData: HashZero,
         },
       ],
       false,
@@ -153,7 +153,7 @@ describe("LooksRareAggregator", () => {
   it("Should be able to handle partial trades", async function () {
     const { aggregator, proxy, functionSelector, buyer, bayc } = await loadFixture(deployX2Y2Fixture);
 
-    const { AddressZero } = ethers.constants;
+    const { AddressZero, HashZero } = ethers.constants;
     const { getBalance } = ethers.provider;
 
     // BLOCK 15346990
@@ -186,7 +186,7 @@ describe("LooksRareAggregator", () => {
           value: totalValue,
           orders: [orderOneJson, orderOneJson],
           ordersExtraData: [getX2Y2ExtraData(orderOne), getX2Y2ExtraData(orderOne)],
-          extraData: ethers.constants.HashZero,
+          extraData: HashZero,
         },
       ],
       false,
@@ -208,7 +208,7 @@ describe("LooksRareAggregator", () => {
   it("Should be able to handle atomic trades", async function () {
     const { aggregator, proxy, functionSelector, buyer, bayc } = await loadFixture(deployX2Y2Fixture);
 
-    const { AddressZero } = ethers.constants;
+    const { AddressZero, HashZero } = ethers.constants;
     const { getBalance } = ethers.provider;
 
     // BLOCK 15346990
@@ -242,7 +242,7 @@ describe("LooksRareAggregator", () => {
             value: totalValue,
             orders: [orderOneJson, orderOneJson],
             ordersExtraData: [getX2Y2ExtraData(orderOne), getX2Y2ExtraData(orderOne)],
-            extraData: ethers.constants.HashZero,
+            extraData: HashZero,
           },
         ],
         true,

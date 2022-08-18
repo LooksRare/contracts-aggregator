@@ -11,6 +11,7 @@ import {Market} from "../../contracts/libraries/x2y2/MarketConsts.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 
 abstract contract TestParameters {
+    address internal constant X2Y2 = 0x74312363e45DCaBA76c59ec49a7Aa8A65a67EeD3;
     address internal constant BAYC = 0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D;
     address internal _buyer = address(1);
 }
@@ -19,7 +20,7 @@ contract X2Y2ProxyTest is TestParameters, TestHelpers {
     X2Y2Proxy x2y2Proxy;
 
     function setUp() public {
-        x2y2Proxy = new X2Y2Proxy();
+        x2y2Proxy = new X2Y2Proxy(X2Y2);
         vm.deal(_buyer, 100 ether);
     }
 
