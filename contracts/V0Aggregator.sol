@@ -16,7 +16,7 @@ contract V0Aggregator is OwnableTwoSteps {
         uint256 value;
     }
 
-    mapping(address => mapping(bytes4 => bool)) private proxyFunctionSelectors;
+    mapping(address => mapping(bytes4 => bool)) private _proxyFunctionSelectors;
 
     event FunctionAdded(address indexed proxy, bytes4 selector);
     event FunctionRemoved(address indexed proxy, bytes4 selector);
@@ -37,7 +37,7 @@ contract V0Aggregator is OwnableTwoSteps {
             }
 
             address proxy = tradeData[i].proxy;
-            if (!proxyFunctionSelectors[proxy][selector]) revert InvalidFunction();
+            if (!_proxyFunctionSelectors[proxy][selector]) revert InvalidFunction();
 
             (bool success, bytes memory returnData) = proxy.call{value: tradeData[i].value}(data);
 
@@ -57,12 +57,12 @@ contract V0Aggregator is OwnableTwoSteps {
     }
 
     function addFunction(address proxy, bytes4 selector) external onlyOwner {
-        proxyFunctionSelectors[proxy][selector] = true;
+        _proxyFunctionSelectors[proxy][selector] = true;
         emit FunctionAdded(proxy, selector);
     }
 
     function removeFunction(address proxy, bytes4 selector) external onlyOwner {
-        delete proxyFunctionSelectors[proxy][selector];
+        delete _proxyFunctionSelectors[proxy][selector];
         emit FunctionRemoved(proxy, selector);
     }
 }
