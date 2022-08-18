@@ -54,7 +54,7 @@ contract X2Y2ProxyTest is TestParameters, TestHelpers {
         x2y2Proxy.buyWithETH{value: orders[0].price}(orders, ordersExtraData, "", false);
     }
 
-    function validBAYCOrder() private returns (BasicOrder[] memory orders) {
+    function validBAYCOrder() private view returns (BasicOrder[] memory orders) {
         orders = new BasicOrder[](1);
         orders[0].signer = 0xCeE749F1CFc66cd3FB57CEfDe8A9c5999FbE7b8F;
         orders[0].recipient = payable(_buyer);
@@ -77,7 +77,7 @@ contract X2Y2ProxyTest is TestParameters, TestHelpers {
             .signature = "0x6b9bc049c00da1de15ad5001025976b5aa3537aad2da1af73bd6cba3c06663236167dcd1ab4af8b6be30ac62420edfe67fa9ce50fc721312c3de87804e5c46e21b";
     }
 
-    function validBAYCOrderExtraData() private returns (bytes memory orderExtraData) {
+    function validBAYCOrderExtraData() private pure returns (bytes memory orderExtraData) {
         Market.Fee[] memory fees = new Market.Fee[](2);
         fees[0].percentage = 5000;
         fees[0].to = 0xD823C605807cC5E6Bd6fC0d7e4eEa50d3e2d66cd;

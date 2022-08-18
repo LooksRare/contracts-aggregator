@@ -38,7 +38,7 @@ contract CryptoPunksProxyTest is TestParameters, TestHelpers {
         cryptoPunksProxy.buyWithETH{value: orders[0].price}(orders, ordersExtraData, "", false);
     }
 
-    function validCryptoPunksOrder() private returns (BasicOrder[] memory orders) {
+    function validCryptoPunksOrder() private view returns (BasicOrder[] memory orders) {
         orders = new BasicOrder[](1);
         orders[0].signer = address(0);
         orders[0].recipient = payable(_buyer);

@@ -31,7 +31,7 @@ contract SudoswapProxyTest is TestParameters, TestHelpers {
     }
 
     function testBuyWithETHOrdersRecipientZeroAddress() public {
-        BasicOrder[] memory orders = validSudoswapOrder();
+        BasicOrder[] memory orders = validMoodieOrder();
         orders[0].recipient = address(0);
         bytes[] memory ordersExtraData = new bytes[](0);
 
@@ -39,7 +39,7 @@ contract SudoswapProxyTest is TestParameters, TestHelpers {
         sudoswapProxy.buyWithETH{value: orders[0].price}(orders, ordersExtraData, "", false);
     }
 
-    function validSudoswapOrder() private returns (BasicOrder[] memory orders) {
+    function validMoodieOrder() private view returns (BasicOrder[] memory orders) {
         orders = new BasicOrder[](1);
         orders[0].signer = address(0);
         orders[0].recipient = payable(_buyer);

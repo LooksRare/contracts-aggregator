@@ -55,7 +55,7 @@ contract SeaportProxyTest is TestParameters, TestHelpers {
         seaportProxy.buyWithETH{value: orders[0].price}(orders, ordersExtraData, validBAYCExtraData(), false);
     }
 
-    function validBAYCOrder() private returns (BasicOrder[] memory orders) {
+    function validBAYCOrder() private view returns (BasicOrder[] memory orders) {
         orders = new BasicOrder[](1);
         orders[0].signer = 0x7a277Cf6E2F3704425195caAe4148848c29Ff815;
         orders[0].recipient = payable(_buyer);
@@ -78,7 +78,7 @@ contract SeaportProxyTest is TestParameters, TestHelpers {
             .signature = "0x27deb8f1923b96693d8d5e1bf9304207e31b9cb49e588e8df5b3926b7547ba444afafe429fb2a17b4b97544d8383f3ad886fc15cab5a91382a56f9d65bb3dc231c";
     }
 
-    function validBAYCOrderExtraData() private returns (bytes memory orderExtraData) {
+    function validBAYCOrderExtraData() private pure returns (bytes memory orderExtraData) {
         AdditionalRecipient[] memory recipients = new AdditionalRecipient[](3);
         recipients[0].recipient = payable(0x7a277Cf6E2F3704425195caAe4148848c29Ff815);
         recipients[0].amount = 79.8 ether;
@@ -97,7 +97,7 @@ contract SeaportProxyTest is TestParameters, TestHelpers {
         );
     }
 
-    function validBAYCExtraData() private returns (bytes memory extraData) {
+    function validBAYCExtraData() private pure returns (bytes memory extraData) {
         Fulfillment memory fulfillment;
 
         fulfillment.offerComponents = new FulfillmentComponent[](1);

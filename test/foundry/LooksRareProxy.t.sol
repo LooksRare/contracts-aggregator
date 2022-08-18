@@ -55,7 +55,7 @@ contract LooksRareProxyTest is TestParameters, TestHelpers {
         looksRareProxy.buyWithETH{value: orders[0].price}(orders, ordersExtraData, "", false);
     }
 
-    function validBAYCOrder() private returns (BasicOrder[] memory orders) {
+    function validBAYCOrder() private pure returns (BasicOrder[] memory orders) {
         orders = new BasicOrder[](1);
         orders[0].signer = 0x2137213d50207Edfd92bCf4CF7eF9E491A155357;
         orders[0].recipient = _buyer;
