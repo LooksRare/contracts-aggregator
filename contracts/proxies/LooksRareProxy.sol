@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.14;
 
-import "../interfaces/ILooksRareV1.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import {ILooksRareExchange} from "@looksrare/contracts-exchange-v1/contracts/interfaces/ILooksRareExchange.sol";
+import {OrderTypes} from "@looksrare/contracts-exchange-v1/contracts/libraries/OrderTypes.sol";
 import {BasicOrder} from "../libraries/OrderStructs.sol";
 import {CollectionType} from "../libraries/OrderEnums.sol";
 import {SignatureSplitter} from "../libraries/SignatureSplitter.sol";
@@ -23,7 +24,7 @@ contract LooksRareProxy is TokenReceiverProxy, LowLevelETH {
         uint256 minPercentageToAsk; // The maker's minimum % to receive from the sale
     }
 
-    ILooksRareV1 constant MARKETPLACE = ILooksRareV1(0x59728544B08AB483533076417FbBB2fD0B17CE3a);
+    ILooksRareExchange constant MARKETPLACE = ILooksRareExchange(0x59728544B08AB483533076417FbBB2fD0B17CE3a);
 
     /// @notice Execute LooksRare NFT sweeps in a single transaction
     /// @dev The 3rd argument extraData is not used
@@ -48,7 +49,7 @@ contract LooksRareProxy is TokenReceiverProxy, LowLevelETH {
 
             OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
 
-            ILooksRareV1.MakerOrder memory makerAsk;
+            OrderTypes.MakerOrder memory makerAsk;
             {
                 makerAsk.isOrderAsk = true;
                 makerAsk.signer = order.signer;
@@ -69,7 +70,7 @@ contract LooksRareProxy is TokenReceiverProxy, LowLevelETH {
                 makerAsk.s = s;
             }
 
-            ILooksRareV1.TakerOrder memory takerBid;
+            OrderTypes.TakerOrder memory takerBid;
             {
                 takerBid.isOrderAsk = false;
                 takerBid.taker = address(this);
@@ -93,8 +94,8 @@ contract LooksRareProxy is TokenReceiverProxy, LowLevelETH {
     }
 
     function _executeSingleOrder(
-        ILooksRareV1.TakerOrder memory takerBid,
-        ILooksRareV1.MakerOrder memory makerAsk,
+        OrderTypes.TakerOrder memory takerBid,
+        OrderTypes.MakerOrder memory makerAsk,
         address recipient,
         CollectionType collectionType,
         bool isAtomic

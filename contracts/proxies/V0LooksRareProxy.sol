@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.14;
 
-import "../interfaces/ILooksRareV1.sol";
+import {ILooksRareExchange} from "@looksrare/contracts-exchange-v1/contracts/interfaces/ILooksRareExchange.sol";
+import {OrderTypes} from "@looksrare/contracts-exchange-v1/contracts/libraries/OrderTypes.sol";
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
@@ -12,7 +13,7 @@ import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
  * @author LooksRare protocol team (👀,💎)
  */
 contract V0LooksRareProxy {
-    ILooksRareV1 constant MARKETPLACE = ILooksRareV1(0x59728544B08AB483533076417FbBB2fD0B17CE3a);
+    ILooksRareExchange constant MARKETPLACE = ILooksRareExchange(0x59728544B08AB483533076417FbBB2fD0B17CE3a);
     bytes4 constant INTERFACE_ID_ERC721 = 0x80ac58cd;
     bytes4 constant INTERFACE_ID_ERC1155 = 0xd9b67a26;
 
@@ -21,8 +22,8 @@ contract V0LooksRareProxy {
     error ZeroAddress();
 
     function buyWithETH(
-        ILooksRareV1.TakerOrder[] calldata takerBids,
-        ILooksRareV1.MakerOrder[] calldata makerAsks,
+        OrderTypes.TakerOrder[] calldata takerBids,
+        OrderTypes.MakerOrder[] calldata makerAsks,
         address recipient
     ) external payable {
         uint256 takerBidsLength = takerBids.length;
@@ -38,8 +39,8 @@ contract V0LooksRareProxy {
     }
 
     function _matchSingleOrder(
-        ILooksRareV1.TakerOrder calldata takerBid,
-        ILooksRareV1.MakerOrder calldata makerAsk,
+        OrderTypes.TakerOrder calldata takerBid,
+        OrderTypes.MakerOrder calldata makerAsk,
         address recipient
     ) private {
         try MARKETPLACE.matchAskWithTakerBidUsingETHAndWETH{value: makerAsk.price}(takerBid, makerAsk) {
