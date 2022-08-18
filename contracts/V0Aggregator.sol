@@ -37,7 +37,6 @@ contract V0Aggregator is OwnableTwoSteps {
             if (!proxyFunctionSelectors[proxy][selector]) revert InvalidFunction();
 
             (bool success, bytes memory returnData) = proxy.call{value: tradeData[i].value}(data);
-            // proxy.call{value: tradeData[i].value}(data);
 
             if (!success) {
                 if (returnData.length > 0) {
