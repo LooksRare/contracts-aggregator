@@ -29,7 +29,7 @@ contract LooksRareProxyTest is TestParameters, TestHelpers {
         bytes[] memory ordersExtraData = new bytes[](0);
 
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        looksRareProxy.buyWithETH{value: 10 ether}(orders, ordersExtraData, "", false);
+        looksRareProxy.buyWithETH(orders, ordersExtraData, "", false);
     }
 
     function testBuyWithETHOrdersLengthMismatch() public asPrankedUser(_buyer) {

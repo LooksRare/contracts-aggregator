@@ -24,13 +24,17 @@ contract SudoswapProxy is IProxy {
         bytes memory,
         bool
     ) external payable override returns (bool) {
+        uint256 ordersLength = orders.length;
+        if (ordersLength == 0) revert InvalidOrderLength();
+
         ISudoswapRouter.RobustPairSwapSpecific[] memory swapList = new ISudoswapRouter.RobustPairSwapSpecific[](
             orders.length
         );
 
         address recipient = orders[0].recipient;
+        if (recipient == address(0)) revert ZeroAddress();
 
-        for (uint256 i; i < orders.length; ) {
+        for (uint256 i; i < ordersLength; ) {
             ISudoswapRouter.RobustPairSwapSpecific memory robustPairSwapSpecific;
             ISudoswapRouter.PairSwapSpecific memory pairSwapSpecific;
             robustPairSwapSpecific.maxCost = orders[i].price;

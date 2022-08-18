@@ -29,7 +29,7 @@ contract SeaportProxyTest is TestParameters, TestHelpers {
         bytes[] memory ordersExtraData = new bytes[](0);
 
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        seaportProxy.buyWithETH{value: 10 ether}(orders, ordersExtraData, validBAYCExtraData(), false);
+        seaportProxy.buyWithETH(orders, ordersExtraData, validBAYCExtraData(), false);
     }
 
     function testBuyWithETHOrdersLengthMismatch() public asPrankedUser(_buyer) {
