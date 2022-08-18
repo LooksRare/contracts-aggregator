@@ -2,7 +2,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 import { IERC1155, IERC721, LooksRareAggregator, SeaportProxy } from "../../../typechain";
 import getSignature from "../utils/get-signature";
-import { BAYC, CITY_DAO } from "../../constants";
+import { BAYC, CITY_DAO, SEAPORT } from "../../constants";
 
 interface SeaportFixture {
   aggregator: LooksRareAggregator;
@@ -19,7 +19,7 @@ export default async function deploySeaportFixture(): Promise<SeaportFixture> {
   await aggregator.deployed();
 
   const SeaportProxy = await ethers.getContractFactory("SeaportProxy");
-  const proxy = await SeaportProxy.deploy();
+  const proxy = await SeaportProxy.deploy(SEAPORT);
   await proxy.deployed();
 
   const functionSelector = await getSignature("SeaportProxy.json", "buyWithETH");

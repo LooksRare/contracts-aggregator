@@ -16,7 +16,7 @@ import {IProxy} from "./IProxy.sol";
  * @author LooksRare protocol team (👀,💎)
  */
 contract SeaportProxy is LowLevelETH, IProxy {
-    SeaportInterface constant MARKETPLACE = SeaportInterface(0x00000000006c3852cbEf3e08E8dF289169EdE581);
+    SeaportInterface public marketplace;
 
     struct Recipient {
         address recipient; // Sale proceeds recipient, typically it is the address of seller/OpenSea Fees/royalty
@@ -35,6 +35,10 @@ contract SeaportProxy is LowLevelETH, IProxy {
         uint256 salt; // An arbitrary source of entropy for the order
         bytes32 conduitKey; // A bytes32 value that indicates what conduit, if any, should be utilized as a source for token approvals when performing transfers
         Recipient[] recipients; // Recipients of consideration items
+    }
+
+    constructor(address _marketplace) {
+        marketplace = SeaportInterface(_marketplace);
     }
 
     /// @notice Execute Seaport NFT sweeps in a single transaction
@@ -76,7 +80,7 @@ contract SeaportProxy is LowLevelETH, IProxy {
 
         // There is no need to do a try/catch here as there is only 1 external call
         // and if it fails the aggregator will catch it and decide whether to revert.
-        MARKETPLACE.fulfillAvailableAdvancedOrders{value: msg.value}(
+        marketplace.fulfillAvailableAdvancedOrders{value: msg.value}(
             advancedOrders,
             criteriaResolver,
             extraDataStruct.offerFulfillments,
