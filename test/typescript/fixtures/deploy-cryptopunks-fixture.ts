@@ -18,7 +18,7 @@ export default async function deployCryptoPunksFixture(): Promise<CryptoPunksFix
   await aggregator.deployed();
 
   const CryptoPunksProxy = await ethers.getContractFactory("CryptoPunksProxy");
-  const proxy = await CryptoPunksProxy.deploy();
+  const proxy = await CryptoPunksProxy.deploy(CRYPTOPUNKS);
   await proxy.deployed();
 
   const [buyer] = await ethers.getSigners();

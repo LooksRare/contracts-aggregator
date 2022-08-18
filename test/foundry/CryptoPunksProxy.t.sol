@@ -17,7 +17,7 @@ contract CryptoPunksProxyTest is TestParameters, TestHelpers {
     CryptoPunksProxy cryptoPunksProxy;
 
     function setUp() public {
-        cryptoPunksProxy = new CryptoPunksProxy();
+        cryptoPunksProxy = new CryptoPunksProxy(CRYPTOPUNKS);
         vm.deal(_buyer, 100 ether);
     }
 

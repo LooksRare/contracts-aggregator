@@ -13,7 +13,11 @@ import {LowLevelETH} from "../lowLevelCallers/LowLevelETH.sol";
  * @author LooksRare protocol team (👀,💎)
  */
 contract CryptoPunksProxy is IProxy, LowLevelETH {
-    ICryptoPunks constant CRYPTOPUNKS = ICryptoPunks(0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB);
+    ICryptoPunks public cryptopunks;
+
+    constructor(address _cryptopunks) {
+        cryptopunks = ICryptoPunks(_cryptopunks);
+    }
 
     /// @notice Execute CryptoPunks NFT sweeps in a single transaction
     /// @dev Only the 1st argument orders and the 4th argument isAtomic are used
@@ -36,12 +40,12 @@ contract CryptoPunksProxy is IProxy, LowLevelETH {
             uint256 punkId = orders[i].tokenIds[0];
 
             if (isAtomic) {
-                CRYPTOPUNKS.buyPunk{value: orders[i].price}(punkId);
-                CRYPTOPUNKS.transferPunk(orders[i].recipient, punkId);
+                cryptopunks.buyPunk{value: orders[i].price}(punkId);
+                cryptopunks.transferPunk(orders[i].recipient, punkId);
                 executedCount += 1;
             } else {
-                try CRYPTOPUNKS.buyPunk{value: orders[i].price}(punkId) {
-                    CRYPTOPUNKS.transferPunk(orders[i].recipient, punkId);
+                try cryptopunks.buyPunk{value: orders[i].price}(punkId) {
+                    cryptopunks.transferPunk(orders[i].recipient, punkId);
                     executedCount += 1;
                 } catch {}
             }
