@@ -163,7 +163,7 @@ describe("Aggregator", () => {
     const buyerBalanceBefore = await ethers.provider.getBalance(buyer.address);
 
     await expect(aggregator.connect(buyer).buyWithETH(tradeData, true, { value: price })).to.be.revertedWith(
-      "Signature: Invalid v parameter"
+      "BadSignatureV(0)"
     );
 
     expect(await bayc.balanceOf(buyer.address)).to.equal(0);

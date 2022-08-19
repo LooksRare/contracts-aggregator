@@ -6,7 +6,7 @@ import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {IX2Y2} from "../interfaces/IX2Y2.sol";
 import {BasicOrder} from "../libraries/OrderStructs.sol";
 import {Market} from "../libraries/x2y2/MarketConsts.sol";
-import {SignatureSplitter} from "../libraries/SignatureSplitter.sol";
+import {SignatureChecker} from "@looksrare/contracts-libs/contracts/SignatureChecker.sol";
 import {CollectionType} from "../libraries/OrderEnums.sol";
 import {TokenReceiverProxy} from "./TokenReceiverProxy.sol";
 import {LowLevelETH} from "../lowLevelCallers/LowLevelETH.sol";
@@ -17,7 +17,7 @@ import {LowLevelETH} from "../lowLevelCallers/LowLevelETH.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract X2Y2Proxy is TokenReceiverProxy, LowLevelETH {
+contract X2Y2Proxy is TokenReceiverProxy, LowLevelETH, SignatureChecker {
     IX2Y2 public immutable marketplace;
 
     struct OrderExtraData {
@@ -118,7 +118,7 @@ contract X2Y2Proxy is TokenReceiverProxy, LowLevelETH {
         settleDetails[0].fees = orderExtraData.fees;
         runInput.details = settleDetails;
 
-        (uint8 v, bytes32 r, bytes32 s) = SignatureSplitter.splitSignature(order.signature);
+        (bytes32 r, bytes32 s, uint8 v) = _splitSignature(order.signature);
         runInput.orders[0].r = r;
         runInput.orders[0].s = s;
         runInput.orders[0].v = v;

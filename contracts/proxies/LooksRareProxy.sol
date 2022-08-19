@@ -5,9 +5,9 @@ import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {ILooksRareExchange} from "@looksrare/contracts-exchange-v1/contracts/interfaces/ILooksRareExchange.sol";
 import {OrderTypes} from "@looksrare/contracts-exchange-v1/contracts/libraries/OrderTypes.sol";
+import {SignatureChecker} from "@looksrare/contracts-libs/contracts/SignatureChecker.sol";
 import {BasicOrder} from "../libraries/OrderStructs.sol";
 import {CollectionType} from "../libraries/OrderEnums.sol";
-import {SignatureSplitter} from "../libraries/SignatureSplitter.sol";
 import {TokenReceiverProxy} from "./TokenReceiverProxy.sol";
 import {LowLevelETH} from "../lowLevelCallers/LowLevelETH.sol";
 
@@ -17,7 +17,7 @@ import {LowLevelETH} from "../lowLevelCallers/LowLevelETH.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract LooksRareProxy is TokenReceiverProxy, LowLevelETH {
+contract LooksRareProxy is TokenReceiverProxy, LowLevelETH, SignatureChecker {
     struct OrderExtraData {
         address strategy; // LooksRare execution strategy
         uint256 nonce; // The maker's nonce
@@ -70,7 +70,7 @@ contract LooksRareProxy is TokenReceiverProxy, LowLevelETH {
                 makerAsk.startTime = order.startTime;
                 makerAsk.endTime = order.endTime;
 
-                (uint8 v, bytes32 r, bytes32 s) = SignatureSplitter.splitSignature(order.signature);
+                (bytes32 r, bytes32 s, uint8 v) = _splitSignature(order.signature);
                 makerAsk.v = v;
                 makerAsk.r = r;
                 makerAsk.s = s;
