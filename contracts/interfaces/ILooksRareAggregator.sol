@@ -13,21 +13,27 @@ interface ILooksRareAggregator {
         bytes extraData; // Extra data specific for each marketplace
     }
 
-    /// @notice Emitted when a marketplace proxy's function is enabled.
-    /// @param proxy The marketplace proxy's address
-    /// @param selector The marketplace proxy's function selector
+    /**
+     * @notice Emitted when a marketplace proxy's function is enabled.
+     * @param proxy The marketplace proxy's address
+     * @param selector The marketplace proxy's function selector
+     */
     event FunctionAdded(address indexed proxy, bytes4 selector);
 
-    /// @notice Emitted when a marketplace proxy's function is disabled.
-    /// @param proxy The marketplace proxy's address
-    /// @param selector The marketplace proxy's function selector
+    /**
+     * @notice Emitted when a marketplace proxy's function is disabled.
+     * @param proxy The marketplace proxy's address
+     * @param selector The marketplace proxy's function selector
+     */
     event FunctionRemoved(address indexed proxy, bytes4 selector);
 
-    /// @notice Emitted when buyWithETH is complete
-    /// @param sweeper The address that submitted the transaction
-    /// @param tradeCount Total trade count
-    /// @param successCount Successful trade count (if only 1 out of N trades in
-    ///                     an order succeeds, it is consider successful)
+    /**
+     * @notice Emitted when buyWithETH is complete
+     * @param sweeper The address that submitted the transaction
+     * @param tradeCount Total trade count
+     * @param successCount Successful trade count (if only 1 out of N trades in
+     *                     an order succeeds, it is consider successful)
+     */
     event Sweep(address indexed sweeper, uint256 tradeCount, uint256 successCount);
 
     error InvalidFunction();

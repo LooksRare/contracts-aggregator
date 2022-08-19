@@ -36,12 +36,14 @@ contract X2Y2Proxy is TokenReceiverProxy, LowLevelETH {
         marketplace = IX2Y2(_marketplace);
     }
 
-    /// @notice Execute X2Y2 NFT sweeps in a single transaction
-    /// @dev The 3rd argument extraData is not used
-    /// @param orders Orders to be executed by Seaport
-    /// @param ordersExtraData Extra data for each order
-    /// @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
-    /// @return Whether at least 1 out of N trades succeeded
+    /**
+     * @notice Execute X2Y2 NFT sweeps in a single transaction
+     * @dev The 3rd argument extraData is not used
+     * @param orders Orders to be executed by Seaport
+     * @param ordersExtraData Extra data for each order
+     * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
+     * @return Whether at least 1 out of N trades succeeded
+     */
     function buyWithETH(
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,

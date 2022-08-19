@@ -30,12 +30,14 @@ contract LooksRareProxy is TokenReceiverProxy, LowLevelETH {
         marketplace = ILooksRareExchange(_marketplace);
     }
 
-    /// @notice Execute LooksRare NFT sweeps in a single transaction
-    /// @dev The 3rd argument extraData is not used
-    /// @param orders Orders to be executed by LooksRare
-    /// @param ordersExtraData Extra data for each order
-    /// @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
-    /// @return Whether at least 1 out of N trades succeeded
+    /**
+     * @notice Execute LooksRare NFT sweeps in a single transaction
+     * @dev The 3rd argument extraData is not used
+     * @param orders Orders to be executed by LooksRare
+     * @param ordersExtraData Extra data for each order
+     * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
+     * @return Whether at least 1 out of N trades succeeded
+     */
     function buyWithETH(
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,

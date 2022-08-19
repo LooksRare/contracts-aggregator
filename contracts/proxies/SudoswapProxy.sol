@@ -18,10 +18,12 @@ contract SudoswapProxy is IProxy {
         router = ISudoswapRouter(_router);
     }
 
-    /// @notice Execute Sudoswap NFT sweeps in a single transaction
-    /// @dev Only the 1st argument orders is used
-    /// @param orders Orders to be executed by Seaport
-    /// @return Whether at least 1 out of N trades succeeded
+    /**
+     * @notice Execute Sudoswap NFT sweeps in a single transaction
+     * @dev Only the 1st argument orders is used
+     * @param orders Orders to be executed by Seaport
+     * @return Whether at least 1 out of N trades succeeded
+     */
     function buyWithETH(
         BasicOrder[] calldata orders,
         bytes[] calldata,

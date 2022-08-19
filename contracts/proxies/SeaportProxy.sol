@@ -41,12 +41,14 @@ contract SeaportProxy is LowLevelETH, IProxy {
         marketplace = SeaportInterface(_marketplace);
     }
 
-    /// @notice Execute Seaport NFT sweeps in a single transaction
-    /// @dev The 4th argument isAtomic is not used because there is only 1 call to Seaport
-    /// @param orders Orders to be executed by Seaport
-    /// @param ordersExtraData Extra data for each order
-    /// @param extraData Extra data for the whole transaction
-    /// @return Whether at least 1 out of N trades succeeded
+    /**
+     * @notice Execute Seaport NFT sweeps in a single transaction
+     * @dev The 4th argument isAtomic is not used because there is only 1 call to Seaport
+     * @param orders Orders to be executed by Seaport
+     * @param ordersExtraData Extra data for each order
+     * @param extraData Extra data for the whole transaction
+     * @return Whether at least 1 out of N trades succeeded
+     */
     function buyWithETH(
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,

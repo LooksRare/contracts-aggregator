@@ -19,11 +19,13 @@ contract CryptoPunksProxy is IProxy, LowLevelETH {
         cryptopunks = ICryptoPunks(_cryptopunks);
     }
 
-    /// @notice Execute CryptoPunks NFT sweeps in a single transaction
-    /// @dev Only the 1st argument orders and the 4th argument isAtomic are used
-    /// @param orders Orders to be executed by CryptoPunks
-    /// @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
-    /// @return Whether at least 1 out of N trades succeeded
+    /**
+     * @notice Execute CryptoPunks NFT sweeps in a single transaction
+     * @dev Only the 1st argument orders and the 4th argument isAtomic are used
+     * @param orders Orders to be executed by CryptoPunks
+     * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
+     * @return Whether at least 1 out of N trades succeeded
+     */
     function buyWithETH(
         BasicOrder[] calldata orders,
         bytes[] calldata,
