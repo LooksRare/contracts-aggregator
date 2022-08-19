@@ -13,7 +13,7 @@ import {LowLevelETH} from "../lowLevelCallers/LowLevelETH.sol";
  * @author LooksRare protocol team (👀,💎)
  */
 contract CryptoPunksProxy is IProxy, LowLevelETH {
-    ICryptoPunks public cryptopunks;
+    ICryptoPunks public immutable cryptopunks;
 
     constructor(address _cryptopunks) {
         cryptopunks = ICryptoPunks(_cryptopunks);

@@ -12,7 +12,7 @@ import {IProxy} from "./IProxy.sol";
  * @author LooksRare protocol team (👀,💎)
  */
 contract SudoswapProxy is IProxy {
-    ISudoswapRouter public router;
+    ISudoswapRouter public immutable router;
 
     constructor(address _router) {
         router = ISudoswapRouter(_router);

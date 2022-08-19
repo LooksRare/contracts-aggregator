@@ -16,7 +16,7 @@ import {IProxy} from "./IProxy.sol";
  * @author LooksRare protocol team (👀,💎)
  */
 contract SeaportProxy is LowLevelETH, IProxy {
-    SeaportInterface public marketplace;
+    SeaportInterface public immutable marketplace;
 
     struct Recipient {
         address recipient; // Sale proceeds recipient, typically it is the address of seller/OpenSea Fees/royalty

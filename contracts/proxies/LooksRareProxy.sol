@@ -24,7 +24,7 @@ contract LooksRareProxy is TokenReceiverProxy, LowLevelETH {
         uint256 minPercentageToAsk; // The maker's minimum % to receive from the sale
     }
 
-    ILooksRareExchange public marketplace;
+    ILooksRareExchange public immutable marketplace;
 
     constructor(address _marketplace) {
         marketplace = ILooksRareExchange(_marketplace);

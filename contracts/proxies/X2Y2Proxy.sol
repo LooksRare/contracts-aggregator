@@ -18,7 +18,7 @@ import {LowLevelETH} from "../lowLevelCallers/LowLevelETH.sol";
  * @author LooksRare protocol team (👀,💎)
  */
 contract X2Y2Proxy is TokenReceiverProxy, LowLevelETH {
-    IX2Y2 public marketplace;
+    IX2Y2 public immutable marketplace;
 
     struct OrderExtraData {
         uint256 salt; // An arbitrary source of entropy for the order (per trade)
