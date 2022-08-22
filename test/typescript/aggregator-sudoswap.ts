@@ -66,7 +66,7 @@ describe("Aggregator", () => {
     expect(await moodie.ownerOf(1915)).to.equal(buyer.address);
   });
 
-  it("is able to refund extra ETH paid (trickled down to SeaportProxy)", async function () {
+  it("is able to refund extra ETH paid", async function () {
     const { aggregator, proxy, buyer, functionSelector, moodie } = await loadFixture(deploySudoswapFixture);
     const maxCostOne = BigNumber.from("221649999999999993");
     const maxCostTwo = BigNumber.from("221650000000000000");
