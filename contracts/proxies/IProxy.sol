@@ -5,7 +5,6 @@ import {BasicOrder} from "../libraries/OrderStructs.sol";
 
 interface IProxy {
     error InvalidOrderLength();
-    error InvalidRecipient();
     error ZeroAddress();
 
     /**

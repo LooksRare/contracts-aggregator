@@ -59,8 +59,6 @@ contract SeaportProxy is LowLevelETH, IProxy {
         if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();
 
         address recipient = orders[0].recipient;
-        // Since Seaport supports custom recipient, the recipient should not be the proxy.
-        if (recipient == address(this)) revert InvalidRecipient();
         if (recipient == address(0)) revert ZeroAddress();
 
         AdvancedOrder[] memory advancedOrders = new AdvancedOrder[](orders.length);
