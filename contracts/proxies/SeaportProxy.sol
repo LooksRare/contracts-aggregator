@@ -90,17 +90,17 @@ contract SeaportProxy is LowLevelETH, IProxy {
             ordersLength
         );
 
+        _returnETHIfAny();
+
         return true;
     }
 
     /**
      * @dev If fulfillAvailableAdvancedOrders fails, the ETH paid to Seaport
      *      is refunded to the proxy contract. The proxy then has to refund
-     *      the ETH back to the user.
+     *      the ETH back to the user through _returnETHIfAny.
      */
-    receive() external payable {
-        _transferETH(tx.origin, msg.value);
-    }
+    receive() external payable {}
 
     function _populateParameters(BasicOrder calldata order, OrderExtraData memory orderExtraData)
         private
