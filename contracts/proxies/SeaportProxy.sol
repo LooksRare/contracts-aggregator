@@ -6,7 +6,7 @@ import {BasicOrder} from "../libraries/OrderStructs.sol";
 import {CollectionType} from "../libraries/OrderEnums.sol";
 import {AdvancedOrder, CriteriaResolver, OrderParameters, OfferItem, ConsiderationItem, FulfillmentComponent} from "../libraries/seaport/ConsiderationStructs.sol";
 import {ItemType, OrderType} from "../libraries/seaport/ConsiderationEnums.sol";
-import {LowLevelETH} from "../lowLevelCallers/LowLevelETH.sol";
+import {TokenRescuer} from "../TokenRescuer.sol";
 import {IProxy} from "./IProxy.sol";
 
 /**
@@ -15,7 +15,7 @@ import {IProxy} from "./IProxy.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract SeaportProxy is LowLevelETH, IProxy {
+contract SeaportProxy is TokenRescuer, IProxy {
     SeaportInterface public immutable marketplace;
 
     struct Recipient {

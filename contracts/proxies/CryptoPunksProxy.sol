@@ -4,7 +4,7 @@ pragma solidity 0.8.14;
 import {BasicOrder} from "../libraries/OrderStructs.sol";
 import {ICryptoPunks} from "../interfaces/ICryptoPunks.sol";
 import {IProxy} from "./IProxy.sol";
-import {LowLevelETH} from "../lowLevelCallers/LowLevelETH.sol";
+import {TokenRescuer} from "../TokenRescuer.sol";
 
 /**
  * @title CryptoPunksProxy
@@ -12,7 +12,7 @@ import {LowLevelETH} from "../lowLevelCallers/LowLevelETH.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract CryptoPunksProxy is IProxy, LowLevelETH {
+contract CryptoPunksProxy is IProxy, TokenRescuer {
     ICryptoPunks public immutable cryptopunks;
 
     constructor(address _cryptopunks) {

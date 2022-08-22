@@ -3,10 +3,12 @@
 pragma solidity 0.8.14;
 
 import {SudoswapProxy} from "../../contracts/proxies/SudoswapProxy.sol";
+import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
 import {IProxy} from "../../contracts/proxies/IProxy.sol";
 import {BasicOrder} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {TestHelpers} from "./TestHelpers.sol";
+import {TokenRescuerTest} from "./TokenRescuer.t.sol";
 
 abstract contract TestParameters {
     address internal constant SUDOSWAP = 0x2B2e8cDA09bBA9660dCA5cB6233787738Ad68329;
@@ -14,11 +16,13 @@ abstract contract TestParameters {
     address internal _buyer = address(1);
 }
 
-contract SudoswapProxyTest is TestParameters, TestHelpers {
+contract SudoswapProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
     SudoswapProxy sudoswapProxy;
+    TokenRescuer tokenRescuer;
 
     function setUp() public {
         sudoswapProxy = new SudoswapProxy(SUDOSWAP);
+        tokenRescuer = TokenRescuer(address(sudoswapProxy));
         vm.deal(_buyer, 100 ether);
     }
 
@@ -37,6 +41,22 @@ contract SudoswapProxyTest is TestParameters, TestHelpers {
 
         vm.expectRevert(IProxy.ZeroAddress.selector);
         sudoswapProxy.buyWithETH{value: orders[0].price}(orders, ordersExtraData, "", false);
+    }
+
+    function testRescueETH() public {
+        _testRescueETH(tokenRescuer);
+    }
+
+    function testRescueETHNotOwner() public {
+        _testRescueETHNotOwner(tokenRescuer);
+    }
+
+    function testRescueERC20() public {
+        _testRescueERC20(tokenRescuer);
+    }
+
+    function testRescueERC20NotOwner() public {
+        _testRescueERC20NotOwner(tokenRescuer);
     }
 
     function validMoodieOrder() private view returns (BasicOrder[] memory orders) {

@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.14;
 
-import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
 import {LooksRareProxy} from "./proxies/LooksRareProxy.sol";
 import {BasicOrder} from "./libraries/OrderStructs.sol";
-import {LowLevelETH} from "./lowLevelCallers/LowLevelETH.sol";
+import {TokenRescuer} from "./TokenRescuer.sol";
 import {ILooksRareAggregator} from "./interfaces/ILooksRareAggregator.sol";
 
 /**
@@ -13,7 +12,7 @@ import {ILooksRareAggregator} from "./interfaces/ILooksRareAggregator.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract LooksRareAggregator is OwnableTwoSteps, LowLevelETH, ILooksRareAggregator {
+contract LooksRareAggregator is TokenRescuer, ILooksRareAggregator {
     mapping(address => mapping(bytes4 => bool)) private _proxyFunctionSelectors;
 
     /**

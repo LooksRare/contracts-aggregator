@@ -4,10 +4,12 @@ pragma solidity 0.8.14;
 
 import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
 import {LooksRareProxy} from "../../contracts/proxies/LooksRareProxy.sol";
+import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
 import {IProxy} from "../../contracts/proxies/IProxy.sol";
 import {BasicOrder} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {TestHelpers} from "./TestHelpers.sol";
+import {TokenRescuerTest} from "./TokenRescuer.t.sol";
 
 abstract contract TestParameters {
     address internal constant BAYC = 0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D;
@@ -17,11 +19,13 @@ abstract contract TestParameters {
     address internal constant _buyer = address(1);
 }
 
-contract LooksRareProxyTest is TestParameters, TestHelpers {
+contract LooksRareProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
     LooksRareProxy looksRareProxy;
+    TokenRescuer tokenRescuer;
 
     function setUp() public {
         looksRareProxy = new LooksRareProxy(LOOKSRARE_V1);
+        tokenRescuer = TokenRescuer(address(looksRareProxy));
         vm.deal(_buyer, 100 ether);
     }
 
@@ -53,6 +57,22 @@ contract LooksRareProxyTest is TestParameters, TestHelpers {
 
         vm.expectRevert(IProxy.ZeroAddress.selector);
         looksRareProxy.buyWithETH{value: orders[0].price}(orders, ordersExtraData, "", false);
+    }
+
+    function testRescueETH() public {
+        _testRescueETH(tokenRescuer);
+    }
+
+    function testRescueETHNotOwner() public {
+        _testRescueETHNotOwner(tokenRescuer);
+    }
+
+    function testRescueERC20() public {
+        _testRescueERC20(tokenRescuer);
+    }
+
+    function testRescueERC20NotOwner() public {
+        _testRescueERC20NotOwner(tokenRescuer);
     }
 
     function validBAYCOrder() private pure returns (BasicOrder[] memory orders) {

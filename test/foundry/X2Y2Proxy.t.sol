@@ -5,10 +5,12 @@ pragma solidity 0.8.14;
 import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
 import {X2Y2Proxy} from "../../contracts/proxies/X2Y2Proxy.sol";
 import {IProxy} from "../../contracts/proxies/IProxy.sol";
+import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
 import {BasicOrder} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {Market} from "../../contracts/libraries/x2y2/MarketConsts.sol";
 import {TestHelpers} from "./TestHelpers.sol";
+import {TokenRescuerTest} from "./TokenRescuer.t.sol";
 
 abstract contract TestParameters {
     address internal constant X2Y2 = 0x74312363e45DCaBA76c59ec49a7Aa8A65a67EeD3;
@@ -16,11 +18,13 @@ abstract contract TestParameters {
     address internal _buyer = address(1);
 }
 
-contract X2Y2ProxyTest is TestParameters, TestHelpers {
+contract X2Y2ProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
     X2Y2Proxy x2y2Proxy;
+    TokenRescuer tokenRescuer;
 
     function setUp() public {
         x2y2Proxy = new X2Y2Proxy(X2Y2);
+        tokenRescuer = TokenRescuer(address(x2y2Proxy));
         vm.deal(_buyer, 100 ether);
     }
 
@@ -52,6 +56,22 @@ contract X2Y2ProxyTest is TestParameters, TestHelpers {
 
         vm.expectRevert(IProxy.ZeroAddress.selector);
         x2y2Proxy.buyWithETH{value: orders[0].price}(orders, ordersExtraData, "", false);
+    }
+
+    function testRescueETH() public {
+        _testRescueETH(tokenRescuer);
+    }
+
+    function testRescueETHNotOwner() public {
+        _testRescueETHNotOwner(tokenRescuer);
+    }
+
+    function testRescueERC20() public {
+        _testRescueERC20(tokenRescuer);
+    }
+
+    function testRescueERC20NotOwner() public {
+        _testRescueERC20NotOwner(tokenRescuer);
     }
 
     function validBAYCOrder() private view returns (BasicOrder[] memory orders) {

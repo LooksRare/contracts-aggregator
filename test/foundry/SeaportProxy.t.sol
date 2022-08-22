@@ -4,12 +4,14 @@ pragma solidity 0.8.14;
 
 import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
 import {SeaportProxy} from "../../contracts/proxies/SeaportProxy.sol";
+import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
 import {OrderType} from "../../contracts/libraries/seaport/ConsiderationEnums.sol";
 import {AdditionalRecipient, Fulfillment, FulfillmentComponent} from "../../contracts/libraries/seaport/ConsiderationStructs.sol";
 import {IProxy} from "../../contracts/proxies/IProxy.sol";
 import {BasicOrder} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {TestHelpers} from "./TestHelpers.sol";
+import {TokenRescuerTest} from "./TokenRescuer.t.sol";
 
 abstract contract TestParameters {
     address internal constant SEAPORT = 0x00000000006c3852cbEf3e08E8dF289169EdE581;
@@ -17,11 +19,13 @@ abstract contract TestParameters {
     address internal _buyer = address(1);
 }
 
-contract SeaportProxyTest is TestParameters, TestHelpers {
+contract SeaportProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
     SeaportProxy seaportProxy;
+    TokenRescuer tokenRescuer;
 
     function setUp() public {
         seaportProxy = new SeaportProxy(SEAPORT);
+        tokenRescuer = TokenRescuer(address(seaportProxy));
         vm.deal(_buyer, 100 ether);
     }
 
@@ -53,6 +57,22 @@ contract SeaportProxyTest is TestParameters, TestHelpers {
 
         vm.expectRevert(IProxy.ZeroAddress.selector);
         seaportProxy.buyWithETH{value: orders[0].price}(orders, ordersExtraData, validBAYCExtraData(), false);
+    }
+
+    function testRescueETH() public {
+        _testRescueETH(tokenRescuer);
+    }
+
+    function testRescueETHNotOwner() public {
+        _testRescueETHNotOwner(tokenRescuer);
+    }
+
+    function testRescueERC20() public {
+        _testRescueERC20(tokenRescuer);
+    }
+
+    function testRescueERC20NotOwner() public {
+        _testRescueERC20NotOwner(tokenRescuer);
     }
 
     function validBAYCOrder() private view returns (BasicOrder[] memory orders) {
