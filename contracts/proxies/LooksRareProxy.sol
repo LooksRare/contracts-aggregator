@@ -19,9 +19,10 @@ import {LowLevelETH} from "../lowLevelCallers/LowLevelETH.sol";
  */
 contract LooksRareProxy is TokenReceiverProxy, LowLevelETH, SignatureChecker {
     struct OrderExtraData {
-        address strategy; // LooksRare execution strategy
-        uint256 nonce; // The maker's nonce
+        uint256 makerAskPrice; // Maker ask price, which is not necessarily equal to the taker bid price
         uint256 minPercentageToAsk; // The maker's minimum % to receive from the sale
+        uint256 nonce; // The maker's nonce
+        address strategy; // LooksRare execution strategy
     }
 
     ILooksRareExchange public immutable marketplace;
@@ -61,7 +62,7 @@ contract LooksRareProxy is TokenReceiverProxy, LowLevelETH, SignatureChecker {
                 makerAsk.signer = order.signer;
                 makerAsk.collection = order.collection;
                 makerAsk.tokenId = order.tokenIds[0];
-                makerAsk.price = order.price;
+                makerAsk.price = orderExtraData.makerAskPrice;
                 makerAsk.amount = order.amounts[0];
                 makerAsk.strategy = orderExtraData.strategy;
                 makerAsk.nonce = orderExtraData.nonce;
@@ -107,7 +108,7 @@ contract LooksRareProxy is TokenReceiverProxy, LowLevelETH, SignatureChecker {
         bool isAtomic
     ) private returns (bool executed) {
         if (isAtomic) {
-            marketplace.matchAskWithTakerBidUsingETHAndWETH{value: makerAsk.price}(takerBid, makerAsk);
+            marketplace.matchAskWithTakerBidUsingETHAndWETH{value: takerBid.price}(takerBid, makerAsk);
             _transferTokenToRecipient(
                 collectionType,
                 recipient,
@@ -117,7 +118,7 @@ contract LooksRareProxy is TokenReceiverProxy, LowLevelETH, SignatureChecker {
             );
             executed = true;
         } else {
-            try marketplace.matchAskWithTakerBidUsingETHAndWETH{value: makerAsk.price}(takerBid, makerAsk) {
+            try marketplace.matchAskWithTakerBidUsingETHAndWETH{value: takerBid.price}(takerBid, makerAsk) {
                 _transferTokenToRecipient(
                     collectionType,
                     recipient,

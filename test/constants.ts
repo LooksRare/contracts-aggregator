@@ -45,7 +45,7 @@ export const X2Y2_ORDER_EXTRA_DATA_SCHEMA = `
   ) orderExtraData
 `;
 
-export const LOOKSRARE_EXTRA_DATA_SCHEMA = ["address", "uint256", "uint256"];
+export const LOOKSRARE_EXTRA_DATA_SCHEMA = ["uint256", "uint256", "uint256", "address"];
 
 export const SEAPORT_OFFER_FULFILLMENT_ONE_ITEM = [[{ orderIndex: 0, itemIndex: 0 }]];
 

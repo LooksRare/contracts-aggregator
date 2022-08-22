@@ -81,7 +81,9 @@ describe("Aggregator", () => {
               "0x7b37474f79837ee4e56faf1e766a30a9d9c6ed3a7984457bcb212381f2b6b8f95a641ec95eca31f060a15a3c9ff2d4fbccbf481c766e8630be72b6e3e3aeca561b",
           },
         ],
-        ordersExtraData: [abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [LOOKSRARE_STRATEGY_FIXED_PRICE, 0, 9550])],
+        ordersExtraData: [
+          abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [looksRarePrice, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE]),
+        ],
         extraData: "0x",
       },
       {
@@ -180,7 +182,9 @@ describe("Aggregator", () => {
               "0x7b37474f79837ee4e56faf1e766a30a9d9c6ed3a7984457bcb212381f2b6b8f95a641ec95eca31f060a15a3c9ff2d4fbccbf481c766e8630be72b6e3e3aeca561b",
           },
         ],
-        ordersExtraData: [abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [LOOKSRARE_STRATEGY_FIXED_PRICE, 0, 9550])],
+        ordersExtraData: [
+          abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [looksRarePrice, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE]),
+        ],
         extraData: "0x",
       },
       {
@@ -292,7 +296,9 @@ describe("Aggregator", () => {
               "0x7b37474f79837ee4e56faf1e766a30a9d9c6ed3a7984457bcb212381f2b6b8f95a641ec95eca31f060a15a3c9ff2d4fbccbf481c766e8630be72b6e3e3aeca561b",
           },
         ],
-        ordersExtraData: [abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [LOOKSRARE_STRATEGY_FIXED_PRICE, 0, 9550])],
+        ordersExtraData: [
+          abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [looksRarePrice, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE]),
+        ],
         extraData: "0x",
       },
       {

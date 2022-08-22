@@ -77,7 +77,9 @@ describe("Aggregator", () => {
               "0x0ad409048cbf4b75ab2dec2cdb7f57b6e0b1a3490a9230d8146f1eec9185ae1078735b237ff2088320f00204968b1eb396d374dfba9fbc79dedde4a53670f8b000",
           },
         ],
-        ordersExtraData: [abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [LOOKSRARE_STRATEGY_FIXED_PRICE, 2, 9550])],
+        ordersExtraData: [
+          abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [looksRarePrice, 9550, 2, LOOKSRARE_STRATEGY_FIXED_PRICE]),
+        ],
         extraData: "0x",
       },
     ];
@@ -155,7 +157,9 @@ describe("Aggregator", () => {
               "0x0ad409048cbf4b75ab2dec2cdb7f57b6e0b1a3490a9230d8146f1eec9185ae1078735b237ff2088320f00204968b1eb396d374dfba9fbc79dedde4a53670f8b000",
           },
         ],
-        ordersExtraData: [abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [LOOKSRARE_STRATEGY_FIXED_PRICE, 2, 9550])],
+        ordersExtraData: [
+          abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [looksRarePrice, 9550, 2, LOOKSRARE_STRATEGY_FIXED_PRICE]),
+        ],
         extraData: "0x",
       },
     ];

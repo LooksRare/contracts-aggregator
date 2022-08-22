@@ -10,7 +10,7 @@ struct BasicOrder {
   CollectionType collectionType; // 0 for ERC-721, 1 for ERC-1155
   uint256[] tokenIds; // The IDs of the tokens to be purchased
   uint256[] amounts; // Always 1 when ERC-721, can be > 1 if ERC-1155
-  uint256 price; // The price to pay for the order
+  uint256 price; // The *taker bid* price to pay for the order
   address currency; // The order's currency, address(0) for ETH
   uint256 startTime; // The timestamp when the order starts becoming valid
   uint256 endTime; // The timestamp when the order stops becoming valid

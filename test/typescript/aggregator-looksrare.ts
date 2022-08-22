@@ -55,8 +55,8 @@ describe("LooksRareAggregator", () => {
           },
         ],
         ordersExtraData: [
-          abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [LOOKSRARE_STRATEGY_FIXED_PRICE, 0, 9550]),
-          abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [LOOKSRARE_STRATEGY_FIXED_PRICE, 50, 8500]),
+          abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [priceOne, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE]),
+          abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [priceTwo, 8500, 50, LOOKSRARE_STRATEGY_FIXED_PRICE]),
         ],
         extraData: "0x",
       },
@@ -119,8 +119,8 @@ describe("LooksRareAggregator", () => {
           },
         ],
         ordersExtraData: [
-          abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [LOOKSRARE_STRATEGY_FIXED_PRICE, 0, 9550]),
-          abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [LOOKSRARE_STRATEGY_FIXED_PRICE, 50, 8500]),
+          abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [priceOne, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE]),
+          abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [priceTwo, 8500, 50, LOOKSRARE_STRATEGY_FIXED_PRICE]),
         ],
         extraData: "0x",
       },
@@ -178,8 +178,8 @@ describe("LooksRareAggregator", () => {
         value: totalValue,
         orders: [orderOneJson, orderOneJson],
         ordersExtraData: [
-          abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [LOOKSRARE_STRATEGY_FIXED_PRICE, 0, 9550]),
-          abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [LOOKSRARE_STRATEGY_FIXED_PRICE, 0, 9550]),
+          abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [priceOne, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE]),
+          abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [priceOne, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE]),
         ],
         extraData: "0x",
       },
@@ -234,8 +234,8 @@ describe("LooksRareAggregator", () => {
         value: totalValue,
         orders: [orderOneJson, orderOneJson],
         ordersExtraData: [
-          abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [LOOKSRARE_STRATEGY_FIXED_PRICE, 0, 9550]),
-          abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [LOOKSRARE_STRATEGY_FIXED_PRICE, 0, 9550]),
+          abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [priceOne, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE]),
+          abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [priceOne, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE]),
         ],
         extraData: "0x",
       },
