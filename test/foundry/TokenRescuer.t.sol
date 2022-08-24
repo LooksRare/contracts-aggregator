@@ -17,8 +17,16 @@ contract TokenRescuerTest is TestParameters, TestHelpers {
     function _testRescueETH(TokenRescuer tokenRescuer) internal {
         vm.deal(address(tokenRescuer), luckyNumber);
         tokenRescuer.rescueETH(luckyUser);
-        assertEq(address(luckyUser).balance, luckyNumber);
-        assertEq(address(tokenRescuer).balance, 0);
+        assertEq(address(luckyUser).balance, luckyNumber - 1);
+        assertEq(address(tokenRescuer).balance, 1);
+    }
+
+    function _testRescueETHInsufficientAmount(TokenRescuer tokenRescuer) internal {
+        vm.deal(address(tokenRescuer), 1);
+        vm.expectRevert(TokenRescuer.InsufficientAmount.selector);
+        tokenRescuer.rescueETH(luckyUser);
+        assertEq(address(luckyUser).balance, 0);
+        assertEq(address(tokenRescuer).balance, 1);
     }
 
     function _testRescueETHNotOwner(TokenRescuer tokenRescuer) internal {
@@ -34,8 +42,8 @@ contract TokenRescuerTest is TestParameters, TestHelpers {
         MockERC20 mockERC20 = new MockERC20();
         mockERC20.mint(address(tokenRescuer), luckyNumber);
         tokenRescuer.rescueERC20(address(mockERC20), luckyUser);
-        assertEq(mockERC20.balanceOf(address(luckyUser)), luckyNumber);
-        assertEq(mockERC20.balanceOf(address(tokenRescuer)), 0);
+        assertEq(mockERC20.balanceOf(address(luckyUser)), luckyNumber - 1);
+        assertEq(mockERC20.balanceOf(address(tokenRescuer)), 1);
     }
 
     function _testRescueERC20NotOwner(TokenRescuer tokenRescuer) internal {
@@ -46,5 +54,14 @@ contract TokenRescuerTest is TestParameters, TestHelpers {
         tokenRescuer.rescueERC20(address(mockERC20), luckyUser);
         assertEq(mockERC20.balanceOf(address(luckyUser)), 0);
         assertEq(mockERC20.balanceOf(address(tokenRescuer)), luckyNumber);
+    }
+
+    function _testRescueERC20InsufficientAmount(TokenRescuer tokenRescuer) internal {
+        MockERC20 mockERC20 = new MockERC20();
+        mockERC20.mint(address(tokenRescuer), 1);
+        vm.expectRevert(TokenRescuer.InsufficientAmount.selector);
+        tokenRescuer.rescueERC20(address(mockERC20), luckyUser);
+        assertEq(mockERC20.balanceOf(address(luckyUser)), 0);
+        assertEq(mockERC20.balanceOf(address(tokenRescuer)), 1);
     }
 }

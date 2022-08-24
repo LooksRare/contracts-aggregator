@@ -12,13 +12,17 @@ import {LowLevelERC20} from "./lowLevelCallers/LowLevelERC20.sol";
  * @author LooksRare protocol team (👀,💎)
  */
 contract TokenRescuer is OwnableTwoSteps, LowLevelETH, LowLevelERC20 {
+    error InsufficientAmount();
+
     /**
      * @notice Rescue the contract's trapped ETH
      * @dev Must be called by the current owner
      * @param to Send the contract's ETH balance to this address
      */
     function rescueETH(address to) external onlyOwner {
-        _transferETH(to, address(this).balance);
+        uint256 withdrawAmount = address(this).balance - 1;
+        if (withdrawAmount == 0) revert InsufficientAmount();
+        _transferETH(to, withdrawAmount);
     }
 
     /**
@@ -28,7 +32,8 @@ contract TokenRescuer is OwnableTwoSteps, LowLevelETH, LowLevelERC20 {
      * @param to Send the contract's specified ERC-20 token balance to this address
      */
     function rescueERC20(address currency, address to) external onlyOwner {
-        uint256 amount = IERC20(currency).balanceOf(address(this));
-        _executeERC20DirectTransfer(currency, to, amount);
+        uint256 withdrawAmount = IERC20(currency).balanceOf(address(this)) - 1;
+        if (withdrawAmount == 0) revert InsufficientAmount();
+        _executeERC20DirectTransfer(currency, to, withdrawAmount);
     }
 }

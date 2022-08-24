@@ -3,21 +3,25 @@
 pragma solidity 0.8.14;
 
 import {CryptoPunksProxy} from "../../contracts/proxies/CryptoPunksProxy.sol";
+import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
 import {IProxy} from "../../contracts/proxies/IProxy.sol";
 import {BasicOrder} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {TestHelpers} from "./TestHelpers.sol";
+import {TokenRescuerTest} from "./TokenRescuer.t.sol";
 
 abstract contract TestParameters {
     address internal constant CRYPTOPUNKS = 0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB;
     address internal _buyer = address(1);
 }
 
-contract CryptoPunksProxyTest is TestParameters, TestHelpers {
+contract CryptoPunksProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
     CryptoPunksProxy cryptoPunksProxy;
+    TokenRescuer tokenRescuer;
 
     function setUp() public {
         cryptoPunksProxy = new CryptoPunksProxy(CRYPTOPUNKS);
+        tokenRescuer = TokenRescuer(address(cryptoPunksProxy));
         vm.deal(_buyer, 100 ether);
     }
 
@@ -36,6 +40,30 @@ contract CryptoPunksProxyTest is TestParameters, TestHelpers {
 
         vm.expectRevert(IProxy.ZeroAddress.selector);
         cryptoPunksProxy.buyWithETH{value: orders[0].price}(orders, ordersExtraData, "", false);
+    }
+
+    function testRescueETH() public {
+        _testRescueETH(tokenRescuer);
+    }
+
+    function testRescueETHNotOwner() public {
+        _testRescueETHNotOwner(tokenRescuer);
+    }
+
+    function testRescueETHInsufficientAmount() public {
+        _testRescueETHInsufficientAmount(tokenRescuer);
+    }
+
+    function testRescueERC20() public {
+        _testRescueERC20(tokenRescuer);
+    }
+
+    function testRescueERC20NotOwner() public {
+        _testRescueERC20NotOwner(tokenRescuer);
+    }
+
+    function testRescueERC20InsufficientAmount() public {
+        _testRescueERC20InsufficientAmount(tokenRescuer);
     }
 
     function validCryptoPunksOrder() private view returns (BasicOrder[] memory orders) {

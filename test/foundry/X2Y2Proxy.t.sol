@@ -66,12 +66,20 @@ contract X2Y2ProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
         _testRescueETHNotOwner(tokenRescuer);
     }
 
+    function testRescueETHInsufficientAmount() public {
+        _testRescueETHInsufficientAmount(tokenRescuer);
+    }
+
     function testRescueERC20() public {
         _testRescueERC20(tokenRescuer);
     }
 
     function testRescueERC20NotOwner() public {
         _testRescueERC20NotOwner(tokenRescuer);
+    }
+
+    function testRescueERC20InsufficientAmount() public {
+        _testRescueERC20InsufficientAmount(tokenRescuer);
     }
 
     function validBAYCOrder() private view returns (BasicOrder[] memory orders) {
