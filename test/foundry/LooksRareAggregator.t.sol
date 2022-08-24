@@ -76,4 +76,10 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTes
     function testRescueERC20NotOwner() public {
         _testRescueERC20NotOwner(tokenRescuer);
     }
+
+    function testBuyWithETHZeroOrders() public {
+        ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](0);
+        vm.expectRevert(ILooksRareAggregator.InvalidOrderLength.selector);
+        aggregator.buyWithETH(tradeData, false);
+    }
 }

@@ -21,6 +21,8 @@ contract LooksRareAggregator is TokenRescuer, ILooksRareAggregator {
      * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
      */
     function buyWithETH(TradeData[] calldata tradeData, bool isAtomic) external payable {
+        if (tradeData.length == 0) revert InvalidOrderLength();
+
         uint256 successCount;
         for (uint256 i; i < tradeData.length; ) {
             address proxy = tradeData[i].proxy;
