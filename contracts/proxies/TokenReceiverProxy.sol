@@ -43,7 +43,6 @@ abstract contract TokenReceiverProxy is IProxy {
         uint256 tokenId,
         uint256 amount
     ) internal {
-        // TODO: handle CryptoPunks/Mooncats
         if (collectionType == CollectionType.ERC721) {
             IERC721(collection).transferFrom(address(this), recipient, tokenId);
         } else if (collectionType == CollectionType.ERC1155) {
