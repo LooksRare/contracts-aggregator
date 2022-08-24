@@ -5,7 +5,6 @@ import {CollectionType} from "./OrderEnums.sol";
 
 struct BasicOrder {
   address signer; // The order's maker
-  address recipient; // Recipient of the token purchased, it can be different from the address that submitted the transaction
   address collection; // The address of the ERC-721/ERC-1155 token to be purchased
   CollectionType collectionType; // 0 for ERC-721, 1 for ERC-1155
   uint256[] tokenIds; // The IDs of the tokens to be purchased

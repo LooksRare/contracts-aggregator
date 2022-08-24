@@ -21,7 +21,6 @@ describe("LooksRareAggregator", () => {
     const totalValue = priceOne.add(priceTwo);
 
     const baseOrder = {
-      recipient: buyer.address,
       signer: AddressZero,
       collection: CRYPTOPUNKS,
       collectionType: 0,
@@ -56,6 +55,7 @@ describe("LooksRareAggregator", () => {
           extraData: HashZero,
         },
       ],
+      buyer.address,
       false,
       { value: totalValue }
     );
@@ -81,7 +81,6 @@ describe("LooksRareAggregator", () => {
     const totalValue = priceOne.add(priceTwo);
 
     const baseOrder = {
-      recipient: buyer.address,
       signer: AddressZero,
       collection: CRYPTOPUNKS,
       collectionType: 0,
@@ -124,6 +123,7 @@ describe("LooksRareAggregator", () => {
           extraData: HashZero,
         },
       ],
+      buyer.address,
       false,
       { value: totalValue.add(priceOne) }
     );
@@ -153,7 +153,6 @@ describe("LooksRareAggregator", () => {
     const totalValue = priceOne.add(priceTwo);
 
     const baseOrder = {
-      recipient: buyer.address,
       signer: AddressZero,
       collection: CRYPTOPUNKS,
       collectionType: 0,
@@ -197,6 +196,7 @@ describe("LooksRareAggregator", () => {
             extraData: HashZero,
           },
         ],
+        buyer.address,
         true,
         { value: totalValue.add(priceOne) }
       )

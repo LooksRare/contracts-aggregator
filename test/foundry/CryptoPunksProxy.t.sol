@@ -30,16 +30,15 @@ contract CryptoPunksProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
         bytes[] memory ordersExtraData = new bytes[](0);
 
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        cryptoPunksProxy.buyWithETH(orders, ordersExtraData, "", false);
+        cryptoPunksProxy.buyWithETH(orders, ordersExtraData, "", _buyer, false);
     }
 
     function testBuyWithETHOrdersRecipientZeroAddress() public {
         BasicOrder[] memory orders = validCryptoPunksOrder();
-        orders[0].recipient = address(0);
         bytes[] memory ordersExtraData = new bytes[](0);
 
         vm.expectRevert(IProxy.ZeroAddress.selector);
-        cryptoPunksProxy.buyWithETH{value: orders[0].price}(orders, ordersExtraData, "", false);
+        cryptoPunksProxy.buyWithETH{value: orders[0].price}(orders, ordersExtraData, "", address(0), false);
     }
 
     function testRescueETH() public {
@@ -66,10 +65,9 @@ contract CryptoPunksProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
         _testRescueERC20InsufficientAmount(tokenRescuer);
     }
 
-    function validCryptoPunksOrder() private view returns (BasicOrder[] memory orders) {
+    function validCryptoPunksOrder() private pure returns (BasicOrder[] memory orders) {
         orders = new BasicOrder[](1);
         orders[0].signer = address(0);
-        orders[0].recipient = payable(_buyer);
         orders[0].collection = CRYPTOPUNKS;
         orders[0].collectionType = CollectionType.ERC721;
 

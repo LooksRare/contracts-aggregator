@@ -31,16 +31,15 @@ contract SudoswapProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
         bytes[] memory ordersExtraData = new bytes[](0);
 
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        sudoswapProxy.buyWithETH(orders, ordersExtraData, "", false);
+        sudoswapProxy.buyWithETH(orders, ordersExtraData, "", _buyer, false);
     }
 
     function testBuyWithETHOrdersRecipientZeroAddress() public {
         BasicOrder[] memory orders = validMoodieOrder();
-        orders[0].recipient = address(0);
         bytes[] memory ordersExtraData = new bytes[](0);
 
         vm.expectRevert(IProxy.ZeroAddress.selector);
-        sudoswapProxy.buyWithETH{value: orders[0].price}(orders, ordersExtraData, "", false);
+        sudoswapProxy.buyWithETH{value: orders[0].price}(orders, ordersExtraData, "", address(0), false);
     }
 
     function testRescueETH() public {
@@ -67,10 +66,9 @@ contract SudoswapProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
         _testRescueERC20InsufficientAmount(tokenRescuer);
     }
 
-    function validMoodieOrder() private view returns (BasicOrder[] memory orders) {
+    function validMoodieOrder() private pure returns (BasicOrder[] memory orders) {
         orders = new BasicOrder[](1);
         orders[0].signer = address(0);
-        orders[0].recipient = payable(_buyer);
         orders[0].collection = MOODIE;
         orders[0].collectionType = CollectionType.ERC721;
 

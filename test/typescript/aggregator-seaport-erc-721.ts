@@ -31,10 +31,7 @@ describe("Aggregator", () => {
         proxy: proxy.address,
         selector: functionSelector,
         value: price,
-        orders: [
-          getSeaportOrderJson(orderOne, priceOne, buyer.address),
-          getSeaportOrderJson(orderTwo, priceTwo, buyer.address),
-        ],
+        orders: [getSeaportOrderJson(orderOne, priceOne), getSeaportOrderJson(orderTwo, priceTwo)],
         ordersExtraData: [getSeaportOrderExtraData(orderOne), getSeaportOrderExtraData(orderTwo)],
         extraData: abiCoder.encode(
           [SEAPORT_EXTRA_DATA_SCHEMA],
@@ -50,7 +47,7 @@ describe("Aggregator", () => {
 
     const tx = await aggregator
       .connect(buyer)
-      .buyWithETH(tradeData, false, { value: price.add(ethers.utils.parseEther("1")) });
+      .buyWithETH(tradeData, buyer.address, false, { value: price.add(ethers.utils.parseEther("1")) });
     const receipt = await tx.wait();
 
     validateSweepEvent(receipt, buyer.address, 1, 1);
@@ -76,10 +73,7 @@ describe("Aggregator", () => {
         proxy: proxy.address,
         selector: functionSelector,
         value: price,
-        orders: [
-          getSeaportOrderJson(orderOne, priceOne, buyer.address),
-          getSeaportOrderJson(orderTwo, priceTwo, buyer.address),
-        ],
+        orders: [getSeaportOrderJson(orderOne, priceOne), getSeaportOrderJson(orderTwo, priceTwo)],
         ordersExtraData: [getSeaportOrderExtraData(orderOne), getSeaportOrderExtraData(orderTwo)],
         extraData: abiCoder.encode(
           [SEAPORT_EXTRA_DATA_SCHEMA],
@@ -97,7 +91,7 @@ describe("Aggregator", () => {
 
     const tx = await aggregator
       .connect(buyer)
-      .buyWithETH(tradeData, false, { value: price.add(ethers.constants.WeiPerEther) });
+      .buyWithETH(tradeData, buyer.address, false, { value: price.add(ethers.constants.WeiPerEther) });
     const receipt = await tx.wait();
     const txFee = await calculateTxFee(tx);
 
@@ -128,10 +122,7 @@ describe("Aggregator", () => {
         proxy: proxy.address,
         selector: functionSelector,
         value: price,
-        orders: [
-          getSeaportOrderJson(orderOne, priceOne, buyer.address),
-          getSeaportOrderJson(orderTwo, priceTwo, buyer.address),
-        ],
+        orders: [getSeaportOrderJson(orderOne, priceOne), getSeaportOrderJson(orderTwo, priceTwo)],
         ordersExtraData: [getSeaportOrderExtraData(orderOne), getSeaportOrderExtraData(orderTwo)],
         extraData: abiCoder.encode(
           [SEAPORT_EXTRA_DATA_SCHEMA],
@@ -147,7 +138,7 @@ describe("Aggregator", () => {
 
     const buyerBalanceBefore = await ethers.provider.getBalance(buyer.address);
 
-    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, false, { value: price });
+    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, buyer.address, false, { value: price });
     const receipt = await tx.wait();
     const txFee = await calculateTxFee(tx);
 

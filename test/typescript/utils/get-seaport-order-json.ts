@@ -3,7 +3,6 @@ import { BigNumber } from "ethers";
 
 interface OrderJson {
   price: BigNumber;
-  recipient: string;
   signer: string;
   collection: string;
   collectionType: number;
@@ -15,10 +14,9 @@ interface OrderJson {
   signature: string;
 }
 
-export default function getSeaportOrderJson(listing: SeaportOrder, price: BigNumber, recipient: string): OrderJson {
+export default function getSeaportOrderJson(listing: SeaportOrder, price: BigNumber): OrderJson {
   const order = {
     price,
-    recipient,
     signer: listing.parameters.offerer,
     collection: listing.parameters.offer[0].token,
     collectionType: Number(listing.parameters.offer[0].itemType) === 2 ? 0 : 1,

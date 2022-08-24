@@ -33,7 +33,7 @@ contract X2Y2ProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
         bytes[] memory ordersExtraData = new bytes[](0);
 
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        x2y2Proxy.buyWithETH(orders, ordersExtraData, "", false);
+        x2y2Proxy.buyWithETH(orders, ordersExtraData, "", _buyer, false);
     }
 
     function testBuyWithETHOrdersLengthMismatch() public asPrankedUser(_buyer) {
@@ -44,18 +44,17 @@ contract X2Y2ProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
         ordersExtraData[1] = validBAYCOrderExtraData();
 
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        x2y2Proxy.buyWithETH{value: orders[0].price}(orders, ordersExtraData, "", false);
+        x2y2Proxy.buyWithETH{value: orders[0].price}(orders, ordersExtraData, "", _buyer, false);
     }
 
     function testBuyWithETHOrdersRecipientZeroAddress() public {
         BasicOrder[] memory orders = validBAYCOrder();
-        orders[0].recipient = address(0);
 
         bytes[] memory ordersExtraData = new bytes[](1);
         ordersExtraData[0] = validBAYCOrderExtraData();
 
         vm.expectRevert(IProxy.ZeroAddress.selector);
-        x2y2Proxy.buyWithETH{value: orders[0].price}(orders, ordersExtraData, "", false);
+        x2y2Proxy.buyWithETH{value: orders[0].price}(orders, ordersExtraData, "", address(0), false);
     }
 
     function testRescueETH() public {
@@ -82,10 +81,9 @@ contract X2Y2ProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
         _testRescueERC20InsufficientAmount(tokenRescuer);
     }
 
-    function validBAYCOrder() private view returns (BasicOrder[] memory orders) {
+    function validBAYCOrder() private pure returns (BasicOrder[] memory orders) {
         orders = new BasicOrder[](1);
         orders[0].signer = 0xCeE749F1CFc66cd3FB57CEfDe8A9c5999FbE7b8F;
-        orders[0].recipient = payable(_buyer);
         orders[0].collection = BAYC;
         orders[0].collectionType = CollectionType.ERC721;
 

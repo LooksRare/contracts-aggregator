@@ -45,7 +45,7 @@ describe("Aggregator", () => {
         proxy: seaportProxy.address,
         selector: seaportFunctionSelector,
         value: seaportPrice,
-        orders: [getSeaportOrderJson(seaportOrder, seaportPrice, buyer.address)],
+        orders: [getSeaportOrderJson(seaportOrder, seaportPrice)],
         ordersExtraData: [getSeaportOrderExtraData(seaportOrder)],
         extraData: abiCoder.encode(
           [SEAPORT_EXTRA_DATA_SCHEMA],
@@ -64,7 +64,6 @@ describe("Aggregator", () => {
         orders: [
           {
             signer: "0x3445A938F98EaAeb6AF3ce90e71FC5994a23F897",
-            recipient: buyer.address,
             collection: BAYC,
             collectionType: 0,
             tokenIds: [tokenId],
@@ -86,7 +85,7 @@ describe("Aggregator", () => {
 
     const buyerBalanceBefore = await getBalance(buyer.address);
 
-    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, false, { value: price });
+    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, buyer.address, false, { value: price });
     const receipt = await tx.wait();
     const txFee = await calculateTxFee(tx);
 
@@ -125,7 +124,7 @@ describe("Aggregator", () => {
         proxy: seaportProxy.address,
         selector: seaportFunctionSelector,
         value: seaportPrice,
-        orders: [getSeaportOrderJson(seaportOrder, seaportPrice, buyer.address)],
+        orders: [getSeaportOrderJson(seaportOrder, seaportPrice)],
         ordersExtraData: [getSeaportOrderExtraData(seaportOrder)],
         extraData: abiCoder.encode(
           [SEAPORT_EXTRA_DATA_SCHEMA],
@@ -144,7 +143,6 @@ describe("Aggregator", () => {
         orders: [
           {
             signer: "0x3445A938F98EaAeb6AF3ce90e71FC5994a23F897",
-            recipient: buyer.address,
             collection: BAYC,
             collectionType: 0,
             tokenIds: [tokenId],
@@ -166,9 +164,9 @@ describe("Aggregator", () => {
 
     const buyerBalanceBefore = await ethers.provider.getBalance(buyer.address);
 
-    await expect(aggregator.connect(buyer).buyWithETH(tradeData, true, { value: price })).to.be.revertedWith(
-      "BadSignatureV(0)"
-    );
+    await expect(
+      aggregator.connect(buyer).buyWithETH(tradeData, buyer.address, true, { value: price })
+    ).to.be.revertedWith("BadSignatureV(0)");
 
     expect(await bayc.balanceOf(buyer.address)).to.equal(0);
 

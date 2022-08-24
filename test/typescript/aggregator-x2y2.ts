@@ -74,7 +74,6 @@ describe("LooksRareAggregator", () => {
           orders: [
             {
               price: priceOne,
-              recipient: buyer.address,
               signer: orderOne.orders[0].user,
               collection: BAYC,
               collectionType: 0,
@@ -87,7 +86,6 @@ describe("LooksRareAggregator", () => {
             },
             {
               price: priceTwo,
-              recipient: buyer.address,
               signer: orderTwo.orders[0].user,
               collection: BAYC,
               collectionType: 0,
@@ -100,7 +98,6 @@ describe("LooksRareAggregator", () => {
             },
             {
               price: priceThree,
-              recipient: buyer.address,
               signer: orderThree.orders[0].user,
               collection: PARALLEL,
               collectionType: 1,
@@ -113,7 +110,6 @@ describe("LooksRareAggregator", () => {
             },
             {
               price: priceFour,
-              recipient: buyer.address,
               signer: orderFour.orders[0].user,
               collection: PARALLEL,
               collectionType: 1,
@@ -134,6 +130,7 @@ describe("LooksRareAggregator", () => {
           extraData: HashZero,
         },
       ],
+      buyer.address,
       false,
       { value: totalValue }
     );
@@ -166,7 +163,6 @@ describe("LooksRareAggregator", () => {
 
     const orderOneJson = {
       price: priceOne,
-      recipient: buyer.address,
       signer: orderOne.orders[0].user,
       collection: BAYC,
       collectionType: 0,
@@ -189,6 +185,7 @@ describe("LooksRareAggregator", () => {
           extraData: HashZero,
         },
       ],
+      buyer.address,
       false,
       { value: totalValue }
     );
@@ -221,7 +218,6 @@ describe("LooksRareAggregator", () => {
 
     const orderOneJson = {
       price: priceOne,
-      recipient: buyer.address,
       signer: orderOne.orders[0].user,
       collection: BAYC,
       collectionType: 0,
@@ -245,6 +241,7 @@ describe("LooksRareAggregator", () => {
             extraData: HashZero,
           },
         ],
+        buyer.address,
         true,
         { value: totalValue }
       )

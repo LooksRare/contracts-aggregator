@@ -36,6 +36,7 @@ contract LooksRareProxy is TokenReceiverProxy, TokenRescuer, SignatureChecker {
      * @dev The 3rd argument extraData is not used
      * @param orders Orders to be executed by LooksRare
      * @param ordersExtraData Extra data for each order
+     * @param recipient The address to receive the purchased NFTs
      * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
      * @return Whether at least 1 out of N trades succeeded
      */
@@ -43,15 +44,16 @@ contract LooksRareProxy is TokenReceiverProxy, TokenRescuer, SignatureChecker {
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,
         bytes memory,
+        address recipient,
         bool isAtomic
     ) external payable override returns (bool) {
+        if (recipient == address(0)) revert ZeroAddress();
+
         uint256 ordersLength = orders.length;
         if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();
 
         uint256 executedCount;
         for (uint256 i; i < ordersLength; ) {
-            if (orders[i].recipient == address(0)) revert ZeroAddress();
-
             BasicOrder memory order = orders[i];
 
             OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
@@ -86,7 +88,7 @@ contract LooksRareProxy is TokenReceiverProxy, TokenRescuer, SignatureChecker {
                 takerBid.minPercentageToAsk = orderExtraData.minPercentageToAsk;
             }
 
-            if (_executeSingleOrder(takerBid, makerAsk, order.recipient, order.collectionType, isAtomic)) {
+            if (_executeSingleOrder(takerBid, makerAsk, recipient, order.collectionType, isAtomic)) {
                 executedCount += 1;
             }
 

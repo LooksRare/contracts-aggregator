@@ -34,7 +34,7 @@ contract SeaportProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
         bytes[] memory ordersExtraData = new bytes[](0);
 
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        seaportProxy.buyWithETH(orders, ordersExtraData, validBAYCExtraData(), false);
+        seaportProxy.buyWithETH(orders, ordersExtraData, validBAYCExtraData(), _buyer, false);
     }
 
     function testBuyWithETHOrdersLengthMismatch() public asPrankedUser(_buyer) {
@@ -45,18 +45,23 @@ contract SeaportProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
         ordersExtraData[1] = validBAYCOrderExtraData();
 
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        seaportProxy.buyWithETH{value: orders[0].price}(orders, ordersExtraData, validBAYCExtraData(), false);
+        seaportProxy.buyWithETH{value: orders[0].price}(orders, ordersExtraData, validBAYCExtraData(), _buyer, false);
     }
 
     function testBuyWithETHOrdersRecipientZeroAddress() public {
         BasicOrder[] memory orders = validBAYCOrder();
-        orders[0].recipient = address(0);
 
         bytes[] memory ordersExtraData = new bytes[](1);
         ordersExtraData[0] = validBAYCOrderExtraData();
 
         vm.expectRevert(IProxy.ZeroAddress.selector);
-        seaportProxy.buyWithETH{value: orders[0].price}(orders, ordersExtraData, validBAYCExtraData(), false);
+        seaportProxy.buyWithETH{value: orders[0].price}(
+            orders,
+            ordersExtraData,
+            validBAYCExtraData(),
+            address(0),
+            false
+        );
     }
 
     function testRescueETH() public {
@@ -83,10 +88,9 @@ contract SeaportProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
         _testRescueERC20InsufficientAmount(tokenRescuer);
     }
 
-    function validBAYCOrder() private view returns (BasicOrder[] memory orders) {
+    function validBAYCOrder() private pure returns (BasicOrder[] memory orders) {
         orders = new BasicOrder[](1);
         orders[0].signer = 0x7a277Cf6E2F3704425195caAe4148848c29Ff815;
-        orders[0].recipient = payable(_buyer);
         orders[0].collection = BAYC;
         orders[0].collectionType = CollectionType.ERC721;
 

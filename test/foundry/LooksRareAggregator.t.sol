@@ -15,6 +15,7 @@ import {TokenRescuerTest} from "./TokenRescuer.t.sol";
 abstract contract TestParameters {
     address internal constant LOOKSRARE_V1 = 0x59728544B08AB483533076417FbBB2fD0B17CE3a;
     address internal constant _notOwner = address(1);
+    address internal constant _buyer = address(2);
 }
 
 contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTest, ILooksRareAggregator {
@@ -80,6 +81,6 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTes
     function testBuyWithETHZeroOrders() public {
         ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](0);
         vm.expectRevert(ILooksRareAggregator.InvalidOrderLength.selector);
-        aggregator.buyWithETH(tradeData, false);
+        aggregator.buyWithETH(tradeData, _buyer, false);
     }
 }

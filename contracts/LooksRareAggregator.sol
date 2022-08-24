@@ -18,23 +18,28 @@ contract LooksRareAggregator is TokenRescuer, ILooksRareAggregator {
     /**
      * @notice Execute NFT sweeps in different marketplaces in a single transaction
      * @param tradeData Data object to be passed downstream to each marketplace's proxy for execution
+     * @param recipient The address to receive the purchased NFTs
      * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
      */
-    function buyWithETH(TradeData[] calldata tradeData, bool isAtomic) external payable {
+    function buyWithETH(
+        TradeData[] calldata tradeData,
+        address recipient,
+        bool isAtomic
+    ) external payable {
+        if (recipient == address(0)) revert ZeroAddress();
         if (tradeData.length == 0) revert InvalidOrderLength();
 
         uint256 successCount;
         for (uint256 i; i < tradeData.length; ) {
-            address proxy = tradeData[i].proxy;
-            bytes4 selector = tradeData[i].selector;
-            if (!_proxyFunctionSelectors[proxy][selector]) revert InvalidFunction();
+            if (!_proxyFunctionSelectors[tradeData[i].proxy][tradeData[i].selector]) revert InvalidFunction();
 
-            (bool success, bytes memory returnData) = proxy.call{value: tradeData[i].value}(
+            (bool success, bytes memory returnData) = tradeData[i].proxy.call{value: tradeData[i].value}(
                 abi.encodeWithSelector(
-                    selector,
+                    tradeData[i].selector,
                     tradeData[i].orders,
                     tradeData[i].ordersExtraData,
                     tradeData[i].extraData,
+                    recipient,
                     isAtomic
                 )
             );

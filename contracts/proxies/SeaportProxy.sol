@@ -47,18 +47,19 @@ contract SeaportProxy is TokenRescuer, IProxy {
      * @param orders Orders to be executed by Seaport
      * @param ordersExtraData Extra data for each order
      * @param extraData Extra data for the whole transaction
+     * @param recipient The address to receive the purchased NFTs
      * @return Whether at least 1 out of N trades succeeded
      */
     function buyWithETH(
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,
         bytes calldata extraData,
+        address recipient,
         bool
     ) external payable override returns (bool) {
         uint256 ordersLength = orders.length;
         if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();
 
-        address recipient = orders[0].recipient;
         if (recipient == address(0)) revert ZeroAddress();
 
         AdvancedOrder[] memory advancedOrders = new AdvancedOrder[](orders.length);

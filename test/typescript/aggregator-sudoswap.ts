@@ -26,7 +26,6 @@ describe("Aggregator", () => {
         orders: [
           {
             signer: AddressZero,
-            recipient: buyer.address,
             collection: "0x0f23939ee95350f26d9c1b818ee0cc1c8fd2b99d",
             collectionType: 0,
             tokenIds: [5536],
@@ -39,7 +38,6 @@ describe("Aggregator", () => {
           },
           {
             signer: AddressZero,
-            recipient: buyer.address,
             collection: "0x4d1ffe3eb76f15d1f7651adf322e1f5a6e5c7552",
             collectionType: 0,
             tokenIds: [1915],
@@ -56,7 +54,7 @@ describe("Aggregator", () => {
       },
     ];
 
-    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, false, { value: price });
+    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, buyer.address, false, { value: price });
     const receipt = await tx.wait();
 
     validateSweepEvent(receipt, buyer.address, 1, 1);
@@ -81,7 +79,6 @@ describe("Aggregator", () => {
         orders: [
           {
             signer: AddressZero,
-            recipient: buyer.address,
             collection: "0x0f23939ee95350f26d9c1b818ee0cc1c8fd2b99d",
             collectionType: 0,
             tokenIds: [5536],
@@ -94,7 +91,6 @@ describe("Aggregator", () => {
           },
           {
             signer: AddressZero,
-            recipient: buyer.address,
             collection: "0x4d1ffe3eb76f15d1f7651adf322e1f5a6e5c7552",
             collectionType: 0,
             tokenIds: [1915],
@@ -113,7 +109,7 @@ describe("Aggregator", () => {
 
     const buyerBalanceBefore = await ethers.provider.getBalance(buyer.address);
 
-    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, false, { value: price });
+    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, buyer.address, false, { value: price });
     const receipt = await tx.wait();
     const txFee = await calculateTxFee(tx);
 

@@ -42,6 +42,7 @@ contract X2Y2Proxy is TokenReceiverProxy, TokenRescuer, SignatureChecker {
      * @dev The 3rd argument extraData is not used
      * @param orders Orders to be executed by Seaport
      * @param ordersExtraData Extra data for each order
+     * @param recipient The address to receive the purchased NFTs
      * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
      * @return Whether at least 1 out of N trades succeeded
      */
@@ -49,16 +50,18 @@ contract X2Y2Proxy is TokenReceiverProxy, TokenRescuer, SignatureChecker {
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,
         bytes calldata,
+        address recipient,
         bool isAtomic
     ) external payable override returns (bool) {
+        if (recipient == address(0)) revert ZeroAddress();
+
         uint256 ordersLength = orders.length;
         if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();
 
         uint256 executedCount;
         for (uint256 i; i < ordersLength; ) {
-            if (orders[i].recipient == address(0)) revert ZeroAddress();
             OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
-            bool executed = _executeSingleOrder(orders[i], orderExtraData, isAtomic);
+            bool executed = _executeSingleOrder(orders[i], orderExtraData, recipient, isAtomic);
             if (executed) executedCount += 1;
 
             unchecked {
@@ -74,10 +77,9 @@ contract X2Y2Proxy is TokenReceiverProxy, TokenRescuer, SignatureChecker {
     function _executeSingleOrder(
         BasicOrder calldata order,
         OrderExtraData memory orderExtraData,
+        address recipient,
         bool isAtomic
     ) private returns (bool executed) {
-        if (order.recipient == address(0)) revert ZeroAddress();
-
         Market.RunInput memory runInput;
 
         runInput.r = orderExtraData.inputR;
@@ -126,23 +128,11 @@ contract X2Y2Proxy is TokenReceiverProxy, TokenRescuer, SignatureChecker {
 
         if (isAtomic) {
             marketplace.run{value: order.price}(runInput);
-            _transferTokenToRecipient(
-                order.collectionType,
-                order.recipient,
-                order.collection,
-                order.tokenIds[0],
-                order.amounts[0]
-            );
+            _redirectTokenToRecipient(order, recipient);
             executed = true;
         } else {
             try marketplace.run{value: order.price}(runInput) {
-                _transferTokenToRecipient(
-                    order.collectionType,
-                    order.recipient,
-                    order.collection,
-                    order.tokenIds[0],
-                    order.amounts[0]
-                );
+                _redirectTokenToRecipient(order, recipient);
                 executed = true;
             } catch {}
         }
@@ -163,5 +153,18 @@ contract X2Y2Proxy is TokenReceiverProxy, TokenRescuer, SignatureChecker {
                     item
                 )
             );
+    }
+
+    /**
+     * @dev Having this function helps solve stack too deep error
+     */
+    function _redirectTokenToRecipient(BasicOrder memory order, address recipient) private {
+        _transferTokenToRecipient(
+            order.collectionType,
+            recipient,
+            order.collection,
+            order.tokenIds[0],
+            order.amounts[0]
+        );
     }
 }

@@ -34,7 +34,7 @@ contract LooksRareProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
         bytes[] memory ordersExtraData = new bytes[](0);
 
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        looksRareProxy.buyWithETH(orders, ordersExtraData, "", false);
+        looksRareProxy.buyWithETH(orders, ordersExtraData, "", _buyer, false);
     }
 
     function testBuyWithETHOrdersLengthMismatch() public asPrankedUser(_buyer) {
@@ -45,18 +45,17 @@ contract LooksRareProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
         ordersExtraData[1] = abi.encode(LOOKSRARE_STRATEGY_FIXED_PRICE, 50, 8500);
 
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        looksRareProxy.buyWithETH{value: orders[0].price}(orders, ordersExtraData, "", false);
+        looksRareProxy.buyWithETH{value: orders[0].price}(orders, ordersExtraData, "", _buyer, false);
     }
 
     function testBuyWithETHOrdersRecipientZeroAddress() public {
         BasicOrder[] memory orders = validBAYCOrder();
-        orders[0].recipient = address(0);
 
         bytes[] memory ordersExtraData = new bytes[](1);
         ordersExtraData[0] = abi.encode(LOOKSRARE_STRATEGY_FIXED_PRICE, 0, 9550);
 
         vm.expectRevert(IProxy.ZeroAddress.selector);
-        looksRareProxy.buyWithETH{value: orders[0].price}(orders, ordersExtraData, "", false);
+        looksRareProxy.buyWithETH{value: orders[0].price}(orders, ordersExtraData, "", address(0), false);
     }
 
     function testRescueETH() public {
@@ -86,7 +85,6 @@ contract LooksRareProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
     function validBAYCOrder() private pure returns (BasicOrder[] memory orders) {
         orders = new BasicOrder[](1);
         orders[0].signer = 0x2137213d50207Edfd92bCf4CF7eF9E491A155357;
-        orders[0].recipient = _buyer;
         orders[0].collection = BAYC;
         orders[0].collectionType = CollectionType.ERC721;
         uint256[] memory tokenIds = new uint256[](1);

@@ -49,7 +49,7 @@ describe("Aggregator", () => {
         proxy: seaportProxy.address,
         selector: seaportFunctionSelector,
         value: seaportPrice,
-        orders: [getSeaportOrderJson(seaportOrder, seaportPrice, buyer.address)],
+        orders: [getSeaportOrderJson(seaportOrder, seaportPrice)],
         ordersExtraData: [getSeaportOrderExtraData(seaportOrder)],
         extraData: abiCoder.encode(
           [SEAPORT_EXTRA_DATA_SCHEMA],
@@ -68,7 +68,6 @@ describe("Aggregator", () => {
         orders: [
           {
             signer: "0xCd46DEe6e832e3ffa3FdC394b8dC673D6CA843dd",
-            recipient: buyer.address,
             collection: BAYC,
             collectionType: 0,
             tokenIds: [2491],
@@ -93,7 +92,6 @@ describe("Aggregator", () => {
         orders: [
           {
             signer: AddressZero,
-            recipient: buyer.address,
             collection: "0xc44b755cb278b682de1Cb07c7B3D15C44be62c34",
             collectionType: 0,
             tokenIds: [8167],
@@ -110,7 +108,7 @@ describe("Aggregator", () => {
       },
     ];
 
-    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, false, { value: price });
+    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, buyer.address, false, { value: price });
     const receipt = await tx.wait();
     validateSweepEvent(receipt, buyer.address, 3, 3);
 
@@ -150,7 +148,7 @@ describe("Aggregator", () => {
         proxy: seaportProxy.address,
         selector: seaportFunctionSelector,
         value: seaportPrice,
-        orders: [getSeaportOrderJson(seaportOrder, seaportPrice, buyer.address)],
+        orders: [getSeaportOrderJson(seaportOrder, seaportPrice)],
         ordersExtraData: [getSeaportOrderExtraData(seaportOrder)],
         extraData: abiCoder.encode(
           [SEAPORT_EXTRA_DATA_SCHEMA],
@@ -169,7 +167,6 @@ describe("Aggregator", () => {
         orders: [
           {
             signer: "0xCd46DEe6e832e3ffa3FdC394b8dC673D6CA843dd",
-            recipient: buyer.address,
             collection: BAYC,
             collectionType: 0,
             tokenIds: [2491],
@@ -194,7 +191,6 @@ describe("Aggregator", () => {
         orders: [
           {
             signer: AddressZero,
-            recipient: buyer.address,
             collection: "0xc44b755cb278b682de1Cb07c7B3D15C44be62c34",
             collectionType: 0,
             tokenIds: [8167],
@@ -215,7 +211,7 @@ describe("Aggregator", () => {
 
     const buyerBalanceBefore = await getBalance(buyer.address);
 
-    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, false, { value: price.mul(2) });
+    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, buyer.address, false, { value: price.mul(2) });
     const receipt = await tx.wait();
     const txFee = await calculateTxFee(tx);
 
@@ -264,7 +260,7 @@ describe("Aggregator", () => {
         proxy: seaportProxy.address,
         selector: seaportFunctionSelector,
         value: seaportPrice,
-        orders: [getSeaportOrderJson(seaportOrder, seaportPrice, buyer.address)],
+        orders: [getSeaportOrderJson(seaportOrder, seaportPrice)],
         ordersExtraData: [getSeaportOrderExtraData(seaportOrder)],
         extraData: abiCoder.encode(
           [SEAPORT_EXTRA_DATA_SCHEMA],
@@ -283,7 +279,6 @@ describe("Aggregator", () => {
         orders: [
           {
             signer: "0xCd46DEe6e832e3ffa3FdC394b8dC673D6CA843dd",
-            recipient: buyer.address,
             collection: BAYC,
             collectionType: 0,
             tokenIds: [2491],
@@ -308,7 +303,6 @@ describe("Aggregator", () => {
         orders: [
           {
             signer: AddressZero,
-            recipient: buyer.address,
             collection: "0xc44b755cb278b682de1Cb07c7B3D15C44be62c34",
             collectionType: 0,
             tokenIds: [8167],
@@ -329,7 +323,8 @@ describe("Aggregator", () => {
 
     const buyerBalanceBefore = await getBalance(buyer.address);
 
-    await expect(aggregator.connect(buyer).buyWithETH(tradeData, true, { value: price.mul(2) })).to.be.reverted;
+    await expect(aggregator.connect(buyer).buyWithETH(tradeData, buyer.address, true, { value: price.mul(2) })).to.be
+      .reverted;
 
     expect(await bayc.balanceOf(buyer.address)).to.equal(0);
 

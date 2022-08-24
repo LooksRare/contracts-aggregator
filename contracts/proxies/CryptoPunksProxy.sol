@@ -23,6 +23,7 @@ contract CryptoPunksProxy is IProxy, TokenRescuer {
      * @notice Execute CryptoPunks NFT sweeps in a single transaction
      * @dev Only the 1st argument orders and the 4th argument isAtomic are used
      * @param orders Orders to be executed by CryptoPunks
+     * @param recipient The address to receive the purchased NFTs
      * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
      * @return Whether at least 1 out of N trades succeeded
      */
@@ -30,24 +31,24 @@ contract CryptoPunksProxy is IProxy, TokenRescuer {
         BasicOrder[] calldata orders,
         bytes[] calldata,
         bytes memory,
+        address recipient,
         bool isAtomic
     ) external payable override returns (bool) {
+        if (recipient == address(0)) revert ZeroAddress();
         uint256 ordersLength = orders.length;
         if (ordersLength == 0) revert InvalidOrderLength();
 
         uint256 executedCount;
         for (uint256 i; i < ordersLength; ) {
-            if (orders[i].recipient == address(0)) revert ZeroAddress();
-
             uint256 punkId = orders[i].tokenIds[0];
 
             if (isAtomic) {
                 cryptopunks.buyPunk{value: orders[i].price}(punkId);
-                cryptopunks.transferPunk(orders[i].recipient, punkId);
+                cryptopunks.transferPunk(recipient, punkId);
                 executedCount += 1;
             } else {
                 try cryptopunks.buyPunk{value: orders[i].price}(punkId) {
-                    cryptopunks.transferPunk(orders[i].recipient, punkId);
+                    cryptopunks.transferPunk(recipient, punkId);
                     executedCount += 1;
                 } catch {}
             }

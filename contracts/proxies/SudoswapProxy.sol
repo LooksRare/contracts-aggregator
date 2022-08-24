@@ -23,12 +23,14 @@ contract SudoswapProxy is TokenRescuer, IProxy {
      * @notice Execute Sudoswap NFT sweeps in a single transaction
      * @dev Only the 1st argument orders is used
      * @param orders Orders to be executed by Seaport
+     * @param recipient The address to receive the purchased NFTs
      * @return Whether at least 1 out of N trades succeeded
      */
     function buyWithETH(
         BasicOrder[] calldata orders,
         bytes[] calldata,
         bytes memory,
+        address recipient,
         bool
     ) external payable override returns (bool) {
         uint256 ordersLength = orders.length;
@@ -38,7 +40,6 @@ contract SudoswapProxy is TokenRescuer, IProxy {
             orders.length
         );
 
-        address recipient = orders[0].recipient;
         if (recipient == address(0)) revert ZeroAddress();
 
         for (uint256 i; i < ordersLength; ) {

@@ -27,7 +27,6 @@ describe("LooksRareAggregator", () => {
         orders: [
           {
             signer: "0x2137213d50207Edfd92bCf4CF7eF9E491A155357",
-            recipient: buyer.address,
             collection: BAYC,
             collectionType: 0,
             tokenIds: [tokenIdOne],
@@ -41,7 +40,6 @@ describe("LooksRareAggregator", () => {
           },
           {
             signer: "0xaf0f4479aF9Df756b9b2c69B463214B9a3346443",
-            recipient: buyer.address,
             collection: BAYC,
             collectionType: 0,
             tokenIds: [tokenIdTwo],
@@ -62,7 +60,7 @@ describe("LooksRareAggregator", () => {
       },
     ];
 
-    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, false, { value: totalValue });
+    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, buyer.address, false, { value: totalValue });
     const receipt = await tx.wait();
     validateSweepEvent(receipt, buyer.address, 1, 1);
 
@@ -91,7 +89,6 @@ describe("LooksRareAggregator", () => {
         orders: [
           {
             signer: "0x2137213d50207Edfd92bCf4CF7eF9E491A155357",
-            recipient: buyer.address,
             collection: BAYC,
             collectionType: 0,
             tokenIds: [tokenIdOne],
@@ -105,7 +102,6 @@ describe("LooksRareAggregator", () => {
           },
           {
             signer: "0xaf0f4479aF9Df756b9b2c69B463214B9a3346443",
-            recipient: buyer.address,
             collection: BAYC,
             collectionType: 0,
             tokenIds: [tokenIdTwo],
@@ -130,7 +126,7 @@ describe("LooksRareAggregator", () => {
 
     const tx = await aggregator
       .connect(buyer)
-      .buyWithETH(tradeData, false, { value: totalValue.add(ethers.constants.WeiPerEther) });
+      .buyWithETH(tradeData, buyer.address, false, { value: totalValue.add(ethers.constants.WeiPerEther) });
     const receipt = await tx.wait();
     const txFee = await calculateTxFee(tx);
 
@@ -158,7 +154,6 @@ describe("LooksRareAggregator", () => {
 
     const orderOneJson = {
       signer: "0x2137213d50207Edfd92bCf4CF7eF9E491A155357",
-      recipient: buyer.address,
       collection: BAYC,
       collectionType: 0,
       tokenIds: [tokenIdOne],
@@ -187,7 +182,7 @@ describe("LooksRareAggregator", () => {
 
     const buyerBalanceBefore = await getBalance(buyer.address);
 
-    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, false, { value: totalValue });
+    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, buyer.address, false, { value: totalValue });
     const receipt = await tx.wait();
     const txFee = await calculateTxFee(tx);
 
@@ -214,7 +209,6 @@ describe("LooksRareAggregator", () => {
 
     const orderOneJson = {
       signer: "0x2137213d50207Edfd92bCf4CF7eF9E491A155357",
-      recipient: buyer.address,
       collection: BAYC,
       collectionType: 0,
       tokenIds: [tokenIdOne],
@@ -243,9 +237,9 @@ describe("LooksRareAggregator", () => {
 
     const buyerBalanceBefore = await getBalance(buyer.address);
 
-    await expect(aggregator.connect(buyer).buyWithETH(tradeData, true, { value: totalValue })).to.be.revertedWith(
-      "Order: Matching order expired"
-    );
+    await expect(
+      aggregator.connect(buyer).buyWithETH(tradeData, buyer.address, true, { value: totalValue })
+    ).to.be.revertedWith("Order: Matching order expired");
 
     expect(await bayc.balanceOf(aggregator.address)).to.equal(0);
     expect(await bayc.balanceOf(buyer.address)).to.equal(0);
