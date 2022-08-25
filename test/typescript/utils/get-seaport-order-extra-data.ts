@@ -5,6 +5,10 @@ import SeaportOrder from "../interfaces/seaport/order";
 
 export default function getSeaportOrderExtraData(order: SeaportOrder): string {
   const abiCoder = ethers.utils.defaultAbiCoder;
+  const recipients = order.parameters.consideration.map((item: Consideration) => ({
+    amount: item.endAmount,
+    recipient: item.recipient,
+  }));
   return abiCoder.encode(
     [SEAPORT_ORDER_EXTRA_DATA_SCHEMA],
     [
@@ -14,10 +18,7 @@ export default function getSeaportOrderExtraData(order: SeaportOrder): string {
         zoneHash: order.parameters.zoneHash,
         salt: order.parameters.salt,
         conduitKey: order.parameters.conduitKey,
-        recipients: order.parameters.consideration.map((item: Consideration) => ({
-          recipient: item.recipient,
-          amount: item.endAmount,
-        })),
+        recipients,
       },
     ]
   );

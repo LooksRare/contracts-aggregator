@@ -4,10 +4,10 @@ pragma solidity 0.8.14;
 import {SeaportInterface} from "../interfaces/SeaportInterface.sol";
 import {BasicOrder} from "../libraries/OrderStructs.sol";
 import {CollectionType} from "../libraries/OrderEnums.sol";
-import {AdvancedOrder, CriteriaResolver, OrderParameters, OfferItem, ConsiderationItem, FulfillmentComponent} from "../libraries/seaport/ConsiderationStructs.sol";
+import {AdvancedOrder, CriteriaResolver, OrderParameters, OfferItem, ConsiderationItem, FulfillmentComponent, AdditionalRecipient} from "../libraries/seaport/ConsiderationStructs.sol";
 import {ItemType, OrderType} from "../libraries/seaport/ConsiderationEnums.sol";
 import {TokenRescuer} from "../TokenRescuer.sol";
-import {IProxy} from "./IProxy.sol";
+import {IProxy} from "../proxies/IProxy.sol";
 
 /**
  * @title SeaportProxy
@@ -18,10 +18,7 @@ import {IProxy} from "./IProxy.sol";
 contract SeaportProxy is TokenRescuer, IProxy {
     SeaportInterface public immutable marketplace;
 
-    struct Recipient {
-        address recipient; // Sale proceeds recipient, typically it is the address of seller/OpenSea Fees/royalty
-        uint256 amount; // Amount of ETH to send to the recipient
-    }
+    error TradeExecutionFailed();
 
     struct ExtraData {
         FulfillmentComponent[][] offerFulfillments; // Contains the order and item index of each offer item
@@ -34,7 +31,7 @@ contract SeaportProxy is TokenRescuer, IProxy {
         bytes32 zoneHash; // An arbitrary 32-byte value that will be supplied to the zone when fulfilling restricted orders that the zone can utilize when making a determination on whether to authorize the order
         uint256 salt; // An arbitrary source of entropy for the order
         bytes32 conduitKey; // A bytes32 value that indicates what conduit, if any, should be utilized as a source for token approvals when performing transfers
-        Recipient[] recipients; // Recipients of consideration items
+        AdditionalRecipient[] recipients; // Recipients of consideration items
     }
 
     constructor(address _marketplace) {
@@ -43,11 +40,11 @@ contract SeaportProxy is TokenRescuer, IProxy {
 
     /**
      * @notice Execute Seaport NFT sweeps in a single transaction
-     * @dev The 4th argument isAtomic is not used because there is only 1 call to Seaport
      * @param orders Orders to be executed by Seaport
      * @param ordersExtraData Extra data for each order
      * @param extraData Extra data for the whole transaction
      * @param recipient The address to receive the purchased NFTs
+     * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
      * @return Whether at least 1 out of N trades succeeded
      */
     function buyWithETH(
@@ -55,45 +52,87 @@ contract SeaportProxy is TokenRescuer, IProxy {
         bytes[] calldata ordersExtraData,
         bytes calldata extraData,
         address recipient,
-        bool
+        bool isAtomic
     ) external payable override returns (bool) {
         uint256 ordersLength = orders.length;
         if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();
 
         if (recipient == address(0)) revert ZeroAddress();
 
-        AdvancedOrder[] memory advancedOrders = new AdvancedOrder[](orders.length);
-        ExtraData memory extraDataStruct = abi.decode(extraData, (ExtraData));
-
-        for (uint256 i; i < orders.length; ) {
-            OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
-            advancedOrders[i].parameters = _populateParameters(orders[i], orderExtraData);
-            advancedOrders[i].numerator = 1;
-            advancedOrders[i].denominator = 1;
-            advancedOrders[i].signature = orders[i].signature;
-
-            unchecked {
-                ++i;
-            }
-        }
-
         CriteriaResolver[] memory criteriaResolver = new CriteriaResolver[](0);
 
-        // There is no need to do a try/catch here as there is only 1 external call
-        // and if it fails the aggregator will catch it and decide whether to revert.
-        marketplace.fulfillAvailableAdvancedOrders{value: msg.value}(
-            advancedOrders,
-            criteriaResolver,
-            extraDataStruct.offerFulfillments,
-            extraDataStruct.considerationFulfillments,
-            bytes32(0),
-            recipient,
-            ordersLength
-        );
+        if (isAtomic) {
+            AdvancedOrder[] memory advancedOrders = new AdvancedOrder[](ordersLength);
+            ExtraData memory extraDataStruct = abi.decode(extraData, (ExtraData));
 
-        _returnETHIfAny();
+            for (uint256 i; i < orders.length; ) {
+                OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
+                advancedOrders[i].parameters = _populateParameters(orders[i], orderExtraData);
+                advancedOrders[i].numerator = 1;
+                advancedOrders[i].denominator = 1;
+                advancedOrders[i].signature = orders[i].signature;
 
-        return true;
+                unchecked {
+                    ++i;
+                }
+            }
+
+            // There is no need to do a try/catch here as there is only 1 external call
+            // and if it fails the aggregator will catch it and decide whether to revert.
+            (bool[] memory availableOrders, ) = marketplace.fulfillAvailableAdvancedOrders{value: msg.value}(
+                advancedOrders,
+                criteriaResolver,
+                extraDataStruct.offerFulfillments,
+                extraDataStruct.considerationFulfillments,
+                bytes32(0),
+                recipient,
+                ordersLength
+            );
+
+            for (uint256 i; i < availableOrders.length; ) {
+                if (!availableOrders[i]) revert TradeExecutionFailed();
+
+                unchecked {
+                    ++i;
+                }
+            }
+
+            _returnETHIfAny();
+
+            return true;
+        } else {
+            uint256 executedCount;
+
+            for (uint256 i; i < ordersLength; ) {
+                OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
+                AdvancedOrder memory advancedOrder;
+                advancedOrder.parameters = _populateParameters(orders[i], orderExtraData);
+                advancedOrder.numerator = 1;
+                advancedOrder.denominator = 1;
+                advancedOrder.signature = orders[i].signature;
+
+                uint256 price = orders[i].price;
+
+                try
+                    marketplace.fulfillAdvancedOrder{value: price}(
+                        advancedOrder,
+                        criteriaResolver,
+                        bytes32(0),
+                        recipient
+                    )
+                {
+                    executedCount += 1;
+                } catch {}
+
+                unchecked {
+                    ++i;
+                }
+            }
+
+            _returnETHIfAny();
+
+            return executedCount > 0;
+        }
     }
 
     /**

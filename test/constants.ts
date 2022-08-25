@@ -27,7 +27,7 @@ export const SEAPORT_ORDER_EXTRA_DATA_SCHEMA = `
     bytes32 zoneHash,
     uint256 salt,
     bytes32 conduitKey,
-    tuple(address recipient, uint256 amount)[] recipients
+    tuple(uint256 amount, address recipient)[] recipients
   ) orderExtraData
 `;
 
