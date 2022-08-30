@@ -65,7 +65,7 @@ contract SeaportProxy is TokenRescuer, IProxy {
             AdvancedOrder[] memory advancedOrders = new AdvancedOrder[](ordersLength);
             ExtraData memory extraDataStruct = abi.decode(extraData, (ExtraData));
 
-            for (uint256 i; i < orders.length; ) {
+            for (uint256 i; i < ordersLength; ) {
                 OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
                 advancedOrders[i].parameters = _populateParameters(orders[i], orderExtraData);
                 advancedOrders[i].numerator = 1;
