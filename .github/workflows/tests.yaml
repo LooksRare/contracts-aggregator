@@ -44,6 +44,10 @@ jobs:
         run: npx hardhat test test/typescript/aggregator-looksrare.ts
         env:
           FORKED_BLOCK_NUMBER: 15282897
+      - name: Run X2Y2 tests
+        run: npx hardhat test test/typescript/aggregator-x2y2.ts
+        env:
+          FORKED_BLOCK_NUMBER: 15346990
       - name: Run atomic Seaport ERC-721 tests
         run: npx hardhat test test/typescript/aggregator-seaport-erc-721-atomic.ts
         env:
