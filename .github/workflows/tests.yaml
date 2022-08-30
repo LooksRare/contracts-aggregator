@@ -40,18 +40,18 @@ jobs:
           version: nightly
       - name: Compile code (Hardhat)
         run: yarn compile:force
-      - name: Run LooksRare tests
-        run: npx hardhat test test/typescript/aggregator-looksrare.ts
-        env:
-          FORKED_BLOCK_NUMBER: 15282897
-      - name: Run X2Y2 tests
-        run: npx hardhat test test/typescript/aggregator-x2y2.ts
-        env:
-          FORKED_BLOCK_NUMBER: 15346990
       - name: Run CryptoPunks tests
         run: npx hardhat test test/typescript/aggregator-cryptopunks.ts
         env:
           FORKED_BLOCK_NUMBER: 15358065
+      - name: Run X2Y2 tests
+        run: npx hardhat test test/typescript/aggregator-x2y2.ts
+        env:
+          FORKED_BLOCK_NUMBER: 15346990
+      - name: Run LooksRare tests
+        run: npx hardhat test test/typescript/aggregator-looksrare.ts
+        env:
+          FORKED_BLOCK_NUMBER: 15282897
       - name: Run atomic Seaport ERC-721 tests
         run: npx hardhat test test/typescript/aggregator-seaport-erc-721-atomic.ts
         env:
@@ -76,5 +76,9 @@ jobs:
         run: npx hardhat test test/typescript/aggregator-conflicted-orders.ts
         env:
           FORKED_BLOCK_NUMBER: 15327113
+      - name: Run multiple markets tests
+        run: npx hardhat test test/typescript/aggregator-multiple-markets.ts
+        env:
+          FORKED_BLOCK_NUMBER: 15326566
       - name: Run Solidity/Forge tests
-        run: forge test
+        run: forge test --no-match-contract Benchmark
