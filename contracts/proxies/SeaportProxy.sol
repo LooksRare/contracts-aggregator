@@ -77,8 +77,6 @@ contract SeaportProxy is TokenRescuer, IProxy {
                 }
             }
 
-            // There is no need to do a try/catch here as there is only 1 external call
-            // and if it fails the aggregator will catch it and decide whether to revert.
             (bool[] memory availableOrders, ) = marketplace.fulfillAvailableAdvancedOrders{value: msg.value}(
                 advancedOrders,
                 criteriaResolver,
