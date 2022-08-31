@@ -40,7 +40,9 @@ jobs:
           version: nightly
       - name: Compile code (Hardhat)
         run: yarn compile:force
-      - name: Run TypeScript/Waffle tests
-        run: yarn test
+      - name: Run LooksRare tests
+        run: npx hardhat test test/typescript/aggregator-looksrare.ts
+        env:
+          FORKED_BLOCK_NUMBER: 15282897
       - name: Run Solidity/Forge tests
         run: forge test
