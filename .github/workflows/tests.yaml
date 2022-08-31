@@ -40,6 +40,10 @@ jobs:
           version: nightly
       - name: Compile code (Hardhat)
         run: yarn compile:force
+      - name: Run Sudoswap tests
+        run: npx hardhat test test/typescript/aggregator-sudoswap.ts
+        env:
+          FORKED_BLOCK_NUMBER: 15315621
       - name: Run CryptoPunks tests
         run: npx hardhat test test/typescript/aggregator-cryptopunks.ts
         env:

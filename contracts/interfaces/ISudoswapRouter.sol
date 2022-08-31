@@ -18,4 +18,11 @@ interface ISudoswapRouter {
         address nftRecipient,
         uint256 deadline
     ) external payable returns (uint256 remainingValue);
+
+    function swapETHForSpecificNFTs(
+        PairSwapSpecific[] calldata swapList,
+        address payable ethRecipient,
+        address nftRecipient,
+        uint256 deadline
+    ) external payable returns (uint256 remainingValue);
 }

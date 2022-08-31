@@ -55,6 +55,7 @@ npx solhint 'contracts/**/*.sol' --fix
 Each test file requires a different block number as the listings were retrieved in different days and they have an expiration timestamp.
 
 ```shell
+FORKED_BLOCK_NUMBER=15315621 npx hardhat test test/typescript/aggregator-sudoswap.ts
 FORKED_BLOCK_NUMBER=15358065 npx hardhat test test/typescript/aggregator-cryptopunks.ts
 FORKED_BLOCK_NUMBER=15346990 npx hardhat test test/typescript/aggregator-x2y2.ts
 FORKED_BLOCK_NUMBER=15282897 npx hardhat test test/typescript/aggregator-looksrare.ts
