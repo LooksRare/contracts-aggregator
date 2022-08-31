@@ -44,5 +44,25 @@ jobs:
         run: npx hardhat test test/typescript/aggregator-looksrare.ts
         env:
           FORKED_BLOCK_NUMBER: 15282897
+      - name: Run atomic Seaport ERC-721 tests
+        run: npx hardhat test test/typescript/aggregator-seaport-erc-721-atomic.ts
+        env:
+          FORKED_BLOCK_NUMBER: 15300884
+      - name: Run non-atomic Seaport ERC-721 tests
+        run: npx hardhat test test/typescript/aggregator-seaport-erc-721-non-atomic.ts
+        env:
+          FORKED_BLOCK_NUMBER: 15300884
+      - name: Run atomic Seaport ERC-1155 tests
+        run: npx hardhat test test/typescript/aggregator-seaport-erc-1155-atomic.ts
+        env:
+          FORKED_BLOCK_NUMBER: 15320038
+      - name: Run non-atomic Seaport ERC-1155 tests
+        run: npx hardhat test test/typescript/aggregator-seaport-erc-1155-non-atomic.ts
+        env:
+          FORKED_BLOCK_NUMBER: 15320038
+      - name: Run Seaport multiple markets tests
+        run: npx hardhat test test/typescript/aggregator-seaport-multiple-collection-types.ts
+        env:
+          FORKED_BLOCK_NUMBER: 15323472
       - name: Run Solidity/Forge tests
         run: forge test
