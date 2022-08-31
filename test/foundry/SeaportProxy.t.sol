@@ -6,7 +6,7 @@ import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
 import {OrderType} from "../../contracts/libraries/seaport/ConsiderationEnums.sol";
 import {AdditionalRecipient, Fulfillment, FulfillmentComponent} from "../../contracts/libraries/seaport/ConsiderationStructs.sol";
 import {IProxy} from "../../contracts/proxies/IProxy.sol";
-import {BasicOrder} from "../../contracts/libraries/OrderStructs.sol";
+import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TokenRescuerTest} from "./TokenRescuer.t.sol";
@@ -29,14 +29,16 @@ contract SeaportProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Seap
     }
 
     function testBuyWithETHZeroOrders() public asPrankedUser(_buyer) {
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder[] memory orders = new BasicOrder[](0);
         bytes[] memory ordersExtraData = new bytes[](0);
 
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        seaportProxy.execute(orders, ordersExtraData, validSingleBAYCExtraData(), _buyer, false);
+        seaportProxy.execute(tokenTransfers, orders, ordersExtraData, validSingleBAYCExtraData(), _buyer, false);
     }
 
     function testBuyWithETHOrdersLengthMismatch() public asPrankedUser(_buyer) {
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder memory order = validBAYCId2518Order();
         BasicOrder[] memory orders = new BasicOrder[](1);
         orders[0] = order;
@@ -47,6 +49,7 @@ contract SeaportProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Seap
 
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
         seaportProxy.execute{value: orders[0].price}(
+            tokenTransfers,
             orders,
             ordersExtraData,
             validSingleBAYCExtraData(),
@@ -56,6 +59,7 @@ contract SeaportProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Seap
     }
 
     function testBuyWithETHOrdersRecipientZeroAddress() public {
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder memory order = validBAYCId2518Order();
         BasicOrder[] memory orders = new BasicOrder[](1);
         orders[0] = order;
@@ -65,6 +69,7 @@ contract SeaportProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Seap
 
         vm.expectRevert(IProxy.ZeroAddress.selector);
         seaportProxy.execute{value: orders[0].price}(
+            tokenTransfers,
             orders,
             ordersExtraData,
             validSingleBAYCExtraData(),

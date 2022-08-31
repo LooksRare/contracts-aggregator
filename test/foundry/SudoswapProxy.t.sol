@@ -5,7 +5,7 @@ pragma solidity 0.8.14;
 import {SudoswapProxy} from "../../contracts/proxies/SudoswapProxy.sol";
 import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
 import {IProxy} from "../../contracts/proxies/IProxy.sol";
-import {BasicOrder} from "../../contracts/libraries/OrderStructs.sol";
+import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TokenRescuerTest} from "./TokenRescuer.t.sol";
@@ -27,19 +27,21 @@ contract SudoswapProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
     }
 
     function testBuyWithETHZeroOrders() public asPrankedUser(_buyer) {
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder[] memory orders = new BasicOrder[](0);
         bytes[] memory ordersExtraData = new bytes[](0);
 
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        sudoswapProxy.execute(orders, ordersExtraData, "", _buyer, false);
+        sudoswapProxy.execute(tokenTransfers, orders, ordersExtraData, "", _buyer, false);
     }
 
     function testBuyWithETHOrdersRecipientZeroAddress() public {
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder[] memory orders = validMoodieOrder();
         bytes[] memory ordersExtraData = new bytes[](0);
 
         vm.expectRevert(IProxy.ZeroAddress.selector);
-        sudoswapProxy.execute{value: orders[0].price}(orders, ordersExtraData, "", address(0), false);
+        sudoswapProxy.execute{value: orders[0].price}(tokenTransfers, orders, ordersExtraData, "", address(0), false);
     }
 
     function testRescueETH() public {

@@ -42,6 +42,7 @@ describe("Aggregator", () => {
             },
           ]
         ),
+        tokenTransfers: [],
       },
     ];
 
