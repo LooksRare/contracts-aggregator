@@ -66,7 +66,6 @@ contract SeaportProxy is TokenRescuer, IProxy {
             _executeAtomicOrders(orders, ordersExtraData, extraData, recipient);
             if (tokenTransfers.length > 0) _returnERC20TokensIfAny(tokenTransfers, recipient);
             _returnETHIfAny();
-
             return true;
         } else {
             uint256 executedCount = _executeNonAtomicOrders(orders, ordersExtraData, recipient);

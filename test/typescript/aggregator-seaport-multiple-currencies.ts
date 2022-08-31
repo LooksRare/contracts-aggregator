@@ -39,6 +39,7 @@ describe("Aggregator", () => {
     const priceOne = combineConsiderationAmount(orderOne.parameters.consideration);
     const priceTwo = combineConsiderationAmount(orderTwo.parameters.consideration);
 
+    // Doesn't look good here but the buyer is the first address, meaning the contract deployer/owner
     await proxy.connect(buyer).approve(USDC);
 
     await airdropUSDC(buyer.address, priceOne);
