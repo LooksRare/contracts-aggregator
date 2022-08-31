@@ -5,7 +5,7 @@ pragma solidity 0.8.14;
 import {CryptoPunksProxy} from "../../contracts/proxies/CryptoPunksProxy.sol";
 import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
 import {IProxy} from "../../contracts/proxies/IProxy.sol";
-import {BasicOrder} from "../../contracts/libraries/OrderStructs.sol";
+import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TokenRescuerTest} from "./TokenRescuer.t.sol";
@@ -26,19 +26,28 @@ contract CryptoPunksProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
     }
 
     function testBuyWithETHZeroOrders() public asPrankedUser(_buyer) {
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder[] memory orders = new BasicOrder[](0);
         bytes[] memory ordersExtraData = new bytes[](0);
 
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        cryptoPunksProxy.execute(orders, ordersExtraData, "", _buyer, false);
+        cryptoPunksProxy.execute(tokenTransfers, orders, ordersExtraData, "", _buyer, false);
     }
 
     function testBuyWithETHOrdersRecipientZeroAddress() public {
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder[] memory orders = validCryptoPunksOrder();
         bytes[] memory ordersExtraData = new bytes[](0);
 
         vm.expectRevert(IProxy.ZeroAddress.selector);
-        cryptoPunksProxy.execute{value: orders[0].price}(orders, ordersExtraData, "", address(0), false);
+        cryptoPunksProxy.execute{value: orders[0].price}(
+            tokenTransfers,
+            orders,
+            ordersExtraData,
+            "",
+            address(0),
+            false
+        );
     }
 
     function testRescueETH() public {

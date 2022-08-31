@@ -56,7 +56,8 @@ describe("LooksRareAggregator", () => {
           abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [priceOne, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE]),
           abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [priceTwo, 8500, 50, LOOKSRARE_STRATEGY_FIXED_PRICE]),
         ],
-        extraData: "0x",
+        extraData: ethers.constants.HashZero,
+        tokenTransfers: [],
       },
     ];
 
@@ -118,7 +119,8 @@ describe("LooksRareAggregator", () => {
           abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [priceOne, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE]),
           abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [priceTwo, 8500, 50, LOOKSRARE_STRATEGY_FIXED_PRICE]),
         ],
-        extraData: "0x",
+        extraData: ethers.constants.HashZero,
+        tokenTransfers: [],
       },
     ];
 
@@ -176,7 +178,8 @@ describe("LooksRareAggregator", () => {
           abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [priceOne, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE]),
           abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [priceOne, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE]),
         ],
-        extraData: "0x",
+        extraData: ethers.constants.HashZero,
+        tokenTransfers: [],
       },
     ];
 
@@ -231,7 +234,8 @@ describe("LooksRareAggregator", () => {
           abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [priceOne, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE]),
           abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [priceOne, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE]),
         ],
-        extraData: "0x",
+        extraData: ethers.constants.HashZero,
+        tokenTransfers: [],
       },
     ];
 
