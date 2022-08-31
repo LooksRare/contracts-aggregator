@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.14;
 
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SeaportInterface} from "../interfaces/SeaportInterface.sol";
-import {BasicOrder} from "../libraries/OrderStructs.sol";
+import {BasicOrder, TokenTransfer} from "../libraries/OrderStructs.sol";
 import {CollectionType} from "../libraries/OrderEnums.sol";
 import {AdvancedOrder, CriteriaResolver, OrderParameters, OfferItem, ConsiderationItem, FulfillmentComponent, AdditionalRecipient} from "../libraries/seaport/ConsiderationStructs.sol";
 import {ItemType, OrderType} from "../libraries/seaport/ConsiderationEnums.sol";
@@ -40,6 +41,7 @@ contract SeaportProxy is TokenRescuer, IProxy {
 
     /**
      * @notice Execute Seaport NFT sweeps in a single transaction
+     * @param tokenTransfers Aggregated ERC-20 token transfers for all orders
      * @param orders Orders to be executed by Seaport
      * @param ordersExtraData Extra data for each order
      * @param extraData Extra data for the whole transaction
@@ -48,6 +50,7 @@ contract SeaportProxy is TokenRescuer, IProxy {
      * @return Whether at least 1 out of N trades succeeded
      */
     function buyWithETH(
+        TokenTransfer[] calldata tokenTransfers,
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,
         bytes calldata extraData,
@@ -56,81 +59,26 @@ contract SeaportProxy is TokenRescuer, IProxy {
     ) external payable override returns (bool) {
         uint256 ordersLength = orders.length;
         if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();
-
         if (recipient == address(0)) revert ZeroAddress();
-
-        CriteriaResolver[] memory criteriaResolver = new CriteriaResolver[](0);
+        if (tokenTransfers.length > 0) _pullERC20Tokens(tokenTransfers, recipient);
 
         if (isAtomic) {
-            AdvancedOrder[] memory advancedOrders = new AdvancedOrder[](ordersLength);
-            ExtraData memory extraDataStruct = abi.decode(extraData, (ExtraData));
-
-            for (uint256 i; i < ordersLength; ) {
-                OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
-                advancedOrders[i].parameters = _populateParameters(orders[i], orderExtraData);
-                advancedOrders[i].numerator = 1;
-                advancedOrders[i].denominator = 1;
-                advancedOrders[i].signature = orders[i].signature;
-
-                unchecked {
-                    ++i;
-                }
-            }
-
-            (bool[] memory availableOrders, ) = marketplace.fulfillAvailableAdvancedOrders{value: msg.value}(
-                advancedOrders,
-                criteriaResolver,
-                extraDataStruct.offerFulfillments,
-                extraDataStruct.considerationFulfillments,
-                bytes32(0),
-                recipient,
-                ordersLength
-            );
-
-            for (uint256 i; i < availableOrders.length; ) {
-                if (!availableOrders[i]) revert TradeExecutionFailed();
-
-                unchecked {
-                    ++i;
-                }
-            }
-
+            _executeAtomicOrders(orders, ordersExtraData, extraData, recipient);
+            if (tokenTransfers.length > 0) _returnERC20TokensIfAny(tokenTransfers, recipient);
             _returnETHIfAny();
 
             return true;
         } else {
-            uint256 executedCount;
-
-            for (uint256 i; i < ordersLength; ) {
-                OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
-                AdvancedOrder memory advancedOrder;
-                advancedOrder.parameters = _populateParameters(orders[i], orderExtraData);
-                advancedOrder.numerator = 1;
-                advancedOrder.denominator = 1;
-                advancedOrder.signature = orders[i].signature;
-
-                uint256 price = orders[i].price;
-
-                try
-                    marketplace.fulfillAdvancedOrder{value: price}(
-                        advancedOrder,
-                        criteriaResolver,
-                        bytes32(0),
-                        recipient
-                    )
-                {
-                    executedCount += 1;
-                } catch {}
-
-                unchecked {
-                    ++i;
-                }
-            }
-
+            uint256 executedCount = _executeNonAtomicOrders(orders, ordersExtraData, recipient);
+            if (tokenTransfers.length > 0) _returnERC20TokensIfAny(tokenTransfers, recipient);
             _returnETHIfAny();
-
             return executedCount > 0;
         }
+    }
+
+    // TODO: Should we allow revoke?
+    function approve(address currency) external onlyOwner {
+        IERC20(currency).approve(address(marketplace), type(uint256).max);
     }
 
     /**
@@ -139,6 +87,75 @@ contract SeaportProxy is TokenRescuer, IProxy {
      *      the ETH back to the user through _returnETHIfAny.
      */
     receive() external payable {}
+
+    function _executeAtomicOrders(
+        BasicOrder[] calldata orders,
+        bytes[] calldata ordersExtraData,
+        bytes calldata extraData,
+        address recipient
+    ) private {
+        uint256 ordersLength = orders.length;
+        AdvancedOrder[] memory advancedOrders = new AdvancedOrder[](ordersLength);
+        ExtraData memory extraDataStruct = abi.decode(extraData, (ExtraData));
+        CriteriaResolver[] memory criteriaResolver = new CriteriaResolver[](0);
+
+        for (uint256 i; i < ordersLength; ) {
+            OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
+            advancedOrders[i].parameters = _populateParameters(orders[i], orderExtraData);
+            advancedOrders[i].numerator = 1;
+            advancedOrders[i].denominator = 1;
+            advancedOrders[i].signature = orders[i].signature;
+
+            unchecked {
+                ++i;
+            }
+        }
+
+        (bool[] memory availableOrders, ) = marketplace.fulfillAvailableAdvancedOrders{value: msg.value}(
+            advancedOrders,
+            criteriaResolver,
+            extraDataStruct.offerFulfillments,
+            extraDataStruct.considerationFulfillments,
+            bytes32(0),
+            recipient,
+            ordersLength
+        );
+
+        for (uint256 i; i < availableOrders.length; ) {
+            if (!availableOrders[i]) revert TradeExecutionFailed();
+
+            unchecked {
+                ++i;
+            }
+        }
+    }
+
+    function _executeNonAtomicOrders(
+        BasicOrder[] calldata orders,
+        bytes[] calldata ordersExtraData,
+        address recipient
+    ) private returns (uint256 executedCount) {
+        CriteriaResolver[] memory criteriaResolver = new CriteriaResolver[](0);
+        uint256 ordersLength = orders.length;
+        for (uint256 i; i < ordersLength; ) {
+            OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
+            AdvancedOrder memory advancedOrder;
+            advancedOrder.parameters = _populateParameters(orders[i], orderExtraData);
+            advancedOrder.numerator = 1;
+            advancedOrder.denominator = 1;
+            advancedOrder.signature = orders[i].signature;
+
+            uint256 price = orders[i].currency == address(0) ? orders[i].price : 0;
+
+            try marketplace.fulfillAdvancedOrder{value: price}(advancedOrder, criteriaResolver, bytes32(0), recipient) {
+                executedCount += 1;
+            } catch {}
+
+            unchecked {
+                ++i;
+            }
+        }
+    }
 
     function _populateParameters(BasicOrder calldata order, OrderExtraData memory orderExtraData)
         private
@@ -168,10 +185,12 @@ contract SeaportProxy is TokenRescuer, IProxy {
 
         ConsiderationItem[] memory consideration = new ConsiderationItem[](recipientsLength);
         for (uint256 j; j < recipientsLength; ) {
-            // We don't need to assign value to itemType/token/identifierOrCriteria as the default values are for ETH.
+            // We don't need to assign value to identifierOrCriteria as it is always 0.
             consideration[j].startAmount = orderExtraData.recipients[j].amount;
             consideration[j].endAmount = orderExtraData.recipients[j].amount;
             consideration[j].recipient = payable(orderExtraData.recipients[j].recipient);
+            consideration[j].itemType = order.currency == address(0) ? ItemType.NATIVE : ItemType.ERC20;
+            consideration[j].token = order.currency;
 
             unchecked {
                 ++j;

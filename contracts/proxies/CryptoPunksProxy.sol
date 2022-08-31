@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.14;
 
-import {BasicOrder} from "../libraries/OrderStructs.sol";
+import {BasicOrder, TokenTransfer} from "../libraries/OrderStructs.sol";
 import {ICryptoPunks} from "../interfaces/ICryptoPunks.sol";
 import {IProxy} from "./IProxy.sol";
 import {TokenRescuer} from "../TokenRescuer.sol";
@@ -21,13 +21,14 @@ contract CryptoPunksProxy is IProxy, TokenRescuer {
 
     /**
      * @notice Execute CryptoPunks NFT sweeps in a single transaction
-     * @dev Only the 1st argument orders and the 4th argument isAtomic are used
+     * @dev Only "orders" and the "isAtomic" are used
      * @param orders Orders to be executed by CryptoPunks
      * @param recipient The address to receive the purchased NFTs
      * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
      * @return Whether at least 1 out of N trades succeeded
      */
     function buyWithETH(
+        TokenTransfer[] calldata,
         BasicOrder[] calldata orders,
         bytes[] calldata,
         bytes memory,
