@@ -16,7 +16,7 @@ interface IProxy {
      * @param recipient The address to receive the purchased NFTs
      * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
      */
-    function buyWithETH(
+    function execute(
         TokenTransfer[] calldata tokenTransfers,
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,

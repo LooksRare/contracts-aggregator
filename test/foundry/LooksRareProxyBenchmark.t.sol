@@ -32,10 +32,10 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         vm.deal(address(looksRareProxy), 0);
 
         aggregator = new LooksRareAggregator();
-        aggregator.addFunction(address(looksRareProxy), LooksRareProxy.buyWithETH.selector);
+        aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
 
         v0Aggregator = new V0Aggregator();
-        v0Aggregator.addFunction(address(looksRareProxy), LooksRareProxy.buyWithETH.selector);
+        v0Aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
     }
 
     function testBuyWithETHDirectlySingleOrder() public asPrankedUser(_buyer) {
@@ -87,7 +87,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         ordersExtraData[0] = abi.encode(orders[0].price, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE);
 
         uint256 gasRemaining = gasleft();
-        looksRareProxy.buyWithETH{value: orders[0].price}(orders, ordersExtraData, "", _buyer, false);
+        looksRareProxy.execute{value: orders[0].price}(orders, ordersExtraData, "", _buyer, false);
         uint256 gasConsumed = gasRemaining - gasleft();
         emit log_named_uint("LooksRare single NFT purchase through the proxy consumed: ", gasConsumed);
 
@@ -105,7 +105,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(looksRareProxy),
-            selector: LooksRareProxy.buyWithETH.selector,
+            selector: LooksRareProxy.execute.selector,
             value: orders[0].price,
             orders: orders,
             ordersExtraData: ordersExtraData,
@@ -113,7 +113,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         });
 
         uint256 gasRemaining = gasleft();
-        aggregator.buyWithETH{value: orders[0].price}(tradeData, _buyer, false);
+        aggregator.execute{value: orders[0].price}(tradeData, _buyer, false);
         uint256 gasConsumed = gasRemaining - gasleft();
         emit log_named_uint("LooksRare single NFT purchase through the aggregator consumed: ", gasConsumed);
 
@@ -129,7 +129,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         ordersExtraData[0] = abi.encode(orders[0].price, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE);
 
         bytes memory data = abi.encodeWithSelector(
-            LooksRareProxy.buyWithETH.selector,
+            LooksRareProxy.execute.selector,
             orders,
             ordersExtraData,
             "",
@@ -141,7 +141,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         tradeData[0] = V0Aggregator.TradeData({proxy: address(looksRareProxy), data: data, value: orders[0].price});
 
         uint256 gasRemaining = gasleft();
-        v0Aggregator.buyWithETH{value: orders[0].price}(tradeData);
+        v0Aggregator.execute{value: orders[0].price}(tradeData);
         uint256 gasConsumed = gasRemaining - gasleft();
         emit log_named_uint("LooksRare single NFT purchase through the V0 aggregator consumed: ", gasConsumed);
 
@@ -156,7 +156,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         ordersExtraData[1] = abi.encode(orders[1].price, 8500, 50, LOOKSRARE_STRATEGY_FIXED_PRICE);
 
         uint256 gasRemaining = gasleft();
-        looksRareProxy.buyWithETH{value: orders[0].price + orders[1].price}(orders, ordersExtraData, "", _buyer, false);
+        looksRareProxy.execute{value: orders[0].price + orders[1].price}(orders, ordersExtraData, "", _buyer, false);
         uint256 gasConsumed = gasRemaining - gasleft();
         emit log_named_uint("LooksRare multiple NFT purchase through the proxy consumed: ", gasConsumed);
 
@@ -174,7 +174,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(looksRareProxy),
-            selector: LooksRareProxy.buyWithETH.selector,
+            selector: LooksRareProxy.execute.selector,
             value: orders[0].price + orders[1].price,
             orders: orders,
             ordersExtraData: ordersExtraData,
@@ -182,7 +182,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         });
 
         uint256 gasRemaining = gasleft();
-        aggregator.buyWithETH{value: orders[0].price + orders[1].price}(tradeData, _buyer, false);
+        aggregator.execute{value: orders[0].price + orders[1].price}(tradeData, _buyer, false);
         uint256 gasConsumed = gasRemaining - gasleft();
         emit log_named_uint("LooksRare multiple NFT purchase through the aggregator consumed: ", gasConsumed);
 
@@ -198,7 +198,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         ordersExtraData[1] = abi.encode(orders[1].price, 8500, 50, LOOKSRARE_STRATEGY_FIXED_PRICE);
 
         bytes memory data = abi.encodeWithSelector(
-            LooksRareProxy.buyWithETH.selector,
+            LooksRareProxy.execute.selector,
             orders,
             ordersExtraData,
             "",
@@ -212,7 +212,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         tradeData[0] = V0Aggregator.TradeData({proxy: address(looksRareProxy), data: data, value: totalPrice});
 
         uint256 gasRemaining = gasleft();
-        v0Aggregator.buyWithETH{value: totalPrice}(tradeData);
+        v0Aggregator.execute{value: totalPrice}(tradeData);
         uint256 gasConsumed = gasRemaining - gasleft();
         emit log_named_uint("LooksRare multiple NFT purchase through the V0 aggregator consumed: ", gasConsumed);
 

@@ -29,7 +29,7 @@ interface ILooksRareAggregator {
     event FunctionRemoved(address indexed proxy, bytes4 selector);
 
     /**
-     * @notice Emitted when buyWithETH is complete
+     * @notice Emitted when execute is complete
      * @param sweeper The address that submitted the transaction
      * @param tradeCount Total trade count
      * @param successCount Successful trade count (if only 1 out of N trades in

@@ -54,7 +54,7 @@ describe("Aggregator", () => {
     await ethers.provider.send("evm_setNextBlockTimestamp", [Number(orderTwo.parameters.endTime) + 1]);
 
     await expect(
-      aggregator.connect(buyer).buyWithETH(tradeData, buyer.address, true, { value: price })
+      aggregator.connect(buyer).execute(tradeData, buyer.address, true, { value: price })
     ).to.be.revertedWith("TradeExecutionFailed()");
   });
 });

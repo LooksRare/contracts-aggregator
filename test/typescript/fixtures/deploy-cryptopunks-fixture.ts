@@ -23,7 +23,7 @@ export default async function deployCryptoPunksFixture(): Promise<CryptoPunksFix
 
   const [buyer] = await ethers.getSigners();
 
-  const functionSelector = await getSignature("CryptoPunksProxy.json", "buyWithETH");
+  const functionSelector = await getSignature("CryptoPunksProxy.json", "execute");
   await aggregator.addFunction(proxy.address, functionSelector);
 
   // Because we are forking from the mainnet, the proxy address somehow already had a contract deployed to

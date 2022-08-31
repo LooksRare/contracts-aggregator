@@ -31,7 +31,7 @@ contract SudoswapProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
         bytes[] memory ordersExtraData = new bytes[](0);
 
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        sudoswapProxy.buyWithETH(orders, ordersExtraData, "", _buyer, false);
+        sudoswapProxy.execute(orders, ordersExtraData, "", _buyer, false);
     }
 
     function testBuyWithETHOrdersRecipientZeroAddress() public {
@@ -39,7 +39,7 @@ contract SudoswapProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
         bytes[] memory ordersExtraData = new bytes[](0);
 
         vm.expectRevert(IProxy.ZeroAddress.selector);
-        sudoswapProxy.buyWithETH{value: orders[0].price}(orders, ordersExtraData, "", address(0), false);
+        sudoswapProxy.execute{value: orders[0].price}(orders, ordersExtraData, "", address(0), false);
     }
 
     function testRescueETH() public {

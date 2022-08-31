@@ -30,7 +30,7 @@ contract CryptoPunksProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
         bytes[] memory ordersExtraData = new bytes[](0);
 
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        cryptoPunksProxy.buyWithETH(orders, ordersExtraData, "", _buyer, false);
+        cryptoPunksProxy.execute(orders, ordersExtraData, "", _buyer, false);
     }
 
     function testBuyWithETHOrdersRecipientZeroAddress() public {
@@ -38,7 +38,7 @@ contract CryptoPunksProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
         bytes[] memory ordersExtraData = new bytes[](0);
 
         vm.expectRevert(IProxy.ZeroAddress.selector);
-        cryptoPunksProxy.buyWithETH{value: orders[0].price}(orders, ordersExtraData, "", address(0), false);
+        cryptoPunksProxy.execute{value: orders[0].price}(orders, ordersExtraData, "", address(0), false);
     }
 
     function testRescueETH() public {
