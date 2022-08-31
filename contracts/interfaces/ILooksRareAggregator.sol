@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.14;
 
-import {BasicOrder} from "../libraries/OrderStructs.sol";
+import {BasicOrder, TokenTransfer} from "../libraries/OrderStructs.sol";
 
 interface ILooksRareAggregator {
     struct TradeData {
@@ -11,6 +11,7 @@ interface ILooksRareAggregator {
         BasicOrder[] orders; // Orders to be executed by the marketplace
         bytes[] ordersExtraData; // Extra data for each order, specific for each marketplace
         bytes extraData; // Extra data specific for each marketplace
+        TokenTransfer[] tokenTransfers;
     }
 
     /**
@@ -36,6 +37,7 @@ interface ILooksRareAggregator {
      */
     event Sweep(address indexed sweeper, uint256 tradeCount, uint256 successCount);
 
+    error FailedTokenTransfer();
     error InvalidFunction();
     error InvalidOrderLength();
     error TradeExecutionFailed();

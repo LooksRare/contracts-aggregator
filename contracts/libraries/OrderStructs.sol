@@ -15,3 +15,8 @@ struct BasicOrder {
   uint256 endTime; // The timestamp when the order stops becoming valid
   bytes signature; // split to v,r,s for LooksRare
 }
+
+struct TokenTransfer {
+    uint256 amount;
+    address currency;
+}

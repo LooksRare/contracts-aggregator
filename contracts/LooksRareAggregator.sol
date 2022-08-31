@@ -34,14 +34,7 @@ contract LooksRareAggregator is TokenRescuer, ILooksRareAggregator {
             if (!_proxyFunctionSelectors[tradeData[i].proxy][tradeData[i].selector]) revert InvalidFunction();
 
             (bool success, bytes memory returnData) = tradeData[i].proxy.call{value: tradeData[i].value}(
-                abi.encodeWithSelector(
-                    tradeData[i].selector,
-                    tradeData[i].orders,
-                    tradeData[i].ordersExtraData,
-                    tradeData[i].extraData,
-                    recipient,
-                    isAtomic
-                )
+                _encodeCalldata(tradeData[i], recipient, isAtomic)
             );
 
             if (success) {
@@ -99,6 +92,23 @@ contract LooksRareAggregator is TokenRescuer, ILooksRareAggregator {
      */
     function supportsProxyFunction(address proxy, bytes4 selector) external view returns (bool) {
         return _proxyFunctionSelectors[proxy][selector];
+    }
+
+    function _encodeCalldata(
+        TradeData calldata singleTradeData,
+        address recipient,
+        bool isAtomic
+    ) private pure returns (bytes memory) {
+        return
+            abi.encodeWithSelector(
+                singleTradeData.selector,
+                singleTradeData.tokenTransfers,
+                singleTradeData.orders,
+                singleTradeData.ordersExtraData,
+                singleTradeData.extraData,
+                recipient,
+                isAtomic
+            );
     }
 
     receive() external payable {}

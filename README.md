@@ -62,6 +62,7 @@ FORKED_BLOCK_NUMBER=15282897 npx hardhat test test/typescript/aggregator-looksra
 FORKED_BLOCK_NUMBER=15327113 npx hardhat test test/typescript/aggregator-conflicted-orders.ts
 FORKED_BLOCK_NUMBER=15326566 npx hardhat test test/typescript/aggregator-multiple-markets.ts
 FORKED_BLOCK_NUMBER=15323472 npx hardhat test test/typescript/aggregator-seaport-multiple-collection-types.ts
+FORKED_BLOCK_NUMBER=15447813 npx hardhat test test/typescript/aggregator-seaport-multiple-currencies.ts
 FORKED_BLOCK_NUMBER=15300884 npx hardhat test test/typescript/aggregator-seaport-erc-721-atomic.ts
 FORKED_BLOCK_NUMBER=15300884 npx hardhat test test/typescript/aggregator-seaport-erc-721-non-atomic.ts
 FORKED_BLOCK_NUMBER=15320038 npx hardhat test test/typescript/aggregator-seaport-erc-1155-atomic.ts

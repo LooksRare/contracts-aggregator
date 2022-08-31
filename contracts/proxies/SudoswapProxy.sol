@@ -2,7 +2,7 @@
 pragma solidity 0.8.14;
 
 import {ISudoswapRouter} from "../interfaces/ISudoswapRouter.sol";
-import {BasicOrder} from "../libraries/OrderStructs.sol";
+import {BasicOrder, TokenTransfer} from "../libraries/OrderStructs.sol";
 import {TokenRescuer} from "../TokenRescuer.sol";
 import {IProxy} from "./IProxy.sol";
 
@@ -21,13 +21,14 @@ contract SudoswapProxy is TokenRescuer, IProxy {
 
     /**
      * @notice Execute Sudoswap NFT sweeps in a single transaction
-     * @dev Only the 1st argument orders is used
+     * @dev tokenTransfers, ordersExtraData and extraData are not used
      * @param orders Orders to be executed by Seaport
      * @param recipient The address to receive the purchased NFTs
      * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
      * @return Whether at least 1 out of N trades succeeded
      */
     function buyWithETH(
+        TokenTransfer[] calldata,
         BasicOrder[] calldata orders,
         bytes[] calldata,
         bytes memory,
