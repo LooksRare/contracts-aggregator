@@ -59,12 +59,12 @@ describe("Aggregator", () => {
         value: priceTwo,
         orders: [getSeaportOrderJson(orderOne, priceOne), getSeaportOrderJson(orderTwo, priceTwo)],
         ordersExtraData: [getSeaportOrderExtraData(orderOne), getSeaportOrderExtraData(orderTwo)],
-        // extraData: encodedExtraData(),
-        extraData: ethers.constants.HashZero,
+        extraData: encodedExtraData(),
+        // extraData: ethers.constants.HashZero,
       },
     ];
 
-    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, buyer.address, false, { value: priceTwo });
+    const tx = await aggregator.connect(buyer).execute(tradeData, buyer.address, true, { value: priceTwo });
     const receipt = await tx.wait();
 
     validateSweepEvent(receipt, buyer.address, 1, 1);

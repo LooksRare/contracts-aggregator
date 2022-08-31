@@ -30,36 +30,36 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTes
     }
 
     function testAddFunction() public {
-        assertTrue(!aggregator.supportsProxyFunction(address(looksRareProxy), LooksRareProxy.buyWithETH.selector));
+        assertTrue(!aggregator.supportsProxyFunction(address(looksRareProxy), LooksRareProxy.execute.selector));
         vm.expectEmit(true, true, false, true);
-        emit FunctionAdded(address(looksRareProxy), LooksRareProxy.buyWithETH.selector);
-        aggregator.addFunction(address(looksRareProxy), LooksRareProxy.buyWithETH.selector);
-        assertTrue(aggregator.supportsProxyFunction(address(looksRareProxy), LooksRareProxy.buyWithETH.selector));
+        emit FunctionAdded(address(looksRareProxy), LooksRareProxy.execute.selector);
+        aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
+        assertTrue(aggregator.supportsProxyFunction(address(looksRareProxy), LooksRareProxy.execute.selector));
     }
 
     function testAddFunctionNotOwner() public {
         vm.prank(_notOwner);
         vm.expectRevert(OwnableTwoSteps.NotOwner.selector);
-        aggregator.addFunction(address(looksRareProxy), LooksRareProxy.buyWithETH.selector);
+        aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
     }
 
     function testRemoveFunction() public {
-        assertTrue(!aggregator.supportsProxyFunction(address(looksRareProxy), LooksRareProxy.buyWithETH.selector));
-        aggregator.addFunction(address(looksRareProxy), LooksRareProxy.buyWithETH.selector);
-        assertTrue(aggregator.supportsProxyFunction(address(looksRareProxy), LooksRareProxy.buyWithETH.selector));
+        assertTrue(!aggregator.supportsProxyFunction(address(looksRareProxy), LooksRareProxy.execute.selector));
+        aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
+        assertTrue(aggregator.supportsProxyFunction(address(looksRareProxy), LooksRareProxy.execute.selector));
 
         vm.expectEmit(true, true, false, true);
-        emit FunctionRemoved(address(looksRareProxy), LooksRareProxy.buyWithETH.selector);
-        aggregator.removeFunction(address(looksRareProxy), LooksRareProxy.buyWithETH.selector);
-        assertTrue(!aggregator.supportsProxyFunction(address(looksRareProxy), LooksRareProxy.buyWithETH.selector));
+        emit FunctionRemoved(address(looksRareProxy), LooksRareProxy.execute.selector);
+        aggregator.removeFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
+        assertTrue(!aggregator.supportsProxyFunction(address(looksRareProxy), LooksRareProxy.execute.selector));
     }
 
     function testRemoveFunctionNotOwner() public {
-        aggregator.addFunction(address(looksRareProxy), LooksRareProxy.buyWithETH.selector);
+        aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
 
         vm.prank(_notOwner);
         vm.expectRevert(OwnableTwoSteps.NotOwner.selector);
-        aggregator.removeFunction(address(looksRareProxy), LooksRareProxy.buyWithETH.selector);
+        aggregator.removeFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
     }
 
     function testRescueETH() public {
@@ -81,6 +81,6 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTes
     function testBuyWithETHZeroOrders() public {
         ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](0);
         vm.expectRevert(ILooksRareAggregator.InvalidOrderLength.selector);
-        aggregator.buyWithETH(tradeData, _buyer, false);
+        aggregator.execute(tradeData, _buyer, false);
     }
 }

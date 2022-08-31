@@ -26,7 +26,7 @@ export default async function deploySeaportFixture(): Promise<SeaportFixture> {
   // the same address with ether balance, causing our test (balance comparison) to fail.
   await ethers.provider.send("hardhat_setBalance", [proxy.address, "0x0"]);
 
-  const functionSelector = await getSignature("SeaportProxy.json", "buyWithETH");
+  const functionSelector = await getSignature("SeaportProxy.json", "execute");
   await aggregator.addFunction(proxy.address, functionSelector);
 
   const [buyer] = await ethers.getSigners();

@@ -33,7 +33,7 @@ contract SeaportProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Seap
         bytes[] memory ordersExtraData = new bytes[](0);
 
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        seaportProxy.buyWithETH(orders, ordersExtraData, validSingleBAYCExtraData(), _buyer, false);
+        seaportProxy.execute(orders, ordersExtraData, validSingleBAYCExtraData(), _buyer, false);
     }
 
     function testBuyWithETHOrdersLengthMismatch() public asPrankedUser(_buyer) {
@@ -46,7 +46,7 @@ contract SeaportProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Seap
         ordersExtraData[1] = validBAYCId8498OrderExtraData();
 
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        seaportProxy.buyWithETH{value: orders[0].price}(
+        seaportProxy.execute{value: orders[0].price}(
             orders,
             ordersExtraData,
             validSingleBAYCExtraData(),
@@ -64,7 +64,7 @@ contract SeaportProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Seap
         ordersExtraData[0] = validBAYCId2518OrderExtraData();
 
         vm.expectRevert(IProxy.ZeroAddress.selector);
-        seaportProxy.buyWithETH{value: orders[0].price}(
+        seaportProxy.execute{value: orders[0].price}(
             orders,
             ordersExtraData,
             validSingleBAYCExtraData(),

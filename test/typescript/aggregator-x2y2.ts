@@ -65,7 +65,7 @@ describe("LooksRareAggregator", () => {
 
     const totalValue = priceOne.add(priceTwo).add(priceThree).add(priceFour);
 
-    const tx = await aggregator.buyWithETH(
+    const tx = await aggregator.execute(
       [
         {
           proxy: proxy.address,
@@ -174,7 +174,7 @@ describe("LooksRareAggregator", () => {
       signature: joinSignature(orderOne.orders[0]),
     };
 
-    const tx = await aggregator.buyWithETH(
+    const tx = await aggregator.execute(
       [
         {
           proxy: proxy.address,
@@ -230,7 +230,7 @@ describe("LooksRareAggregator", () => {
     };
 
     await expect(
-      aggregator.buyWithETH(
+      aggregator.execute(
         [
           {
             proxy: proxy.address,

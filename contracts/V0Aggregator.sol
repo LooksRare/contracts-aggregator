@@ -24,7 +24,7 @@ contract V0Aggregator is OwnableTwoSteps {
     error InvalidFunction();
     error InvalidOrderLength();
 
-    function buyWithETH(TradeData[] calldata tradeData) external payable {
+    function execute(TradeData[] calldata tradeData) external payable {
         uint256 tradeCount = tradeData.length;
         if (tradeCount == 0) revert InvalidOrderLength();
 

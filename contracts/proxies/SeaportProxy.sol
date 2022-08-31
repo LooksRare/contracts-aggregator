@@ -49,7 +49,7 @@ contract SeaportProxy is TokenRescuer, IProxy {
      * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
      * @return Whether at least 1 out of N trades succeeded
      */
-    function buyWithETH(
+    function execute(
         TokenTransfer[] calldata tokenTransfers,
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,

@@ -33,10 +33,10 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         vm.deal(address(seaportProxy), 0);
 
         aggregator = new LooksRareAggregator();
-        aggregator.addFunction(address(seaportProxy), SeaportProxy.buyWithETH.selector);
+        aggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);
 
         v0Aggregator = new V0Aggregator();
-        v0Aggregator.addFunction(address(seaportProxy), SeaportProxy.buyWithETH.selector);
+        v0Aggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);
     }
 
     function testBuyWithETHDirectlySingleOrder() public asPrankedUser(_buyer) {
@@ -87,7 +87,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         bytes memory extraData = validSingleBAYCExtraData();
 
         uint256 gasRemaining = gasleft();
-        seaportProxy.buyWithETH{value: order.price}(orders, ordersExtraData, extraData, _buyer, true);
+        seaportProxy.execute{value: order.price}(orders, ordersExtraData, extraData, _buyer, true);
         uint256 gasConsumed = gasRemaining - gasleft();
         emit log_named_uint("Seaport single NFT purchase through the proxy consumed: ", gasConsumed);
 
@@ -108,7 +108,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(seaportProxy),
-            selector: SeaportProxy.buyWithETH.selector,
+            selector: SeaportProxy.execute.selector,
             value: order.price,
             orders: orders,
             ordersExtraData: ordersExtraData,
@@ -116,7 +116,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         });
 
         uint256 gasRemaining = gasleft();
-        aggregator.buyWithETH{value: order.price}(tradeData, _buyer, true);
+        aggregator.execute{value: order.price}(tradeData, _buyer, true);
         uint256 gasConsumed = gasRemaining - gasleft();
         emit log_named_uint("Seaport single NFT purchase through the aggregator consumed: ", gasConsumed);
 
@@ -135,7 +135,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         bytes memory extraData = validSingleBAYCExtraData();
 
         bytes memory data = abi.encodeWithSelector(
-            SeaportProxy.buyWithETH.selector,
+            SeaportProxy.execute.selector,
             orders,
             ordersExtraData,
             extraData,
@@ -147,7 +147,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         tradeData[0] = V0Aggregator.TradeData({proxy: address(seaportProxy), value: order.price, data: data});
 
         uint256 gasRemaining = gasleft();
-        v0Aggregator.buyWithETH{value: order.price}(tradeData);
+        v0Aggregator.execute{value: order.price}(tradeData);
         uint256 gasConsumed = gasRemaining - gasleft();
         emit log_named_uint("Seaport single NFT purchase through the V0 aggregator consumed: ", gasConsumed);
 
@@ -268,7 +268,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         uint256 totalPrice = orders[0].price + orders[1].price;
 
         uint256 gasRemaining = gasleft();
-        seaportProxy.buyWithETH{value: totalPrice}(orders, ordersExtraData, extraData, _buyer, true);
+        seaportProxy.execute{value: totalPrice}(orders, ordersExtraData, extraData, _buyer, true);
         uint256 gasConsumed = gasRemaining - gasleft();
         emit log_named_uint("Seaport multiple NFT purchase through the proxy consumed: ", gasConsumed);
 
@@ -295,7 +295,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         uint256 totalPrice = orders[0].price + orders[1].price;
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(seaportProxy),
-            selector: SeaportProxy.buyWithETH.selector,
+            selector: SeaportProxy.execute.selector,
             value: totalPrice,
             orders: orders,
             ordersExtraData: ordersExtraData,
@@ -303,7 +303,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         });
 
         uint256 gasRemaining = gasleft();
-        seaportProxy.buyWithETH{value: totalPrice}(orders, ordersExtraData, extraData, _buyer, true);
+        seaportProxy.execute{value: totalPrice}(orders, ordersExtraData, extraData, _buyer, true);
         uint256 gasConsumed = gasRemaining - gasleft();
         emit log_named_uint("Seaport multiple NFT purchase through the aggregator consumed: ", gasConsumed);
 
@@ -329,7 +329,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         V0Aggregator.TradeData[] memory tradeData = new V0Aggregator.TradeData[](1);
         uint256 totalPrice = orders[0].price + orders[1].price;
         bytes memory data = abi.encodeWithSelector(
-            SeaportProxy.buyWithETH.selector,
+            SeaportProxy.execute.selector,
             orders,
             ordersExtraData,
             extraData,
@@ -339,7 +339,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         tradeData[0] = V0Aggregator.TradeData({proxy: address(seaportProxy), value: totalPrice, data: data});
 
         uint256 gasRemaining = gasleft();
-        v0Aggregator.buyWithETH{value: totalPrice}(tradeData);
+        v0Aggregator.execute{value: totalPrice}(tradeData);
         uint256 gasConsumed = gasRemaining - gasleft();
         emit log_named_uint("Seaport multiple NFT purchase through the V0 aggregator consumed: ", gasConsumed);
 

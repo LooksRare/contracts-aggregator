@@ -21,7 +21,7 @@ contract LooksRareAggregator is TokenRescuer, ILooksRareAggregator {
      * @param recipient The address to receive the purchased NFTs
      * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
      */
-    function buyWithETH(
+    function execute(
         TradeData[] calldata tradeData,
         address recipient,
         bool isAtomic

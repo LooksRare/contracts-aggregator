@@ -21,7 +21,7 @@ export default async function deploySudoswapFixture(): Promise<SudoswapFixture> 
   const proxy = await SudoswapProxy.deploy(SUDOSWAP);
   await proxy.deployed();
 
-  const functionSelector = await getSignature("SudoswapProxy.json", "buyWithETH");
+  const functionSelector = await getSignature("SudoswapProxy.json", "execute");
   await aggregator.addFunction(proxy.address, functionSelector);
 
   const [buyer] = await ethers.getSigners();

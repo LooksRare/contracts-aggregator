@@ -29,7 +29,7 @@ export default async function deployLooksRareFixture(): Promise<MultipleMarketsF
   // the same address with ether balance, causing our test (balance comparison) to fail.
   await ethers.provider.send("hardhat_setBalance", [looksRareProxy.address, "0x0"]);
 
-  const looksRareFunctionSelector = await getSignature("LooksRareProxy.json", "buyWithETH");
+  const looksRareFunctionSelector = await getSignature("LooksRareProxy.json", "execute");
   await aggregator.addFunction(looksRareProxy.address, looksRareFunctionSelector);
 
   const SeaportProxy = await ethers.getContractFactory("SeaportProxy");
@@ -40,7 +40,7 @@ export default async function deployLooksRareFixture(): Promise<MultipleMarketsF
   // the same address with ether balance, causing our test (balance comparison) to fail.
   await ethers.provider.send("hardhat_setBalance", [seaportProxy.address, "0x0"]);
 
-  const seaportFunctionSelector = await getSignature("SeaportProxy.json", "buyWithETH");
+  const seaportFunctionSelector = await getSignature("SeaportProxy.json", "execute");
   await aggregator.addFunction(seaportProxy.address, seaportFunctionSelector);
 
   const SudoswapProxy = await ethers.getContractFactory("SudoswapProxy");
@@ -51,7 +51,7 @@ export default async function deployLooksRareFixture(): Promise<MultipleMarketsF
   // the same address with ether balance, causing our test (balance comparison) to fail.
   await ethers.provider.send("hardhat_setBalance", [sudoswapProxy.address, "0x0"]);
 
-  const sudoswapFunctionSelector = await getSignature("SudoswapProxy.json", "buyWithETH");
+  const sudoswapFunctionSelector = await getSignature("SudoswapProxy.json", "execute");
   await aggregator.addFunction(sudoswapProxy.address, sudoswapFunctionSelector);
 
   const [buyer] = await ethers.getSigners();

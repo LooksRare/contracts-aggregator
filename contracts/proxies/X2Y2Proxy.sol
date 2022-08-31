@@ -46,7 +46,7 @@ contract X2Y2Proxy is TokenReceiverProxy, TokenRescuer, SignatureChecker {
      * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
      * @return Whether at least 1 out of N trades succeeded
      */
-    function buyWithETH(
+    function execute(
         TokenTransfer[] calldata,
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,

@@ -34,7 +34,7 @@ describe("Aggregator", () => {
       },
     ];
 
-    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, buyer.address, false, { value: price });
+    const tx = await aggregator.connect(buyer).execute(tradeData, buyer.address, false, { value: price });
     const receipt = await tx.wait();
 
     validateSweepEvent(receipt, buyer.address, 1, 1);

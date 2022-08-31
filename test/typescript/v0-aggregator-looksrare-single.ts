@@ -22,7 +22,7 @@ describe("V0Aggregator", () => {
     proxy = await V0LooksRareProxy.deploy();
     await proxy.deployed();
 
-    const functionSelector = getSignature("V0LooksRareProxy.json", "buyWithETH");
+    const functionSelector = getSignature("V0LooksRareProxy.json", "execute");
     await aggregator.addFunction(proxy.address, functionSelector);
 
     [buyer] = await ethers.getSigners();
@@ -114,18 +114,16 @@ describe("V0Aggregator", () => {
     );
     const iface = new ethers.utils.Interface(abi);
 
-    const calldata = iface.encodeFunctionData("buyWithETH", [
+    const calldata = iface.encodeFunctionData("execute", [
       [takerBidOne, takerBidTwo],
       [makerAskOne, makerAskTwo],
       buyer.address,
     ]);
 
     const totalValue = priceOne.add(priceTwo);
-    const tx = await aggregator
-      .connect(buyer)
-      .buyWithETH([{ proxy: proxy.address, data: calldata, value: totalValue }], {
-        value: totalValue,
-      });
+    const tx = await aggregator.connect(buyer).execute([{ proxy: proxy.address, data: calldata, value: totalValue }], {
+      value: totalValue,
+    });
     await tx.wait();
 
     expect(await bayc.balanceOf(aggregator.address)).to.equal(0);
