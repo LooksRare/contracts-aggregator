@@ -6,9 +6,9 @@ import {
   SEAPORT_EXTRA_DATA_SCHEMA,
   SEAPORT_OFFER_FULFILLMENT_TWO_ITEMS,
   USDC,
-  USDC_WHALE,
 } from "../constants";
 import deploySeaportFixture from "./fixtures/deploy-seaport-fixture";
+import airdropUSDC from "./utils/airdrop-usdc";
 import combineConsiderationAmount from "./utils/combine-consideration-amount";
 import getFixture from "./utils/get-fixture";
 import getSeaportOrderExtraData from "./utils/get-seaport-order-extra-data";
@@ -41,13 +41,9 @@ describe("Aggregator", () => {
 
     await proxy.connect(buyer).approve(USDC);
 
+    await airdropUSDC(buyer.address, priceOne);
+
     const usdc = await ethers.getContractAt("IERC20", USDC);
-
-    await ethers.provider.send("hardhat_impersonateAccount", [USDC_WHALE]);
-    const ftx = await ethers.getSigner(USDC_WHALE);
-    await usdc.connect(ftx).transfer(buyer.address, priceOne);
-    await ethers.provider.send("hardhat_stopImpersonatingAccount", [USDC_WHALE]);
-
     // TODO: should be aggregator instead
     await usdc.connect(buyer).approve(proxy.address, priceOne);
 
