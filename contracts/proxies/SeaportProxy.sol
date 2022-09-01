@@ -81,6 +81,10 @@ contract SeaportProxy is TokenRescuer, IProxy {
     }
 
     // TODO: Should we allow revoke?
+    /**
+     * @notice Approve Seaport to transfer ERC-20 tokens from the proxy
+     * @param currency The address of the ERC-20 token to approve
+     */
     function approve(address currency) external onlyOwner {
         IERC20(currency).approve(address(marketplace), type(uint256).max);
     }
