@@ -21,7 +21,7 @@ contract CryptoPunksProxy is IProxy, TokenLogic {
 
     /**
      * @notice Execute CryptoPunks NFT sweeps in a single transaction
-     * @dev Only "orders" and the "isAtomic" are used
+     * @dev Only "orders" and "isAtomic" are used
      * @param orders Orders to be executed by CryptoPunks
      * @param recipient The address to receive the purchased NFTs
      * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
