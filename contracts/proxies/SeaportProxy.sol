@@ -65,6 +65,8 @@ contract SeaportProxy is TokenLogic, IProxy {
         if (recipient == address(0)) revert ZeroAddress();
 
         // TODO: Use recipient for now but this is probably not right
+        // NOTE: Have an idea, if msg.sender is aggregator, trust whatever is passed downstream.
+        // (aggregator passes its msg.sender as the buyer) Else, pull ERC-20 tokens from msg.sender.
         if (tokenTransfers.length > 0) _pullERC20TokensFromBuyer(tokenTransfers, recipient);
 
         if (isAtomic) {
