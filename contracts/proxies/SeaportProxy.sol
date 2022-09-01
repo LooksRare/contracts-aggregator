@@ -7,7 +7,7 @@ import {BasicOrder, TokenTransfer} from "../libraries/OrderStructs.sol";
 import {CollectionType} from "../libraries/OrderEnums.sol";
 import {AdvancedOrder, CriteriaResolver, OrderParameters, OfferItem, ConsiderationItem, FulfillmentComponent, AdditionalRecipient} from "../libraries/seaport/ConsiderationStructs.sol";
 import {ItemType, OrderType} from "../libraries/seaport/ConsiderationEnums.sol";
-import {TokenRescuer} from "../TokenRescuer.sol";
+import {TokenLogic} from "../TokenLogic.sol";
 import {IProxy} from "../proxies/IProxy.sol";
 import {ILooksRareAggregator} from "../interfaces/ILooksRareAggregator.sol";
 
@@ -17,7 +17,7 @@ import {ILooksRareAggregator} from "../interfaces/ILooksRareAggregator.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract SeaportProxy is TokenRescuer, IProxy {
+contract SeaportProxy is TokenLogic, IProxy {
     SeaportInterface public immutable marketplace;
     ILooksRareAggregator private immutable aggregator;
 

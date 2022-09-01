@@ -3,14 +3,14 @@ pragma solidity 0.8.14;
 import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
 import {SeaportProxy} from "../../contracts/proxies/SeaportProxy.sol";
 import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
-import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
+import {TokenLogic} from "../../contracts/TokenLogic.sol";
 import {OrderType} from "../../contracts/libraries/seaport/ConsiderationEnums.sol";
 import {AdditionalRecipient, Fulfillment, FulfillmentComponent} from "../../contracts/libraries/seaport/ConsiderationStructs.sol";
 import {IProxy} from "../../contracts/proxies/IProxy.sol";
 import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {TestHelpers} from "./TestHelpers.sol";
-import {TokenRescuerTest} from "./TokenRescuer.t.sol";
+import {TokenLogicTest} from "./TokenLogic.t.sol";
 import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
 
 abstract contract TestParameters {
@@ -19,13 +19,13 @@ abstract contract TestParameters {
     address internal _buyer = address(1);
 }
 
-contract SeaportProxyTest is TestParameters, TestHelpers, TokenRescuerTest, SeaportProxyTestHelpers {
+contract SeaportProxyTest is TestParameters, TestHelpers, TokenLogicTest, SeaportProxyTestHelpers {
     SeaportProxy seaportProxy;
-    TokenRescuer tokenRescuer;
+    TokenLogic tokenRescuer;
 
     function setUp() public {
         seaportProxy = new SeaportProxy(SEAPORT, address(new LooksRareAggregator()));
-        tokenRescuer = TokenRescuer(address(seaportProxy));
+        tokenRescuer = TokenLogic(address(seaportProxy));
         vm.deal(_buyer, 100 ether);
     }
 

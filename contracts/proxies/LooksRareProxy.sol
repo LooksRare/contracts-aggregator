@@ -9,7 +9,7 @@ import {SignatureChecker} from "@looksrare/contracts-libs/contracts/SignatureChe
 import {BasicOrder, TokenTransfer} from "../libraries/OrderStructs.sol";
 import {CollectionType} from "../libraries/OrderEnums.sol";
 import {TokenReceiverProxy} from "./TokenReceiverProxy.sol";
-import {TokenRescuer} from "../TokenRescuer.sol";
+import {TokenLogic} from "../TokenLogic.sol";
 
 /**
  * @title LooksRareProxy
@@ -17,7 +17,7 @@ import {TokenRescuer} from "../TokenRescuer.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract LooksRareProxy is TokenReceiverProxy, TokenRescuer, SignatureChecker {
+contract LooksRareProxy is TokenReceiverProxy, TokenLogic, SignatureChecker {
     struct OrderExtraData {
         uint256 makerAskPrice; // Maker ask price, which is not necessarily equal to the taker bid price
         uint256 minPercentageToAsk; // The maker's minimum % to receive from the sale

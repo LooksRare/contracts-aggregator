@@ -3,7 +3,7 @@ pragma solidity 0.8.14;
 
 import {LooksRareProxy} from "./proxies/LooksRareProxy.sol";
 import {BasicOrder} from "./libraries/OrderStructs.sol";
-import {TokenRescuer} from "./TokenRescuer.sol";
+import {TokenLogic} from "./TokenLogic.sol";
 import {ILooksRareAggregator} from "./interfaces/ILooksRareAggregator.sol";
 
 /**
@@ -12,7 +12,7 @@ import {ILooksRareAggregator} from "./interfaces/ILooksRareAggregator.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract LooksRareAggregator is TokenRescuer, ILooksRareAggregator {
+contract LooksRareAggregator is TokenLogic, ILooksRareAggregator {
     struct Proxy {
         bool supportsERC20Orders;
         mapping(bytes4 => bool) functionSelectors;

@@ -4,7 +4,7 @@ pragma solidity 0.8.14;
 import {BasicOrder, TokenTransfer} from "../libraries/OrderStructs.sol";
 import {ICryptoPunks} from "../interfaces/ICryptoPunks.sol";
 import {IProxy} from "./IProxy.sol";
-import {TokenRescuer} from "../TokenRescuer.sol";
+import {TokenLogic} from "../TokenLogic.sol";
 
 /**
  * @title CryptoPunksProxy
@@ -12,7 +12,7 @@ import {TokenRescuer} from "../TokenRescuer.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract CryptoPunksProxy is IProxy, TokenRescuer {
+contract CryptoPunksProxy is IProxy, TokenLogic {
     ICryptoPunks public immutable cryptopunks;
 
     constructor(address _cryptopunks) {
