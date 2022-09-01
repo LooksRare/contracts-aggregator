@@ -16,10 +16,9 @@ interface SeaportFixture {
 export default async function deploySeaportFixture(): Promise<SeaportFixture> {
   const Aggregator = await ethers.getContractFactory("LooksRareAggregator");
   const aggregator = await Aggregator.deploy();
-  await aggregator.deployed();
 
   const SeaportProxy = await ethers.getContractFactory("SeaportProxy");
-  const proxy = await SeaportProxy.deploy(SEAPORT);
+  const proxy = await SeaportProxy.deploy(SEAPORT, aggregator.address);
   await proxy.deployed();
 
   // Because we are forking from the mainnet, the proxy address somehow already had a contract deployed to
@@ -28,6 +27,7 @@ export default async function deploySeaportFixture(): Promise<SeaportFixture> {
 
   const functionSelector = await getSignature("SeaportProxy.json", "execute");
   await aggregator.addFunction(proxy.address, functionSelector);
+  await aggregator.setSupportsERC20Orders(proxy.address, true);
 
   const [buyer] = await ethers.getSigners();
 

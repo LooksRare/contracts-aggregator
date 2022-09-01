@@ -45,8 +45,7 @@ describe("Aggregator", () => {
     await airdropUSDC(buyer.address, priceOne);
 
     const usdc = await ethers.getContractAt("IERC20", USDC);
-    // TODO: should be aggregator instead
-    await usdc.connect(buyer).approve(proxy.address, priceOne);
+    await usdc.connect(buyer).approve(aggregator.address, priceOne);
 
     const tradeData = [
       {

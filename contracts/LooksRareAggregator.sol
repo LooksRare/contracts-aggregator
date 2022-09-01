@@ -67,6 +67,9 @@ contract LooksRareAggregator is TokenRescuer, ILooksRareAggregator {
         emit Sweep(msg.sender, tradeData.length, successCount);
     }
 
+    /**
+     * @inheritdoc ILooksRareAggregator
+     */
     function pullERC20Tokens(
         address buyer,
         address currency,

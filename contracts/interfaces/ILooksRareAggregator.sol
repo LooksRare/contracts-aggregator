@@ -15,6 +15,21 @@ interface ILooksRareAggregator {
     }
 
     /**
+     * @notice Pull ERC-20 tokens from buyers to the proxy
+     * @dev Must be called by an authorized proxy
+     * @dev The pull happens here so that the buyer only has to approve the aggregator once
+     *      instead of having to approve each proxy
+     * @param buyer The address to pull from
+     * @param currency The ERC-20 token to pull
+     * @param amount The pull amount
+     */
+    function pullERC20Tokens(
+        address buyer,
+        address currency,
+        uint256 amount
+    ) external;
+
+    /**
      * @notice Emitted when a marketplace proxy's function is enabled.
      * @param proxy The marketplace proxy's address
      * @param selector The marketplace proxy's function selector
