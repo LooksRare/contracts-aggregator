@@ -1,0 +1,53 @@
+{
+  "orders": [
+    {
+      "salt": "303818313790121321496340686162946921668",
+      "user": "0xCd46DEe6e832e3ffa3FdC394b8dC673D6CA843dd",
+      "network": "1",
+      "intent": "1",
+      "delegateType": "1",
+      "deadline": "1662823423",
+      "currency": "0x0000000000000000000000000000000000000000",
+      "dataMask": "0x",
+      "items": [
+        {
+          "price": "78690000000000000000",
+          "data": "0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000001000000000000000000000000bc4ca0eda7647a8ab7c2061c2e118a18a936f13d00000000000000000000000000000000000000000000000000000000000009bb"
+        }
+      ],
+      "r": "0xf154cebd53d26c5165f886d3993ad8f2d0bca0bed47939375c544c32052ed296",
+      "s": "0x76eb0d1f67675a8d3a812784a393962df36fddd55e38ec747619dfe22c555c2a",
+      "v": 27,
+      "signVersion": 1
+    }
+  ],
+  "details": [
+    {
+      "op": 1,
+      "orderIdx": "0",
+      "itemIdx": "0",
+      "price": "78690000000000000000",
+      "itemHash": "0x215f1b90d78333c4bf08901597b3406860765b9fab4c779f26b3026e2737e5d6",
+      "executionDelegate": "0xF849de01B080aDC3A814FaBE1E2087475cF2E354",
+      "dataReplacement": "0x",
+      "bidIncentivePct": "0",
+      "aucMinIncrementPct": "0",
+      "aucIncDurationSecs": "0",
+      "fees": [
+        { "percentage": "5000", "to": "0xD823C605807cC5E6Bd6fC0d7e4eEa50d3e2d66cd" },
+        { "percentage": "25000", "to": "0xA858DDc0445d8131daC4d1DE01f834ffcbA52Ef1" }
+      ]
+    }
+  ],
+  "shared": {
+    "salt": "755524116640362",
+    "deadline": "1660595707",
+    "amountToEth": "0",
+    "amountToWeth": "0",
+    "user": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+    "canFail": false
+  },
+  "v": 27,
+  "r": "0x7fb256e03e6d74ce6dcd54c324b00160951d7606a21627868cd743e81794c7f0",
+  "s": "0x27e283dcb1296c5b9679cc9dba48828fae3e7b695413e10186e5421249c094f1"
+}
