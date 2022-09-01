@@ -27,16 +27,17 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
     SeaportProxy seaportProxy;
 
     function setUp() public {
-        seaportProxy = new SeaportProxy(SEAPORT);
-        vm.deal(_buyer, 100 ether);
-        // Since we are forking mainnet, we have to make sure it has 0 ETH.
-        vm.deal(address(seaportProxy), 0);
-
         aggregator = new LooksRareAggregator();
+        seaportProxy = new SeaportProxy(SEAPORT, address(aggregator));
+
         aggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);
 
         v0Aggregator = new V0Aggregator();
         v0Aggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);
+
+        vm.deal(_buyer, 100 ether);
+        // Since we are forking mainnet, we have to make sure it has 0 ETH.
+        vm.deal(address(seaportProxy), 0);
     }
 
     function testBuyWithETHDirectlySingleOrder() public asPrankedUser(_buyer) {

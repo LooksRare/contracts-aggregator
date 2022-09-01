@@ -74,7 +74,7 @@ contract LooksRareAggregator is TokenRescuer, ILooksRareAggregator {
         address buyer,
         address currency,
         uint256 amount
-    ) external {
+    ) external override {
         if (!_proxies[msg.sender].supportsERC20Orders) revert UnauthorizedToPullTokens();
         _executeERC20Transfer(currency, buyer, msg.sender, amount);
     }
