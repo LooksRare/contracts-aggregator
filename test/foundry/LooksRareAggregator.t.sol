@@ -62,6 +62,24 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTes
         aggregator.removeFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
     }
 
+    function testSetSupportsERC20Orders() public {
+        assertTrue(!aggregator.supportsERC20Orders(address(looksRareProxy)));
+        vm.expectEmit(true, true, false, true);
+        emit SupportsERC20OrdersUpdated(address(looksRareProxy), true);
+        aggregator.setSupportsERC20Orders(address(looksRareProxy), true);
+        assertTrue(aggregator.supportsERC20Orders(address(looksRareProxy)));
+
+        vm.expectEmit(true, true, false, true);
+        emit SupportsERC20OrdersUpdated(address(looksRareProxy), false);
+        aggregator.setSupportsERC20Orders(address(looksRareProxy), false);
+        assertTrue(!aggregator.supportsERC20Orders(address(looksRareProxy)));
+    }
+
+    function testSetSupportsERC20OrdersNotOwner() public asPrankedUser(_notOwner) {
+        vm.expectRevert(OwnableTwoSteps.NotOwner.selector);
+        aggregator.setSupportsERC20Orders(address(looksRareProxy), true);
+    }
+
     function testRescueETH() public {
         _testRescueETH(tokenRescuer);
     }
