@@ -13,7 +13,11 @@ import {ILooksRareAggregator} from "./interfaces/ILooksRareAggregator.sol";
  * @author LooksRare protocol team (👀,💎)
  */
 contract LooksRareAggregator is TokenRescuer, ILooksRareAggregator {
-    mapping(address => mapping(bytes4 => bool)) private _proxyFunctionSelectors;
+    struct Proxy {
+        bool supportsERC20Orders;
+        mapping(bytes4 => bool) functionSelectors;
+    }
+    mapping(address => Proxy) private _proxies;
 
     /**
      * @notice Execute NFT sweeps in different marketplaces in a single transaction
@@ -31,7 +35,7 @@ contract LooksRareAggregator is TokenRescuer, ILooksRareAggregator {
 
         uint256 successCount;
         for (uint256 i; i < tradeData.length; ) {
-            if (!_proxyFunctionSelectors[tradeData[i].proxy][tradeData[i].selector]) revert InvalidFunction();
+            if (!_proxies[tradeData[i].proxy].functionSelectors[tradeData[i].selector]) revert InvalidFunction();
 
             (bool success, bytes memory returnData) = tradeData[i].proxy.call{value: tradeData[i].value}(
                 _encodeCalldata(tradeData[i], recipient, isAtomic)
@@ -70,7 +74,7 @@ contract LooksRareAggregator is TokenRescuer, ILooksRareAggregator {
      * @param selector The marketplace proxy's function selector
      */
     function addFunction(address proxy, bytes4 selector) external onlyOwner {
-        _proxyFunctionSelectors[proxy][selector] = true;
+        _proxies[proxy].functionSelectors[selector] = true;
         emit FunctionAdded(proxy, selector);
     }
 
@@ -81,8 +85,19 @@ contract LooksRareAggregator is TokenRescuer, ILooksRareAggregator {
      * @param selector The marketplace proxy's function selector
      */
     function removeFunction(address proxy, bytes4 selector) external onlyOwner {
-        delete _proxyFunctionSelectors[proxy][selector];
+        delete _proxies[proxy].functionSelectors[selector];
         emit FunctionRemoved(proxy, selector);
+    }
+
+    /**
+     * @notice Toggle a marketplace proxy's supports ERC-20 tokens orders flag
+     * @dev Must be called by the current owner
+     * @param proxy The marketplace proxy's address
+     * @param isSupported Whether the marketplace supports orders paid with ERC-20 tokens
+     */
+    function setSupportsERC20Orders(address proxy, bool isSupported) external onlyOwner {
+        _proxies[proxy].supportsERC20Orders = isSupported;
+        emit SupportsERC20OrdersUpdated(proxy, isSupported);
     }
 
     /**
@@ -91,7 +106,15 @@ contract LooksRareAggregator is TokenRescuer, ILooksRareAggregator {
      * @return Whether the marketplace proxy's function can be called from the aggregator
      */
     function supportsProxyFunction(address proxy, bytes4 selector) external view returns (bool) {
-        return _proxyFunctionSelectors[proxy][selector];
+        return _proxies[proxy].functionSelectors[selector];
+    }
+
+    /**
+     * @param proxy The marketplace proxy's address
+     * @return Whether the marketplace proxy supports ERC-20 tokens orders
+     */
+    function supportsERC20Orders(address proxy) external view returns (bool) {
+        return _proxies[proxy].supportsERC20Orders;
     }
 
     function _encodeCalldata(
