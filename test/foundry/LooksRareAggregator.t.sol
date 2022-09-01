@@ -136,4 +136,11 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTes
         vm.expectRevert(ILooksRareAggregator.InvalidOrderLength.selector);
         aggregator.execute(tradeData, _buyer, false);
     }
+
+    // Because LooksRareAggregatorTest inherits from ILooksRareAggregator
+    function pullERC20Tokens(
+        address buyer,
+        address currency,
+        uint256 amount
+    ) external override {}
 }
