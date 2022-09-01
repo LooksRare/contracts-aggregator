@@ -39,17 +39,6 @@ contract TokenRescuer is OwnableTwoSteps, LowLevelETH, LowLevelERC20 {
         _executeERC20DirectTransfer(currency, to, withdrawAmount);
     }
 
-    function _pullERC20Tokens(TokenTransfer[] calldata tokenTransfers, address recipient) internal {
-        for (uint256 i; i < tokenTransfers.length; ) {
-            // NOTE: Can recipient be different from the person who paid?
-            _executeERC20Transfer(tokenTransfers[i].currency, recipient, address(this), tokenTransfers[i].amount);
-
-            unchecked {
-                ++i;
-            }
-        }
-    }
-
     // NOTE: will we return too much if there are ERC-20 tokens in the contract for whatever reasons?
     function _returnERC20TokensIfAny(TokenTransfer[] calldata tokenTransfers, address recipient) internal {
         for (uint256 i; i < tokenTransfers.length; ) {
