@@ -210,7 +210,9 @@ contract SeaportProxy is TokenRescuer, IProxy {
     function _pullERC20TokensFromBuyer(TokenTransfer[] calldata tokenTransfers, address buyer) private {
         for (uint256 i; i < tokenTransfers.length; ) {
             aggregator.pullERC20Tokens(buyer, tokenTransfers[i].currency, tokenTransfers[i].amount);
-            ++i;
+            unchecked {
+                ++i;
+            }
         }
     }
 }
