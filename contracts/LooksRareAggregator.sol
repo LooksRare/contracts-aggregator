@@ -67,6 +67,15 @@ contract LooksRareAggregator is TokenRescuer, ILooksRareAggregator {
         emit Sweep(msg.sender, tradeData.length, successCount);
     }
 
+    function pullERC20Tokens(
+        address buyer,
+        address currency,
+        uint256 amount
+    ) external {
+        if (!_proxies[msg.sender].supportsERC20Orders) revert UnauthorizedToPullTokens();
+        _executeERC20Transfer(currency, buyer, msg.sender, amount);
+    }
+
     /**
      * @notice Enable calling the specified proxy's trade function
      * @dev Must be called by the current owner

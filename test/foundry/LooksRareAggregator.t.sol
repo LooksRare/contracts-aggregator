@@ -80,6 +80,41 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTes
         aggregator.setSupportsERC20Orders(address(looksRareProxy), true);
     }
 
+    function testPullERC20Tokens() public {
+        uint256 pullAmount = 69420e18;
+        MockERC20 erc20 = new MockERC20();
+        erc20.mint(_buyer, pullAmount);
+
+        vm.prank(_buyer);
+        erc20.approve(address(aggregator), 69420e18);
+
+        aggregator.setSupportsERC20Orders(address(looksRareProxy), true);
+
+        assertEq(erc20.balanceOf(address(looksRareProxy)), 0);
+
+        vm.prank(address(looksRareProxy));
+        aggregator.pullERC20Tokens(_buyer, address(erc20), pullAmount);
+
+        assertEq(erc20.balanceOf(_buyer), 0);
+        assertEq(erc20.balanceOf(address(looksRareProxy)), pullAmount);
+        assertEq(erc20.allowance(_buyer, address(aggregator)), 0);
+    }
+
+    function testPullERC20TokensUnauthorized() public {
+        uint256 pullAmount = 69420e18;
+        MockERC20 erc20 = new MockERC20();
+        erc20.mint(_buyer, pullAmount);
+
+        vm.prank(_buyer);
+        erc20.approve(address(aggregator), 69420e18);
+
+        assertEq(erc20.balanceOf(address(looksRareProxy)), 0);
+
+        vm.prank(address(looksRareProxy));
+        vm.expectRevert(ILooksRareAggregator.UnauthorizedToPullTokens.selector);
+        aggregator.pullERC20Tokens(_buyer, address(erc20), pullAmount);
+    }
+
     function testRescueETH() public {
         _testRescueETH(tokenRescuer);
     }
