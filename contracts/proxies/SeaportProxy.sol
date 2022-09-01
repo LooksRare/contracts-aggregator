@@ -9,6 +9,7 @@ import {AdvancedOrder, CriteriaResolver, OrderParameters, OfferItem, Considerati
 import {ItemType, OrderType} from "../libraries/seaport/ConsiderationEnums.sol";
 import {TokenRescuer} from "../TokenRescuer.sol";
 import {IProxy} from "../proxies/IProxy.sol";
+import {ILooksRareAggregator} from "../interfaces/ILooksRareAggregator.sol";
 
 /**
  * @title SeaportProxy
@@ -18,6 +19,7 @@ import {IProxy} from "../proxies/IProxy.sol";
  */
 contract SeaportProxy is TokenRescuer, IProxy {
     SeaportInterface public immutable marketplace;
+    ILooksRareAggregator private immutable aggregator;
 
     error TradeExecutionFailed();
 
@@ -35,8 +37,9 @@ contract SeaportProxy is TokenRescuer, IProxy {
         AdditionalRecipient[] recipients; // Recipients of consideration items
     }
 
-    constructor(address _marketplace) {
+    constructor(address _marketplace, address _aggregator) {
         marketplace = SeaportInterface(_marketplace);
+        aggregator = ILooksRareAggregator(_aggregator);
     }
 
     /**
@@ -60,7 +63,9 @@ contract SeaportProxy is TokenRescuer, IProxy {
         uint256 ordersLength = orders.length;
         if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();
         if (recipient == address(0)) revert ZeroAddress();
-        if (tokenTransfers.length > 0) _pullERC20Tokens(tokenTransfers, recipient);
+
+        // TODO: Use recipient for now but this is probably not right
+        if (tokenTransfers.length > 0) _pullERC20TokensFromBuyer(tokenTransfers, recipient);
 
         if (isAtomic) {
             _executeAtomicOrders(orders, ordersExtraData, extraData, recipient);
@@ -196,5 +201,12 @@ contract SeaportProxy is TokenRescuer, IProxy {
             }
         }
         parameters.consideration = consideration;
+    }
+
+    function _pullERC20TokensFromBuyer(TokenTransfer[] calldata tokenTransfers, address buyer) private {
+        for (uint256 i; i < tokenTransfers.length; ) {
+            aggregator.pullERC20Tokens(buyer, tokenTransfers[i].currency, tokenTransfers[i].amount);
+            ++i;
+        }
     }
 }
