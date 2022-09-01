@@ -48,5 +48,6 @@ interface ILooksRareAggregator {
     error InvalidFunction();
     error InvalidOrderLength();
     error TradeExecutionFailed();
+    error UnauthorizedToPullTokens();
     error ZeroAddress();
 }
