@@ -12,6 +12,7 @@ import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TokenLogicTest} from "./TokenLogic.t.sol";
 import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
+import {MockERC20} from "./utils/MockERC20.sol";
 
 abstract contract TestParameters {
     address internal constant SEAPORT = 0x00000000006c3852cbEf3e08E8dF289169EdE581;
@@ -77,6 +78,22 @@ contract SeaportProxyTest is TestParameters, TestHelpers, TokenLogicTest, Seapor
             address(0),
             false
         );
+    }
+
+    function testApprove() public {
+        MockERC20 erc20 = new MockERC20();
+        assertEq(erc20.allowance(address(seaportProxy), SEAPORT), 0);
+        seaportProxy.approve(address(erc20));
+        assertEq(erc20.allowance(address(seaportProxy), SEAPORT), type(uint256).max);
+    }
+
+    function testApproveNotOwner() public {
+        MockERC20 erc20 = new MockERC20();
+        assertEq(erc20.allowance(address(seaportProxy), SEAPORT), 0);
+
+        vm.expectRevert(OwnableTwoSteps.NotOwner.selector);
+        vm.prank(_buyer);
+        seaportProxy.approve(address(erc20));
     }
 
     function testRescueETH() public {
