@@ -1,19 +1,19 @@
-import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
-import { expect } from "chai";
 import { ethers } from "hardhat";
+import getFixture from "../utils/get-fixture";
+import deploySeaportFixture from "../fixtures/deploy-seaport-fixture";
+import combineConsiderationAmount from "../utils/combine-consideration-amount";
+import getSeaportOrderJson from "../utils/get-seaport-order-json";
+import getSeaportOrderExtraData from "../utils/get-seaport-order-extra-data";
 import {
-  SEAPORT_CONSIDERATION_FULFILLMENTS_TWO_ORDERS_DIFFERENT_CURRENCIES,
   SEAPORT_EXTRA_DATA_SCHEMA,
   SEAPORT_OFFER_FULFILLMENT_TWO_ITEMS,
   USDC,
-} from "../constants";
-import deploySeaportFixture from "./fixtures/deploy-seaport-fixture";
-import airdropUSDC from "./utils/airdrop-usdc";
-import combineConsiderationAmount from "./utils/combine-consideration-amount";
-import getFixture from "./utils/get-fixture";
-import getSeaportOrderExtraData from "./utils/get-seaport-order-extra-data";
-import getSeaportOrderJson from "./utils/get-seaport-order-json";
-import validateSweepEvent from "./utils/validate-sweep-event";
+  SEAPORT_CONSIDERATION_FULFILLMENTS_TWO_ORDERS_DIFFERENT_CURRENCIES,
+} from "../../constants";
+import validateSweepEvent from "../utils/validate-sweep-event";
+import { expect } from "chai";
+import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
+import airdropUSDC from "../utils/airdrop-usdc";
 
 const encodedExtraData = () => {
   const abiCoder = ethers.utils.defaultAbiCoder;
@@ -28,7 +28,7 @@ const encodedExtraData = () => {
   );
 };
 
-describe("Aggregator", () => {
+export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean): void {
   it("Should be able to handle OpenSea trades", async function () {
     const { aggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(deploySeaportFixture);
 
@@ -55,12 +55,11 @@ describe("Aggregator", () => {
         value: priceTwo,
         orders: [getSeaportOrderJson(orderOne, priceOne), getSeaportOrderJson(orderTwo, priceTwo)],
         ordersExtraData: [getSeaportOrderExtraData(orderOne), getSeaportOrderExtraData(orderTwo)],
-        extraData: encodedExtraData(),
-        // extraData: ethers.constants.HashZero,
+        extraData: isAtomic ? encodedExtraData() : ethers.constants.HashZero,
       },
     ];
 
-    const tx = await aggregator.connect(buyer).execute(tradeData, buyer.address, true, { value: priceTwo });
+    const tx = await aggregator.connect(buyer).execute(tradeData, buyer.address, isAtomic, { value: priceTwo });
     const receipt = await tx.wait();
 
     validateSweepEvent(receipt, buyer.address, 1, 1);
@@ -69,4 +68,4 @@ describe("Aggregator", () => {
     expect(await bayc.ownerOf(9996)).to.equal(buyer.address);
     expect(await bayc.ownerOf(5509)).to.equal(buyer.address);
   });
-});
+}
