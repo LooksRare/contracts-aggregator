@@ -46,6 +46,7 @@ export default function behavesLikeSeaportERC721(isAtomic: boolean): void {
         orders: [getSeaportOrderJson(orderOne, priceOne), getSeaportOrderJson(orderTwo, priceTwo)],
         ordersExtraData: [getSeaportOrderExtraData(orderOne), getSeaportOrderExtraData(orderTwo)],
         extraData: isAtomic ? encodedExtraData() : ethers.constants.HashZero,
+        tokenTransfers: [],
       },
     ];
 
@@ -77,6 +78,7 @@ export default function behavesLikeSeaportERC721(isAtomic: boolean): void {
         orders: [getSeaportOrderJson(orderOne, priceOne), getSeaportOrderJson(orderTwo, priceTwo)],
         ordersExtraData: [getSeaportOrderExtraData(orderOne), getSeaportOrderExtraData(orderTwo)],
         extraData: isAtomic ? encodedExtraData() : ethers.constants.HashZero,
+        tokenTransfers: [],
       },
     ];
 
@@ -117,6 +119,7 @@ export default function behavesLikeSeaportERC721(isAtomic: boolean): void {
         orders: [getSeaportOrderJson(orderOne, priceOne), getSeaportOrderJson(orderTwo, priceTwo)],
         ordersExtraData: [getSeaportOrderExtraData(orderOne), getSeaportOrderExtraData(orderTwo)],
         extraData: isAtomic ? encodedExtraData() : ethers.constants.HashZero,
+        tokenTransfers: [],
       },
     ];
 
