@@ -5,12 +5,12 @@ pragma solidity 0.8.14;
 import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
 import {X2Y2Proxy} from "../../contracts/proxies/X2Y2Proxy.sol";
 import {IProxy} from "../../contracts/proxies/IProxy.sol";
-import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
+import {TokenLogic} from "../../contracts/TokenLogic.sol";
 import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {Market} from "../../contracts/libraries/x2y2/MarketConsts.sol";
 import {TestHelpers} from "./TestHelpers.sol";
-import {TokenRescuerTest} from "./TokenRescuer.t.sol";
+import {TokenLogicTest} from "./TokenLogic.t.sol";
 
 abstract contract TestParameters {
     address internal constant X2Y2 = 0x74312363e45DCaBA76c59ec49a7Aa8A65a67EeD3;
@@ -18,13 +18,13 @@ abstract contract TestParameters {
     address internal _buyer = address(1);
 }
 
-contract X2Y2ProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
+contract X2Y2ProxyTest is TestParameters, TestHelpers, TokenLogicTest {
     X2Y2Proxy x2y2Proxy;
-    TokenRescuer tokenRescuer;
+    TokenLogic tokenRescuer;
 
     function setUp() public {
         x2y2Proxy = new X2Y2Proxy(X2Y2);
-        tokenRescuer = TokenRescuer(address(x2y2Proxy));
+        tokenRescuer = TokenLogic(address(x2y2Proxy));
         vm.deal(_buyer, 100 ether);
     }
 

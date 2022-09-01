@@ -4,13 +4,13 @@ pragma solidity 0.8.14;
 
 import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
 import {LooksRareProxy} from "../../contracts/proxies/LooksRareProxy.sol";
-import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
+import {TokenLogic} from "../../contracts/TokenLogic.sol";
 import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggregator.sol";
 import {BasicOrder} from "../../contracts/libraries/OrderStructs.sol";
 import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
 import {MockERC20} from "./utils/MockERC20.sol";
 import {TestHelpers} from "./TestHelpers.sol";
-import {TokenRescuerTest} from "./TokenRescuer.t.sol";
+import {TokenLogicTest} from "./TokenLogic.t.sol";
 
 abstract contract TestParameters {
     address internal constant LOOKSRARE_V1 = 0x59728544B08AB483533076417FbBB2fD0B17CE3a;
@@ -18,14 +18,14 @@ abstract contract TestParameters {
     address internal constant _buyer = address(2);
 }
 
-contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTest, ILooksRareAggregator {
+contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenLogicTest, ILooksRareAggregator {
     LooksRareAggregator aggregator;
     LooksRareProxy looksRareProxy;
-    TokenRescuer tokenRescuer;
+    TokenLogic tokenRescuer;
 
     function setUp() public {
         aggregator = new LooksRareAggregator();
-        tokenRescuer = TokenRescuer(address(aggregator));
+        tokenRescuer = TokenLogic(address(aggregator));
         looksRareProxy = new LooksRareProxy(LOOKSRARE_V1);
     }
 
