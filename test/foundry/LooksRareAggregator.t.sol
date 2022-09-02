@@ -79,6 +79,23 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenLogicTest,
         aggregator.approve(address(erc20), address(looksRareProxy));
     }
 
+    function testRevoke() public {
+        MockERC20 erc20 = new MockERC20();
+
+        aggregator.approve(address(looksRareProxy), address(erc20));
+        assertEq(erc20.allowance(address(aggregator), address(looksRareProxy)), type(uint256).max);
+
+        aggregator.revoke(address(looksRareProxy), address(erc20));
+        assertEq(erc20.allowance(address(aggregator), address(looksRareProxy)), 0);
+    }
+
+    function testRevokeNotOwner() public {
+        MockERC20 erc20 = new MockERC20();
+        vm.prank(_buyer);
+        vm.expectRevert(OwnableTwoSteps.NotOwner.selector);
+        aggregator.revoke(address(looksRareProxy), address(erc20));
+    }
+
     function testRescueETH() public {
         _testRescueETH(tokenRescuer);
     }

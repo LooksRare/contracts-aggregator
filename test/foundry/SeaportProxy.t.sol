@@ -96,6 +96,24 @@ contract SeaportProxyTest is TestParameters, TestHelpers, TokenLogicTest, Seapor
         seaportProxy.approve(address(erc20));
     }
 
+    function testRevoke() public {
+        MockERC20 erc20 = new MockERC20();
+        assertEq(erc20.allowance(address(seaportProxy), SEAPORT), 0);
+
+        seaportProxy.approve(address(erc20));
+        assertEq(erc20.allowance(address(seaportProxy), SEAPORT), type(uint256).max);
+
+        seaportProxy.revoke(address(erc20));
+        assertEq(erc20.allowance(address(seaportProxy), SEAPORT), 0);
+    }
+
+    function testRevokeNotOwner() public {
+        MockERC20 erc20 = new MockERC20();
+        vm.expectRevert(OwnableTwoSteps.NotOwner.selector);
+        vm.prank(_buyer);
+        seaportProxy.revoke(address(erc20));
+    }
+
     function testRescueETH() public {
         _testRescueETH(tokenRescuer);
     }
