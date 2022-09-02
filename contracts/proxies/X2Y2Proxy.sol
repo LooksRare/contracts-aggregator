@@ -51,7 +51,6 @@ contract X2Y2Proxy is TokenReceiverProxy, TokenLogic, SignatureChecker {
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,
         bytes calldata,
-        address,
         address recipient,
         bool isAtomic
     ) external payable override returns (bool) {
