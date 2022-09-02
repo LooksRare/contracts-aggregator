@@ -6,7 +6,7 @@ import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
 import {LooksRareProxy} from "../../contracts/proxies/LooksRareProxy.sol";
 import {TokenLogic} from "../../contracts/TokenLogic.sol";
 import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggregator.sol";
-import {BasicOrder} from "../../contracts/libraries/OrderStructs.sol";
+import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
 import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
 import {MockERC20} from "./utils/MockERC20.sol";
 import {TestHelpers} from "./TestHelpers.sol";
@@ -62,59 +62,6 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenLogicTest,
         aggregator.removeFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
     }
 
-    function testSetSupportsERC20Orders() public {
-        assertTrue(!aggregator.supportsERC20Orders(address(looksRareProxy)));
-        vm.expectEmit(true, true, false, true);
-        emit SupportsERC20OrdersUpdated(address(looksRareProxy), true);
-        aggregator.setSupportsERC20Orders(address(looksRareProxy), true);
-        assertTrue(aggregator.supportsERC20Orders(address(looksRareProxy)));
-
-        vm.expectEmit(true, true, false, true);
-        emit SupportsERC20OrdersUpdated(address(looksRareProxy), false);
-        aggregator.setSupportsERC20Orders(address(looksRareProxy), false);
-        assertTrue(!aggregator.supportsERC20Orders(address(looksRareProxy)));
-    }
-
-    function testSetSupportsERC20OrdersNotOwner() public asPrankedUser(_notOwner) {
-        vm.expectRevert(OwnableTwoSteps.NotOwner.selector);
-        aggregator.setSupportsERC20Orders(address(looksRareProxy), true);
-    }
-
-    function testPullERC20Tokens() public {
-        uint256 pullAmount = 69420e18;
-        MockERC20 erc20 = new MockERC20();
-        erc20.mint(_buyer, pullAmount);
-
-        vm.prank(_buyer);
-        erc20.approve(address(aggregator), 69420e18);
-
-        aggregator.setSupportsERC20Orders(address(looksRareProxy), true);
-
-        assertEq(erc20.balanceOf(address(looksRareProxy)), 0);
-
-        vm.prank(address(looksRareProxy));
-        aggregator.pullERC20Tokens(_buyer, address(erc20), pullAmount);
-
-        assertEq(erc20.balanceOf(_buyer), 0);
-        assertEq(erc20.balanceOf(address(looksRareProxy)), pullAmount);
-        assertEq(erc20.allowance(_buyer, address(aggregator)), 0);
-    }
-
-    function testPullERC20TokensUnauthorized() public {
-        uint256 pullAmount = 69420e18;
-        MockERC20 erc20 = new MockERC20();
-        erc20.mint(_buyer, pullAmount);
-
-        vm.prank(_buyer);
-        erc20.approve(address(aggregator), 69420e18);
-
-        assertEq(erc20.balanceOf(address(looksRareProxy)), 0);
-
-        vm.prank(address(looksRareProxy));
-        vm.expectRevert(ILooksRareAggregator.UnauthorizedToPullTokens.selector);
-        aggregator.pullERC20Tokens(_buyer, address(erc20), pullAmount);
-    }
-
     function testRescueETH() public {
         _testRescueETH(tokenRescuer);
     }
@@ -132,15 +79,9 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenLogicTest,
     }
 
     function testBuyWithETHZeroOrders() public {
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](0);
         vm.expectRevert(ILooksRareAggregator.InvalidOrderLength.selector);
-        aggregator.execute(tradeData, _buyer, false);
+        aggregator.execute(tokenTransfers, tradeData, _buyer, false);
     }
-
-    // Because LooksRareAggregatorTest inherits from ILooksRareAggregator
-    function pullERC20Tokens(
-        address buyer,
-        address currency,
-        uint256 amount
-    ) external override {}
 }

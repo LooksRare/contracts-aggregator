@@ -96,6 +96,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
     }
 
     function testBuyWithETHThroughAggregatorSingleOrder() public {
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder[] memory validOrders = validBAYCOrders();
         BasicOrder[] memory orders = new BasicOrder[](1);
         orders[0] = validOrders[0];
@@ -115,7 +116,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         });
 
         uint256 gasRemaining = gasleft();
-        aggregator.execute{value: orders[0].price}(tradeData, _buyer, false);
+        aggregator.execute{value: orders[0].price}(tokenTransfers, tradeData, _buyer, false);
         uint256 gasConsumed = gasRemaining - gasleft();
         emit log_named_uint("LooksRare single NFT purchase through the aggregator consumed: ", gasConsumed);
 
@@ -176,6 +177,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
     }
 
     function testBuyWithETHThroughAggregatorTwoOrders() public {
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder[] memory orders = validBAYCOrders();
 
         bytes[] memory ordersExtraData = new bytes[](2);
@@ -194,7 +196,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         });
 
         uint256 gasRemaining = gasleft();
-        aggregator.execute{value: orders[0].price + orders[1].price}(tradeData, _buyer, false);
+        aggregator.execute{value: orders[0].price + orders[1].price}(tokenTransfers, tradeData, _buyer, false);
         uint256 gasConsumed = gasRemaining - gasleft();
         emit log_named_uint("LooksRare multiple NFT purchase through the aggregator consumed: ", gasConsumed);
 

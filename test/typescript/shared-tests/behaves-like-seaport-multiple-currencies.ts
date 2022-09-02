@@ -47,9 +47,10 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
     const usdc = await ethers.getContractAt("IERC20", USDC);
     await usdc.connect(buyer).approve(aggregator.address, priceOne);
 
+    const tokenTransfers = [{ amount: priceOne, currency: USDC }];
     const tradeData = [
       {
-        tokenTransfers: [{ amount: priceOne, currency: USDC }],
+        tokenTransfers,
         proxy: proxy.address,
         selector: functionSelector,
         value: priceTwo,
@@ -59,7 +60,9 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
       },
     ];
 
-    const tx = await aggregator.connect(buyer).execute(tradeData, buyer.address, isAtomic, { value: priceTwo });
+    const tx = await aggregator
+      .connect(buyer)
+      .execute(tokenTransfers, tradeData, buyer.address, isAtomic, { value: priceTwo });
     const receipt = await tx.wait();
 
     validateSweepEvent(receipt, buyer.address, 1, 1);
@@ -92,9 +95,10 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
     const usdc = await ethers.getContractAt("IERC20", USDC);
     await usdc.connect(buyer).approve(aggregator.address, priceOne.add(excess));
 
+    const tokenTransfers = [{ amount: priceOne.add(excess), currency: USDC }];
     const tradeData = [
       {
-        tokenTransfers: [{ amount: priceOne.add(excess), currency: USDC }],
+        tokenTransfers,
         proxy: proxy.address,
         selector: functionSelector,
         value: priceTwo,
@@ -104,7 +108,9 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
       },
     ];
 
-    const tx = await aggregator.connect(buyer).execute(tradeData, buyer.address, isAtomic, { value: priceTwo });
+    const tx = await aggregator
+      .connect(buyer)
+      .execute(tokenTransfers, tradeData, buyer.address, isAtomic, { value: priceTwo });
     const receipt = await tx.wait();
 
     validateSweepEvent(receipt, buyer.address, 1, 1);

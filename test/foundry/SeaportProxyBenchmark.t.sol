@@ -97,6 +97,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
     }
 
     function testBuyWithETHThroughAggregatorSingleOrder() public {
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder memory order = validBAYCId2518Order();
         BasicOrder[] memory orders = new BasicOrder[](1);
         orders[0] = order;
@@ -119,7 +120,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         });
 
         uint256 gasRemaining = gasleft();
-        aggregator.execute{value: order.price}(tradeData, _buyer, true);
+        aggregator.execute{value: order.price}(tokenTransfers, tradeData, _buyer, true);
         uint256 gasConsumed = gasRemaining - gasleft();
         emit log_named_uint("Seaport single NFT purchase through the aggregator consumed: ", gasConsumed);
 
@@ -283,6 +284,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
     }
 
     function testBuyWithETHThroughAggregatorTwoOrders() public {
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder memory orderOne = validBAYCId2518Order();
         BasicOrder memory orderTwo = validBAYCId8498Order();
         BasicOrder[] memory orders = new BasicOrder[](2);
@@ -310,7 +312,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         });
 
         uint256 gasRemaining = gasleft();
-        aggregator.execute{value: totalPrice}(tradeData, _buyer, true);
+        aggregator.execute{value: totalPrice}(tokenTransfers, tradeData, _buyer, true);
         uint256 gasConsumed = gasRemaining - gasleft();
         emit log_named_uint("Seaport multiple NFT purchase through the aggregator consumed: ", gasConsumed);
 

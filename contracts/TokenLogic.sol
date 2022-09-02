@@ -38,6 +38,15 @@ contract TokenLogic is OwnableTwoSteps, LowLevelETH, LowLevelERC20 {
         _executeERC20DirectTransfer(currency, to, withdrawAmount);
     }
 
+    function _pullERC20Tokens(TokenTransfer[] calldata tokenTransfers, address source) internal {
+        for (uint256 i; i < tokenTransfers.length; ) {
+            _executeERC20Transfer(tokenTransfers[i].currency, source, address(this), tokenTransfers[i].amount);
+            unchecked {
+                ++i;
+            }
+        }
+    }
+
     // NOTE: will we return too much if there are ERC-20 tokens in the contract for whatever reasons?
     function _returnERC20TokensIfAny(TokenTransfer[] calldata tokenTransfers, address recipient) internal {
         for (uint256 i; i < tokenTransfers.length; ) {
