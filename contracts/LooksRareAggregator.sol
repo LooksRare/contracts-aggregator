@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.14;
 
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {LooksRareProxy} from "./proxies/LooksRareProxy.sol";
-import {BasicOrder} from "./libraries/OrderStructs.sol";
+import {BasicOrder, TokenTransfer} from "./libraries/OrderStructs.sol";
 import {TokenLogic} from "./TokenLogic.sol";
 import {ILooksRareAggregator} from "./interfaces/ILooksRareAggregator.sol";
 
@@ -13,11 +14,7 @@ import {ILooksRareAggregator} from "./interfaces/ILooksRareAggregator.sol";
  * @author LooksRare protocol team (👀,💎)
  */
 contract LooksRareAggregator is TokenLogic, ILooksRareAggregator {
-    struct Proxy {
-        bool supportsERC20Orders;
-        mapping(bytes4 => bool) functionSelectors;
-    }
-    mapping(address => Proxy) private _proxies;
+    mapping(address => mapping(bytes4 => bool)) private _proxyFunctionSelectors;
 
     /**
      * @notice Execute NFT sweeps in different marketplaces in a single transaction
@@ -26,6 +23,7 @@ contract LooksRareAggregator is TokenLogic, ILooksRareAggregator {
      * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
      */
     function execute(
+        TokenTransfer[] calldata tokenTransfers,
         TradeData[] calldata tradeData,
         address recipient,
         bool isAtomic
@@ -33,9 +31,11 @@ contract LooksRareAggregator is TokenLogic, ILooksRareAggregator {
         if (recipient == address(0)) revert ZeroAddress();
         if (tradeData.length == 0) revert InvalidOrderLength();
 
+        if (tokenTransfers.length > 0) _pullERC20Tokens(tokenTransfers, msg.sender);
+
         uint256 successCount;
         for (uint256 i; i < tradeData.length; ) {
-            if (!_proxies[tradeData[i].proxy].functionSelectors[tradeData[i].selector]) revert InvalidFunction();
+            if (!_proxyFunctionSelectors[tradeData[i].proxy][tradeData[i].selector]) revert InvalidFunction();
 
             (bool success, bytes memory returnData) = tradeData[i].proxy.call{value: tradeData[i].value}(
                 _encodeCalldata(tradeData[i], recipient, isAtomic)
@@ -62,21 +62,10 @@ contract LooksRareAggregator is TokenLogic, ILooksRareAggregator {
             }
         }
 
+        if (tokenTransfers.length > 0) _returnERC20TokensIfAny(tokenTransfers, msg.sender);
         _returnETHIfAny();
 
         emit Sweep(msg.sender, tradeData.length, successCount);
-    }
-
-    /**
-     * @inheritdoc ILooksRareAggregator
-     */
-    function pullERC20Tokens(
-        address buyer,
-        address currency,
-        uint256 amount
-    ) external override {
-        if (!_proxies[msg.sender].supportsERC20Orders) revert UnauthorizedToPullTokens();
-        _executeERC20Transfer(currency, buyer, msg.sender, amount);
     }
 
     /**
@@ -86,7 +75,7 @@ contract LooksRareAggregator is TokenLogic, ILooksRareAggregator {
      * @param selector The marketplace proxy's function selector
      */
     function addFunction(address proxy, bytes4 selector) external onlyOwner {
-        _proxies[proxy].functionSelectors[selector] = true;
+        _proxyFunctionSelectors[proxy][selector] = true;
         emit FunctionAdded(proxy, selector);
     }
 
@@ -97,19 +86,18 @@ contract LooksRareAggregator is TokenLogic, ILooksRareAggregator {
      * @param selector The marketplace proxy's function selector
      */
     function removeFunction(address proxy, bytes4 selector) external onlyOwner {
-        delete _proxies[proxy].functionSelectors[selector];
+        delete _proxyFunctionSelectors[proxy][selector];
         emit FunctionRemoved(proxy, selector);
     }
 
+    // TODO: Should we allow revoke?
     /**
-     * @notice Toggle a marketplace proxy's supports ERC-20 tokens orders flag
-     * @dev Must be called by the current owner
-     * @param proxy The marketplace proxy's address
-     * @param isSupported Whether the marketplace supports orders paid with ERC-20 tokens
+     * @notice Approve proxies to transfer ERC-20 tokens from the aggregator
+     * @param proxy The address of the proxy to approve
+     * @param currency The address of the ERC-20 token to approve
      */
-    function setSupportsERC20Orders(address proxy, bool isSupported) external onlyOwner {
-        _proxies[proxy].supportsERC20Orders = isSupported;
-        emit SupportsERC20OrdersUpdated(proxy, isSupported);
+    function approve(address proxy, address currency) external onlyOwner {
+        IERC20(currency).approve(proxy, type(uint256).max);
     }
 
     /**
@@ -118,15 +106,7 @@ contract LooksRareAggregator is TokenLogic, ILooksRareAggregator {
      * @return Whether the marketplace proxy's function can be called from the aggregator
      */
     function supportsProxyFunction(address proxy, bytes4 selector) external view returns (bool) {
-        return _proxies[proxy].functionSelectors[selector];
-    }
-
-    /**
-     * @param proxy The marketplace proxy's address
-     * @return Whether the marketplace proxy supports ERC-20 tokens orders
-     */
-    function supportsERC20Orders(address proxy) external view returns (bool) {
-        return _proxies[proxy].supportsERC20Orders;
+        return _proxyFunctionSelectors[proxy][selector];
     }
 
     function _encodeCalldata(

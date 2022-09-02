@@ -64,19 +64,16 @@ contract SeaportProxy is TokenLogic, IProxy {
         if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();
         if (recipient == address(0)) revert ZeroAddress();
 
-        // TODO: Use recipient for now but this is probably not right
-        // NOTE: Have an idea, if msg.sender is aggregator, trust whatever is passed downstream.
-        // (aggregator passes its msg.sender as the buyer) Else, pull ERC-20 tokens from msg.sender.
-        if (tokenTransfers.length > 0) _pullERC20TokensFromBuyer(tokenTransfers, recipient);
+        if (tokenTransfers.length > 0) _pullERC20Tokens(tokenTransfers, msg.sender);
 
         if (isAtomic) {
             _executeAtomicOrders(orders, ordersExtraData, extraData, recipient);
-            if (tokenTransfers.length > 0) _returnERC20TokensIfAny(tokenTransfers, recipient);
+            if (tokenTransfers.length > 0) _returnERC20TokensIfAny(tokenTransfers, msg.sender);
             _returnETHIfAny();
             return true;
         } else {
             uint256 executedCount = _executeNonAtomicOrders(orders, ordersExtraData, recipient);
-            if (tokenTransfers.length > 0) _returnERC20TokensIfAny(tokenTransfers, recipient);
+            if (tokenTransfers.length > 0) _returnERC20TokensIfAny(tokenTransfers, msg.sender);
             _returnETHIfAny();
             return executedCount > 0;
         }
@@ -207,14 +204,5 @@ contract SeaportProxy is TokenLogic, IProxy {
             }
         }
         parameters.consideration = consideration;
-    }
-
-    function _pullERC20TokensFromBuyer(TokenTransfer[] calldata tokenTransfers, address buyer) private {
-        for (uint256 i; i < tokenTransfers.length; ) {
-            aggregator.pullERC20Tokens(buyer, tokenTransfers[i].currency, tokenTransfers[i].amount);
-            unchecked {
-                ++i;
-            }
-        }
     }
 }
