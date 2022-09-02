@@ -87,7 +87,7 @@ describe("Aggregator", () => {
 
     const buyerBalanceBefore = await getBalance(buyer.address);
 
-    const tx = await aggregator.connect(buyer).execute(tradeData, buyer.address, false, { value: price });
+    const tx = await aggregator.connect(buyer).execute([], tradeData, buyer.address, false, { value: price });
     const receipt = await tx.wait();
     const txFee = await calculateTxFee(tx);
 
@@ -169,7 +169,7 @@ describe("Aggregator", () => {
     const buyerBalanceBefore = await ethers.provider.getBalance(buyer.address);
 
     await expect(
-      aggregator.connect(buyer).execute(tradeData, buyer.address, true, { value: price })
+      aggregator.connect(buyer).execute([], tradeData, buyer.address, true, { value: price })
     ).to.be.revertedWith("BadSignatureV(0)");
 
     expect(await bayc.balanceOf(buyer.address)).to.equal(0);

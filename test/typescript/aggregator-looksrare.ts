@@ -61,7 +61,7 @@ describe("LooksRareAggregator", () => {
       },
     ];
 
-    const tx = await aggregator.connect(buyer).execute(tradeData, buyer.address, false, { value: totalValue });
+    const tx = await aggregator.connect(buyer).execute([], tradeData, buyer.address, false, { value: totalValue });
     const receipt = await tx.wait();
     validateSweepEvent(receipt, buyer.address, 1, 1);
 
@@ -128,7 +128,7 @@ describe("LooksRareAggregator", () => {
 
     const tx = await aggregator
       .connect(buyer)
-      .execute(tradeData, buyer.address, false, { value: totalValue.add(ethers.constants.WeiPerEther) });
+      .execute([], tradeData, buyer.address, false, { value: totalValue.add(ethers.constants.WeiPerEther) });
     const receipt = await tx.wait();
     const txFee = await calculateTxFee(tx);
 
@@ -185,7 +185,7 @@ describe("LooksRareAggregator", () => {
 
     const buyerBalanceBefore = await getBalance(buyer.address);
 
-    const tx = await aggregator.connect(buyer).execute(tradeData, buyer.address, false, { value: totalValue });
+    const tx = await aggregator.connect(buyer).execute([], tradeData, buyer.address, false, { value: totalValue });
     const receipt = await tx.wait();
     const txFee = await calculateTxFee(tx);
 
@@ -242,7 +242,7 @@ describe("LooksRareAggregator", () => {
     const buyerBalanceBefore = await getBalance(buyer.address);
 
     await expect(
-      aggregator.connect(buyer).execute(tradeData, buyer.address, true, { value: totalValue })
+      aggregator.connect(buyer).execute([], tradeData, buyer.address, true, { value: totalValue })
     ).to.be.revertedWith("Order: Matching order expired");
 
     expect(await bayc.balanceOf(aggregator.address)).to.equal(0);

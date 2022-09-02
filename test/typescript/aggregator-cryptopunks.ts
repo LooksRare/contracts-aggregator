@@ -32,6 +32,7 @@ describe("LooksRareAggregator", () => {
     };
 
     const tx = await aggregator.execute(
+      [],
       [
         {
           proxy: proxy.address,
@@ -95,6 +96,7 @@ describe("LooksRareAggregator", () => {
     const buyerBalanceBefore = await getBalance(buyer.address);
 
     const tx = await aggregator.execute(
+      [],
       [
         {
           proxy: proxy.address,
@@ -169,6 +171,7 @@ describe("LooksRareAggregator", () => {
 
     await expect(
       aggregator.execute(
+        [],
         [
           {
             proxy: proxy.address,
