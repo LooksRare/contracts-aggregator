@@ -66,6 +66,7 @@ describe("LooksRareAggregator", () => {
     const totalValue = priceOne.add(priceTwo).add(priceThree).add(priceFour);
 
     const tx = await aggregator.execute(
+      [],
       [
         {
           proxy: proxy.address,
@@ -176,6 +177,7 @@ describe("LooksRareAggregator", () => {
     };
 
     const tx = await aggregator.execute(
+      [],
       [
         {
           proxy: proxy.address,
@@ -233,6 +235,7 @@ describe("LooksRareAggregator", () => {
 
     await expect(
       aggregator.execute(
+        [],
         [
           {
             proxy: proxy.address,

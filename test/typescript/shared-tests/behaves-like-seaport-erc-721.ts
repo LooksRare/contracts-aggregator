@@ -50,7 +50,7 @@ export default function behavesLikeSeaportERC721(isAtomic: boolean): void {
       },
     ];
 
-    const tx = await aggregator.connect(buyer).execute(tradeData, buyer.address, isAtomic, { value: price });
+    const tx = await aggregator.connect(buyer).execute([], tradeData, buyer.address, isAtomic, { value: price });
     const receipt = await tx.wait();
 
     validateSweepEvent(receipt, buyer.address, 1, 1);
@@ -86,7 +86,7 @@ export default function behavesLikeSeaportERC721(isAtomic: boolean): void {
 
     const tx = await aggregator
       .connect(buyer)
-      .execute(tradeData, buyer.address, isAtomic, { value: price.add(ethers.constants.WeiPerEther) });
+      .execute([], tradeData, buyer.address, isAtomic, { value: price.add(ethers.constants.WeiPerEther) });
     const receipt = await tx.wait();
     const txFee = await calculateTxFee(tx);
 
@@ -125,7 +125,7 @@ export default function behavesLikeSeaportERC721(isAtomic: boolean): void {
 
     const buyerBalanceBefore = await ethers.provider.getBalance(buyer.address);
 
-    const tx = await aggregator.connect(buyer).execute(tradeData, buyer.address, isAtomic, { value: price });
+    const tx = await aggregator.connect(buyer).execute([], tradeData, buyer.address, isAtomic, { value: price });
     const receipt = await tx.wait();
     const txFee = await calculateTxFee(tx);
 
