@@ -90,7 +90,6 @@ contract LooksRareAggregator is TokenLogic, ILooksRareAggregator {
         emit FunctionRemoved(proxy, selector);
     }
 
-    // TODO: Should we allow revoke?
     /**
      * @notice Approve proxies to transfer ERC-20 tokens from the aggregator
      * @param proxy The address of the proxy to approve
@@ -98,6 +97,15 @@ contract LooksRareAggregator is TokenLogic, ILooksRareAggregator {
      */
     function approve(address proxy, address currency) external onlyOwner {
         IERC20(currency).approve(proxy, type(uint256).max);
+    }
+
+    /**
+     * @notice Revoke proxies to transfer ERC-20 tokens from the aggregator
+     * @param proxy The address of the proxy to revoke
+     * @param currency The address of the ERC-20 token to revoke
+     */
+    function revoke(address proxy, address currency) external onlyOwner {
+        IERC20(currency).approve(proxy, 0);
     }
 
     /**
