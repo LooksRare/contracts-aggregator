@@ -72,5 +72,9 @@ jobs:
         run: npx hardhat test test/typescript/aggregator-seaport-multiple-collection-types.ts
         env:
           FORKED_BLOCK_NUMBER: 15323472
+      - name: Run conflicted orders tests
+        run: npx hardhat test test/typescript/aggregator-conflicted-orders.ts
+        env:
+          FORKED_BLOCK_NUMBER: 15327113
       - name: Run Solidity/Forge tests
         run: forge test
