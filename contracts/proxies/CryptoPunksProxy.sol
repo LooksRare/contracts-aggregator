@@ -32,7 +32,6 @@ contract CryptoPunksProxy is IProxy, TokenLogic {
         BasicOrder[] calldata orders,
         bytes[] calldata,
         bytes memory,
-        address,
         address recipient,
         bool isAtomic
     ) external payable override returns (bool) {

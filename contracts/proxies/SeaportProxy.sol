@@ -57,7 +57,6 @@ contract SeaportProxy is TokenLogic, IProxy {
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,
         bytes calldata extraData,
-        address buyer,
         address recipient,
         bool isAtomic
     ) external payable override returns (bool) {
@@ -65,16 +64,19 @@ contract SeaportProxy is TokenLogic, IProxy {
         if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();
         if (recipient == address(0)) revert ZeroAddress();
 
-        if (tokenTransfers.length > 0) _pullERC20TokensFromBuyer(tokenTransfers, _sourceOfERC20Tokens(buyer));
+        // TODO: Use recipient for now but this is probably not right
+        // NOTE: Have an idea, if msg.sender is aggregator, trust whatever is passed downstream.
+        // (aggregator passes its msg.sender as the buyer) Else, pull ERC-20 tokens from msg.sender.
+        if (tokenTransfers.length > 0) _pullERC20TokensFromBuyer(tokenTransfers, recipient);
 
         if (isAtomic) {
             _executeAtomicOrders(orders, ordersExtraData, extraData, recipient);
-            if (tokenTransfers.length > 0) _returnERC20TokensIfAny(tokenTransfers, _sourceOfERC20Tokens(buyer));
+            if (tokenTransfers.length > 0) _returnERC20TokensIfAny(tokenTransfers, recipient);
             _returnETHIfAny();
             return true;
         } else {
             uint256 executedCount = _executeNonAtomicOrders(orders, ordersExtraData, recipient);
-            if (tokenTransfers.length > 0) _returnERC20TokensIfAny(tokenTransfers, _sourceOfERC20Tokens(buyer));
+            if (tokenTransfers.length > 0) _returnERC20TokensIfAny(tokenTransfers, recipient);
             _returnETHIfAny();
             return executedCount > 0;
         }
@@ -213,14 +215,6 @@ contract SeaportProxy is TokenLogic, IProxy {
             unchecked {
                 ++i;
             }
-        }
-    }
-
-    function _sourceOfERC20Tokens(address buyerFromUpstream) private view returns (address) {
-        if (msg.sender == address(aggregator)) {
-            return buyerFromUpstream;
-        } else {
-            return msg.sender;
         }
     }
 }

@@ -45,7 +45,6 @@ contract LooksRareProxy is TokenReceiverProxy, TokenLogic, SignatureChecker {
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,
         bytes memory,
-        address,
         address recipient,
         bool isAtomic
     ) external payable override returns (bool) {
