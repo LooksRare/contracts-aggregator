@@ -1,8 +1,13 @@
-# Solidity template
+# Aggregator
 
-This is a template for GitHub repos with Solidity smart contracts using Forge and Hardhat. This template is used by the LooksRare team for Solidity-based repos. Feel free to use or get inspired to build your own templates!
+This is an aggregator that allows NFT sweepers to buy NFTs from multiple sources in a single transaction (LooksRare, Seaport, X2Y2, Sudoswap, etc).
 
 ## About this repo
+
+### How to interact with the contracts
+
+LooksRareAggregator is the entrypoint for a batch transaction. Clients should submit a list of trade data for different marketplaces to the aggregator. However, it is only recommended when the trade data belongs to different marketplaces. It is cheaper to interact with the proxy (LooksRare, X2Y2, CryptoPunks) or even the marketplace directly (Seaport, Sudoswap) when the sweeping is only targeting one marketplace.
+Generally speaking, if the marketplace supports buying multiple NFTs at once, the client should avoid the proxy. Using a proxy is only beneficial if the marketplace does not support submitting multiple orders at once.
 
 ### Structure
 
@@ -43,4 +48,33 @@ npx prettier '**/*.{json,sol,md}' --check
 npx prettier '**/*.{json,sol,md}' --write
 npx solhint 'contracts/**/*.sol'
 npx solhint 'contracts/**/*.sol' --fix
+```
+
+### Running tests for each marketplace
+
+Each test file requires a different block number as the listings were retrieved in different days and they have an expiration timestamp.
+
+```shell
+FORKED_BLOCK_NUMBER=15358065 npx hardhat test test/typescript/aggregator-cryptopunks.ts
+FORKED_BLOCK_NUMBER=15346990 npx hardhat test test/typescript/aggregator-x2y2.ts
+FORKED_BLOCK_NUMBER=15282897 npx hardhat test test/typescript/aggregator-looksrare.ts
+FORKED_BLOCK_NUMBER=15327113 npx hardhat test test/typescript/aggregator-conflicted-orders.ts
+FORKED_BLOCK_NUMBER=15326566 npx hardhat test test/typescript/aggregator-multiple-markets.ts
+FORKED_BLOCK_NUMBER=15323472 npx hardhat test test/typescript/aggregator-seaport-multiple-collection-types.ts
+FORKED_BLOCK_NUMBER=15300884 npx hardhat test test/typescript/aggregator-seaport-erc-721-atomic.ts
+FORKED_BLOCK_NUMBER=15300884 npx hardhat test test/typescript/aggregator-seaport-erc-721-non-atomic.ts
+FORKED_BLOCK_NUMBER=15320038 npx hardhat test test/typescript/aggregator-seaport-erc-1155-atomic.ts
+FORKED_BLOCK_NUMBER=15320038 npx hardhat test test/typescript/aggregator-seaport-erc-1155-non-atomic.ts
+FORKED_BLOCK_NUMBER=15300884 npx hardhat test test/typescript/direct-seaport-single.ts
+FORKED_BLOCK_NUMBER=15302889 npx hardhat test test/typescript/v0-aggregator-seaport-looksrare-combined.ts
+FORKED_BLOCK_NUMBER=15300884 npx hardhat test test/typescript/v0-aggregator-seaport-single.ts
+FORKED_BLOCK_NUMBER=15300884 npx hardhat test test/typescript/v0-aggregator-seaport-multiple.ts
+FORKED_BLOCK_NUMBER=15282897 npx hardhat test test/typescript/v0-aggregator-looksrare-single.ts
+```
+
+### Gas benchmark
+
+```
+forge test --match-contract LooksRareProxyBenchmarkTest  --fork-url $ETH_RPC_URL --fork-block-number 15282897 --chain-id 1 -vv
+forge test --match-contract SeaportProxyBenchmarkTest  --fork-url $ETH_RPC_URL --fork-block-number 15300884 --chain-id 1 -vv
 ```
