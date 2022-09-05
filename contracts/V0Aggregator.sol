@@ -2,6 +2,7 @@
 pragma solidity 0.8.14;
 
 import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
+import {TokenLogic} from "./TokenLogic.sol";
 
 /**
  * @title V0Aggregator
@@ -9,7 +10,7 @@ import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSte
  *         by passing bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract V0Aggregator is OwnableTwoSteps {
+contract V0Aggregator is TokenLogic {
     struct TradeData {
         address proxy;
         bytes data;
@@ -20,6 +21,7 @@ contract V0Aggregator is OwnableTwoSteps {
 
     event FunctionAdded(address indexed proxy, bytes4 selector);
     event FunctionRemoved(address indexed proxy, bytes4 selector);
+    event Sweep(address indexed sweeper, uint256 tradeCount, uint256 successCount);
 
     error InvalidFunction();
     error InvalidOrderLength();
@@ -27,6 +29,8 @@ contract V0Aggregator is OwnableTwoSteps {
     function execute(TradeData[] calldata tradeData) external payable {
         uint256 tradeCount = tradeData.length;
         if (tradeCount == 0) revert InvalidOrderLength();
+
+        uint256 successCount;
 
         for (uint256 i; i < tradeCount; ) {
             bytes calldata data = tradeData[i].data;
@@ -47,13 +51,19 @@ contract V0Aggregator is OwnableTwoSteps {
                         let returnDataSize := mload(returnData)
                         revert(add(32, returnData), returnDataSize)
                     }
-                } else {}
+                } else {
+                    successCount += 1;
+                }
             }
 
             unchecked {
                 ++i;
             }
         }
+
+        _returnETHIfAny();
+
+        emit Sweep(msg.sender, tradeData.length, successCount);
     }
 
     function addFunction(address proxy, bytes4 selector) external onlyOwner {
