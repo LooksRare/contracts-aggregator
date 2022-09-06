@@ -20,6 +20,8 @@ import {LowLevelETH} from "../lowLevelCallers/LowLevelETH.sol";
  */
 contract X2Y2Proxy is TokenReceiverProxy, TokenLogic, SignatureChecker {
     IX2Y2 public immutable marketplace;
+    uint256 public feeBp;
+    address public feeRecipient;
 
     struct OrderExtraData {
         uint256 salt; // An arbitrary source of entropy for the order (per trade)
@@ -157,6 +159,25 @@ contract X2Y2Proxy is TokenReceiverProxy, TokenLogic, SignatureChecker {
                     item
                 )
             );
+    }
+
+    /**
+     * @notice Set fee basis point
+     * @param _feeBp The new fee basis point
+     */
+    function setFeeBp(uint256 _feeBp) external override onlyOwner {
+        if (_feeBp > 10000) revert FeeTooHigh();
+        feeBp = _feeBp;
+        emit FeeUpdated(_feeBp);
+    }
+
+    /**
+     * @notice Set fee recipient
+     * @param _feeRecipient The new fee recipient
+     */
+    function setFeeRecipient(address _feeRecipient) external override onlyOwner {
+        feeRecipient = _feeRecipient;
+        emit FeeRecipientUpdated(_feeRecipient);
     }
 
     /**

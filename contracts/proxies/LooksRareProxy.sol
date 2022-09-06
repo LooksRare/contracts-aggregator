@@ -26,6 +26,8 @@ contract LooksRareProxy is TokenReceiverProxy, TokenLogic, SignatureChecker {
     }
 
     ILooksRareExchange public immutable marketplace;
+    uint256 public feeBp;
+    address public feeRecipient;
 
     /**
      * @param _marketplace LooksRareExchange's address
@@ -104,6 +106,25 @@ contract LooksRareProxy is TokenReceiverProxy, TokenLogic, SignatureChecker {
         _returnETHIfAny();
 
         return executedCount > 0;
+    }
+
+    /**
+     * @notice Set fee basis point
+     * @param _feeBp The new fee basis point
+     */
+    function setFeeBp(uint256 _feeBp) external override onlyOwner {
+        if (_feeBp > 10000) revert FeeTooHigh();
+        feeBp = _feeBp;
+        emit FeeUpdated(_feeBp);
+    }
+
+    /**
+     * @notice Set fee recipient
+     * @param _feeRecipient The new fee recipient
+     */
+    function setFeeRecipient(address _feeRecipient) external override onlyOwner {
+        feeRecipient = _feeRecipient;
+        emit FeeRecipientUpdated(_feeRecipient);
     }
 
     function _executeSingleOrder(

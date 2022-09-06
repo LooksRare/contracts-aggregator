@@ -18,6 +18,8 @@ import {IProxy} from "../proxies/IProxy.sol";
  */
 contract SeaportProxy is TokenLogic, IProxy {
     SeaportInterface public immutable marketplace;
+    uint256 public feeBp;
+    address public feeRecipient;
 
     error TradeExecutionFailed();
 
@@ -98,6 +100,23 @@ contract SeaportProxy is TokenLogic, IProxy {
     }
 
     /**
+     * @inheritdoc IProxy
+     */
+    function setFeeBp(uint256 _feeBp) external override onlyOwner {
+        if (_feeBp > 10000) revert FeeTooHigh();
+        feeBp = _feeBp;
+        emit FeeUpdated(_feeBp);
+    }
+
+    /**
+     * @inheritdoc IProxy
+     */
+    function setFeeRecipient(address _feeRecipient) external override onlyOwner {
+        feeRecipient = _feeRecipient;
+        emit FeeRecipientUpdated(_feeRecipient);
+    }
+
+    /**
      * @dev If fulfillAvailableAdvancedOrders fails, the ETH paid to Seaport
      *      is refunded to the proxy contract. The proxy then has to refund
      *      the ETH back to the user through _returnETHIfAny.
@@ -127,7 +146,9 @@ contract SeaportProxy is TokenLogic, IProxy {
             }
         }
 
-        (bool[] memory availableOrders, ) = marketplace.fulfillAvailableAdvancedOrders{value: msg.value}(
+        uint256 fee = msg.value * feeBp;
+
+        (bool[] memory availableOrders, ) = marketplace.fulfillAvailableAdvancedOrders{value: msg.value - fee}(
             advancedOrders,
             criteriaResolver,
             extraDataStruct.offerFulfillments,
@@ -144,6 +165,8 @@ contract SeaportProxy is TokenLogic, IProxy {
                 ++i;
             }
         }
+
+        if (fee > 0 && feeRecipient != address(0)) _transferETH(feeRecipient, fee);
     }
 
     function _executeNonAtomicOrders(
@@ -153,6 +176,7 @@ contract SeaportProxy is TokenLogic, IProxy {
     ) private returns (uint256 executedCount) {
         CriteriaResolver[] memory criteriaResolver = new CriteriaResolver[](0);
         uint256 ordersLength = orders.length;
+        uint256 fee;
         for (uint256 i; i < ordersLength; ) {
             OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
             AdvancedOrder memory advancedOrder;
@@ -165,12 +189,15 @@ contract SeaportProxy is TokenLogic, IProxy {
 
             try marketplace.fulfillAdvancedOrder{value: price}(advancedOrder, criteriaResolver, bytes32(0), recipient) {
                 executedCount += 1;
+                fee += price * feeBp;
             } catch {}
 
             unchecked {
                 ++i;
             }
         }
+
+        if (fee > 0 && feeRecipient != address(0)) _transferETH(feeRecipient, fee);
     }
 
     function _populateParameters(BasicOrder calldata order, OrderExtraData memory orderExtraData)

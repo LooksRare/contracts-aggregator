@@ -14,6 +14,8 @@ import {IProxy} from "./IProxy.sol";
  */
 contract SudoswapProxy is TokenLogic, IProxy {
     ISudoswapRouter public immutable marketplace;
+    uint256 public feeBp;
+    address public feeRecipient;
 
     /**
      * @param _marketplace Sudoswap router's address
@@ -100,5 +102,22 @@ contract SudoswapProxy is TokenLogic, IProxy {
         }
 
         return true;
+    }
+
+    /**
+     * @inheritdoc IProxy
+     */
+    function setFeeBp(uint256 _feeBp) external override onlyOwner {
+        if (_feeBp > 10000) revert FeeTooHigh();
+        feeBp = _feeBp;
+        emit FeeUpdated(_feeBp);
+    }
+
+    /**
+     * @inheritdoc IProxy
+     */
+    function setFeeRecipient(address _feeRecipient) external override onlyOwner {
+        feeRecipient = _feeRecipient;
+        emit FeeRecipientUpdated(_feeRecipient);
     }
 }
