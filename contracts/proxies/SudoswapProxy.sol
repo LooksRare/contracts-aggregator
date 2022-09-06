@@ -57,8 +57,7 @@ contract SudoswapProxy is TokenRescuer, IProxy {
                 ++i;
             }
         }
-        // There is no need to do a try/catch here as there is only 1 external call
-        // and if it fails the aggregator will catch it and decide whether to revert.
+        // TODO: Verify how to do atomic/non-atomic trades, the current impl is likely insufficient.
         router.robustSwapETHForSpecificNFTs{value: msg.value}(swapList, payable(recipient), recipient, block.timestamp);
 
         return true;
