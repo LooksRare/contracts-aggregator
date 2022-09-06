@@ -19,7 +19,7 @@ describe("Aggregator", () => {
 
     const cityDaoOrders = getFixture("seaport", "city-dao-orders.json");
     const orderOne = getFixture("seaport", "bayc-6092-order.json");
-    const orderTwo = cityDaoOrders[1].protocol_data;
+    const orderTwo = cityDaoOrders[1];
 
     const priceOne = combineConsiderationAmount(orderOne.parameters.consideration);
     const priceTwo = combineConsiderationAmount(orderTwo.parameters.consideration);
