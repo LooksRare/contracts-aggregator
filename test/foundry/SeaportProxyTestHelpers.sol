@@ -62,6 +62,8 @@ abstract contract SeaportProxyTestHelpers {
         recipients[2].amount = 2.1 ether;
 
         SeaportProxy.OrderExtraData memory orderExtraData;
+        orderExtraData.numerator = 1;
+        orderExtraData.denominator = 1;
         orderExtraData.orderType = OrderType.FULL_RESTRICTED;
         orderExtraData.zone = 0x004C00500000aD104D7DBd00e3ae0A5C00560C00;
         orderExtraData.zoneHash = bytes32(0);
@@ -82,6 +84,8 @@ abstract contract SeaportProxyTestHelpers {
         recipients[2].amount = 2.1195 ether;
 
         SeaportProxy.OrderExtraData memory orderExtraData;
+        orderExtraData.numerator = 1;
+        orderExtraData.denominator = 1;
         orderExtraData.orderType = OrderType.FULL_RESTRICTED;
         orderExtraData.zone = 0x004C00500000aD104D7DBd00e3ae0A5C00560C00;
         orderExtraData.zoneHash = bytes32(0);
