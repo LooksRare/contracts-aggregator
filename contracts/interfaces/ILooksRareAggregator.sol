@@ -29,13 +29,6 @@ interface ILooksRareAggregator {
     event FunctionRemoved(address indexed proxy, bytes4 selector);
 
     /**
-     * @notice Emitted when a marketplace proxy's supports ERC-20 tokens orders flag is toggled.
-     * @param proxy The marketplace proxy's address
-     * @param isSupported Whether the marketplace supports orders paid with ERC-20 tokens
-     */
-    event SupportsERC20OrdersUpdated(address proxy, bool isSupported);
-
-    /**
      * @notice Emitted when execute is complete
      * @param sweeper The address that submitted the transaction
      * @param tradeCount Total trade count
