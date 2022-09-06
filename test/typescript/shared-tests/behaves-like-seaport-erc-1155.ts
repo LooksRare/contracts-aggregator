@@ -32,8 +32,8 @@ export default function behavesLikeSeaportERC1155(isAtomic: boolean): void {
     const { aggregator, buyer, proxy, functionSelector, cityDao } = await loadFixture(deploySeaportFixture);
 
     const orders = getFixture("seaport", "city-dao-orders.json");
-    const orderOne = orders[0].protocol_data;
-    const orderTwo = orders[1].protocol_data;
+    const orderOne = orders[0];
+    const orderTwo = orders[1];
 
     const priceOne = combineConsiderationAmount(orderOne.parameters.consideration);
     const priceTwo = combineConsiderationAmount(orderTwo.parameters.consideration);
@@ -63,8 +63,8 @@ export default function behavesLikeSeaportERC1155(isAtomic: boolean): void {
     const { aggregator, buyer, proxy, functionSelector, cityDao } = await loadFixture(deploySeaportFixture);
 
     const orders = getFixture("seaport", "city-dao-orders.json");
-    const orderOne = orders[0].protocol_data;
-    const orderTwo = orders[1].protocol_data;
+    const orderOne = orders[0];
+    const orderTwo = orders[1];
 
     const priceOne = combineConsiderationAmount(orderOne.parameters.consideration);
     const priceTwo = combineConsiderationAmount(orderTwo.parameters.consideration);
@@ -102,8 +102,8 @@ export default function behavesLikeSeaportERC1155(isAtomic: boolean): void {
     const { aggregator, buyer, proxy, functionSelector, cityDao } = await loadFixture(deploySeaportFixture);
 
     const orders = getFixture("seaport", "city-dao-orders.json");
-    const orderOne = orders[0].protocol_data;
-    const orderTwo = orders[1].protocol_data;
+    const orderOne = orders[0];
+    const orderTwo = orders[1];
 
     const { WeiPerEther } = ethers.constants;
     const priceOne = WeiPerEther;

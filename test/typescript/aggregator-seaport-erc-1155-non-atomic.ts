@@ -17,8 +17,8 @@ describe("Aggregator", () => {
     const { HashZero, Zero } = ethers.constants;
 
     const orders = getFixture("seaport", "city-dao-orders.json");
-    const orderOne = orders[0].protocol_data;
-    const orderTwo = orders[1].protocol_data;
+    const orderOne = orders[0];
+    const orderTwo = orders[1];
 
     const priceOne = combineConsiderationAmount(orderOne.parameters.consideration);
     const priceTwo = Zero; // not paying for the second order
