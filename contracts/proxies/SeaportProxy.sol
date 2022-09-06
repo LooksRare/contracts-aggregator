@@ -157,8 +157,8 @@ contract SeaportProxy is TokenLogic, IProxy {
             OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
             AdvancedOrder memory advancedOrder;
             advancedOrder.parameters = _populateParameters(orders[i], orderExtraData);
-            advancedOrder.numerator = 1;
-            advancedOrder.denominator = 1;
+            advancedOrder.numerator = orderExtraData.numerator;
+            advancedOrder.denominator = orderExtraData.denominator;
             advancedOrder.signature = orders[i].signature;
 
             uint256 price = orders[i].currency == address(0) ? orders[i].price : 0;
