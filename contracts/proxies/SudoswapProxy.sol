@@ -86,6 +86,11 @@ contract SudoswapProxy is TokenLogic, IProxy {
                 }
             }
 
+            // TODO: This cannot handle the case where the NFT to be purchased
+            //       is no longer in the pool for whatever reasons. We will have
+            //       to wait for Sudoswap's router V2 to go live to re-integrate
+            //       as it allows partial fills.
+
             marketplace.robustSwapETHForSpecificNFTs{value: msg.value}(
                 swapList,
                 payable(recipient),
