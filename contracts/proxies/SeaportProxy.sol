@@ -35,6 +35,9 @@ contract SeaportProxy is TokenLogic, IProxy {
         AdditionalRecipient[] recipients; // Recipients of consideration items
     }
 
+    /**
+     * @param _marketplace Seaport's address
+     */
     constructor(address _marketplace) {
         marketplace = SeaportInterface(_marketplace);
     }
