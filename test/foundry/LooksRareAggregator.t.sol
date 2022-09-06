@@ -71,10 +71,7 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenLogicTest,
 
     function testApproveNotOwner() public {
         MockERC20 erc20 = new MockERC20();
-        assertEq(erc20.allowance(address(aggregator), address(looksRareProxy)), 0);
-
         vm.prank(_buyer);
-
         vm.expectRevert(OwnableTwoSteps.NotOwner.selector);
         aggregator.approve(address(erc20), address(looksRareProxy));
     }

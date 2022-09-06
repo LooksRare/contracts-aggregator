@@ -89,8 +89,6 @@ contract SeaportProxyTest is TestParameters, TestHelpers, TokenLogicTest, Seapor
 
     function testApproveNotOwner() public {
         MockERC20 erc20 = new MockERC20();
-        assertEq(erc20.allowance(address(seaportProxy), SEAPORT), 0);
-
         vm.expectRevert(OwnableTwoSteps.NotOwner.selector);
         vm.prank(_buyer);
         seaportProxy.approve(address(erc20));
