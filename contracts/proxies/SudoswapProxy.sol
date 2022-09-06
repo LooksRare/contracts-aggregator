@@ -13,13 +13,13 @@ import {IProxy} from "./IProxy.sol";
  * @author LooksRare protocol team (👀,💎)
  */
 contract SudoswapProxy is TokenLogic, IProxy {
-    ISudoswapRouter public immutable router;
+    ISudoswapRouter public immutable marketplace;
 
     /**
-     * @param _router Sudoswap router's address
+     * @param _marketplace Sudoswap router's address
      */
-    constructor(address _router) {
-        router = ISudoswapRouter(_router);
+    constructor(address _marketplace) {
+        markeplace = ISudoswapRouter(_marketplace);
     }
 
     /**
@@ -59,7 +59,12 @@ contract SudoswapProxy is TokenLogic, IProxy {
                 }
             }
 
-            router.swapETHForSpecificNFTs{value: msg.value}(swapList, payable(recipient), recipient, block.timestamp);
+            marketplace.swapETHForSpecificNFTs{value: msg.value}(
+                swapList,
+                payable(recipient),
+                recipient,
+                block.timestamp
+            );
         } else {
             ISudoswapRouter.RobustPairSwapSpecific[] memory swapList = new ISudoswapRouter.RobustPairSwapSpecific[](
                 orders.length
@@ -81,7 +86,7 @@ contract SudoswapProxy is TokenLogic, IProxy {
                 }
             }
 
-            router.robustSwapETHForSpecificNFTs{value: msg.value}(
+            marketplace.robustSwapETHForSpecificNFTs{value: msg.value}(
                 swapList,
                 payable(recipient),
                 recipient,
