@@ -19,7 +19,7 @@ contract SudoswapProxy is TokenLogic, IProxy {
      * @param _marketplace Sudoswap router's address
      */
     constructor(address _marketplace) {
-        markeplace = ISudoswapRouter(_marketplace);
+        marketplace = ISudoswapRouter(_marketplace);
     }
 
     /**
