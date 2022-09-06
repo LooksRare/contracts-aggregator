@@ -24,6 +24,8 @@ export const SEAPORT_EXTRA_DATA_SCHEMA = `
 
 export const SEAPORT_ORDER_EXTRA_DATA_SCHEMA = `
   tuple(
+    uint120 numerator,
+    uint120 denominator,
     uint8 orderType,
     address zone,
     bytes32 zoneHash,
