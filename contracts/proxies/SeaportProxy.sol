@@ -146,7 +146,7 @@ contract SeaportProxy is TokenLogic, IProxy {
             }
         }
 
-        uint256 fee = msg.value * feeBp;
+        uint256 fee = msg.value - (msg.value * 10000) / (10000 + feeBp);
 
         (bool[] memory availableOrders, ) = marketplace.fulfillAvailableAdvancedOrders{value: msg.value - fee}(
             advancedOrders,
@@ -160,6 +160,17 @@ contract SeaportProxy is TokenLogic, IProxy {
 
         for (uint256 i; i < availableOrders.length; ) {
             if (!availableOrders[i]) revert TradeExecutionFailed();
+
+            address currency = orders[i].currency;
+            uint256 price = orders[i].price;
+
+            if (currency != address(0)) {
+                uint256 erc20OrderFee = (price * feeBp) / 10000;
+                if (erc20OrderFee > 0 && feeRecipient != address(0)) {
+                    // TODO: We should transfer once instead of N times
+                    _executeERC20DirectTransfer(currency, feeRecipient, erc20OrderFee);
+                }
+            }
 
             unchecked {
                 ++i;
@@ -176,7 +187,7 @@ contract SeaportProxy is TokenLogic, IProxy {
     ) private returns (uint256 executedCount) {
         CriteriaResolver[] memory criteriaResolver = new CriteriaResolver[](0);
         uint256 ordersLength = orders.length;
-        uint256 fee;
+        uint256 ethOrdersFee;
         for (uint256 i; i < ordersLength; ) {
             OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
             AdvancedOrder memory advancedOrder;
@@ -189,7 +200,16 @@ contract SeaportProxy is TokenLogic, IProxy {
 
             try marketplace.fulfillAdvancedOrder{value: price}(advancedOrder, criteriaResolver, bytes32(0), recipient) {
                 executedCount += 1;
-                fee += price * feeBp;
+
+                if (orders[i].currency == address(0)) {
+                    ethOrdersFee += (price * feeBp) / 10000;
+                } else {
+                    uint256 erc20OrderFee = (price * feeBp) / 10000;
+                    if (erc20OrderFee > 0 && feeRecipient != address(0)) {
+                        // TODO: We should transfer once instead of N times
+                        _executeERC20DirectTransfer(orders[i].currency, feeRecipient, erc20OrderFee);
+                    }
+                }
             } catch {}
 
             unchecked {
@@ -197,7 +217,7 @@ contract SeaportProxy is TokenLogic, IProxy {
             }
         }
 
-        if (fee > 0 && feeRecipient != address(0)) _transferETH(feeRecipient, fee);
+        if (ethOrdersFee > 0 && feeRecipient != address(0)) _transferETH(feeRecipient, ethOrdersFee);
     }
 
     function _populateParameters(BasicOrder calldata order, OrderExtraData memory orderExtraData)
