@@ -24,6 +24,7 @@ contract SudoswapProxy is TokenRescuer, IProxy {
      * @dev Only the 1st argument orders is used
      * @param orders Orders to be executed by Seaport
      * @param recipient The address to receive the purchased NFTs
+     * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
      * @return Whether at least 1 out of N trades succeeded
      */
     function buyWithETH(
@@ -31,34 +32,58 @@ contract SudoswapProxy is TokenRescuer, IProxy {
         bytes[] calldata,
         bytes memory,
         address recipient,
-        bool
+        bool isAtomic
     ) external payable override returns (bool) {
         uint256 ordersLength = orders.length;
         if (ordersLength == 0) revert InvalidOrderLength();
 
-        ISudoswapRouter.RobustPairSwapSpecific[] memory swapList = new ISudoswapRouter.RobustPairSwapSpecific[](
-            orders.length
-        );
-
         if (recipient == address(0)) revert ZeroAddress();
 
-        for (uint256 i; i < ordersLength; ) {
-            ISudoswapRouter.RobustPairSwapSpecific memory robustPairSwapSpecific;
-            ISudoswapRouter.PairSwapSpecific memory pairSwapSpecific;
-            robustPairSwapSpecific.maxCost = orders[i].price;
-            // here the collection is the AMM pool address
-            pairSwapSpecific.pair = orders[i].collection;
-            pairSwapSpecific.nftIds = orders[i].tokenIds;
-            robustPairSwapSpecific.swapInfo = pairSwapSpecific;
+        if (isAtomic) {
+            ISudoswapRouter.PairSwapSpecific[] memory swapList = new ISudoswapRouter.PairSwapSpecific[](orders.length);
 
-            swapList[i] = robustPairSwapSpecific;
+            for (uint256 i; i < ordersLength; ) {
+                ISudoswapRouter.PairSwapSpecific memory pairSwapSpecific;
+                // here the collection is the AMM pool address
+                pairSwapSpecific.pair = orders[i].collection;
+                pairSwapSpecific.nftIds = orders[i].tokenIds;
 
-            unchecked {
-                ++i;
+                swapList[i] = pairSwapSpecific;
+
+                unchecked {
+                    ++i;
+                }
             }
+
+            router.swapETHForSpecificNFTs{value: msg.value}(swapList, payable(recipient), recipient, block.timestamp);
+        } else {
+            ISudoswapRouter.RobustPairSwapSpecific[] memory swapList = new ISudoswapRouter.RobustPairSwapSpecific[](
+                orders.length
+            );
+
+            for (uint256 i; i < ordersLength; ) {
+                ISudoswapRouter.RobustPairSwapSpecific memory robustPairSwapSpecific;
+                ISudoswapRouter.PairSwapSpecific memory pairSwapSpecific;
+                robustPairSwapSpecific.maxCost = orders[i].price;
+                // here the collection is the AMM pool address
+                pairSwapSpecific.pair = orders[i].collection;
+                pairSwapSpecific.nftIds = orders[i].tokenIds;
+                robustPairSwapSpecific.swapInfo = pairSwapSpecific;
+
+                swapList[i] = robustPairSwapSpecific;
+
+                unchecked {
+                    ++i;
+                }
+            }
+
+            router.robustSwapETHForSpecificNFTs{value: msg.value}(
+                swapList,
+                payable(recipient),
+                recipient,
+                block.timestamp
+            );
         }
-        // TODO: Verify how to do atomic/non-atomic trades, the current impl is likely insufficient.
-        router.robustSwapETHForSpecificNFTs{value: msg.value}(swapList, payable(recipient), recipient, block.timestamp);
 
         return true;
     }
