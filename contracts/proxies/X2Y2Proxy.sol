@@ -33,6 +33,9 @@ contract X2Y2Proxy is TokenReceiverProxy, TokenLogic, SignatureChecker {
         Market.Fee[] fees; // An array of sales proceeds recipient and the % for each of them
     }
 
+    /**
+     * @param _marketplace X2Y2's address
+     */
     constructor(address _marketplace) {
         marketplace = IX2Y2(_marketplace);
     }

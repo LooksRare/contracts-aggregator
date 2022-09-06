@@ -15,6 +15,9 @@ import {TokenLogic} from "../TokenLogic.sol";
 contract CryptoPunksProxy is IProxy, TokenLogic {
     ICryptoPunks public immutable cryptopunks;
 
+    /**
+     * @param _cryptopunks CryptoPunks' address
+     */
     constructor(address _cryptopunks) {
         cryptopunks = ICryptoPunks(_cryptopunks);
     }

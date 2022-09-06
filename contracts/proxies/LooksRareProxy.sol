@@ -27,6 +27,9 @@ contract LooksRareProxy is TokenReceiverProxy, TokenLogic, SignatureChecker {
 
     ILooksRareExchange public immutable marketplace;
 
+    /**
+     * @param _marketplace LooksRareExchange's address
+     */
     constructor(address _marketplace) {
         marketplace = ILooksRareExchange(_marketplace);
     }

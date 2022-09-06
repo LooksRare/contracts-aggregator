@@ -15,6 +15,9 @@ import {IProxy} from "./IProxy.sol";
 contract SudoswapProxy is TokenLogic, IProxy {
     ISudoswapRouter public immutable router;
 
+    /**
+     * @param _router Sudoswap router's address
+     */
     constructor(address _router) {
         router = ISudoswapRouter(_router);
     }
