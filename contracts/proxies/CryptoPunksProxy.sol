@@ -13,13 +13,13 @@ import {TokenLogic} from "../TokenLogic.sol";
  * @author LooksRare protocol team (👀,💎)
  */
 contract CryptoPunksProxy is IProxy, TokenLogic {
-    ICryptoPunks public immutable cryptopunks;
+    ICryptoPunks public immutable marketplace;
 
     /**
-     * @param _cryptopunks CryptoPunks' address
+     * @param _marketplace CryptoPunks' address
      */
-    constructor(address _cryptopunks) {
-        cryptopunks = ICryptoPunks(_cryptopunks);
+    constructor(address _marketplace) {
+        marketplace = ICryptoPunks(_marketplace);
     }
 
     /**
@@ -47,12 +47,12 @@ contract CryptoPunksProxy is IProxy, TokenLogic {
             uint256 punkId = orders[i].tokenIds[0];
 
             if (isAtomic) {
-                cryptopunks.buyPunk{value: orders[i].price}(punkId);
-                cryptopunks.transferPunk(recipient, punkId);
+                marketplace.buyPunk{value: orders[i].price}(punkId);
+                marketplace.transferPunk(recipient, punkId);
                 executedCount += 1;
             } else {
-                try cryptopunks.buyPunk{value: orders[i].price}(punkId) {
-                    cryptopunks.transferPunk(recipient, punkId);
+                try marketplace.buyPunk{value: orders[i].price}(punkId) {
+                    marketplace.transferPunk(recipient, punkId);
                     executedCount += 1;
                 } catch {}
             }
