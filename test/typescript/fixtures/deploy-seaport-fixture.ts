@@ -16,6 +16,7 @@ interface SeaportFixture {
 export default async function deploySeaportFixture(): Promise<SeaportFixture> {
   const Aggregator = await ethers.getContractFactory("LooksRareAggregator");
   const aggregator = await Aggregator.deploy();
+  await aggregator.deployed();
 
   const SeaportProxy = await ethers.getContractFactory("SeaportProxy");
   const proxy = await SeaportProxy.deploy(SEAPORT);
