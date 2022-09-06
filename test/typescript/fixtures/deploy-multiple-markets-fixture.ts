@@ -33,7 +33,7 @@ export default async function deployLooksRareFixture(): Promise<MultipleMarketsF
   await aggregator.addFunction(looksRareProxy.address, looksRareFunctionSelector);
 
   const SeaportProxy = await ethers.getContractFactory("SeaportProxy");
-  const seaportProxy = await SeaportProxy.deploy(SEAPORT, aggregator.address);
+  const seaportProxy = await SeaportProxy.deploy(SEAPORT);
   await seaportProxy.deployed();
 
   // Because we are forking from the mainnet, the proxy address somehow already had a contract deployed to

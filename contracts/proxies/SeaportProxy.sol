@@ -9,7 +9,6 @@ import {AdvancedOrder, CriteriaResolver, OrderParameters, OfferItem, Considerati
 import {ItemType, OrderType} from "../libraries/seaport/ConsiderationEnums.sol";
 import {TokenLogic} from "../TokenLogic.sol";
 import {IProxy} from "../proxies/IProxy.sol";
-import {ILooksRareAggregator} from "../interfaces/ILooksRareAggregator.sol";
 
 /**
  * @title SeaportProxy
@@ -19,7 +18,6 @@ import {ILooksRareAggregator} from "../interfaces/ILooksRareAggregator.sol";
  */
 contract SeaportProxy is TokenLogic, IProxy {
     SeaportInterface public immutable marketplace;
-    ILooksRareAggregator private immutable aggregator;
 
     error TradeExecutionFailed();
 
@@ -37,9 +35,8 @@ contract SeaportProxy is TokenLogic, IProxy {
         AdditionalRecipient[] recipients; // Recipients of consideration items
     }
 
-    constructor(address _marketplace, address _aggregator) {
+    constructor(address _marketplace) {
         marketplace = SeaportInterface(_marketplace);
-        aggregator = ILooksRareAggregator(_aggregator);
     }
 
     /**

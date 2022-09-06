@@ -25,7 +25,7 @@ contract SeaportProxyTest is TestParameters, TestHelpers, TokenLogicTest, Seapor
     TokenLogic tokenRescuer;
 
     function setUp() public {
-        seaportProxy = new SeaportProxy(SEAPORT, address(new LooksRareAggregator()));
+        seaportProxy = new SeaportProxy(SEAPORT);
         tokenRescuer = TokenLogic(address(seaportProxy));
         vm.deal(_buyer, 100 ether);
     }
