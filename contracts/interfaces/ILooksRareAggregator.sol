@@ -37,7 +37,6 @@ interface ILooksRareAggregator {
      */
     event Sweep(address indexed sweeper, uint256 tradeCount, uint256 successCount);
 
-    error FailedTokenTransfer();
     error InvalidFunction();
     error InvalidOrderLength();
     error TradeExecutionFailed();
