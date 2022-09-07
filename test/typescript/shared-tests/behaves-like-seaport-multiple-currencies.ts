@@ -9,6 +9,7 @@ import {
   SEAPORT_OFFER_FULFILLMENT_TWO_ITEMS,
   USDC,
   SEAPORT_CONSIDERATION_FULFILLMENTS_TWO_ORDERS_DIFFERENT_CURRENCIES,
+  USDC_DECIMALS,
 } from "../../constants";
 import validateSweepEvent from "../utils/validate-sweep-event";
 import { expect } from "chai";
@@ -88,7 +89,7 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
     // Doesn't look good here but the buyer is the first address, meaning the contract deployer/owner
     await proxy.connect(buyer).approve(USDC);
 
-    const excess = ethers.utils.parseUnits("100", 6);
+    const excess = ethers.utils.parseUnits("100", USDC_DECIMALS);
 
     await airdropUSDC(buyer.address, priceOne.add(excess));
 
