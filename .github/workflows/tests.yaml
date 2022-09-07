@@ -64,6 +64,14 @@ jobs:
         run: npx hardhat test test/typescript/aggregator-seaport-erc-721-non-atomic.ts
         env:
           FORKED_BLOCK_NUMBER: 15300884
+      - name: Run atomic Seaport ERC-721 USDC orders tests
+        run: npx hardhat test test/typescript/aggregator-seaport-erc-721-only-usdc-orders-atomic.ts
+        env:
+          FORKED_BLOCK_NUMBER: 15491323
+      - name: Run non-atomic Seaport ERC-721 USDC orders tests
+        run: npx hardhat test test/typescript/aggregator-seaport-erc-721-only-usdc-orders-non-atomic.ts
+        env:
+          FORKED_BLOCK_NUMBER: 15491323
       - name: Run atomic Seaport ERC-1155 tests
         run: npx hardhat test test/typescript/aggregator-seaport-erc-1155-atomic.ts
         env:
