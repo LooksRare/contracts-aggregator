@@ -1,0 +1,50 @@
+{
+  "parameters": {
+    "offerer": "0x50e00ae08678ebd16b79b84439defa046f18eb76",
+    "offer": [
+      {
+        "itemType": 2,
+        "token": "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D",
+        "identifierOrCriteria": "9357",
+        "startAmount": "1",
+        "endAmount": "1"
+      }
+    ],
+    "consideration": [
+      {
+        "itemType": 0,
+        "token": "0x0000000000000000000000000000000000000000",
+        "identifierOrCriteria": "0",
+        "startAmount": "71060000000000000000",
+        "endAmount": "71060000000000000000",
+        "recipient": "0x50e00Ae08678EBd16b79B84439defa046F18eb76"
+      },
+      {
+        "itemType": 0,
+        "token": "0x0000000000000000000000000000000000000000",
+        "identifierOrCriteria": "0",
+        "startAmount": "1870000000000000000",
+        "endAmount": "1870000000000000000",
+        "recipient": "0x0000a26b00c1F0DF003000390027140000fAa719"
+      },
+      {
+        "itemType": 0,
+        "token": "0x0000000000000000000000000000000000000000",
+        "identifierOrCriteria": "0",
+        "startAmount": "1870000000000000000",
+        "endAmount": "1870000000000000000",
+        "recipient": "0xA858DDc0445d8131daC4d1DE01f834ffcbA52Ef1"
+      }
+    ],
+    "startTime": "1662541278",
+    "endTime": "1662627798",
+    "orderType": 2,
+    "zone": "0x004C00500000aD104D7DBd00e3ae0A5C00560C00",
+    "zoneHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "salt": "27629372416354136",
+    "conduitKey": "0x0000007b02230091a7ed01230072f7006a004d60a8d4e71d599b8104250f0000",
+    "totalOriginalConsiderationItems": 3,
+    "counter": 0
+  },
+  "signature": "0xeb9bb2307e431826000c5fe5e10d755430cea74fe49dc8a59c2b758a7e16a42332cf96c021992aa8ad021b8a0d8f5c38fddbe81fc8126069b59de4375867046c1c"
+}
