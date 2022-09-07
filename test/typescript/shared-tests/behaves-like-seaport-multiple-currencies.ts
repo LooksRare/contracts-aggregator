@@ -158,7 +158,7 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
         proxy: proxy.address,
         selector: functionSelector,
         value: priceTwo,
-        orders: [getSeaportOrderJson(orderOne, priceOneBeforeFee), getSeaportOrderJson(orderTwo, priceOneBeforeFee)],
+        orders: [getSeaportOrderJson(orderOne, priceOneBeforeFee), getSeaportOrderJson(orderTwo, priceTwoBeforeFee)],
         ordersExtraData: [getSeaportOrderExtraData(orderOne), getSeaportOrderExtraData(orderTwo)],
         extraData: isAtomic ? encodedExtraData() : ethers.constants.HashZero,
       },

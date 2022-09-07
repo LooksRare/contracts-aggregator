@@ -187,7 +187,8 @@ contract SeaportProxy is TokenLogic, IProxy {
     ) private returns (uint256 executedCount) {
         CriteriaResolver[] memory criteriaResolver = new CriteriaResolver[](0);
         uint256 ordersLength = orders.length;
-        uint256 ethOrdersFee;
+        uint256 fee;
+        address lastOrderCurrency;
         for (uint256 i; i < ordersLength; ) {
             OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
             AdvancedOrder memory advancedOrder;
@@ -201,13 +202,20 @@ contract SeaportProxy is TokenLogic, IProxy {
             try marketplace.fulfillAdvancedOrder{value: price}(advancedOrder, criteriaResolver, bytes32(0), recipient) {
                 executedCount += 1;
 
-                if (orders[i].currency == address(0)) {
-                    ethOrdersFee += (price * feeBp) / 10000;
-                } else {
-                    uint256 erc20OrderFee = (price * feeBp) / 10000;
-                    if (erc20OrderFee > 0 && feeRecipient != address(0)) {
-                        // TODO: We should transfer once instead of N times
-                        _executeERC20DirectTransfer(orders[i].currency, feeRecipient, erc20OrderFee);
+                if (feeRecipient != address(0)) {
+                    if (orders[i].currency == lastOrderCurrency) {
+                        fee += (orders[i].price * feeBp) / 10000;
+                    } else {
+                        if (fee > 0) {
+                            if (lastOrderCurrency == address(0)) {
+                                _transferETH(feeRecipient, fee);
+                            } else {
+                                _executeERC20DirectTransfer(lastOrderCurrency, feeRecipient, fee);
+                            }
+                        }
+
+                        lastOrderCurrency = orders[i].currency;
+                        fee = (orders[i].price * feeBp) / 10000;
                     }
                 }
             } catch {}
@@ -217,7 +225,13 @@ contract SeaportProxy is TokenLogic, IProxy {
             }
         }
 
-        if (ethOrdersFee > 0 && feeRecipient != address(0)) _transferETH(feeRecipient, ethOrdersFee);
+        if (fee > 0 && feeRecipient != address(0)) {
+            if (lastOrderCurrency == address(0)) {
+                _transferETH(feeRecipient, fee);
+            } else {
+                _executeERC20DirectTransfer(lastOrderCurrency, feeRecipient, fee);
+            }
+        }
     }
 
     function _populateParameters(BasicOrder calldata order, OrderExtraData memory orderExtraData)
