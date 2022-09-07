@@ -47,7 +47,6 @@ contract TokenLogic is OwnableTwoSteps, LowLevelETH, LowLevelERC20 {
         }
     }
 
-    // NOTE: will we return too much if there are ERC-20 tokens in the contract for whatever reasons?
     function _returnERC20TokensIfAny(TokenTransfer[] calldata tokenTransfers, address recipient) internal {
         for (uint256 i; i < tokenTransfers.length; ) {
             uint256 balance = IERC20(tokenTransfers[i].currency).balanceOf(address(this));
