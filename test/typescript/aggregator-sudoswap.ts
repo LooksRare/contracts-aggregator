@@ -54,10 +54,11 @@ describe("Aggregator", () => {
         ],
         ordersExtraData: [HashZero, HashZero],
         extraData: HashZero,
+        tokenTransfers: [],
       },
     ];
 
-    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, buyer.address, false, { value: price });
+    const tx = await aggregator.connect(buyer).execute([], tradeData, buyer.address, false, { value: price });
     const receipt = await tx.wait();
 
     validateSweepEvent(receipt, buyer.address, 1, 1);
@@ -105,11 +106,12 @@ describe("Aggregator", () => {
         ],
         ordersExtraData: [HashZero, HashZero],
         extraData: HashZero,
+        tokenTransfers: [],
       },
     ];
 
     await expect(
-      aggregator.connect(buyer).buyWithETH(tradeData, buyer.address, true, { value: price })
+      aggregator.connect(buyer).execute([], tradeData, buyer.address, true, { value: price })
     ).to.be.revertedWith("TradeExecutionFailed()");
   });
 
@@ -151,10 +153,11 @@ describe("Aggregator", () => {
         ],
         ordersExtraData: [HashZero, HashZero],
         extraData: HashZero,
+        tokenTransfers: [],
       },
     ];
 
-    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, buyer.address, false, { value: price });
+    const tx = await aggregator.connect(buyer).execute([], tradeData, buyer.address, false, { value: price });
     const receipt = await tx.wait();
 
     validateSweepEvent(receipt, buyer.address, 1, 1);
@@ -202,12 +205,13 @@ describe("Aggregator", () => {
         ],
         ordersExtraData: [HashZero, HashZero],
         extraData: HashZero,
+        tokenTransfers: [],
       },
     ];
 
     const buyerBalanceBefore = await getBalance(buyer.address);
 
-    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, buyer.address, false, { value: price });
+    const tx = await aggregator.connect(buyer).execute([], tradeData, buyer.address, false, { value: price });
     const receipt = await tx.wait();
     const txFee = await calculateTxFee(tx);
 

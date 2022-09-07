@@ -56,7 +56,7 @@ describe("Aggregator", () => {
     const price = ethers.utils.parseEther("168.78");
     const tx = await aggregator
       .connect(buyer)
-      .buyWithETH([{ proxy: SEAPORT, data: calldata, value: price }], { value: price });
+      .execute([{ proxy: SEAPORT, data: calldata, value: price }], { value: price });
 
     await tx.wait();
 

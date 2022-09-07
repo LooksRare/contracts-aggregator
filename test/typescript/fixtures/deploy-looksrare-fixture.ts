@@ -25,7 +25,7 @@ export default async function deployLooksRareFixture(): Promise<LooksRareFixture
   // the same address with ether balance, causing our test (balance comparison) to fail.
   await ethers.provider.send("hardhat_setBalance", [proxy.address, "0x0"]);
 
-  const functionSelector = await getSignature("LooksRareProxy.json", "buyWithETH");
+  const functionSelector = await getSignature("LooksRareProxy.json", "execute");
   await aggregator.addFunction(proxy.address, functionSelector);
 
   const [buyer] = await ethers.getSigners();

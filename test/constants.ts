@@ -9,6 +9,9 @@ export const LOOKSRARE_STRATEGY_FIXED_PRICE = "0x56244Bb70CbD3EA9Dc8007399F61dFC
 export const OPENSEA_FEES = "0x8De9C5A032463C561423387a9648c5C7BCC5BC90";
 export const SEAPORT = "0x00000000006c3852cbef3e08e8df289169ede581";
 export const SUDOSWAP = "0x2B2e8cDA09bBA9660dCA5cB6233787738Ad68329";
+export const USDC = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
+export const USDC_DECIMALS = 6;
+export const USDC_WHALE = "0x2faf487a4414fe77e2327f0bf4ae2a264a776ad2"; // FTX
 export const WETH = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
 export const X2Y2 = "0x74312363e45DCaBA76c59ec49a7Aa8A65a67EeD3";
 export const ZONE_HASH = "0x0000000000000000000000000000000000000000000000000000000000000000";
@@ -78,6 +81,19 @@ export const SEAPORT_CONSIDERATION_FULFILLMENTS_TWO_ORDERS_SAME_COLLECTION = [
     { orderIndex: 0, itemIndex: 2 },
     { orderIndex: 1, itemIndex: 2 },
   ],
+];
+
+export const SEAPORT_CONSIDERATION_FULFILLMENTS_TWO_ORDERS_DIFFERENT_CURRENCIES = [
+  // seller one
+  [{ orderIndex: 0, itemIndex: 0 }],
+  // seller two
+  [{ orderIndex: 1, itemIndex: 0 }],
+  // OpenSea: Fees
+  [{ orderIndex: 0, itemIndex: 1 }],
+  [{ orderIndex: 1, itemIndex: 1 }],
+  // royalty
+  [{ orderIndex: 0, itemIndex: 2 }],
+  [{ orderIndex: 1, itemIndex: 2 }],
 ];
 
 export const SEAPORT_CONSIDERATION_FULFILLMENTS_TWO_ORDERS_DIFFERENT_COLLECTIONS = [

@@ -21,7 +21,7 @@ contract V0LooksRareProxy {
     error UnrecognizedTokenInterface();
     error ZeroAddress();
 
-    function buyWithETH(
+    function execute(
         OrderTypes.TakerOrder[] calldata takerBids,
         OrderTypes.MakerOrder[] calldata makerAsks,
         address recipient

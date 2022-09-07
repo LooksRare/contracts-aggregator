@@ -30,7 +30,7 @@ describe("Aggregator", () => {
     proxy = await V0LooksRareProxy.deploy();
     await proxy.deployed();
 
-    const looksRareSelector = getSignature("V0LooksRareProxy.json", "buyWithETH");
+    const looksRareSelector = getSignature("V0LooksRareProxy.json", "execute");
     await aggregator.addFunction(proxy.address, looksRareSelector);
 
     const seaportSelector = getSignature("SeaportInterface.json", "fulfillAvailableAdvancedOrders");
@@ -131,7 +131,7 @@ describe("Aggregator", () => {
     const looksRareAbi = await getAbi("V0LooksRareProxy.json");
     const iface = new ethers.utils.Interface(looksRareAbi);
 
-    const calldataLooksRare = iface.encodeFunctionData("buyWithETH", [
+    const calldataLooksRare = iface.encodeFunctionData("execute", [
       [takerBidOne, takerBidTwo],
       [makerAskOne, makerAskTwo],
       buyer.address,
@@ -139,7 +139,7 @@ describe("Aggregator", () => {
 
     const seaportPrice = ethers.utils.parseEther("168.78");
     const looksRarePrice = ethers.utils.parseEther("168");
-    const tx = await aggregator.connect(buyer).buyWithETH(
+    const tx = await aggregator.connect(buyer).execute(
       [
         { proxy: SEAPORT, data: calldata, value: seaportPrice },
         { proxy: proxy.address, data: calldataLooksRare, value: looksRarePrice },

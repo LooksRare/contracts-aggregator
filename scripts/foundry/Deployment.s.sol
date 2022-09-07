@@ -23,19 +23,19 @@ contract Deployment is Script {
         looksRareAggregator = new LooksRareAggregator();
 
         looksRareProxy = new LooksRareProxy();
-        looksRareAggregator.addFunction(address(looksRareProxy), LooksRareProxy.buyWithETH.selector);
+        looksRareAggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
 
         seaportProxy = new SeaportProxy();
-        looksRareAggregator.addFunction(address(seaportProxy), SeaportProxy.buyWithETH.selector);
+        looksRareAggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);
 
         x2y2Proxy = new X2Y2Proxy();
-        looksRareAggregator.addFunction(address(x2y2Proxy), X2Y2Proxy.buyWithETH.selector);
+        looksRareAggregator.addFunction(address(x2y2Proxy), X2Y2Proxy.execute.selector);
 
         cryptoPunksProxy = new CryptoPunksProxy();
-        looksRareAggregator.addFunction(address(cryptoPunksProxy), CryptoPunksProxy.buyWithETH.selector);
+        looksRareAggregator.addFunction(address(cryptoPunksProxy), CryptoPunksProxy.execute.selector);
 
         sudoswapProxy = new SudoswapProxy();
-        looksRareAggregator.addFunction(address(sudoswapProxy), SudoswapProxy.buyWithETH.selector);
+        looksRareAggregator.addFunction(address(sudoswapProxy), SudoswapProxy.execute.selector);
 
         vm.stopBroadcast();
     }

@@ -28,7 +28,7 @@ export default async function deployX2Y2Fixture(): Promise<X2Y2Fixture> {
 
   await ethers.provider.send("hardhat_setCode", [predefinedProxy.address, proxyCode]);
 
-  const functionSelector = await getSignature("X2Y2Proxy.json", "buyWithETH");
+  const functionSelector = await getSignature("X2Y2Proxy.json", "execute");
   await aggregator.addFunction(predefinedProxy.address, functionSelector);
 
   const proxy = X2Y2Proxy.attach(predefinedProxy.address);

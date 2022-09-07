@@ -31,7 +31,8 @@ describe("LooksRareAggregator", () => {
       signature: HashZero,
     };
 
-    const tx = await aggregator.buyWithETH(
+    const tx = await aggregator.execute(
+      [],
       [
         {
           proxy: proxy.address,
@@ -53,6 +54,7 @@ describe("LooksRareAggregator", () => {
           ],
           ordersExtraData: [HashZero, HashZero],
           extraData: HashZero,
+          tokenTransfers: [],
         },
       ],
       buyer.address,
@@ -93,7 +95,8 @@ describe("LooksRareAggregator", () => {
 
     const buyerBalanceBefore = await getBalance(buyer.address);
 
-    const tx = await aggregator.buyWithETH(
+    const tx = await aggregator.execute(
+      [],
       [
         {
           proxy: proxy.address,
@@ -121,6 +124,7 @@ describe("LooksRareAggregator", () => {
           ],
           ordersExtraData: [HashZero, HashZero, HashZero],
           extraData: HashZero,
+          tokenTransfers: [],
         },
       ],
       buyer.address,
@@ -166,7 +170,8 @@ describe("LooksRareAggregator", () => {
     const buyerBalanceBefore = await getBalance(buyer.address);
 
     await expect(
-      aggregator.buyWithETH(
+      aggregator.execute(
+        [],
         [
           {
             proxy: proxy.address,
@@ -194,6 +199,7 @@ describe("LooksRareAggregator", () => {
             ],
             ordersExtraData: [HashZero, HashZero, HashZero],
             extraData: HashZero,
+            tokenTransfers: [],
           },
         ],
         buyer.address,

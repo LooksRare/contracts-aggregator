@@ -60,6 +60,7 @@ describe("Aggregator", () => {
             },
           ]
         ),
+        tokenTransfers: [],
       },
       {
         proxy: looksRareProxy.address,
@@ -83,7 +84,8 @@ describe("Aggregator", () => {
         ordersExtraData: [
           abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [looksRarePrice, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE]),
         ],
-        extraData: "0x",
+        extraData: ethers.constants.HashZero,
+        tokenTransfers: [],
       },
       {
         proxy: sudoswapProxy.address,
@@ -105,10 +107,11 @@ describe("Aggregator", () => {
         ],
         ordersExtraData: [HashZero, HashZero],
         extraData: HashZero,
+        tokenTransfers: [],
       },
     ];
 
-    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, buyer.address, false, { value: price });
+    const tx = await aggregator.connect(buyer).execute([], tradeData, buyer.address, false, { value: price });
     const receipt = await tx.wait();
     validateSweepEvent(receipt, buyer.address, 3, 3);
 
@@ -159,6 +162,7 @@ describe("Aggregator", () => {
             },
           ]
         ),
+        tokenTransfers: [],
       },
       {
         proxy: looksRareProxy.address,
@@ -182,7 +186,8 @@ describe("Aggregator", () => {
         ordersExtraData: [
           abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [looksRarePrice, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE]),
         ],
-        extraData: "0x",
+        extraData: HashZero,
+        tokenTransfers: [],
       },
       {
         proxy: sudoswapProxy.address,
@@ -204,6 +209,7 @@ describe("Aggregator", () => {
         ],
         ordersExtraData: [HashZero, HashZero],
         extraData: HashZero,
+        tokenTransfers: [],
       },
     ];
     // Duplicating the orders to make the 2nd batch fail
@@ -211,7 +217,7 @@ describe("Aggregator", () => {
 
     const buyerBalanceBefore = await getBalance(buyer.address);
 
-    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, buyer.address, false, { value: price.mul(2) });
+    const tx = await aggregator.connect(buyer).execute([], tradeData, buyer.address, false, { value: price.mul(2) });
     const receipt = await tx.wait();
     const txFee = await calculateTxFee(tx);
 
@@ -271,6 +277,7 @@ describe("Aggregator", () => {
             },
           ]
         ),
+        tokenTransfers: [],
       },
       {
         proxy: looksRareProxy.address,
@@ -294,7 +301,8 @@ describe("Aggregator", () => {
         ordersExtraData: [
           abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [looksRarePrice, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE]),
         ],
-        extraData: "0x",
+        extraData: ethers.constants.HashZero,
+        tokenTransfers: [],
       },
       {
         proxy: sudoswapProxy.address,
@@ -316,6 +324,7 @@ describe("Aggregator", () => {
         ],
         ordersExtraData: [HashZero, HashZero],
         extraData: HashZero,
+        tokenTransfers: [],
       },
     ];
     // Duplicating the orders to make the 2nd batch fail
@@ -323,7 +332,7 @@ describe("Aggregator", () => {
 
     const buyerBalanceBefore = await getBalance(buyer.address);
 
-    await expect(aggregator.connect(buyer).buyWithETH(tradeData, buyer.address, true, { value: price.mul(2) })).to.be
+    await expect(aggregator.connect(buyer).execute([], tradeData, buyer.address, true, { value: price.mul(2) })).to.be
       .reverted;
 
     expect(await bayc.balanceOf(buyer.address)).to.equal(0);

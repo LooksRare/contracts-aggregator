@@ -2,8 +2,8 @@
 pragma solidity 0.8.14;
 
 import {ISudoswapRouter} from "../interfaces/ISudoswapRouter.sol";
-import {BasicOrder} from "../libraries/OrderStructs.sol";
-import {TokenRescuer} from "../TokenRescuer.sol";
+import {BasicOrder, TokenTransfer} from "../libraries/OrderStructs.sol";
+import {TokenLogic} from "../TokenLogic.sol";
 import {IProxy} from "./IProxy.sol";
 
 /**
@@ -12,22 +12,26 @@ import {IProxy} from "./IProxy.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract SudoswapProxy is TokenRescuer, IProxy {
-    ISudoswapRouter public immutable router;
+contract SudoswapProxy is TokenLogic, IProxy {
+    ISudoswapRouter public immutable marketplace;
 
-    constructor(address _router) {
-        router = ISudoswapRouter(_router);
+    /**
+     * @param _marketplace Sudoswap router's address
+     */
+    constructor(address _marketplace) {
+        marketplace = ISudoswapRouter(_marketplace);
     }
 
     /**
      * @notice Execute Sudoswap NFT sweeps in a single transaction
-     * @dev Only the 1st argument orders is used
+     * @dev tokenTransfers, ordersExtraData and extraData are not used
      * @param orders Orders to be executed by Seaport
      * @param recipient The address to receive the purchased NFTs
      * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
      * @return Whether at least 1 out of N trades succeeded
      */
-    function buyWithETH(
+    function execute(
+        TokenTransfer[] calldata,
         BasicOrder[] calldata orders,
         bytes[] calldata,
         bytes memory,
@@ -55,7 +59,12 @@ contract SudoswapProxy is TokenRescuer, IProxy {
                 }
             }
 
-            router.swapETHForSpecificNFTs{value: msg.value}(swapList, payable(recipient), recipient, block.timestamp);
+            marketplace.swapETHForSpecificNFTs{value: msg.value}(
+                swapList,
+                payable(recipient),
+                recipient,
+                block.timestamp
+            );
         } else {
             ISudoswapRouter.RobustPairSwapSpecific[] memory swapList = new ISudoswapRouter.RobustPairSwapSpecific[](
                 orders.length
@@ -77,7 +86,12 @@ contract SudoswapProxy is TokenRescuer, IProxy {
                 }
             }
 
-            router.robustSwapETHForSpecificNFTs{value: msg.value}(
+            // TODO: This cannot handle the case where the NFT to be purchased
+            //       is no longer in the pool for whatever reasons. We will have
+            //       to wait for Sudoswap's router V2 to go live to re-integrate
+            //       as it allows partial fills.
+
+            marketplace.robustSwapETHForSpecificNFTs{value: msg.value}(
                 swapList,
                 payable(recipient),
                 recipient,

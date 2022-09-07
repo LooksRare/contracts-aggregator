@@ -4,12 +4,12 @@ pragma solidity 0.8.14;
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {IX2Y2} from "../interfaces/IX2Y2.sol";
-import {BasicOrder} from "../libraries/OrderStructs.sol";
+import {BasicOrder, TokenTransfer} from "../libraries/OrderStructs.sol";
 import {Market} from "../libraries/x2y2/MarketConsts.sol";
 import {SignatureChecker} from "@looksrare/contracts-libs/contracts/SignatureChecker.sol";
 import {CollectionType} from "../libraries/OrderEnums.sol";
 import {TokenReceiverProxy} from "./TokenReceiverProxy.sol";
-import {TokenRescuer} from "../TokenRescuer.sol";
+import {TokenLogic} from "../TokenLogic.sol";
 import {LowLevelETH} from "../lowLevelCallers/LowLevelETH.sol";
 
 /**
@@ -18,7 +18,7 @@ import {LowLevelETH} from "../lowLevelCallers/LowLevelETH.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract X2Y2Proxy is TokenReceiverProxy, TokenRescuer, SignatureChecker {
+contract X2Y2Proxy is TokenReceiverProxy, TokenLogic, SignatureChecker {
     IX2Y2 public immutable marketplace;
 
     struct OrderExtraData {
@@ -33,20 +33,24 @@ contract X2Y2Proxy is TokenReceiverProxy, TokenRescuer, SignatureChecker {
         Market.Fee[] fees; // An array of sales proceeds recipient and the % for each of them
     }
 
+    /**
+     * @param _marketplace X2Y2's address
+     */
     constructor(address _marketplace) {
         marketplace = IX2Y2(_marketplace);
     }
 
     /**
      * @notice Execute X2Y2 NFT sweeps in a single transaction
-     * @dev The 3rd argument extraData is not used
+     * @dev The 4th argument extraData is not used
      * @param orders Orders to be executed by Seaport
      * @param ordersExtraData Extra data for each order
      * @param recipient The address to receive the purchased NFTs
      * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
      * @return Whether at least 1 out of N trades succeeded
      */
-    function buyWithETH(
+    function execute(
+        TokenTransfer[] calldata,
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,
         bytes calldata,

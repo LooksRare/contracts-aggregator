@@ -5,12 +5,12 @@ pragma solidity 0.8.14;
 import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
 import {X2Y2Proxy} from "../../contracts/proxies/X2Y2Proxy.sol";
 import {IProxy} from "../../contracts/proxies/IProxy.sol";
-import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
-import {BasicOrder} from "../../contracts/libraries/OrderStructs.sol";
+import {TokenLogic} from "../../contracts/TokenLogic.sol";
+import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {Market} from "../../contracts/libraries/x2y2/MarketConsts.sol";
 import {TestHelpers} from "./TestHelpers.sol";
-import {TokenRescuerTest} from "./TokenRescuer.t.sol";
+import {TokenLogicTest} from "./TokenLogic.t.sol";
 
 abstract contract TestParameters {
     address internal constant X2Y2 = 0x74312363e45DCaBA76c59ec49a7Aa8A65a67EeD3;
@@ -18,25 +18,27 @@ abstract contract TestParameters {
     address internal _buyer = address(1);
 }
 
-contract X2Y2ProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
+contract X2Y2ProxyTest is TestParameters, TestHelpers, TokenLogicTest {
     X2Y2Proxy x2y2Proxy;
-    TokenRescuer tokenRescuer;
+    TokenLogic tokenRescuer;
 
     function setUp() public {
         x2y2Proxy = new X2Y2Proxy(X2Y2);
-        tokenRescuer = TokenRescuer(address(x2y2Proxy));
+        tokenRescuer = TokenLogic(address(x2y2Proxy));
         vm.deal(_buyer, 100 ether);
     }
 
     function testBuyWithETHZeroOrders() public asPrankedUser(_buyer) {
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder[] memory orders = new BasicOrder[](0);
         bytes[] memory ordersExtraData = new bytes[](0);
 
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        x2y2Proxy.buyWithETH(orders, ordersExtraData, "", _buyer, false);
+        x2y2Proxy.execute(tokenTransfers, orders, ordersExtraData, "", _buyer, false);
     }
 
     function testBuyWithETHOrdersLengthMismatch() public asPrankedUser(_buyer) {
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder[] memory orders = validBAYCOrder();
 
         bytes[] memory ordersExtraData = new bytes[](2);
@@ -44,17 +46,18 @@ contract X2Y2ProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
         ordersExtraData[1] = validBAYCOrderExtraData();
 
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        x2y2Proxy.buyWithETH{value: orders[0].price}(orders, ordersExtraData, "", _buyer, false);
+        x2y2Proxy.execute{value: orders[0].price}(tokenTransfers, orders, ordersExtraData, "", _buyer, false);
     }
 
     function testBuyWithETHOrdersRecipientZeroAddress() public {
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder[] memory orders = validBAYCOrder();
 
         bytes[] memory ordersExtraData = new bytes[](1);
         ordersExtraData[0] = validBAYCOrderExtraData();
 
         vm.expectRevert(IProxy.ZeroAddress.selector);
-        x2y2Proxy.buyWithETH{value: orders[0].price}(orders, ordersExtraData, "", address(0), false);
+        x2y2Proxy.execute{value: orders[0].price}(tokenTransfers, orders, ordersExtraData, "", address(0), false);
     }
 
     function testRescueETH() public {

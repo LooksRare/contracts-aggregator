@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.14;
 
-import {BasicOrder} from "../libraries/OrderStructs.sol";
+import {BasicOrder, TokenTransfer} from "../libraries/OrderStructs.sol";
 import {ICryptoPunks} from "../interfaces/ICryptoPunks.sol";
 import {IProxy} from "./IProxy.sol";
-import {TokenRescuer} from "../TokenRescuer.sol";
+import {TokenLogic} from "../TokenLogic.sol";
 
 /**
  * @title CryptoPunksProxy
@@ -12,22 +12,26 @@ import {TokenRescuer} from "../TokenRescuer.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract CryptoPunksProxy is IProxy, TokenRescuer {
-    ICryptoPunks public immutable cryptopunks;
+contract CryptoPunksProxy is IProxy, TokenLogic {
+    ICryptoPunks public immutable marketplace;
 
-    constructor(address _cryptopunks) {
-        cryptopunks = ICryptoPunks(_cryptopunks);
+    /**
+     * @param _marketplace CryptoPunks' address
+     */
+    constructor(address _marketplace) {
+        marketplace = ICryptoPunks(_marketplace);
     }
 
     /**
      * @notice Execute CryptoPunks NFT sweeps in a single transaction
-     * @dev Only the 1st argument orders and the 4th argument isAtomic are used
+     * @dev Only orders, recipient and isAtomic are used
      * @param orders Orders to be executed by CryptoPunks
      * @param recipient The address to receive the purchased NFTs
      * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
      * @return Whether at least 1 out of N trades succeeded
      */
-    function buyWithETH(
+    function execute(
+        TokenTransfer[] calldata,
         BasicOrder[] calldata orders,
         bytes[] calldata,
         bytes memory,
@@ -43,12 +47,12 @@ contract CryptoPunksProxy is IProxy, TokenRescuer {
             uint256 punkId = orders[i].tokenIds[0];
 
             if (isAtomic) {
-                cryptopunks.buyPunk{value: orders[i].price}(punkId);
-                cryptopunks.transferPunk(recipient, punkId);
+                marketplace.buyPunk{value: orders[i].price}(punkId);
+                marketplace.transferPunk(recipient, punkId);
                 executedCount += 1;
             } else {
-                try cryptopunks.buyPunk{value: orders[i].price}(punkId) {
-                    cryptopunks.transferPunk(recipient, punkId);
+                try marketplace.buyPunk{value: orders[i].price}(punkId) {
+                    marketplace.transferPunk(recipient, punkId);
                     executedCount += 1;
                 } catch {}
             }

@@ -6,10 +6,10 @@ import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {ILooksRareExchange} from "@looksrare/contracts-exchange-v1/contracts/interfaces/ILooksRareExchange.sol";
 import {OrderTypes} from "@looksrare/contracts-exchange-v1/contracts/libraries/OrderTypes.sol";
 import {SignatureChecker} from "@looksrare/contracts-libs/contracts/SignatureChecker.sol";
-import {BasicOrder} from "../libraries/OrderStructs.sol";
+import {BasicOrder, TokenTransfer} from "../libraries/OrderStructs.sol";
 import {CollectionType} from "../libraries/OrderEnums.sol";
 import {TokenReceiverProxy} from "./TokenReceiverProxy.sol";
-import {TokenRescuer} from "../TokenRescuer.sol";
+import {TokenLogic} from "../TokenLogic.sol";
 
 /**
  * @title LooksRareProxy
@@ -17,7 +17,7 @@ import {TokenRescuer} from "../TokenRescuer.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract LooksRareProxy is TokenReceiverProxy, TokenRescuer, SignatureChecker {
+contract LooksRareProxy is TokenReceiverProxy, TokenLogic, SignatureChecker {
     struct OrderExtraData {
         uint256 makerAskPrice; // Maker ask price, which is not necessarily equal to the taker bid price
         uint256 minPercentageToAsk; // The maker's minimum % to receive from the sale
@@ -27,20 +27,24 @@ contract LooksRareProxy is TokenReceiverProxy, TokenRescuer, SignatureChecker {
 
     ILooksRareExchange public immutable marketplace;
 
+    /**
+     * @param _marketplace LooksRareExchange's address
+     */
     constructor(address _marketplace) {
         marketplace = ILooksRareExchange(_marketplace);
     }
 
     /**
      * @notice Execute LooksRare NFT sweeps in a single transaction
-     * @dev The 3rd argument extraData is not used
+     * @dev The 1st argument tokenTransfers and the 4th argument extraData are not used
      * @param orders Orders to be executed by LooksRare
      * @param ordersExtraData Extra data for each order
      * @param recipient The address to receive the purchased NFTs
      * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
      * @return Whether at least 1 out of N trades succeeded
      */
-    function buyWithETH(
+    function execute(
+        TokenTransfer[] calldata,
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,
         bytes memory,

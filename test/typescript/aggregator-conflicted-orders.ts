@@ -56,6 +56,7 @@ describe("Aggregator", () => {
             },
           ]
         ),
+        tokenTransfers: [],
       },
       {
         proxy: looksRareProxy.address,
@@ -79,13 +80,14 @@ describe("Aggregator", () => {
         ordersExtraData: [
           abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [looksRarePrice, 9550, 2, LOOKSRARE_STRATEGY_FIXED_PRICE]),
         ],
-        extraData: "0x",
+        extraData: ethers.constants.HashZero,
+        tokenTransfers: [],
       },
     ];
 
     const buyerBalanceBefore = await getBalance(buyer.address);
 
-    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, buyer.address, false, { value: price });
+    const tx = await aggregator.connect(buyer).execute([], tradeData, buyer.address, false, { value: price });
     const receipt = await tx.wait();
     const txFee = await calculateTxFee(tx);
 
@@ -135,6 +137,7 @@ describe("Aggregator", () => {
             },
           ]
         ),
+        tokenTransfers: [],
       },
       {
         proxy: looksRareProxy.address,
@@ -158,14 +161,15 @@ describe("Aggregator", () => {
         ordersExtraData: [
           abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [looksRarePrice, 9550, 2, LOOKSRARE_STRATEGY_FIXED_PRICE]),
         ],
-        extraData: "0x",
+        extraData: ethers.constants.HashZero,
+        tokenTransfers: [],
       },
     ];
 
     const buyerBalanceBefore = await ethers.provider.getBalance(buyer.address);
 
     await expect(
-      aggregator.connect(buyer).buyWithETH(tradeData, buyer.address, true, { value: price })
+      aggregator.connect(buyer).execute([], tradeData, buyer.address, true, { value: price })
     ).to.be.revertedWith("BadSignatureV(0)");
 
     expect(await bayc.balanceOf(buyer.address)).to.equal(0);

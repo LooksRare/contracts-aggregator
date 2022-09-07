@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.14;
 
-import {BasicOrder} from "../libraries/OrderStructs.sol";
+import {BasicOrder, TokenTransfer} from "../libraries/OrderStructs.sol";
 
 interface ILooksRareAggregator {
     struct TradeData {
@@ -11,6 +11,7 @@ interface ILooksRareAggregator {
         BasicOrder[] orders; // Orders to be executed by the marketplace
         bytes[] ordersExtraData; // Extra data for each order, specific for each marketplace
         bytes extraData; // Extra data specific for each marketplace
+        TokenTransfer[] tokenTransfers;
     }
 
     /**
@@ -28,7 +29,7 @@ interface ILooksRareAggregator {
     event FunctionRemoved(address indexed proxy, bytes4 selector);
 
     /**
-     * @notice Emitted when buyWithETH is complete
+     * @notice Emitted when execute is complete
      * @param sweeper The address that submitted the transaction
      * @param tradeCount Total trade count
      * @param successCount Successful trade count (if only 1 out of N trades in

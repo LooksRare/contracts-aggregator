@@ -9,7 +9,7 @@ import {V0Aggregator} from "../../contracts/V0Aggregator.sol";
 import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggregator.sol";
 import {SeaportInterface} from "../../contracts/interfaces/SeaportInterface.sol";
 import {IProxy} from "../../contracts/proxies/IProxy.sol";
-import {BasicOrder} from "../../contracts/libraries/OrderStructs.sol";
+import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
 import {BasicOrderParameters, AdditionalRecipient, AdvancedOrder, OrderParameters, OfferItem, ConsiderationItem, CriteriaResolver} from "../../contracts/libraries/seaport/ConsiderationStructs.sol";
@@ -27,16 +27,17 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
     SeaportProxy seaportProxy;
 
     function setUp() public {
+        aggregator = new LooksRareAggregator();
         seaportProxy = new SeaportProxy(SEAPORT);
+
+        aggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);
+
+        v0Aggregator = new V0Aggregator();
+        v0Aggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);
+
         vm.deal(_buyer, 100 ether);
         // Since we are forking mainnet, we have to make sure it has 0 ETH.
         vm.deal(address(seaportProxy), 0);
-
-        aggregator = new LooksRareAggregator();
-        aggregator.addFunction(address(seaportProxy), SeaportProxy.buyWithETH.selector);
-
-        v0Aggregator = new V0Aggregator();
-        v0Aggregator.addFunction(address(seaportProxy), SeaportProxy.buyWithETH.selector);
     }
 
     function testBuyWithETHDirectlySingleOrder() public asPrankedUser(_buyer) {
@@ -77,6 +78,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
     }
 
     function testBuyWithETHDirectlyFromProxySingleOrder() public {
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder memory order = validBAYCId2518Order();
         BasicOrder[] memory orders = new BasicOrder[](1);
         orders[0] = order;
@@ -87,7 +89,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         bytes memory extraData = validSingleBAYCExtraData();
 
         uint256 gasRemaining = gasleft();
-        seaportProxy.buyWithETH{value: order.price}(orders, ordersExtraData, extraData, _buyer, true);
+        seaportProxy.execute{value: order.price}(tokenTransfers, orders, ordersExtraData, extraData, _buyer, true);
         uint256 gasConsumed = gasRemaining - gasleft();
         emit log_named_uint("Seaport single NFT purchase through the proxy consumed: ", gasConsumed);
 
@@ -95,6 +97,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
     }
 
     function testBuyWithETHThroughAggregatorSingleOrder() public {
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder memory order = validBAYCId2518Order();
         BasicOrder[] memory orders = new BasicOrder[](1);
         orders[0] = order;
@@ -108,15 +111,16 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(seaportProxy),
-            selector: SeaportProxy.buyWithETH.selector,
+            selector: SeaportProxy.execute.selector,
             value: order.price,
             orders: orders,
             ordersExtraData: ordersExtraData,
-            extraData: extraData
+            extraData: extraData,
+            tokenTransfers: new TokenTransfer[](0)
         });
 
         uint256 gasRemaining = gasleft();
-        aggregator.buyWithETH{value: order.price}(tradeData, _buyer, true);
+        aggregator.execute{value: order.price}(tokenTransfers, tradeData, _buyer, true);
         uint256 gasConsumed = gasRemaining - gasleft();
         emit log_named_uint("Seaport single NFT purchase through the aggregator consumed: ", gasConsumed);
 
@@ -135,7 +139,8 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         bytes memory extraData = validSingleBAYCExtraData();
 
         bytes memory data = abi.encodeWithSelector(
-            SeaportProxy.buyWithETH.selector,
+            SeaportProxy.execute.selector,
+            new TokenTransfer[](0),
             orders,
             ordersExtraData,
             extraData,
@@ -147,7 +152,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         tradeData[0] = V0Aggregator.TradeData({proxy: address(seaportProxy), value: order.price, data: data});
 
         uint256 gasRemaining = gasleft();
-        v0Aggregator.buyWithETH{value: order.price}(tradeData);
+        v0Aggregator.execute{value: order.price}(tradeData);
         uint256 gasConsumed = gasRemaining - gasleft();
         emit log_named_uint("Seaport single NFT purchase through the V0 aggregator consumed: ", gasConsumed);
 
@@ -251,6 +256,8 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
     }
 
     function testBuyWithETHDirectlyFromProxyTwoOrders() public {
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
+
         BasicOrder memory orderOne = validBAYCId2518Order();
         BasicOrder memory orderTwo = validBAYCId8498Order();
         BasicOrder[] memory orders = new BasicOrder[](2);
@@ -268,7 +275,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         uint256 totalPrice = orders[0].price + orders[1].price;
 
         uint256 gasRemaining = gasleft();
-        seaportProxy.buyWithETH{value: totalPrice}(orders, ordersExtraData, extraData, _buyer, true);
+        seaportProxy.execute{value: totalPrice}(tokenTransfers, orders, ordersExtraData, extraData, _buyer, true);
         uint256 gasConsumed = gasRemaining - gasleft();
         emit log_named_uint("Seaport multiple NFT purchase through the proxy consumed: ", gasConsumed);
 
@@ -277,6 +284,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
     }
 
     function testBuyWithETHThroughAggregatorTwoOrders() public {
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder memory orderOne = validBAYCId2518Order();
         BasicOrder memory orderTwo = validBAYCId8498Order();
         BasicOrder[] memory orders = new BasicOrder[](2);
@@ -295,15 +303,16 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         uint256 totalPrice = orders[0].price + orders[1].price;
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(seaportProxy),
-            selector: SeaportProxy.buyWithETH.selector,
+            selector: SeaportProxy.execute.selector,
             value: totalPrice,
             orders: orders,
             ordersExtraData: ordersExtraData,
-            extraData: extraData
+            extraData: extraData,
+            tokenTransfers: new TokenTransfer[](0)
         });
 
         uint256 gasRemaining = gasleft();
-        seaportProxy.buyWithETH{value: totalPrice}(orders, ordersExtraData, extraData, _buyer, true);
+        aggregator.execute{value: totalPrice}(tokenTransfers, tradeData, _buyer, true);
         uint256 gasConsumed = gasRemaining - gasleft();
         emit log_named_uint("Seaport multiple NFT purchase through the aggregator consumed: ", gasConsumed);
 
@@ -329,7 +338,8 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         V0Aggregator.TradeData[] memory tradeData = new V0Aggregator.TradeData[](1);
         uint256 totalPrice = orders[0].price + orders[1].price;
         bytes memory data = abi.encodeWithSelector(
-            SeaportProxy.buyWithETH.selector,
+            SeaportProxy.execute.selector,
+            new TokenTransfer[](0),
             orders,
             ordersExtraData,
             extraData,
@@ -339,7 +349,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         tradeData[0] = V0Aggregator.TradeData({proxy: address(seaportProxy), value: totalPrice, data: data});
 
         uint256 gasRemaining = gasleft();
-        v0Aggregator.buyWithETH{value: totalPrice}(tradeData);
+        v0Aggregator.execute{value: totalPrice}(tradeData);
         uint256 gasConsumed = gasRemaining - gasleft();
         emit log_named_uint("Seaport multiple NFT purchase through the V0 aggregator consumed: ", gasConsumed);
 

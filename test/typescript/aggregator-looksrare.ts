@@ -56,11 +56,12 @@ describe("LooksRareAggregator", () => {
           abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [priceOne, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE]),
           abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [priceTwo, 8500, 50, LOOKSRARE_STRATEGY_FIXED_PRICE]),
         ],
-        extraData: "0x",
+        extraData: ethers.constants.HashZero,
+        tokenTransfers: [],
       },
     ];
 
-    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, buyer.address, false, { value: totalValue });
+    const tx = await aggregator.connect(buyer).execute([], tradeData, buyer.address, false, { value: totalValue });
     const receipt = await tx.wait();
     validateSweepEvent(receipt, buyer.address, 1, 1);
 
@@ -118,7 +119,8 @@ describe("LooksRareAggregator", () => {
           abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [priceOne, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE]),
           abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [priceTwo, 8500, 50, LOOKSRARE_STRATEGY_FIXED_PRICE]),
         ],
-        extraData: "0x",
+        extraData: ethers.constants.HashZero,
+        tokenTransfers: [],
       },
     ];
 
@@ -126,7 +128,7 @@ describe("LooksRareAggregator", () => {
 
     const tx = await aggregator
       .connect(buyer)
-      .buyWithETH(tradeData, buyer.address, false, { value: totalValue.add(ethers.constants.WeiPerEther) });
+      .execute([], tradeData, buyer.address, false, { value: totalValue.add(ethers.constants.WeiPerEther) });
     const receipt = await tx.wait();
     const txFee = await calculateTxFee(tx);
 
@@ -176,13 +178,14 @@ describe("LooksRareAggregator", () => {
           abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [priceOne, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE]),
           abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [priceOne, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE]),
         ],
-        extraData: "0x",
+        extraData: ethers.constants.HashZero,
+        tokenTransfers: [],
       },
     ];
 
     const buyerBalanceBefore = await getBalance(buyer.address);
 
-    const tx = await aggregator.connect(buyer).buyWithETH(tradeData, buyer.address, false, { value: totalValue });
+    const tx = await aggregator.connect(buyer).execute([], tradeData, buyer.address, false, { value: totalValue });
     const receipt = await tx.wait();
     const txFee = await calculateTxFee(tx);
 
@@ -231,14 +234,15 @@ describe("LooksRareAggregator", () => {
           abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [priceOne, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE]),
           abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [priceOne, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE]),
         ],
-        extraData: "0x",
+        extraData: ethers.constants.HashZero,
+        tokenTransfers: [],
       },
     ];
 
     const buyerBalanceBefore = await getBalance(buyer.address);
 
     await expect(
-      aggregator.connect(buyer).buyWithETH(tradeData, buyer.address, true, { value: totalValue })
+      aggregator.connect(buyer).execute([], tradeData, buyer.address, true, { value: totalValue })
     ).to.be.revertedWith("Order: Matching order expired");
 
     expect(await bayc.balanceOf(aggregator.address)).to.equal(0);

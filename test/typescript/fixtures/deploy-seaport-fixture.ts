@@ -2,7 +2,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 import { IERC1155, IERC721, LooksRareAggregator, SeaportProxy } from "../../../typechain";
 import getSignature from "../utils/get-signature";
-import { BAYC, CITY_DAO, SEAPORT } from "../../constants";
+import { BAYC, CITY_DAO, SEAPORT, USDC } from "../../constants";
 
 interface SeaportFixture {
   aggregator: LooksRareAggregator;
@@ -26,8 +26,9 @@ export default async function deploySeaportFixture(): Promise<SeaportFixture> {
   // the same address with ether balance, causing our test (balance comparison) to fail.
   await ethers.provider.send("hardhat_setBalance", [proxy.address, "0x0"]);
 
-  const functionSelector = await getSignature("SeaportProxy.json", "buyWithETH");
+  const functionSelector = await getSignature("SeaportProxy.json", "execute");
   await aggregator.addFunction(proxy.address, functionSelector);
+  await aggregator.approve(proxy.address, USDC);
 
   const [buyer] = await ethers.getSigners();
 

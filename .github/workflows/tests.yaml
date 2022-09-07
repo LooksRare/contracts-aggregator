@@ -76,6 +76,14 @@ jobs:
         run: npx hardhat test test/typescript/aggregator-seaport-multiple-collection-types.ts
         env:
           FORKED_BLOCK_NUMBER: 15323472
+      - name: Run atomic Seaport multiple currencies tests
+        run: npx hardhat test test/typescript/aggregator-seaport-multiple-currencies-atomic.ts
+        env:
+          FORKED_BLOCK_NUMBER: 15447813
+      - name: Run non-atomic Seaport multiple currencies tests
+        run: npx hardhat test test/typescript/aggregator-seaport-multiple-currencies-non-atomic.ts
+        env:
+          FORKED_BLOCK_NUMBER: 15447813
       - name: Run conflicted orders tests
         run: npx hardhat test test/typescript/aggregator-conflicted-orders.ts
         env:
