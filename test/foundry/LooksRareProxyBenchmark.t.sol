@@ -2,6 +2,8 @@
 
 pragma solidity 0.8.14;
 
+import {ILooksRareExchange} from "@looksrare/contracts-exchange-v1/contracts/interfaces/ILooksRareExchange.sol";
+import {OrderTypes} from "@looksrare/contracts-exchange-v1/contracts/libraries/OrderTypes.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {LooksRareProxy} from "../../contracts/proxies/LooksRareProxy.sol";
 import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
@@ -34,6 +36,46 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
 
         v0Aggregator = new V0Aggregator();
         v0Aggregator.addFunction(address(looksRareProxy), LooksRareProxy.buyWithETH.selector);
+    }
+
+    function testBuyWithETHDirectlySingleOrder() public asPrankedUser(_buyer) {
+        ILooksRareExchange looksRare = ILooksRareExchange(LOOKSRARE_V1);
+
+        OrderTypes.MakerOrder memory makerAsk;
+        {
+            makerAsk.isOrderAsk = true;
+            makerAsk.signer = 0x2137213d50207Edfd92bCf4CF7eF9E491A155357;
+            makerAsk.collection = BAYC;
+            makerAsk.tokenId = 7139;
+            makerAsk.price = 81.8 ether;
+            makerAsk.amount = 1;
+            makerAsk.strategy = 0x56244Bb70CbD3EA9Dc8007399F61dFC065190031;
+            makerAsk.nonce = 0;
+            makerAsk.minPercentageToAsk = 9550;
+            makerAsk.currency = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
+            makerAsk.startTime = 1659632508;
+            makerAsk.endTime = 1662186976;
+
+            makerAsk.v = 28;
+            makerAsk.r = 0xe669f75ee8768c3dc4a7ac11f2d301f9dbfced5c1f3c13c7f445ad84d326db4b;
+            makerAsk.s = 0x0f2da0827bac814c4ed782b661ef40dcb2fa71141ef8239a5e5f1038e117549c;
+        }
+
+        OrderTypes.TakerOrder memory takerBid;
+        {
+            takerBid.isOrderAsk = false;
+            takerBid.taker = _buyer;
+            takerBid.price = 81.8 ether;
+            takerBid.tokenId = 7139;
+            takerBid.minPercentageToAsk = 9550;
+        }
+
+        uint256 gasRemaining = gasleft();
+        looksRare.matchAskWithTakerBidUsingETHAndWETH{value: 81.8 ether}(takerBid, makerAsk);
+        uint256 gasConsumed = gasRemaining - gasleft();
+        emit log_named_uint("LooksRare single NFT purchase through the proxy consumed: ", gasConsumed);
+
+        assertEq(IERC721(BAYC).ownerOf(7139), _buyer);
     }
 
     function testBuyWithETHDirectlyFromProxySingleOrder() public {

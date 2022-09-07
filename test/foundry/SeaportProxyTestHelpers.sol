@@ -118,40 +118,55 @@ abstract contract SeaportProxyTestHelpers {
         return abi.encode(extraData);
     }
 
+    function validMultipleOfferFulfillments()
+        internal
+        pure
+        returns (FulfillmentComponent[][] memory offerFulfillments)
+    {
+        offerFulfillments = new FulfillmentComponent[][](2);
+
+        offerFulfillments[0] = new FulfillmentComponent[](1);
+        offerFulfillments[0][0].orderIndex = 0;
+        offerFulfillments[0][0].itemIndex = 0;
+
+        offerFulfillments[1] = new FulfillmentComponent[](1);
+        offerFulfillments[1][0].orderIndex = 1;
+        offerFulfillments[1][0].itemIndex = 0;
+    }
+
+    function validMultipleConsiderationFulfillments()
+        internal
+        pure
+        returns (FulfillmentComponent[][] memory considerationFulfillments)
+    {
+        considerationFulfillments = new FulfillmentComponent[][](4);
+
+        considerationFulfillments[0] = new FulfillmentComponent[](1);
+        considerationFulfillments[0][0].orderIndex = 0;
+        considerationFulfillments[0][0].itemIndex = 0;
+
+        considerationFulfillments[1] = new FulfillmentComponent[](1);
+        considerationFulfillments[1][0].orderIndex = 1;
+        considerationFulfillments[1][0].itemIndex = 0;
+
+        considerationFulfillments[2] = new FulfillmentComponent[](2);
+        considerationFulfillments[2][0].orderIndex = 0;
+        considerationFulfillments[2][0].itemIndex = 1;
+        considerationFulfillments[2][1].orderIndex = 1;
+        considerationFulfillments[2][1].itemIndex = 1;
+
+        considerationFulfillments[3] = new FulfillmentComponent[](2);
+        considerationFulfillments[3][0].orderIndex = 0;
+        considerationFulfillments[3][0].itemIndex = 2;
+        considerationFulfillments[3][1].orderIndex = 1;
+        considerationFulfillments[3][1].itemIndex = 2;
+    }
+
     function validMultipleBAYCExtraData() internal pure returns (bytes memory) {
         SeaportProxy.ExtraData memory extraData;
 
-        extraData.offerFulfillments = new FulfillmentComponent[][](2);
-
-        extraData.offerFulfillments[0] = new FulfillmentComponent[](1);
-        extraData.offerFulfillments[0][0].orderIndex = 0;
-        extraData.offerFulfillments[0][0].itemIndex = 0;
-
-        extraData.offerFulfillments[1] = new FulfillmentComponent[](1);
-        extraData.offerFulfillments[1][0].orderIndex = 1;
-        extraData.offerFulfillments[1][0].itemIndex = 0;
-
-        extraData.considerationFulfillments = new FulfillmentComponent[][](4);
-
-        extraData.considerationFulfillments[0] = new FulfillmentComponent[](1);
-        extraData.considerationFulfillments[0][0].orderIndex = 0;
-        extraData.considerationFulfillments[0][0].itemIndex = 0;
-
-        extraData.considerationFulfillments[1] = new FulfillmentComponent[](1);
-        extraData.considerationFulfillments[1][0].orderIndex = 1;
-        extraData.considerationFulfillments[1][0].itemIndex = 0;
-
-        extraData.considerationFulfillments[2] = new FulfillmentComponent[](2);
-        extraData.considerationFulfillments[2][0].orderIndex = 0;
-        extraData.considerationFulfillments[2][0].itemIndex = 1;
-        extraData.considerationFulfillments[2][1].orderIndex = 1;
-        extraData.considerationFulfillments[2][1].itemIndex = 1;
-
-        extraData.considerationFulfillments[3] = new FulfillmentComponent[](2);
-        extraData.considerationFulfillments[3][0].orderIndex = 0;
-        extraData.considerationFulfillments[3][0].itemIndex = 2;
-        extraData.considerationFulfillments[3][1].orderIndex = 1;
-        extraData.considerationFulfillments[3][1].itemIndex = 2;
+        extraData.offerFulfillments = validMultipleOfferFulfillments();
+        extraData.considerationFulfillments = validMultipleConsiderationFulfillments();
 
         return abi.encode(extraData);
     }
