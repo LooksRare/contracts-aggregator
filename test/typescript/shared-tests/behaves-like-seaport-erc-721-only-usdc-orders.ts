@@ -45,8 +45,6 @@ export default function behavesLikeSeaportERC721OnlyUSDCOrders(isAtomic: boolean
 
     // Doesn't look good here but the buyer is the first address, meaning the contract deployer/owner
     await proxy.connect(buyer).approve(USDC);
-
-    // Doesn't look good here but the buyer is the first address, meaning the contract deployer/owner
     await proxy.connect(buyer).setFeeBp(250);
     await proxy.connect(buyer).setFeeRecipient(protocolFeeRecipient.address);
 
