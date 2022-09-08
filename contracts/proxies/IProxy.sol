@@ -6,6 +6,7 @@ import {BasicOrder, TokenTransfer} from "../libraries/OrderStructs.sol";
 interface IProxy {
     error FeeTooHigh();
     error InvalidOrderLength();
+    error UncallableFunction();
     error ZeroAddress();
 
     /**
