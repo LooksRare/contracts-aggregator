@@ -86,41 +86,23 @@ export default function behavesLikeSeaportMultipleCurrenciesRandomOrderFees(isAt
 
   const priceAfterFee = (priceBeforeFee: BigNumber) => priceBeforeFee.mul(10250).div(10000);
 
-  const priceInETH = () => {
+  const priceInETHBeforeFees = () => {
     const ethPriceOneBeforeFee = combineConsiderationAmount(ethOrders()[0].parameters.consideration);
-    const ethPriceOne = priceAfterFee(ethPriceOneBeforeFee);
     const ethPriceTwoBeforeFee = combineConsiderationAmount(ethOrders()[1].parameters.consideration);
-    const ethPriceTwo = priceAfterFee(ethPriceTwoBeforeFee);
-    return ethPriceOne.add(ethPriceTwo);
+    return ethPriceOneBeforeFee.add(ethPriceTwoBeforeFee);
   };
 
-  const priceInUSDC = () => {
+  const priceInUSDCBeforeFees = () => {
     const usdcPriceOneBeforeFee = combineConsiderationAmount(usdcOrders()[0].parameters.consideration);
-    const usdcPriceOne = priceAfterFee(usdcPriceOneBeforeFee);
     const usdcPriceTwoBeforeFee = combineConsiderationAmount(usdcOrders()[1].parameters.consideration);
-    const usdcPriceTwo = priceAfterFee(usdcPriceTwoBeforeFee);
-    return usdcPriceOne.add(usdcPriceTwo);
+    return usdcPriceOneBeforeFee.add(usdcPriceTwoBeforeFee);
   };
 
-  const ethFees = () => {
-    const ethOrderOne = ethOrders()[0];
-    const ethOrderTwo = ethOrders()[1];
-    const ethPriceOneBeforeFee = combineConsiderationAmount(ethOrderOne.parameters.consideration);
-    const ethPriceOne = priceAfterFee(ethPriceOneBeforeFee);
-    const ethPriceTwoBeforeFee = combineConsiderationAmount(ethOrderTwo.parameters.consideration);
-    const ethPriceTwo = priceAfterFee(ethPriceTwoBeforeFee);
-    return ethPriceOne.sub(ethPriceOneBeforeFee).add(ethPriceTwo.sub(ethPriceTwoBeforeFee));
-  };
+  const priceInETH = () => priceAfterFee(priceInETHBeforeFees());
+  const priceInUSDC = () => priceAfterFee(priceInUSDCBeforeFees());
 
-  const usdcFees = () => {
-    const usdcOrderOne = usdcOrders()[0];
-    const usdcOrderTwo = usdcOrders()[1];
-    const usdcPriceOneBeforeFee = combineConsiderationAmount(usdcOrderOne.parameters.consideration);
-    const usdcPriceOne = priceAfterFee(usdcPriceOneBeforeFee);
-    const usdcPriceTwoBeforeFee = combineConsiderationAmount(usdcOrderTwo.parameters.consideration);
-    const usdcPriceTwo = priceAfterFee(usdcPriceTwoBeforeFee);
-    return usdcPriceOne.sub(usdcPriceOneBeforeFee).add(usdcPriceTwo.sub(usdcPriceTwoBeforeFee));
-  };
+  const ethFees = () => priceInETH().sub(priceInETHBeforeFees());
+  const usdcFees = () => priceInUSDC().sub(priceInUSDCBeforeFees());
 
   describe("Execution order: USDC - USDC - ETH - ETH", async function () {
     it("Should be able to charge a fee", async function () {
@@ -129,11 +111,8 @@ export default function behavesLikeSeaportMultipleCurrenciesRandomOrderFees(isAt
 
       const [, protocolFeeRecipient] = await ethers.getSigners();
 
-      const usdcOrderOne = usdcOrders()[0];
-      const usdcOrderTwo = usdcOrders()[1];
-
-      const ethOrderOne = ethOrders()[0];
-      const ethOrderTwo = ethOrders()[1];
+      const [usdcOrderOne, usdcOrderTwo] = usdcOrders();
+      const [ethOrderOne, ethOrderTwo] = ethOrders();
 
       // USDC
       const usdcPriceOneBeforeFee = combineConsiderationAmount(usdcOrderOne.parameters.consideration);
