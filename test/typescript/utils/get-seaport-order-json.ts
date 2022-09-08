@@ -1,7 +1,7 @@
 import SeaportOrder from "../interfaces/seaport/order";
 import { BigNumber } from "ethers";
 
-interface OrderJson {
+export interface OrderJson {
   price: BigNumber;
   signer: string;
   collection: string;
