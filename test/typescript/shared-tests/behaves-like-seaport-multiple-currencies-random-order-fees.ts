@@ -122,11 +122,9 @@ export default function behavesLikeSeaportMultipleCurrenciesRandomOrderFees(isAt
       const [usdcOrderOne, usdcOrderTwo] = usdcOrders();
       const [ethOrderOne, ethOrderTwo] = ethOrders();
 
-      // USDC
       const usdcPriceOneBeforeFee = combineConsiderationAmount(usdcOrderOne.parameters.consideration);
       const usdcPriceTwoBeforeFee = combineConsiderationAmount(usdcOrderTwo.parameters.consideration);
 
-      // ETH
       const ethPriceOneBeforeFee = combineConsiderationAmount(ethOrderOne.parameters.consideration);
       const ethPriceTwoBeforeFee = combineConsiderationAmount(ethOrderTwo.parameters.consideration);
 
@@ -150,6 +148,69 @@ export default function behavesLikeSeaportMultipleCurrenciesRandomOrderFees(isAt
             getSeaportOrderExtraData(usdcOrderTwo),
             getSeaportOrderExtraData(ethOrderOne),
             getSeaportOrderExtraData(ethOrderTwo),
+          ],
+          extraData: isAtomic ? encodedExtraData() : ethers.constants.HashZero,
+          tokenTransfers,
+        },
+      ];
+
+      const usdc = await ethers.getContractAt("IERC20", USDC);
+
+      const feeRecipientUSDCBalanceBefore = await usdc.balanceOf(protocolFeeRecipient.address);
+      const feeRecipientEthBalanceBefore = await getBalance(protocolFeeRecipient.address);
+
+      const tx = await aggregator
+        .connect(buyer)
+        .execute(tokenTransfers, tradeData, buyer.address, isAtomic, { value: priceInETH() });
+      const receipt = await tx.wait();
+
+      const feeRecipientUSDCBalanceAfter = await usdc.balanceOf(protocolFeeRecipient.address);
+      const feeRecipientEthBalanceAfter = await getBalance(protocolFeeRecipient.address);
+
+      expect(feeRecipientUSDCBalanceAfter.sub(feeRecipientUSDCBalanceBefore)).to.equal(usdcFees());
+      expect(feeRecipientEthBalanceAfter.sub(feeRecipientEthBalanceBefore)).to.equal(ethFees());
+
+      validateSweepEvent(receipt, buyer.address, 1, 1);
+      await expectBAYCToHaveChangedHands(bayc, buyer.address);
+    });
+  });
+
+  describe("Execution order: ETH - ETH - USDC - USDC", async function () {
+    it("Should be able to charge a fee", async function () {
+      const { aggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(deploySeaportFixture);
+      const { getBalance } = ethers.provider;
+
+      const [, protocolFeeRecipient] = await ethers.getSigners();
+
+      const [usdcOrderOne, usdcOrderTwo] = usdcOrders();
+      const [ethOrderOne, ethOrderTwo] = ethOrders();
+
+      const usdcPriceOneBeforeFee = combineConsiderationAmount(usdcOrderOne.parameters.consideration);
+      const usdcPriceTwoBeforeFee = combineConsiderationAmount(usdcOrderTwo.parameters.consideration);
+
+      const ethPriceOneBeforeFee = combineConsiderationAmount(ethOrderOne.parameters.consideration);
+      const ethPriceTwoBeforeFee = combineConsiderationAmount(ethOrderTwo.parameters.consideration);
+
+      await setUp(aggregator, proxy, buyer, protocolFeeRecipient, priceInUSDC());
+
+      const tokenTransfers = [{ amount: priceInUSDC(), currency: USDC }];
+
+      const tradeData = [
+        {
+          proxy: proxy.address,
+          selector: functionSelector,
+          value: priceInETH(),
+          orders: [
+            getSeaportOrderJson(ethOrderOne, ethPriceOneBeforeFee),
+            getSeaportOrderJson(ethOrderTwo, ethPriceTwoBeforeFee),
+            getSeaportOrderJson(usdcOrderOne, usdcPriceOneBeforeFee),
+            getSeaportOrderJson(usdcOrderTwo, usdcPriceTwoBeforeFee),
+          ],
+          ordersExtraData: [
+            getSeaportOrderExtraData(ethOrderOne),
+            getSeaportOrderExtraData(ethOrderTwo),
+            getSeaportOrderExtraData(usdcOrderOne),
+            getSeaportOrderExtraData(usdcOrderTwo),
           ],
           extraData: isAtomic ? encodedExtraData() : ethers.constants.HashZero,
           tokenTransfers,
