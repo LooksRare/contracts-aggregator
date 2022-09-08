@@ -152,7 +152,6 @@ export default function behavesLikeSeaportERC721(isAtomic: boolean): void {
     const orderOne = getFixture("seaport", "bayc-2518-order.json");
     const orderTwo = getFixture("seaport", "bayc-8498-order.json");
 
-    // priceOne is in USDC and priceTwo is in ETH
     const priceOneBeforeFee = combineConsiderationAmount(orderOne.parameters.consideration);
     const priceOne = priceOneBeforeFee.mul(10250).div(10000); // Fee
     const priceTwoBeforeFee = combineConsiderationAmount(orderTwo.parameters.consideration);
