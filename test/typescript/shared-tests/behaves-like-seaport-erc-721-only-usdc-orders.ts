@@ -59,7 +59,7 @@ export default function behavesLikeSeaportERC721OnlyUSDCOrders(isAtomic: boolean
         proxy: proxy.address,
         selector: functionSelector,
         value: 0,
-        orders: [getSeaportOrderJson(orderOne, priceOneBeforeFee), getSeaportOrderJson(orderTwo, priceTwoBeforeFee)],
+        orders: [getSeaportOrderJson(orderOne), getSeaportOrderJson(orderTwo)],
         ordersExtraData: [getSeaportOrderExtraData(orderOne), getSeaportOrderExtraData(orderTwo)],
         extraData: isAtomic ? encodedExtraData() : ethers.constants.HashZero,
         tokenTransfers,

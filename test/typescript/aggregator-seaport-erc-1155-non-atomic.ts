@@ -29,7 +29,7 @@ describe("Aggregator", () => {
         proxy: proxy.address,
         selector: functionSelector,
         value: price,
-        orders: [getSeaportOrderJson(orderOne, priceOne), getSeaportOrderJson(orderTwo, priceTwo)],
+        orders: [getSeaportOrderJson(orderOne), getSeaportOrderJson(orderTwo)],
         ordersExtraData: [getSeaportOrderExtraData(orderOne), getSeaportOrderExtraData(orderTwo)],
         extraData: HashZero,
         tokenTransfers: [],

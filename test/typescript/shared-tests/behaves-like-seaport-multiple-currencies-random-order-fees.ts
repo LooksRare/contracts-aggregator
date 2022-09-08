@@ -141,12 +141,6 @@ export default function behavesLikeSeaportMultipleCurrenciesRandomOrderFees(isAt
       const [usdcOrderOne, usdcOrderTwo] = usdcOrders();
       const [ethOrderOne, ethOrderTwo] = ethOrders();
 
-      const usdcPriceOneBeforeFee = combineConsiderationAmount(usdcOrderOne.parameters.consideration);
-      const usdcPriceTwoBeforeFee = combineConsiderationAmount(usdcOrderTwo.parameters.consideration);
-
-      const ethPriceOneBeforeFee = combineConsiderationAmount(ethOrderOne.parameters.consideration);
-      const ethPriceTwoBeforeFee = combineConsiderationAmount(ethOrderTwo.parameters.consideration);
-
       await setUp(aggregator, proxy, buyer, protocolFeeRecipient, priceInUSDC());
 
       const tokenTransfers = [{ amount: priceInUSDC(), currency: USDC }];
@@ -157,16 +151,16 @@ export default function behavesLikeSeaportMultipleCurrenciesRandomOrderFees(isAt
 
       givenOrders.forEach((order: string) => {
         if (order === "ethOrderOne") {
-          orders.push(getSeaportOrderJson(ethOrderOne, ethPriceOneBeforeFee));
+          orders.push(getSeaportOrderJson(ethOrderOne));
           ordersExtraData.push(getSeaportOrderExtraData(ethOrderOne));
         } else if (order === "ethOrderTwo") {
-          orders.push(getSeaportOrderJson(ethOrderTwo, ethPriceTwoBeforeFee));
+          orders.push(getSeaportOrderJson(ethOrderTwo));
           ordersExtraData.push(getSeaportOrderExtraData(ethOrderTwo));
         } else if (order === "usdcOrderOne") {
-          orders.push(getSeaportOrderJson(usdcOrderOne, usdcPriceOneBeforeFee));
+          orders.push(getSeaportOrderJson(usdcOrderOne));
           ordersExtraData.push(getSeaportOrderExtraData(usdcOrderOne));
         } else if (order === "usdcOrderTwo") {
-          orders.push(getSeaportOrderJson(usdcOrderTwo, usdcPriceTwoBeforeFee));
+          orders.push(getSeaportOrderJson(usdcOrderTwo));
           ordersExtraData.push(getSeaportOrderExtraData(usdcOrderTwo));
         }
       });
