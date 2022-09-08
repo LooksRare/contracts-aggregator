@@ -14,6 +14,7 @@ interface OrderJson {
   signature: string;
 }
 
+// TODO: Just use combineConsiderationAmount for price?
 export default function getSeaportOrderJson(listing: SeaportOrder, price: BigNumber): OrderJson {
   const order = {
     price,
