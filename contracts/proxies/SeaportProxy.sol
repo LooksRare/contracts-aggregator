@@ -146,7 +146,8 @@ contract SeaportProxy is TokenLogic, IProxy {
             }
         }
 
-        uint256 ethFee = msg.value - (msg.value * 10000) / (10000 + feeBp);
+        address _feeRecipient = feeRecipient;
+        uint256 ethFee = _feeRecipient == address(0) ? 0 : msg.value - (msg.value * 10000) / (10000 + feeBp);
 
         (bool[] memory availableOrders, ) = marketplace.fulfillAvailableAdvancedOrders{value: msg.value - ethFee}(
             advancedOrders,
@@ -165,9 +166,9 @@ contract SeaportProxy is TokenLogic, IProxy {
             }
         }
 
-        if (feeRecipient != address(0)) {
+        if (_feeRecipient != address(0)) {
             _handleAtomicOrdersERC20OrdersFees(orders);
-            if (ethFee > 0) _transferETH(feeRecipient, ethFee);
+            if (ethFee > 0) _transferETH(_feeRecipient, ethFee);
         }
     }
 
