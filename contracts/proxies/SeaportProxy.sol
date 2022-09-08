@@ -251,7 +251,7 @@ contract SeaportProxy is TokenLogic, IProxy {
             }
         }
 
-        if (fee > 0 && feeRecipient != address(0)) {
+        if (fee > 0) {
             if (lastOrderCurrency == address(0)) {
                 _transferETH(feeRecipient, fee);
             } else {
