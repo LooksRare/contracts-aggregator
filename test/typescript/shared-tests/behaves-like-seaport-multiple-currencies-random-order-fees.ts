@@ -104,6 +104,14 @@ export default function behavesLikeSeaportMultipleCurrenciesRandomOrderFees(isAt
   const ethFees = () => priceInETH().sub(priceInETHBeforeFees());
   const usdcFees = () => priceInUSDC().sub(priceInUSDCBeforeFees());
 
+  const expectBAYCToHaveChangedHands = async (bayc: Contract, buyer: string): Promise<void> => {
+    expect(await bayc.balanceOf(buyer)).to.equal(4);
+    expect(await bayc.ownerOf(9948)).to.equal(buyer);
+    expect(await bayc.ownerOf(8350)).to.equal(buyer);
+    expect(await bayc.ownerOf(9357)).to.equal(buyer);
+    expect(await bayc.ownerOf(9477)).to.equal(buyer);
+  };
+
   describe("Execution order: USDC - USDC - ETH - ETH", async function () {
     it("Should be able to charge a fee", async function () {
       const { aggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(deploySeaportFixture);
@@ -165,12 +173,7 @@ export default function behavesLikeSeaportMultipleCurrenciesRandomOrderFees(isAt
       expect(feeRecipientEthBalanceAfter.sub(feeRecipientEthBalanceBefore)).to.equal(ethFees());
 
       validateSweepEvent(receipt, buyer.address, 1, 1);
-
-      expect(await bayc.balanceOf(buyer.address)).to.equal(4);
-      expect(await bayc.ownerOf(9948)).to.equal(buyer.address);
-      expect(await bayc.ownerOf(8350)).to.equal(buyer.address);
-      expect(await bayc.ownerOf(9357)).to.equal(buyer.address);
-      expect(await bayc.ownerOf(9477)).to.equal(buyer.address);
+      await expectBAYCToHaveChangedHands(bayc, buyer.address);
     });
   });
 }
