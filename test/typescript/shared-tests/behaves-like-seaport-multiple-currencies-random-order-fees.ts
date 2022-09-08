@@ -86,6 +86,42 @@ export default function behavesLikeSeaportMultipleCurrenciesRandomOrderFees(isAt
 
   const priceAfterFee = (priceBeforeFee: BigNumber) => priceBeforeFee.mul(10250).div(10000);
 
+  const priceInETH = () => {
+    const ethPriceOneBeforeFee = combineConsiderationAmount(ethOrders()[0].parameters.consideration);
+    const ethPriceOne = priceAfterFee(ethPriceOneBeforeFee);
+    const ethPriceTwoBeforeFee = combineConsiderationAmount(ethOrders()[1].parameters.consideration);
+    const ethPriceTwo = priceAfterFee(ethPriceTwoBeforeFee);
+    return ethPriceOne.add(ethPriceTwo);
+  };
+
+  const priceInUSDC = () => {
+    const usdcPriceOneBeforeFee = combineConsiderationAmount(usdcOrders()[0].parameters.consideration);
+    const usdcPriceOne = priceAfterFee(usdcPriceOneBeforeFee);
+    const usdcPriceTwoBeforeFee = combineConsiderationAmount(usdcOrders()[1].parameters.consideration);
+    const usdcPriceTwo = priceAfterFee(usdcPriceTwoBeforeFee);
+    return usdcPriceOne.add(usdcPriceTwo);
+  };
+
+  const ethFees = () => {
+    const ethOrderOne = ethOrders()[0];
+    const ethOrderTwo = ethOrders()[1];
+    const ethPriceOneBeforeFee = combineConsiderationAmount(ethOrderOne.parameters.consideration);
+    const ethPriceOne = priceAfterFee(ethPriceOneBeforeFee);
+    const ethPriceTwoBeforeFee = combineConsiderationAmount(ethOrderTwo.parameters.consideration);
+    const ethPriceTwo = priceAfterFee(ethPriceTwoBeforeFee);
+    return ethPriceOne.sub(ethPriceOneBeforeFee).add(ethPriceTwo.sub(ethPriceTwoBeforeFee));
+  };
+
+  const usdcFees = () => {
+    const usdcOrderOne = usdcOrders()[0];
+    const usdcOrderTwo = usdcOrders()[1];
+    const usdcPriceOneBeforeFee = combineConsiderationAmount(usdcOrderOne.parameters.consideration);
+    const usdcPriceOne = priceAfterFee(usdcPriceOneBeforeFee);
+    const usdcPriceTwoBeforeFee = combineConsiderationAmount(usdcOrderTwo.parameters.consideration);
+    const usdcPriceTwo = priceAfterFee(usdcPriceTwoBeforeFee);
+    return usdcPriceOne.sub(usdcPriceOneBeforeFee).add(usdcPriceTwo.sub(usdcPriceTwoBeforeFee));
+  };
+
   describe("Execution order: USDC - USDC - ETH - ETH", async function () {
     it("Should be able to charge a fee", async function () {
       const { aggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(deploySeaportFixture);
@@ -101,27 +137,21 @@ export default function behavesLikeSeaportMultipleCurrenciesRandomOrderFees(isAt
 
       // USDC
       const usdcPriceOneBeforeFee = combineConsiderationAmount(usdcOrderOne.parameters.consideration);
-      const usdcPriceOne = priceAfterFee(usdcPriceOneBeforeFee);
       const usdcPriceTwoBeforeFee = combineConsiderationAmount(usdcOrderTwo.parameters.consideration);
-      const usdcPriceTwo = priceAfterFee(usdcPriceTwoBeforeFee);
-      const priceInUSDC = usdcPriceOne.add(usdcPriceTwo);
 
       // ETH
       const ethPriceOneBeforeFee = combineConsiderationAmount(ethOrderOne.parameters.consideration);
-      const ethPriceOne = priceAfterFee(ethPriceOneBeforeFee);
       const ethPriceTwoBeforeFee = combineConsiderationAmount(ethOrderTwo.parameters.consideration);
-      const ethPriceTwo = priceAfterFee(ethPriceTwoBeforeFee);
-      const priceInETH = ethPriceOne.add(ethPriceTwo);
 
-      await setUp(aggregator, proxy, buyer, protocolFeeRecipient, priceInUSDC);
+      await setUp(aggregator, proxy, buyer, protocolFeeRecipient, priceInUSDC());
 
-      const tokenTransfers = [{ amount: priceInUSDC, currency: USDC }];
+      const tokenTransfers = [{ amount: priceInUSDC(), currency: USDC }];
 
       const tradeData = [
         {
           proxy: proxy.address,
           selector: functionSelector,
-          value: priceInETH,
+          value: priceInETH(),
           orders: [
             getSeaportOrderJson(usdcOrderOne, usdcPriceOneBeforeFee),
             getSeaportOrderJson(usdcOrderTwo, usdcPriceTwoBeforeFee),
@@ -146,18 +176,14 @@ export default function behavesLikeSeaportMultipleCurrenciesRandomOrderFees(isAt
 
       const tx = await aggregator
         .connect(buyer)
-        .execute(tokenTransfers, tradeData, buyer.address, isAtomic, { value: priceInETH });
+        .execute(tokenTransfers, tradeData, buyer.address, isAtomic, { value: priceInETH() });
       const receipt = await tx.wait();
 
       const feeRecipientUSDCBalanceAfter = await usdc.balanceOf(protocolFeeRecipient.address);
       const feeRecipientEthBalanceAfter = await getBalance(protocolFeeRecipient.address);
 
-      expect(feeRecipientUSDCBalanceAfter.sub(feeRecipientUSDCBalanceBefore)).to.equal(
-        usdcPriceOne.sub(usdcPriceOneBeforeFee).add(usdcPriceTwo.sub(usdcPriceTwoBeforeFee))
-      );
-      expect(feeRecipientEthBalanceAfter.sub(feeRecipientEthBalanceBefore)).to.equal(
-        ethPriceOne.sub(ethPriceOneBeforeFee).add(ethPriceTwo.sub(ethPriceTwoBeforeFee))
-      );
+      expect(feeRecipientUSDCBalanceAfter.sub(feeRecipientUSDCBalanceBefore)).to.equal(usdcFees());
+      expect(feeRecipientEthBalanceAfter.sub(feeRecipientEthBalanceBefore)).to.equal(ethFees());
 
       validateSweepEvent(receipt, buyer.address, 1, 1);
 
