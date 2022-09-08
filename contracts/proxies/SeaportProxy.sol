@@ -188,9 +188,7 @@ contract SeaportProxy is TokenLogic, IProxy {
                 if (currency == lastOrderCurrency) {
                     fee += orderFee;
                 } else {
-                    if (fee > 0) {
-                        _executeERC20DirectTransfer(lastOrderCurrency, feeRecipient, fee);
-                    }
+                    if (fee > 0) _executeERC20DirectTransfer(lastOrderCurrency, feeRecipient, fee);
                     fee = orderFee;
                     lastOrderCurrency = currency;
                 }
@@ -201,9 +199,7 @@ contract SeaportProxy is TokenLogic, IProxy {
             }
         }
 
-        if (fee > 0) {
-            _executeERC20DirectTransfer(lastOrderCurrency, feeRecipient, fee);
-        }
+        if (fee > 0) _executeERC20DirectTransfer(lastOrderCurrency, feeRecipient, fee);
     }
 
     function _executeNonAtomicOrders(
