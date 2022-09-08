@@ -9,6 +9,8 @@ import validateSweepEvent from "../utils/validate-sweep-event";
 import { expect } from "chai";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import airdropUSDC from "../utils/airdrop-usdc";
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { BigNumber, Contract } from "ethers";
 
 const encodedExtraData = () => {
   const abiCoder = ethers.utils.defaultAbiCoder;
@@ -56,6 +58,34 @@ const encodedExtraData = () => {
 };
 
 export default function behavesLikeSeaportMultipleCurrenciesRandomOrderFees(isAtomic: boolean): void {
+  const setUp = async (
+    aggregator: Contract,
+    proxy: Contract,
+    buyer: SignerWithAddress,
+    protocolFeeRecipient: SignerWithAddress,
+    usdcAirdropAmount: BigNumber
+  ): Promise<void> => {
+    // Doesn't look good here but the buyer is the first address, meaning the contract deployer/owner
+    await proxy.connect(buyer).approve(USDC);
+    await proxy.connect(buyer).setFeeBp(250);
+    await proxy.connect(buyer).setFeeRecipient(protocolFeeRecipient.address);
+
+    await airdropUSDC(buyer.address, usdcAirdropAmount);
+
+    const usdc = await ethers.getContractAt("IERC20", USDC);
+    await usdc.connect(buyer).approve(aggregator.address, usdcAirdropAmount);
+  };
+
+  const usdcOrders = () => {
+    return [getFixture("seaport", "bayc-9948-order.json"), getFixture("seaport", "bayc-8350-order.json")];
+  };
+
+  const ethOrders = () => {
+    return [getFixture("seaport", "bayc-9357-order.json"), getFixture("seaport", "bayc-9477-order.json")];
+  };
+
+  const priceAfterFee = (priceBeforeFee: BigNumber) => priceBeforeFee.mul(10250).div(10000);
+
   describe("Execution order: USDC - USDC - ETH - ETH", async function () {
     it("Should be able to charge a fee", async function () {
       const { aggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(deploySeaportFixture);
@@ -63,37 +93,27 @@ export default function behavesLikeSeaportMultipleCurrenciesRandomOrderFees(isAt
 
       const [, protocolFeeRecipient] = await ethers.getSigners();
 
-      const orderOne = getFixture("seaport", "bayc-9948-order.json");
-      const orderTwo = getFixture("seaport", "bayc-8350-order.json");
+      const usdcOrderOne = usdcOrders()[0];
+      const usdcOrderTwo = usdcOrders()[1];
 
-      const orderThree = getFixture("seaport", "bayc-9357-order.json");
-      const orderFour = getFixture("seaport", "bayc-9477-order.json");
+      const ethOrderOne = ethOrders()[0];
+      const ethOrderTwo = ethOrders()[1];
 
       // USDC
-      const priceOneBeforeFee = combineConsiderationAmount(orderOne.parameters.consideration);
-      const priceOne = priceOneBeforeFee.mul(10250).div(10000); // Fee
-      const priceTwoBeforeFee = combineConsiderationAmount(orderTwo.parameters.consideration);
-      const priceTwo = priceTwoBeforeFee.mul(10250).div(10000); // Fee
-      const priceInUSDC = priceOne.add(priceTwo);
+      const usdcPriceOneBeforeFee = combineConsiderationAmount(usdcOrderOne.parameters.consideration);
+      const usdcPriceOne = priceAfterFee(usdcPriceOneBeforeFee);
+      const usdcPriceTwoBeforeFee = combineConsiderationAmount(usdcOrderTwo.parameters.consideration);
+      const usdcPriceTwo = priceAfterFee(usdcPriceTwoBeforeFee);
+      const priceInUSDC = usdcPriceOne.add(usdcPriceTwo);
 
       // ETH
-      const priceThreeBeforeFee = combineConsiderationAmount(orderThree.parameters.consideration);
-      const priceThree = priceThreeBeforeFee.mul(10250).div(10000); // Fee
-      const priceFourBeforeFee = combineConsiderationAmount(orderFour.parameters.consideration);
-      const priceFour = priceFourBeforeFee.mul(10250).div(10000); // Fee
-      const priceInETH = priceThree.add(priceFour);
+      const ethPriceOneBeforeFee = combineConsiderationAmount(ethOrderOne.parameters.consideration);
+      const ethPriceOne = priceAfterFee(ethPriceOneBeforeFee);
+      const ethPriceTwoBeforeFee = combineConsiderationAmount(ethOrderTwo.parameters.consideration);
+      const ethPriceTwo = priceAfterFee(ethPriceTwoBeforeFee);
+      const priceInETH = ethPriceOne.add(ethPriceTwo);
 
-      // Doesn't look good here but the buyer is the first address, meaning the contract deployer/owner
-      await proxy.connect(buyer).approve(USDC);
-
-      // Doesn't look good here but the buyer is the first address, meaning the contract deployer/owner
-      await proxy.connect(buyer).setFeeBp(250);
-      await proxy.connect(buyer).setFeeRecipient(protocolFeeRecipient.address);
-
-      await airdropUSDC(buyer.address, priceInUSDC);
-
-      const usdc = await ethers.getContractAt("IERC20", USDC);
-      await usdc.connect(buyer).approve(aggregator.address, priceInUSDC);
+      await setUp(aggregator, proxy, buyer, protocolFeeRecipient, priceInUSDC);
 
       const tokenTransfers = [{ amount: priceInUSDC, currency: USDC }];
 
@@ -103,21 +123,23 @@ export default function behavesLikeSeaportMultipleCurrenciesRandomOrderFees(isAt
           selector: functionSelector,
           value: priceInETH,
           orders: [
-            getSeaportOrderJson(orderOne, priceOneBeforeFee),
-            getSeaportOrderJson(orderTwo, priceTwoBeforeFee),
-            getSeaportOrderJson(orderThree, priceThreeBeforeFee),
-            getSeaportOrderJson(orderFour, priceFourBeforeFee),
+            getSeaportOrderJson(usdcOrderOne, usdcPriceOneBeforeFee),
+            getSeaportOrderJson(usdcOrderTwo, usdcPriceTwoBeforeFee),
+            getSeaportOrderJson(ethOrderOne, ethPriceOneBeforeFee),
+            getSeaportOrderJson(ethOrderTwo, ethPriceTwoBeforeFee),
           ],
           ordersExtraData: [
-            getSeaportOrderExtraData(orderOne),
-            getSeaportOrderExtraData(orderTwo),
-            getSeaportOrderExtraData(orderThree),
-            getSeaportOrderExtraData(orderFour),
+            getSeaportOrderExtraData(usdcOrderOne),
+            getSeaportOrderExtraData(usdcOrderTwo),
+            getSeaportOrderExtraData(ethOrderOne),
+            getSeaportOrderExtraData(ethOrderTwo),
           ],
           extraData: isAtomic ? encodedExtraData() : ethers.constants.HashZero,
           tokenTransfers,
         },
       ];
+
+      const usdc = await ethers.getContractAt("IERC20", USDC);
 
       const feeRecipientUSDCBalanceBefore = await usdc.balanceOf(protocolFeeRecipient.address);
       const feeRecipientEthBalanceBefore = await getBalance(protocolFeeRecipient.address);
@@ -131,10 +153,10 @@ export default function behavesLikeSeaportMultipleCurrenciesRandomOrderFees(isAt
       const feeRecipientEthBalanceAfter = await getBalance(protocolFeeRecipient.address);
 
       expect(feeRecipientUSDCBalanceAfter.sub(feeRecipientUSDCBalanceBefore)).to.equal(
-        priceOne.sub(priceOneBeforeFee).add(priceTwo.sub(priceTwoBeforeFee))
+        usdcPriceOne.sub(usdcPriceOneBeforeFee).add(usdcPriceTwo.sub(usdcPriceTwoBeforeFee))
       );
       expect(feeRecipientEthBalanceAfter.sub(feeRecipientEthBalanceBefore)).to.equal(
-        priceThree.sub(priceThreeBeforeFee).add(priceFour.sub(priceFourBeforeFee))
+        ethPriceOne.sub(ethPriceOneBeforeFee).add(ethPriceTwo.sub(ethPriceTwoBeforeFee))
       );
 
       validateSweepEvent(receipt, buyer.address, 1, 1);
