@@ -12,8 +12,48 @@ import airdropUSDC from "../utils/airdrop-usdc";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { BigNumber, Contract } from "ethers";
 
-const encodedExtraData = () => {
+const encodedExtraData = (givenOrders: Array<string>): string => {
   const abiCoder = ethers.utils.defaultAbiCoder;
+  let feesOne, feesTwo, royaltyOne, royaltyTwo;
+  if (
+    (givenOrders[0].match(/eth/) && givenOrders[1].match(/eth/)) ||
+    (givenOrders[0].match(/usdc/) && givenOrders[1].match(/usdc/))
+  ) {
+    feesOne = [
+      { orderIndex: 0, itemIndex: 1 },
+      { orderIndex: 1, itemIndex: 1 },
+    ];
+    feesTwo = [
+      { orderIndex: 2, itemIndex: 1 },
+      { orderIndex: 3, itemIndex: 1 },
+    ];
+    royaltyOne = [
+      { orderIndex: 0, itemIndex: 2 },
+      { orderIndex: 1, itemIndex: 2 },
+    ];
+    royaltyTwo = [
+      { orderIndex: 2, itemIndex: 2 },
+      { orderIndex: 3, itemIndex: 2 },
+    ];
+  } else {
+    feesOne = [
+      { orderIndex: 0, itemIndex: 1 },
+      { orderIndex: 2, itemIndex: 1 },
+    ];
+    feesTwo = [
+      { orderIndex: 1, itemIndex: 1 },
+      { orderIndex: 3, itemIndex: 1 },
+    ];
+    royaltyOne = [
+      { orderIndex: 0, itemIndex: 2 },
+      { orderIndex: 2, itemIndex: 2 },
+    ];
+    royaltyTwo = [
+      { orderIndex: 1, itemIndex: 2 },
+      { orderIndex: 3, itemIndex: 2 },
+    ];
+  }
+
   return abiCoder.encode(
     [SEAPORT_EXTRA_DATA_SCHEMA],
     [
@@ -34,23 +74,11 @@ const encodedExtraData = () => {
           // seller four
           [{ orderIndex: 3, itemIndex: 0 }],
           // OpenSea: Fees
-          [
-            { orderIndex: 0, itemIndex: 1 },
-            { orderIndex: 1, itemIndex: 1 },
-          ],
-          [
-            { orderIndex: 2, itemIndex: 1 },
-            { orderIndex: 3, itemIndex: 1 },
-          ],
+          feesOne,
+          feesTwo,
           // royalty
-          [
-            { orderIndex: 0, itemIndex: 2 },
-            { orderIndex: 1, itemIndex: 2 },
-          ],
-          [
-            { orderIndex: 2, itemIndex: 2 },
-            { orderIndex: 3, itemIndex: 2 },
-          ],
+          royaltyOne,
+          royaltyTwo,
         ],
       },
     ]
@@ -151,7 +179,7 @@ export default function behavesLikeSeaportMultipleCurrenciesRandomOrderFees(isAt
           value: priceInETH(),
           orders,
           ordersExtraData,
-          extraData: isAtomic ? encodedExtraData() : ethers.constants.HashZero,
+          extraData: isAtomic ? encodedExtraData(givenOrders) : ethers.constants.HashZero,
           tokenTransfers,
         },
       ];
