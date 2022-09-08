@@ -212,10 +212,10 @@ contract SeaportProxy is TokenLogic, IProxy {
         address recipient
     ) private returns (uint256 executedCount) {
         CriteriaResolver[] memory criteriaResolver = new CriteriaResolver[](0);
-        uint256 ordersLength = orders.length;
         uint256 fee;
         address lastOrderCurrency;
-        for (uint256 i; i < ordersLength; ) {
+        address _feeRecipient = feeRecipient;
+        for (uint256 i; i < orders.length; ) {
             OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
             AdvancedOrder memory advancedOrder;
             advancedOrder.parameters = _populateParameters(orders[i], orderExtraData);
@@ -228,15 +228,15 @@ contract SeaportProxy is TokenLogic, IProxy {
             try marketplace.fulfillAdvancedOrder{value: price}(advancedOrder, criteriaResolver, bytes32(0), recipient) {
                 executedCount += 1;
 
-                if (feeRecipient != address(0)) {
+                if (_feeRecipient != address(0)) {
                     if (orders[i].currency == lastOrderCurrency) {
                         fee += (orders[i].price * feeBp) / 10000;
                     } else {
                         if (fee > 0) {
                             if (lastOrderCurrency == address(0)) {
-                                _transferETH(feeRecipient, fee);
+                                _transferETH(_feeRecipient, fee);
                             } else {
-                                _executeERC20DirectTransfer(lastOrderCurrency, feeRecipient, fee);
+                                _executeERC20DirectTransfer(lastOrderCurrency, _feeRecipient, fee);
                             }
                         }
 
@@ -253,9 +253,9 @@ contract SeaportProxy is TokenLogic, IProxy {
 
         if (fee > 0) {
             if (lastOrderCurrency == address(0)) {
-                _transferETH(feeRecipient, fee);
+                _transferETH(_feeRecipient, fee);
             } else {
-                _executeERC20DirectTransfer(lastOrderCurrency, feeRecipient, fee);
+                _executeERC20DirectTransfer(lastOrderCurrency, _feeRecipient, fee);
             }
         }
     }
