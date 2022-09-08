@@ -65,7 +65,7 @@ describe("LooksRareAggregator", () => {
 
     const totalValue = priceOne.add(priceTwo).add(priceThree).add(priceFour);
 
-    const tx = await aggregator.execute(
+    const tx = await aggregator.connect(buyer).execute(
       [],
       [
         {
@@ -176,7 +176,7 @@ describe("LooksRareAggregator", () => {
       signature: joinSignature(orderOne.orders[0]),
     };
 
-    const tx = await aggregator.execute(
+    const tx = await aggregator.connect(buyer).execute(
       [],
       [
         {
@@ -234,7 +234,7 @@ describe("LooksRareAggregator", () => {
     };
 
     await expect(
-      aggregator.execute(
+      aggregator.connect(buyer).execute(
         [],
         [
           {

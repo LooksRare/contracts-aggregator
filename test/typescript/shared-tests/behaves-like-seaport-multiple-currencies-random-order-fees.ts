@@ -93,10 +93,9 @@ export default function behavesLikeSeaportMultipleCurrenciesRandomOrderFees(isAt
     protocolFeeRecipient: SignerWithAddress,
     usdcAirdropAmount: BigNumber
   ): Promise<void> => {
-    // Doesn't look good here but the buyer is the first address, meaning the contract deployer/owner
-    await proxy.connect(buyer).approve(USDC);
-    await proxy.connect(buyer).setFeeBp(250);
-    await proxy.connect(buyer).setFeeRecipient(protocolFeeRecipient.address);
+    await proxy.approve(USDC);
+    await proxy.setFeeBp(250);
+    await proxy.setFeeRecipient(protocolFeeRecipient.address);
 
     await airdropUSDC(buyer.address, usdcAirdropAmount);
 

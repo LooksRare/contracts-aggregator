@@ -30,7 +30,7 @@ export default async function deploySeaportFixture(): Promise<SeaportFixture> {
   await aggregator.addFunction(proxy.address, functionSelector);
   await aggregator.approve(proxy.address, USDC);
 
-  const [buyer] = await ethers.getSigners();
+  const [, , buyer] = await ethers.getSigners();
 
   await ethers.provider.send("hardhat_setBalance", [
     buyer.address,

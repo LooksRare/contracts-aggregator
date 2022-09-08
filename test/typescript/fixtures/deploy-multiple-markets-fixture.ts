@@ -54,7 +54,7 @@ export default async function deployLooksRareFixture(): Promise<MultipleMarketsF
   const sudoswapFunctionSelector = await getSignature("SudoswapProxy.json", "execute");
   await aggregator.addFunction(sudoswapProxy.address, sudoswapFunctionSelector);
 
-  const [buyer] = await ethers.getSigners();
+  const [, , buyer] = await ethers.getSigners();
 
   await ethers.provider.send("hardhat_setBalance", [
     buyer.address,

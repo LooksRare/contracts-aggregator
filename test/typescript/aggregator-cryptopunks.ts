@@ -31,7 +31,7 @@ describe("LooksRareAggregator", () => {
       signature: HashZero,
     };
 
-    const tx = await aggregator.execute(
+    const tx = await aggregator.connect(buyer).execute(
       [],
       [
         {
@@ -170,7 +170,7 @@ describe("LooksRareAggregator", () => {
     const buyerBalanceBefore = await getBalance(buyer.address);
 
     await expect(
-      aggregator.execute(
+      aggregator.connect(buyer).execute(
         [],
         [
           {

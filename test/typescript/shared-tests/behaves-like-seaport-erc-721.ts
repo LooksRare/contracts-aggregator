@@ -157,11 +157,10 @@ export default function behavesLikeSeaportERC721(isAtomic: boolean): void {
     const priceOne = priceOneBeforeFee.mul(10250).div(10000); // Fee
     const priceTwoBeforeFee = combineConsiderationAmount(orderTwo.parameters.consideration);
     const priceTwo = priceTwoBeforeFee.mul(10250).div(10000); // Fee
-
-    // Doesn't look good here but the buyer is the first address, meaning the contract deployer/owner
-    await proxy.connect(buyer).setFeeBp(250);
-    await proxy.connect(buyer).setFeeRecipient(protocolFeeRecipient.address);
     const price = priceOne.add(priceTwo);
+
+    await proxy.setFeeBp(250);
+    await proxy.setFeeRecipient(protocolFeeRecipient.address);
 
     const tradeData = [
       {

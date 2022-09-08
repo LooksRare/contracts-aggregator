@@ -40,8 +40,7 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
     const priceOne = combineConsiderationAmount(orderOne.parameters.consideration);
     const priceTwo = combineConsiderationAmount(orderTwo.parameters.consideration);
 
-    // Doesn't look good here but the buyer is the first address, meaning the contract deployer/owner
-    await proxy.connect(buyer).approve(USDC);
+    await proxy.approve(USDC);
 
     await airdropUSDC(buyer.address, priceOne);
 
@@ -86,8 +85,7 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
     const priceOne = combineConsiderationAmount(orderOne.parameters.consideration);
     const priceTwo = combineConsiderationAmount(orderTwo.parameters.consideration);
 
-    // Doesn't look good here but the buyer is the first address, meaning the contract deployer/owner
-    await proxy.connect(buyer).approve(USDC);
+    await proxy.approve(USDC);
 
     const excess = ethers.utils.parseUnits("100", USDC_DECIMALS);
 
@@ -141,10 +139,9 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
     const priceTwoBeforeFee = combineConsiderationAmount(orderTwo.parameters.consideration);
     const priceTwo = priceTwoBeforeFee.mul(10250).div(10000); // Fee
 
-    // Doesn't look good here but the buyer is the first address, meaning the contract deployer/owner
-    await proxy.connect(buyer).setFeeBp(250);
-    await proxy.connect(buyer).setFeeRecipient(protocolFeeRecipient.address);
-    await proxy.connect(buyer).approve(USDC);
+    await proxy.setFeeBp(250);
+    await proxy.setFeeRecipient(protocolFeeRecipient.address);
+    await proxy.approve(USDC);
 
     await airdropUSDC(buyer.address, priceOne);
 

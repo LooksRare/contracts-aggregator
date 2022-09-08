@@ -28,7 +28,7 @@ export default async function deployLooksRareFixture(): Promise<LooksRareFixture
   const functionSelector = await getSignature("LooksRareProxy.json", "execute");
   await aggregator.addFunction(proxy.address, functionSelector);
 
-  const [buyer] = await ethers.getSigners();
+  const [, , buyer] = await ethers.getSigners();
 
   await ethers.provider.send("hardhat_setBalance", [
     buyer.address,
