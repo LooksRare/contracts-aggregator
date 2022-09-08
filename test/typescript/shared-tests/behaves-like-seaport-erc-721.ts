@@ -180,7 +180,7 @@ export default function behavesLikeSeaportERC721(isAtomic: boolean): void {
 
     const feeRecipientEthBalanceAfter = await getBalance(protocolFeeRecipient.address);
     expect(feeRecipientEthBalanceAfter.sub(feeRecipientEthBalanceBefore)).to.equal(
-      priceOne.sub(priceOneBeforeFee).add(priceTwo.sub(priceTwoBeforeFee))
+      price.sub(priceOneBeforeFee.add(priceTwoBeforeFee))
     );
 
     validateSweepEvent(receipt, buyer.address, 1, 1);
