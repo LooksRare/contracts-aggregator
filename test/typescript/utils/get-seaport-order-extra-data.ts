@@ -13,6 +13,8 @@ export default function getSeaportOrderExtraData(order: SeaportOrder): string {
     [SEAPORT_ORDER_EXTRA_DATA_SCHEMA],
     [
       {
+        numerator: order.numerator || 1,
+        denominator: order.denominator || 1,
         orderType: order.parameters.orderType,
         zone: order.parameters.zone,
         zoneHash: order.parameters.zoneHash,

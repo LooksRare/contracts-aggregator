@@ -27,6 +27,8 @@ contract SeaportProxy is TokenLogic, IProxy {
     }
 
     struct OrderExtraData {
+        uint120 numerator; // A fraction to attempt to fill
+        uint120 denominator; // The total size of the order
         OrderType orderType; // Seaport order type
         address zone; // A zone can cancel the order or restrict who can fulfill the order depending on the type
         bytes32 zoneHash; // An arbitrary 32-byte value that will be supplied to the zone when fulfilling restricted orders that the zone can utilize when making a determination on whether to authorize the order
@@ -116,8 +118,8 @@ contract SeaportProxy is TokenLogic, IProxy {
         for (uint256 i; i < ordersLength; ) {
             OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
             advancedOrders[i].parameters = _populateParameters(orders[i], orderExtraData);
-            advancedOrders[i].numerator = 1;
-            advancedOrders[i].denominator = 1;
+            advancedOrders[i].numerator = orderExtraData.numerator;
+            advancedOrders[i].denominator = orderExtraData.denominator;
             advancedOrders[i].signature = orders[i].signature;
 
             unchecked {
@@ -155,8 +157,8 @@ contract SeaportProxy is TokenLogic, IProxy {
             OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
             AdvancedOrder memory advancedOrder;
             advancedOrder.parameters = _populateParameters(orders[i], orderExtraData);
-            advancedOrder.numerator = 1;
-            advancedOrder.denominator = 1;
+            advancedOrder.numerator = orderExtraData.numerator;
+            advancedOrder.denominator = orderExtraData.denominator;
             advancedOrder.signature = orders[i].signature;
 
             uint256 price = orders[i].currency == address(0) ? orders[i].price : 0;
