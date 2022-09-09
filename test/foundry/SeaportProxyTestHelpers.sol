@@ -10,6 +10,27 @@ import {OrderType} from "../../contracts/libraries/seaport/ConsiderationEnums.so
 abstract contract SeaportProxyTestHelpers {
     address private constant BAYC = 0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D;
 
+    function validBAYCId9477Order() internal pure returns (BasicOrder memory order) {
+        order.signer = 0x2ce485fe158593B9f3D4b840f1e44E3b77c96741;
+        order.collection = BAYC;
+        order.collectionType = CollectionType.ERC721;
+
+        uint256[] memory tokenIds = new uint256[](1);
+        tokenIds[0] = 9477;
+        order.tokenIds = tokenIds;
+
+        uint256[] memory amounts = new uint256[](1);
+        amounts[0] = 1;
+        order.amounts = amounts;
+
+        order.price = 84 ether;
+        order.currency = address(0);
+        order.startTime = 1662563436;
+        order.endTime = 1665091508;
+        order
+            .signature = hex"b2616381d5c9b1569f88661a35b1899a6cbd1e4bdb4110c138073b3045d372c029b12f1ef561fd4d9bc8a5932348ad834ded1fd17668ae59fa5e0d4211bac1951c";
+    }
+
     function validBAYCId2518Order() internal pure returns (BasicOrder memory order) {
         order.signer = 0x7a277Cf6E2F3704425195caAe4148848c29Ff815;
         order.collection = BAYC;
@@ -50,6 +71,28 @@ abstract contract SeaportProxyTestHelpers {
         order.endTime = 1662303030;
         order
             .signature = hex"fcdc82cba99c19522af3692070e4649ff573d20f2550eb29f7a24b3c39da74bd6a6c5b8444a2139c529301a8da011af414342d304609f896580e12fbd94d387a1b";
+    }
+
+    function validBAYCId9477OrderExtraData() internal pure returns (bytes memory) {
+        AdditionalRecipient[] memory recipients = new AdditionalRecipient[](3);
+        recipients[0].recipient = payable(0x2ce485fe158593B9f3D4b840f1e44E3b77c96741);
+        recipients[0].amount = 70.585 ether;
+        recipients[1].recipient = payable(0x0000a26b00c1F0DF003000390027140000fAa719);
+        recipients[1].amount = 1.8575 ether;
+        recipients[2].recipient = payable(0xA858DDc0445d8131daC4d1DE01f834ffcbA52Ef1);
+        recipients[2].amount = 1.8575 ether;
+
+        SeaportProxy.OrderExtraData memory orderExtraData;
+        orderExtraData.numerator = 1;
+        orderExtraData.denominator = 1;
+        orderExtraData.orderType = OrderType.FULL_RESTRICTED;
+        orderExtraData.zone = 0x004C00500000aD104D7DBd00e3ae0A5C00560C00;
+        orderExtraData.zoneHash = bytes32(0);
+        orderExtraData.salt = 97387095972374677;
+        orderExtraData.conduitKey = 0x0000007b02230091a7ed01230072f7006a004d60a8d4e71d599b8104250f0000;
+        orderExtraData.recipients = recipients;
+
+        return abi.encode(orderExtraData);
     }
 
     function validBAYCId2518OrderExtraData() internal pure returns (bytes memory) {

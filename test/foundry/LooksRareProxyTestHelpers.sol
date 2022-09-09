@@ -42,4 +42,25 @@ abstract contract LooksRareProxyTestHelpers {
         orders[1]
             .signature = hex"146a8f500fea9cde68c339da9abe8654ffb60c5a80506532e3500d1edba687640519093ff36ab3a728c961fc763d6e6a107ed823cfa5bd45182cab8029dab5d21b";
     }
+
+    function validBAYCId9483Order() internal pure returns (BasicOrder[] memory orders) {
+        orders = new BasicOrder[](1);
+
+        uint256[] memory amounts = new uint256[](1);
+        amounts[0] = 1;
+
+        orders[0].signer = 0x17331428346E388f32013e6bEc0Aba29303857FD;
+        orders[0].collection = BAYC;
+        orders[0].collectionType = CollectionType.ERC721;
+        uint256[] memory tokenIds = new uint256[](1);
+        tokenIds[0] = 9483;
+        orders[0].tokenIds = tokenIds;
+        orders[0].amounts = amounts;
+        orders[0].price = 73.88 ether;
+        orders[0].currency = WETH;
+        orders[0].startTime = 1662683712;
+        orders[0].endTime = 1663288508;
+        orders[0]
+            .signature = hex"137b835f53750e28c2ca2c14686206fc1b5e44b47b22f619ae35ac7e661de1fa2d22c786fd897ad08ae30113d1a8804e2313b6410438ba9187e14e94ef25e4671c";
+    }
 }
