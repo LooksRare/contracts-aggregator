@@ -62,6 +62,7 @@ export default function behavesLikeSeaportERC721(isAtomic: boolean): void {
 
   it("is able to refund extra ETH paid (not trickled down to SeaportProxy)", async function () {
     const { aggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(deploySeaportFixture);
+    const { getBalance } = ethers.provider;
 
     const orderOne = getFixture("seaport", "bayc-2518-order.json");
     const orderTwo = getFixture("seaport", "bayc-8498-order.json");
@@ -82,7 +83,7 @@ export default function behavesLikeSeaportERC721(isAtomic: boolean): void {
       },
     ];
 
-    const buyerBalanceBefore = await ethers.provider.getBalance(buyer.address);
+    const buyerBalanceBefore = await getBalance(buyer.address);
 
     const tx = await aggregator
       .connect(buyer)
@@ -95,13 +96,14 @@ export default function behavesLikeSeaportERC721(isAtomic: boolean): void {
     expect(await bayc.balanceOf(buyer.address)).to.equal(2);
     expect(await bayc.ownerOf(2518)).to.equal(buyer.address);
     expect(await bayc.ownerOf(8498)).to.equal(buyer.address);
-    expect(await ethers.provider.getBalance(aggregator.address)).to.equal(0);
-    const buyerBalanceAfter = await ethers.provider.getBalance(buyer.address);
+    expect(await getBalance(aggregator.address)).to.equal(0);
+    const buyerBalanceAfter = await getBalance(buyer.address);
     expect(buyerBalanceBefore.sub(buyerBalanceAfter).sub(txFee)).to.equal(price);
   });
 
   it("is able to refund extra ETH paid (trickled down to SeaportProxy)", async function () {
     const { aggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(deploySeaportFixture);
+    const { getBalance } = ethers.provider;
 
     const orderOne = getFixture("seaport", "bayc-2518-order.json");
     const orderTwo = getFixture("seaport", "bayc-8498-order.json");
@@ -123,7 +125,7 @@ export default function behavesLikeSeaportERC721(isAtomic: boolean): void {
       },
     ];
 
-    const buyerBalanceBefore = await ethers.provider.getBalance(buyer.address);
+    const buyerBalanceBefore = await getBalance(buyer.address);
 
     const tx = await aggregator.connect(buyer).execute([], tradeData, buyer.address, isAtomic, { value: price });
     const receipt = await tx.wait();
@@ -135,9 +137,56 @@ export default function behavesLikeSeaportERC721(isAtomic: boolean): void {
     expect(await bayc.ownerOf(2518)).to.equal(buyer.address);
     expect(await bayc.ownerOf(8498)).to.equal(buyer.address);
     expect(await ethers.provider.getBalance(aggregator.address)).to.equal(0);
-    const buyerBalanceAfter = await ethers.provider.getBalance(buyer.address);
+    const buyerBalanceAfter = await getBalance(buyer.address);
     const actualPriceOne = combineConsiderationAmount(orderOne.parameters.consideration);
     const actualPriceTwo = combineConsiderationAmount(orderTwo.parameters.consideration);
     expect(buyerBalanceBefore.sub(buyerBalanceAfter).sub(txFee)).to.equal(actualPriceOne.add(actualPriceTwo));
+  });
+
+  it("Should be able to charge a fee", async function () {
+    const { aggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(deploySeaportFixture);
+    const { getBalance } = ethers.provider;
+
+    const [, protocolFeeRecipient] = await ethers.getSigners();
+
+    const orderOne = getFixture("seaport", "bayc-2518-order.json");
+    const orderTwo = getFixture("seaport", "bayc-8498-order.json");
+
+    const priceOneBeforeFee = combineConsiderationAmount(orderOne.parameters.consideration);
+    const priceOne = priceOneBeforeFee.mul(10250).div(10000); // Fee
+    const priceTwoBeforeFee = combineConsiderationAmount(orderTwo.parameters.consideration);
+    const priceTwo = priceTwoBeforeFee.mul(10250).div(10000); // Fee
+    const price = priceOne.add(priceTwo);
+
+    await proxy.setFeeBp(250);
+    await proxy.setFeeRecipient(protocolFeeRecipient.address);
+
+    const tradeData = [
+      {
+        proxy: proxy.address,
+        selector: functionSelector,
+        value: price,
+        orders: [getSeaportOrderJson(orderOne, priceOneBeforeFee), getSeaportOrderJson(orderTwo, priceTwoBeforeFee)],
+        ordersExtraData: [getSeaportOrderExtraData(orderOne), getSeaportOrderExtraData(orderTwo)],
+        extraData: isAtomic ? encodedExtraData() : ethers.constants.HashZero,
+        tokenTransfers: [],
+      },
+    ];
+
+    const feeRecipientEthBalanceBefore = await getBalance(protocolFeeRecipient.address);
+
+    const tx = await aggregator.connect(buyer).execute([], tradeData, buyer.address, isAtomic, { value: price });
+    const receipt = await tx.wait();
+
+    const feeRecipientEthBalanceAfter = await getBalance(protocolFeeRecipient.address);
+    expect(feeRecipientEthBalanceAfter.sub(feeRecipientEthBalanceBefore)).to.equal(
+      price.sub(priceOneBeforeFee.add(priceTwoBeforeFee))
+    );
+
+    validateSweepEvent(receipt, buyer.address, 1, 1);
+
+    expect(await bayc.balanceOf(buyer.address)).to.equal(2);
+    expect(await bayc.ownerOf(2518)).to.equal(buyer.address);
+    expect(await bayc.ownerOf(8498)).to.equal(buyer.address);
   });
 }

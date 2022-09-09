@@ -24,7 +24,7 @@ export default async function deploySudoswapFixture(): Promise<SudoswapFixture> 
   const functionSelector = await getSignature("SudoswapProxy.json", "execute");
   await aggregator.addFunction(proxy.address, functionSelector);
 
-  const [buyer] = await ethers.getSigners();
+  const [, , buyer] = await ethers.getSigners();
 
   await ethers.provider.send("hardhat_setBalance", [
     buyer.address,

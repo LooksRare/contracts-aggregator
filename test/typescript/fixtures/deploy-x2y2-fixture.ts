@@ -22,7 +22,7 @@ export default async function deployX2Y2Fixture(): Promise<X2Y2Fixture> {
   const proxyPlaceholder = await X2Y2Proxy.deploy(X2Y2);
   await proxyPlaceholder.deployed();
 
-  const [buyer, predefinedProxy] = await ethers.getSigners();
+  const [, predefinedProxy, buyer] = await ethers.getSigners();
 
   const proxyCode = await ethers.provider.getCode(proxyPlaceholder.address);
 

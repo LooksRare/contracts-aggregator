@@ -63,7 +63,7 @@ const config: HardhatUserConfig = {
     except: ["test*"],
   },
   gasReporter: {
-    enabled: !!process.env.REPORT_GAS,
+    enabled: process.env.REPORT_GAS === "true",
     excludeContracts: ["test*"],
   },
 };

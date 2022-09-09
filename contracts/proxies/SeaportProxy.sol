@@ -18,6 +18,8 @@ import {IProxy} from "../proxies/IProxy.sol";
  */
 contract SeaportProxy is TokenLogic, IProxy {
     SeaportInterface public immutable marketplace;
+    uint256 public feeBp;
+    address public feeRecipient;
 
     error TradeExecutionFailed();
 
@@ -98,6 +100,23 @@ contract SeaportProxy is TokenLogic, IProxy {
     }
 
     /**
+     * @inheritdoc IProxy
+     */
+    function setFeeBp(uint256 _feeBp) external override onlyOwner {
+        if (_feeBp > 10000) revert FeeTooHigh();
+        feeBp = _feeBp;
+        emit FeeUpdated(_feeBp);
+    }
+
+    /**
+     * @inheritdoc IProxy
+     */
+    function setFeeRecipient(address _feeRecipient) external override onlyOwner {
+        feeRecipient = _feeRecipient;
+        emit FeeRecipientUpdated(_feeRecipient);
+    }
+
+    /**
      * @dev If fulfillAvailableAdvancedOrders fails, the ETH paid to Seaport
      *      is refunded to the proxy contract. The proxy then has to refund
      *      the ETH back to the user through _returnETHIfAny.
@@ -127,7 +146,10 @@ contract SeaportProxy is TokenLogic, IProxy {
             }
         }
 
-        (bool[] memory availableOrders, ) = marketplace.fulfillAvailableAdvancedOrders{value: msg.value}(
+        address _feeRecipient = feeRecipient;
+        uint256 ethFee = _feeRecipient == address(0) ? 0 : msg.value - (msg.value * 10000) / (10000 + feeBp);
+
+        (bool[] memory availableOrders, ) = marketplace.fulfillAvailableAdvancedOrders{value: msg.value - ethFee}(
             advancedOrders,
             criteriaResolver,
             extraDataStruct.offerFulfillments,
@@ -139,11 +161,45 @@ contract SeaportProxy is TokenLogic, IProxy {
 
         for (uint256 i; i < availableOrders.length; ) {
             if (!availableOrders[i]) revert TradeExecutionFailed();
+            unchecked {
+                ++i;
+            }
+        }
+
+        if (_feeRecipient != address(0)) {
+            _handleAtomicOrdersERC20OrdersFees(orders);
+            if (ethFee > 0) _transferETH(_feeRecipient, ethFee);
+        }
+    }
+
+    function _handleAtomicOrdersERC20OrdersFees(BasicOrder[] calldata orders) private {
+        address lastOrderCurrency;
+        uint256 fee;
+
+        for (uint256 i; i < orders.length; ) {
+            address currency = orders[i].currency;
+
+            // Atomic orders handle fees differently as the total ETH fee is calculated
+            // before we even submit the orders to Seaport. It's all or nothing, so we do
+            // not have to loop each order to add the ETH fee.
+            if (currency != address(0)) {
+                uint256 price = orders[i].price;
+                uint256 orderFee = (price * feeBp) / 10000;
+                if (currency == lastOrderCurrency) {
+                    fee += orderFee;
+                } else {
+                    if (fee > 0) _executeERC20DirectTransfer(lastOrderCurrency, feeRecipient, fee);
+                    fee = orderFee;
+                    lastOrderCurrency = currency;
+                }
+            }
 
             unchecked {
                 ++i;
             }
         }
+
+        if (fee > 0) _executeERC20DirectTransfer(lastOrderCurrency, feeRecipient, fee);
     }
 
     function _executeNonAtomicOrders(
@@ -152,8 +208,10 @@ contract SeaportProxy is TokenLogic, IProxy {
         address recipient
     ) private returns (uint256 executedCount) {
         CriteriaResolver[] memory criteriaResolver = new CriteriaResolver[](0);
-        uint256 ordersLength = orders.length;
-        for (uint256 i; i < ordersLength; ) {
+        uint256 fee;
+        address lastOrderCurrency;
+        address _feeRecipient = feeRecipient;
+        for (uint256 i; i < orders.length; ) {
             OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
             AdvancedOrder memory advancedOrder;
             advancedOrder.parameters = _populateParameters(orders[i], orderExtraData);
@@ -165,10 +223,35 @@ contract SeaportProxy is TokenLogic, IProxy {
 
             try marketplace.fulfillAdvancedOrder{value: price}(advancedOrder, criteriaResolver, bytes32(0), recipient) {
                 executedCount += 1;
+
+                if (_feeRecipient != address(0)) {
+                    if (orders[i].currency == lastOrderCurrency) {
+                        fee += (orders[i].price * feeBp) / 10000;
+                    } else {
+                        if (fee > 0) {
+                            if (lastOrderCurrency == address(0)) {
+                                _transferETH(_feeRecipient, fee);
+                            } else {
+                                _executeERC20DirectTransfer(lastOrderCurrency, _feeRecipient, fee);
+                            }
+                        }
+
+                        lastOrderCurrency = orders[i].currency;
+                        fee = (orders[i].price * feeBp) / 10000;
+                    }
+                }
             } catch {}
 
             unchecked {
                 ++i;
+            }
+        }
+
+        if (fee > 0) {
+            if (lastOrderCurrency == address(0)) {
+                _transferETH(_feeRecipient, fee);
+            } else {
+                _executeERC20DirectTransfer(lastOrderCurrency, _feeRecipient, fee);
             }
         }
     }
