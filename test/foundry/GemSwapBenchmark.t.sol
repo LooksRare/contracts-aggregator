@@ -7,18 +7,13 @@ import {SeaportProxy} from "../../contracts/proxies/SeaportProxy.sol";
 import {LooksRareProxy} from "../../contracts/proxies/LooksRareProxy.sol";
 import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
 import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggregator.sol";
-// import {SeaportInterface} from "../../contracts/interfaces/SeaportInterface.sol";
-// import {IProxy} from "../../contracts/proxies/IProxy.sol";
 import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
 import {LooksRareProxyTestHelpers} from "./LooksRareProxyTestHelpers.sol";
-// import {BasicOrderParameters, AdditionalRecipient, AdvancedOrder, OrderParameters, OfferItem, ConsiderationItem, CriteriaResolver} from "../../contracts/libraries/seaport/ConsiderationStructs.sol";
-// import {BasicOrderType, OrderType, ItemType} from "../../contracts/libraries/seaport/ConsiderationEnums.sol";
 import {IGemSwap} from "./utils/IGemSwap.sol";
 
 abstract contract TestParameters {
-    // address internal constant BAYC = 0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D;
     address internal constant GEMSWAP = 0x83C8F28c26bF6aaca652Df1DbBE0e1b56F8baBa2;
     address internal constant LOOKSRARE_V1 = 0x59728544B08AB483533076417FbBB2fD0B17CE3a;
     address internal constant LOOKSRARE_STRATEGY_FIXED_PRICE = 0x56244Bb70CbD3EA9Dc8007399F61dFC065190031;
