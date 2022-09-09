@@ -61,6 +61,7 @@ export default function behavesLikeSeaportERC1155(isAtomic: boolean): void {
 
   it("is able to refund extra ETH paid (not trickled down to SeaportProxy)", async function () {
     const { aggregator, buyer, proxy, functionSelector, cityDao } = await loadFixture(deploySeaportFixture);
+    const { getBalance } = ethers.provider;
 
     const orders = getFixture("seaport", "city-dao-orders.json");
     const orderOne = orders[0];
@@ -82,7 +83,7 @@ export default function behavesLikeSeaportERC1155(isAtomic: boolean): void {
       },
     ];
 
-    const buyerBalanceBefore = await ethers.provider.getBalance(buyer.address);
+    const buyerBalanceBefore = await getBalance(buyer.address);
 
     const tx = await aggregator
       .connect(buyer)
@@ -93,13 +94,14 @@ export default function behavesLikeSeaportERC1155(isAtomic: boolean): void {
     validateSweepEvent(receipt, buyer.address, 1, 1);
 
     expect(await cityDao.balanceOf(buyer.address, 42)).to.equal(2);
-    expect(await ethers.provider.getBalance(aggregator.address)).to.equal(0);
-    const buyerBalanceAfter = await ethers.provider.getBalance(buyer.address);
+    expect(await getBalance(aggregator.address)).to.equal(0);
+    const buyerBalanceAfter = await getBalance(buyer.address);
     expect(buyerBalanceBefore.sub(buyerBalanceAfter).sub(txFee)).to.equal(price);
   });
 
   it("is able to refund extra ETH paid (trickled down to SeaportProxy)", async function () {
     const { aggregator, buyer, proxy, functionSelector, cityDao } = await loadFixture(deploySeaportFixture);
+    const { getBalance } = ethers.provider;
 
     const orders = getFixture("seaport", "city-dao-orders.json");
     const orderOne = orders[0];
@@ -122,7 +124,7 @@ export default function behavesLikeSeaportERC1155(isAtomic: boolean): void {
       },
     ];
 
-    const buyerBalanceBefore = await ethers.provider.getBalance(buyer.address);
+    const buyerBalanceBefore = await getBalance(buyer.address);
 
     const tx = await aggregator.connect(buyer).execute([], tradeData, buyer.address, isAtomic, { value: price });
     const receipt = await tx.wait();
@@ -131,8 +133,8 @@ export default function behavesLikeSeaportERC1155(isAtomic: boolean): void {
     validateSweepEvent(receipt, buyer.address, 1, 1);
 
     expect(await cityDao.balanceOf(buyer.address, 42)).to.equal(2);
-    expect(await ethers.provider.getBalance(aggregator.address)).to.equal(0);
-    const buyerBalanceAfter = await ethers.provider.getBalance(buyer.address);
+    expect(await getBalance(aggregator.address)).to.equal(0);
+    const buyerBalanceAfter = await getBalance(buyer.address);
     const actualPriceOne = combineConsiderationAmount(orderOne.parameters.consideration);
     const actualPriceTwo = combineConsiderationAmount(orderTwo.parameters.consideration);
     expect(buyerBalanceBefore.sub(buyerBalanceAfter).sub(txFee)).to.equal(actualPriceOne.add(actualPriceTwo));
