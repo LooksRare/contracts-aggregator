@@ -78,6 +78,6 @@ abstract contract LooksRareProxyTestHelpers {
         order.startTime = 1662522412;
         order.endTime = 1664367698;
         order
-            .signature = hex"c0b72a9fc4068e489c0464b44c6e93ff28c24e30bb2ff1776d6afbc23d8235e75d4c996bf069c445133dcdc01dd1615fedfbb4a3e43fc539d5795215baf7671000";
+            .signature = hex"c0b72a9fc4068e489c0464b44c6e93ff28c24e30bb2ff1776d6afbc23d8235e75d4c996bf069c445133dcdc01dd1615fedfbb4a3e43fc539d5795215baf767101b";
     }
 }
