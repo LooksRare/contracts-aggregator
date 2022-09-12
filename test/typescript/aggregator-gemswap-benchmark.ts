@@ -20,15 +20,8 @@ import validateSweepEvent from "./utils/validate-sweep-event";
 
 describe("Aggregator", () => {
   it("Using LooksRareAggregator", async function () {
-    const {
-      aggregator,
-      buyer,
-      looksRareProxy,
-      looksRareFunctionSelector,
-      seaportProxy,
-      seaportFunctionSelector,
-      bayc,
-    } = await loadFixture(deployMultipleMarketFixtures);
+    const { aggregator, looksRareProxy, looksRareFunctionSelector, seaportProxy, seaportFunctionSelector, bayc } =
+      await loadFixture(deployMultipleMarketFixtures);
     const seaportOrderOne = getFixture("seaport", "bayc-9477-order.json");
     const seaportOrderTwo = getFixture("seaport", "bayc-4560-order.json");
 
@@ -103,6 +96,9 @@ describe("Aggregator", () => {
       },
     ];
 
+    await ethers.provider.send("hardhat_impersonateAccount", ["0xbF3aEB96e164ae67E763D9e050FF124e7c3Fdd28"]);
+    const buyer = await ethers.getSigner("0xbF3aEB96e164ae67E763D9e050FF124e7c3Fdd28");
+
     const tx = await aggregator.connect(buyer).execute([], tradeData, buyer.address, false, { value: price });
     const receipt = await tx.wait();
     console.log(receipt.gasUsed.toString());
@@ -117,7 +113,8 @@ describe("Aggregator", () => {
 
   it("Using GemSwap", async function () {
     const aggregator = await ethers.getContractAt("IGemSwap", "0x83C8F28c26bF6aaca652Df1DbBE0e1b56F8baBa2");
-    const [, , buyer] = await ethers.getSigners();
+    await ethers.provider.send("hardhat_impersonateAccount", ["0xbF3aEB96e164ae67E763D9e050FF124e7c3Fdd28"]);
+    const buyer = await ethers.getSigner("0xbF3aEB96e164ae67E763D9e050FF124e7c3Fdd28");
     const bayc = await ethers.getContractAt("IERC721", BAYC);
 
     const seaportOrderOne = getFixture("seaport", "bayc-9477-order.json");
