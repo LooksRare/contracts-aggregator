@@ -45,7 +45,7 @@ describe("Aggregator", () => {
         proxy: seaportProxy.address,
         selector: seaportFunctionSelector,
         value: seaportPrice,
-        orders: [getSeaportOrderJson(seaportOrder, seaportPrice)],
+        orders: [getSeaportOrderJson(seaportOrder)],
         ordersExtraData: [getSeaportOrderExtraData(seaportOrder)],
         extraData: abiCoder.encode(
           [SEAPORT_EXTRA_DATA_SCHEMA],
@@ -126,7 +126,7 @@ describe("Aggregator", () => {
         proxy: seaportProxy.address,
         selector: seaportFunctionSelector,
         value: seaportPrice,
-        orders: [getSeaportOrderJson(seaportOrder, seaportPrice)],
+        orders: [getSeaportOrderJson(seaportOrder)],
         ordersExtraData: [getSeaportOrderExtraData(seaportOrder)],
         extraData: abiCoder.encode(
           [SEAPORT_EXTRA_DATA_SCHEMA],

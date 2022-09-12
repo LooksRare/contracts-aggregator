@@ -1,5 +1,6 @@
 import SeaportOrder from "../interfaces/seaport/order";
 import { BigNumber } from "ethers";
+import combineConsiderationAmount from "./combine-consideration-amount";
 
 export interface OrderJson {
   price: BigNumber;
@@ -14,10 +15,9 @@ export interface OrderJson {
   signature: string;
 }
 
-// TODO: Just use combineConsiderationAmount for price?
-export default function getSeaportOrderJson(listing: SeaportOrder, price: BigNumber): OrderJson {
+export default function getSeaportOrderJson(listing: SeaportOrder): OrderJson {
   const order = {
-    price,
+    price: combineConsiderationAmount(listing.parameters.consideration),
     signer: listing.parameters.offerer,
     collection: listing.parameters.offer[0].token,
     collectionType: Number(listing.parameters.offer[0].itemType) === 2 ? 0 : 1,
