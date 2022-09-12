@@ -9,35 +9,57 @@ import {X2Y2Proxy} from "../contracts/proxies/X2Y2Proxy.sol";
 import {CryptoPunksProxy} from "../contracts/proxies/CryptoPunksProxy.sol";
 import {SudoswapProxy} from "../contracts/proxies/SudoswapProxy.sol";
 
-contract Deployment is Script {
-    LooksRareAggregator looksRareAggregator;
-    LooksRareProxy looksRareProxy;
-    SeaportProxy seaportProxy;
-    X2Y2Proxy x2y2Proxy;
-    CryptoPunksProxy cryptoPunksProxy;
-    SudoswapProxy sudoswapProxy;
+contract MainnetDeploymentParameters {
+    address internal constant LOOKSRARE_V1 = 0x59728544B08AB483533076417FbBB2fD0B17CE3a;
+}
 
-    function run() public {
+contract GoerliDeploymentParameters {
+    address internal constant LOOKSRARE_V1 = 0xD112466471b5438C1ca2D218694200e49d81D047;
+}
+
+contract Deployment is Script {
+    LooksRareAggregator internal looksRareAggregator;
+    LooksRareProxy internal looksRareProxy;
+    SeaportProxy internal seaportProxy;
+    X2Y2Proxy internal x2y2Proxy;
+    CryptoPunksProxy internal cryptoPunksProxy;
+    SudoswapProxy internal sudoswapProxy;
+
+    error WrongChain();
+
+    function _run(address looksrare, address seaport) internal {
         vm.startBroadcast();
 
         looksRareAggregator = new LooksRareAggregator();
-
-        looksRareProxy = new LooksRareProxy(0x59728544B08AB483533076417FbBB2fD0B17CE3a);
-        looksRareAggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
-
-        seaportProxy = new SeaportProxy(0x00000000006c3852cbEf3e08E8dF289169EdE581);
-        looksRareAggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);
-
-        x2y2Proxy = new X2Y2Proxy(0x74312363e45DCaBA76c59ec49a7Aa8A65a67EeD3);
-        looksRareAggregator.addFunction(address(x2y2Proxy), X2Y2Proxy.execute.selector);
-
-        cryptoPunksProxy = new CryptoPunksProxy(0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB);
-        looksRareAggregator.addFunction(address(cryptoPunksProxy), CryptoPunksProxy.execute.selector);
-
-        // TODO: Wait until Sudoswap router V2 is available
-        // sudoswapProxy = new SudoswapProxy(0x2B2e8cDA09bBA9660dCA5cB6233787738Ad68329);
-        // looksRareAggregator.addFunction(address(sudoswapProxy), SudoswapProxy.execute.selector);
+        _deployLooksRareProxy(looksrare);
+        _deploySeaportProxy(seaport);
 
         vm.stopBroadcast();
+    }
+
+    function _deployLooksRareProxy(address marketplace) private {
+        looksRareProxy = new LooksRareProxy(marketplace);
+        looksRareAggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
+    }
+
+    function _deploySeaportProxy(address marketplace) private {
+        seaportProxy = new SeaportProxy(marketplace);
+        looksRareAggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);
+    }
+
+    function _deployX2Y2Proxy(address marketplace) private {
+        x2y2Proxy = new X2Y2Proxy(marketplace);
+        looksRareAggregator.addFunction(address(x2y2Proxy), X2Y2Proxy.execute.selector);
+    }
+
+    function _deployCryptoPunksProxy(address marketplace) private {
+        cryptoPunksProxy = new CryptoPunksProxy(marketplace);
+        looksRareAggregator.addFunction(address(cryptoPunksProxy), CryptoPunksProxy.execute.selector);
+    }
+
+    function _deploySudoswapProxy(address marketplace) private {
+        require(false, "Wait until Sudoswap router V2 is available");
+        sudoswapProxy = new SudoswapProxy(marketplace);
+        looksRareAggregator.addFunction(address(sudoswapProxy), SudoswapProxy.execute.selector);
     }
 }
