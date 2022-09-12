@@ -11,7 +11,7 @@ import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.
 import {TestHelpers} from "./TestHelpers.sol";
 import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
 import {LooksRareProxyTestHelpers} from "./LooksRareProxyTestHelpers.sol";
-import {IGemSwap} from "./utils/IGemSwap.sol";
+import {IGemSwap} from "../../contracts/interfaces/IGemSwap.sol";
 
 abstract contract TestParameters {
     address internal constant GEMSWAP = 0x83C8F28c26bF6aaca652Df1DbBE0e1b56F8baBa2;
