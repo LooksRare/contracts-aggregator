@@ -103,7 +103,7 @@ contract SeaportProxy is TokenLogic, IProxy {
             advancedOrders[i].denominator = orderExtraData.denominator;
             advancedOrders[i].signature = orders[i].signature;
 
-            ethValue += orders[i].price;
+            if (orders[i].currency == address(0)) ethValue += orders[i].price;
 
             unchecked {
                 ++i;
