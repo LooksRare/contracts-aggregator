@@ -143,7 +143,7 @@ contract LooksRareAggregator is TokenLogic, TokenReceiver, ILooksRareAggregator 
         TradeData calldata singleTradeData,
         address recipient,
         bool isAtomic
-    ) private pure returns (bytes memory) {
+    ) private view returns (bytes memory) {
         return
             abi.encodeWithSelector(
                 singleTradeData.selector,
@@ -151,7 +151,8 @@ contract LooksRareAggregator is TokenLogic, TokenReceiver, ILooksRareAggregator 
                 singleTradeData.ordersExtraData,
                 singleTradeData.extraData,
                 recipient,
-                isAtomic
+                isAtomic,
+                _proxyFeeData[singleTradeData.proxy]
             );
     }
 

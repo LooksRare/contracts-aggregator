@@ -7,6 +7,7 @@ import {BasicOrder} from "../libraries/OrderStructs.sol";
 import {CollectionType} from "../libraries/OrderEnums.sol";
 import {AdvancedOrder, CriteriaResolver, OrderParameters, OfferItem, ConsiderationItem, FulfillmentComponent, AdditionalRecipient} from "../libraries/seaport/ConsiderationStructs.sol";
 import {ItemType, OrderType} from "../libraries/seaport/ConsiderationEnums.sol";
+import {FeeData} from "../libraries/OrderStructs.sol";
 import {TokenLogic} from "../TokenLogic.sol";
 import {IProxy} from "../proxies/IProxy.sol";
 
@@ -18,8 +19,6 @@ import {IProxy} from "../proxies/IProxy.sol";
  */
 contract SeaportProxy is TokenLogic, IProxy {
     SeaportInterface public immutable marketplace;
-    uint256 public feeBp;
-    address public feeRecipient;
 
     error TradeExecutionFailed();
 
@@ -53,6 +52,7 @@ contract SeaportProxy is TokenLogic, IProxy {
      * @param extraData Extra data for the whole transaction
      * @param recipient The address to receive the purchased NFTs
      * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
+     * @param feeData Fee basis point and recipient
      * @return Whether at least 1 out of N trades succeeded
      */
     function execute(
@@ -60,16 +60,17 @@ contract SeaportProxy is TokenLogic, IProxy {
         bytes[] calldata ordersExtraData,
         bytes calldata extraData,
         address recipient,
-        bool isAtomic
+        bool isAtomic,
+        FeeData memory feeData
     ) external payable override returns (bool) {
         uint256 ordersLength = orders.length;
         if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();
 
         if (isAtomic) {
-            _executeAtomicOrders(orders, ordersExtraData, extraData, recipient);
+            _executeAtomicOrders(orders, ordersExtraData, extraData, recipient, feeData);
             return true;
         } else {
-            uint256 executedCount = _executeNonAtomicOrders(orders, ordersExtraData, recipient);
+            uint256 executedCount = _executeNonAtomicOrders(orders, ordersExtraData, recipient, feeData);
             return executedCount > 0;
         }
     }
@@ -85,7 +86,8 @@ contract SeaportProxy is TokenLogic, IProxy {
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,
         bytes calldata extraData,
-        address recipient
+        address recipient,
+        FeeData memory feeData
     ) private {
         uint256 ordersLength = orders.length;
         AdvancedOrder[] memory advancedOrders = new AdvancedOrder[](ordersLength);
@@ -125,12 +127,11 @@ contract SeaportProxy is TokenLogic, IProxy {
             }
         }
 
-        _handleFees(orders);
+        _handleFees(orders, feeData);
     }
 
-    function _handleFees(BasicOrder[] calldata orders) private {
-        address _feeRecipient = feeRecipient;
-        if (_feeRecipient == address(0)) return;
+    function _handleFees(BasicOrder[] calldata orders, FeeData memory feeData) private {
+        if (feeData.recipient == address(0)) return;
 
         address lastOrderCurrency;
         uint256 fee;
@@ -139,12 +140,12 @@ contract SeaportProxy is TokenLogic, IProxy {
             address currency = orders[i].currency;
 
             if (currency == lastOrderCurrency) {
-                fee += (orders[i].price * feeBp) / 10000;
+                fee += (orders[i].price * feeData.bp) / 10000;
             } else {
-                if (fee > 0) _transferFee(fee, lastOrderCurrency, _feeRecipient);
+                if (fee > 0) _transferFee(fee, lastOrderCurrency, feeData.recipient);
 
                 lastOrderCurrency = currency;
-                fee = (orders[i].price * feeBp) / 10000;
+                fee = (orders[i].price * feeData.bp) / 10000;
             }
 
             unchecked {
@@ -152,30 +153,30 @@ contract SeaportProxy is TokenLogic, IProxy {
             }
         }
 
-        if (fee > 0) _transferFee(fee, lastOrderCurrency, _feeRecipient);
+        if (fee > 0) _transferFee(fee, lastOrderCurrency, feeData.recipient);
     }
 
     function _transferFee(
         uint256 fee,
         address lastOrderCurrency,
-        address _feeRecipient
+        address recipient
     ) private {
         if (lastOrderCurrency == address(0)) {
-            _transferETH(_feeRecipient, fee);
+            _transferETH(recipient, fee);
         } else {
-            _executeERC20DirectTransfer(lastOrderCurrency, _feeRecipient, fee);
+            _executeERC20DirectTransfer(lastOrderCurrency, recipient, fee);
         }
     }
 
     function _executeNonAtomicOrders(
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,
-        address recipient
+        address recipient,
+        FeeData memory feeData
     ) private returns (uint256 executedCount) {
         CriteriaResolver[] memory criteriaResolver = new CriteriaResolver[](0);
         uint256 fee;
         address lastOrderCurrency;
-        address _feeRecipient = feeRecipient;
         for (uint256 i; i < orders.length; ) {
             OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
             AdvancedOrder memory advancedOrder;
@@ -189,14 +190,14 @@ contract SeaportProxy is TokenLogic, IProxy {
             try marketplace.fulfillAdvancedOrder{value: price}(advancedOrder, criteriaResolver, bytes32(0), recipient) {
                 executedCount += 1;
 
-                if (_feeRecipient != address(0)) {
+                if (feeData.recipient != address(0)) {
                     if (orders[i].currency == lastOrderCurrency) {
-                        fee += (orders[i].price * feeBp) / 10000;
+                        fee += (orders[i].price * feeData.bp) / 10000;
                     } else {
-                        if (fee > 0) _transferFee(fee, lastOrderCurrency, _feeRecipient);
+                        if (fee > 0) _transferFee(fee, lastOrderCurrency, feeData.recipient);
 
                         lastOrderCurrency = orders[i].currency;
-                        fee = (orders[i].price * feeBp) / 10000;
+                        fee = (orders[i].price * feeData.bp) / 10000;
                     }
                 }
             } catch {}
@@ -206,7 +207,7 @@ contract SeaportProxy is TokenLogic, IProxy {
             }
         }
 
-        if (fee > 0) _transferFee(fee, lastOrderCurrency, _feeRecipient);
+        if (fee > 0) _transferFee(fee, lastOrderCurrency, feeData.recipient);
     }
 
     function _populateParameters(BasicOrder calldata order, OrderExtraData memory orderExtraData)

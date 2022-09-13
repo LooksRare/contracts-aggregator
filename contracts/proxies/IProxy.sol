@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.14;
 
-import {BasicOrder} from "../libraries/OrderStructs.sol";
+import {BasicOrder, FeeData} from "../libraries/OrderStructs.sol";
 
 interface IProxy {
     error InvalidOrderLength();
@@ -14,12 +14,14 @@ interface IProxy {
      * @param extraData Extra data for the whole transaction
      * @param recipient The address to receive the purchased NFTs
      * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
+     * @param feeData Fee basis point and recipient
      */
     function execute(
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,
         bytes calldata extraData,
         address recipient,
-        bool isAtomic
+        bool isAtomic,
+        FeeData memory feeData
     ) external payable returns (bool);
 }
