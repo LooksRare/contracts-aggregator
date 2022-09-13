@@ -14,34 +14,35 @@ interface X2Y2Fixture {
 }
 
 export default async function deployX2Y2Fixture(): Promise<X2Y2Fixture> {
+  const { send, getCode } = ethers.provider;
+
   const Aggregator = await ethers.getContractFactory("LooksRareAggregator");
-  const aggregator = await Aggregator.deploy();
-  await aggregator.deployed();
+  const aggregatorPlaceholder = await Aggregator.deploy();
+  await aggregatorPlaceholder.deployed();
 
   const X2Y2Proxy = await ethers.getContractFactory("X2Y2Proxy");
-  const proxyPlaceholder = await X2Y2Proxy.deploy(X2Y2);
-  await proxyPlaceholder.deployed();
+  const proxy = await X2Y2Proxy.deploy(X2Y2);
+  await proxy.deployed();
 
-  const [, predefinedProxy, buyer] = await ethers.getSigners();
+  const [owner, predefinedAggregator, buyer] = await ethers.getSigners();
 
-  const proxyCode = await ethers.provider.getCode(proxyPlaceholder.address);
+  const aggregatorCode = await getCode(aggregatorPlaceholder.address);
 
-  await ethers.provider.send("hardhat_setCode", [predefinedProxy.address, proxyCode]);
+  await send("hardhat_setCode", [predefinedAggregator.address, aggregatorCode]);
 
   const functionSelector = await getSignature("X2Y2Proxy.json", "execute");
-  await aggregator.addFunction(predefinedProxy.address, functionSelector);
 
-  const proxy = X2Y2Proxy.attach(predefinedProxy.address);
-  await ethers.provider.send("hardhat_setStorageAt", [proxy.address, "0x0", ethers.utils.hexZeroPad(X2Y2, 32)]);
+  const aggregator = Aggregator.attach(predefinedAggregator.address);
+  await send("hardhat_setStorageAt", [aggregator.address, "0x0", ethers.utils.hexZeroPad(owner.address, 32)]);
+
+  await aggregator.addFunction(proxy.address, functionSelector);
 
   // Because we are forking from the mainnet, the proxy address somehow already had a contract deployed to
   // the same address with ether balance, causing our test (balance comparison) to fail.
-  await ethers.provider.send("hardhat_setBalance", [proxy.address, "0x0"]);
+  await send("hardhat_setBalance", [aggregator.address, "0x0"]);
 
-  await ethers.provider.send("hardhat_setBalance", [
-    buyer.address,
-    ethers.utils.parseEther("200").toHexString().replace("0x0", "0x"),
-  ]);
+  const buyerBalance = ethers.utils.parseEther("200").toHexString().replace("0x0", "0x");
+  await send("hardhat_setBalance", [buyer.address, buyerBalance]);
 
   const bayc = await ethers.getContractAt("IERC721", BAYC);
   const parallel = await ethers.getContractAt("IERC1155", PARALLEL);
