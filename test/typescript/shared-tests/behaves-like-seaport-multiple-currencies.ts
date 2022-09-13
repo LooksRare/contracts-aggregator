@@ -10,6 +10,7 @@ import {
   USDC,
   SEAPORT_CONSIDERATION_FULFILLMENTS_TWO_ORDERS_DIFFERENT_CURRENCIES,
   USDC_DECIMALS,
+  SEAPORT,
 } from "../../constants";
 import validateSweepEvent from "../utils/validate-sweep-event";
 import { expect } from "chai";
@@ -40,7 +41,7 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
     const priceOne = combineConsiderationAmount(orderOne.parameters.consideration);
     const priceTwo = combineConsiderationAmount(orderTwo.parameters.consideration);
 
-    await proxy.approve(USDC);
+    await aggregator.approve(SEAPORT, USDC);
 
     await airdropUSDC(buyer.address, priceOne);
 
@@ -85,7 +86,7 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
     const priceOne = combineConsiderationAmount(orderOne.parameters.consideration);
     const priceTwo = combineConsiderationAmount(orderTwo.parameters.consideration);
 
-    await proxy.approve(USDC);
+    await aggregator.approve(SEAPORT, USDC);
 
     const excess = ethers.utils.parseUnits("100", USDC_DECIMALS);
 
@@ -141,7 +142,7 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
 
     await proxy.setFeeBp(250);
     await proxy.setFeeRecipient(protocolFeeRecipient.address);
-    await proxy.approve(USDC);
+    await aggregator.approve(SEAPORT, USDC);
 
     await airdropUSDC(buyer.address, priceOne);
 

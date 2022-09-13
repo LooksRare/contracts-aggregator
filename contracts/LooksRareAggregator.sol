@@ -93,21 +93,21 @@ contract LooksRareAggregator is TokenLogic, TokenReceiver, ILooksRareAggregator 
     }
 
     /**
-     * @notice Approve proxies to transfer ERC-20 tokens from the aggregator
-     * @param proxy The address of the proxy to approve
+     * @notice Approve marketplaces to transfer ERC-20 tokens from the aggregator
+     * @param marketplace The address of the marketplace to approve
      * @param currency The address of the ERC-20 token to approve
      */
-    function approve(address proxy, address currency) external onlyOwner {
-        IERC20(currency).approve(proxy, type(uint256).max);
+    function approve(address marketplace, address currency) external onlyOwner {
+        IERC20(currency).approve(marketplace, type(uint256).max);
     }
 
     /**
-     * @notice Revoke proxies to transfer ERC-20 tokens from the aggregator
-     * @param proxy The address of the proxy to revoke
+     * @notice Revoke marketplaces to transfer ERC-20 tokens from the aggregator
+     * @param marketplace The address of the marketplace to revoke
      * @param currency The address of the ERC-20 token to revoke
      */
-    function revoke(address proxy, address currency) external onlyOwner {
-        IERC20(currency).approve(proxy, 0);
+    function revoke(address marketplace, address currency) external onlyOwner {
+        IERC20(currency).approve(marketplace, 0);
     }
 
     /**

@@ -75,22 +75,6 @@ contract SeaportProxy is TokenLogic, IProxy {
     }
 
     /**
-     * @notice Approve Seaport to transfer ERC-20 tokens from the proxy
-     * @param currency The address of the ERC-20 token to approve
-     */
-    function approve(address currency) external onlyOwner {
-        IERC20(currency).approve(address(marketplace), type(uint256).max);
-    }
-
-    /**
-     * @notice Revoke Seaport's approval to transfer ERC-20 tokens from the proxy
-     * @param currency The address of the ERC-20 token to revoke
-     */
-    function revoke(address currency) external onlyOwner {
-        IERC20(currency).approve(address(marketplace), 0);
-    }
-
-    /**
      * @inheritdoc IProxy
      */
     function setFeeBp(uint256 _feeBp) external override onlyOwner {
