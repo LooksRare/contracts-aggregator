@@ -78,7 +78,6 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
     }
 
     function testBuyWithETHDirectlyFromProxySingleOrder() public {
-        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder memory order = validBAYCId2518Order();
         BasicOrder[] memory orders = new BasicOrder[](1);
         orders[0] = order;
@@ -89,7 +88,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         bytes memory extraData = validSingleBAYCExtraData();
 
         uint256 gasRemaining = gasleft();
-        seaportProxy.execute{value: order.price}(tokenTransfers, orders, ordersExtraData, extraData, _buyer, true);
+        seaportProxy.execute{value: order.price}(orders, ordersExtraData, extraData, _buyer, true);
         uint256 gasConsumed = gasRemaining - gasleft();
         emit log_named_uint("Seaport single NFT purchase through the proxy consumed: ", gasConsumed);
 
@@ -256,8 +255,6 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
     }
 
     function testBuyWithETHDirectlyFromProxyTwoOrders() public {
-        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
-
         BasicOrder memory orderOne = validBAYCId2518Order();
         BasicOrder memory orderTwo = validBAYCId8498Order();
         BasicOrder[] memory orders = new BasicOrder[](2);
@@ -275,7 +272,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         uint256 totalPrice = orders[0].price + orders[1].price;
 
         uint256 gasRemaining = gasleft();
-        seaportProxy.execute{value: totalPrice}(tokenTransfers, orders, ordersExtraData, extraData, _buyer, true);
+        seaportProxy.execute{value: totalPrice}(orders, ordersExtraData, extraData, _buyer, true);
         uint256 gasConsumed = gasRemaining - gasleft();
         emit log_named_uint("Seaport multiple NFT purchase through the proxy consumed: ", gasConsumed);
 

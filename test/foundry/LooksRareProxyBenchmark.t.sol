@@ -79,7 +79,6 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
     }
 
     function testBuyWithETHDirectlyFromProxySingleOrder() public {
-        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder[] memory validOrders = validBAYCOrders();
         BasicOrder[] memory orders = new BasicOrder[](1);
         orders[0] = validOrders[0];
@@ -88,7 +87,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         ordersExtraData[0] = abi.encode(orders[0].price, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE);
 
         uint256 gasRemaining = gasleft();
-        looksRareProxy.execute{value: orders[0].price}(tokenTransfers, orders, ordersExtraData, "", _buyer, false);
+        looksRareProxy.execute{value: orders[0].price}(orders, ordersExtraData, "", _buyer, false);
         uint256 gasConsumed = gasRemaining - gasleft();
         emit log_named_uint("LooksRare single NFT purchase through the proxy consumed: ", gasConsumed);
 
@@ -153,7 +152,6 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
     }
 
     function testBuyWithETHDirectlyFromProxyTwoOrders() public {
-        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder[] memory orders = validBAYCOrders();
 
         bytes[] memory ordersExtraData = new bytes[](2);
@@ -161,14 +159,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         ordersExtraData[1] = abi.encode(orders[1].price, 8500, 50, LOOKSRARE_STRATEGY_FIXED_PRICE);
 
         uint256 gasRemaining = gasleft();
-        looksRareProxy.execute{value: orders[0].price + orders[1].price}(
-            tokenTransfers,
-            orders,
-            ordersExtraData,
-            "",
-            _buyer,
-            false
-        );
+        looksRareProxy.execute{value: orders[0].price + orders[1].price}(orders, ordersExtraData, "", _buyer, false);
         uint256 gasConsumed = gasRemaining - gasleft();
         emit log_named_uint("LooksRare multiple NFT purchase through the proxy consumed: ", gasConsumed);
 

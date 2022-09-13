@@ -26,7 +26,7 @@ contract SudoswapProxy is TokenLogic, IProxy {
 
     /**
      * @notice Execute Sudoswap NFT sweeps in a single transaction
-     * @dev tokenTransfers, ordersExtraData and extraData are not used
+     * @dev ordersExtraData and extraData are not used
      * @param orders Orders to be executed by Seaport
      * @param recipient The address to receive the purchased NFTs
      * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades

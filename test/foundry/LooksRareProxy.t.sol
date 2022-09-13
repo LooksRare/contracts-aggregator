@@ -47,7 +47,6 @@ contract LooksRareProxyTest is TestParameters, TestHelpers, TokenLogicTest, Look
     }
 
     function testBuyWithETHOrdersRecipientZeroAddress() public {
-        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder[] memory orders = validBAYCOrders();
 
         bytes[] memory ordersExtraData = new bytes[](2);
@@ -56,7 +55,6 @@ contract LooksRareProxyTest is TestParameters, TestHelpers, TokenLogicTest, Look
 
         vm.expectRevert(IProxy.ZeroAddress.selector);
         looksRareProxy.execute{value: orders[0].price + orders[1].price}(
-            tokenTransfers,
             orders,
             ordersExtraData,
             "",
