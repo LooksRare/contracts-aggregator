@@ -25,11 +25,6 @@ export default async function deployLooksRareFixture(): Promise<MultipleMarketsF
   const looksRareProxy = await LooksRareProxy.deploy(LOOKSRARE_V1);
   await looksRareProxy.deployed();
 
-  // Because we are forking from the mainnet, the aggregator/proxy address might have a nonzero
-  // balance, causing our test (balance comparison) to fail.
-  await ethers.provider.send("hardhat_setBalance", [proxy.address, "0x0"]);
-  await ethers.provider.send("hardhat_setBalance", [aggregator.address, "0x0"]);
-
   const looksRareFunctionSelector = await getSignature("LooksRareProxy.json", "execute");
   await aggregator.addFunction(looksRareProxy.address, looksRareFunctionSelector);
 
@@ -48,6 +43,13 @@ export default async function deployLooksRareFixture(): Promise<MultipleMarketsF
   await aggregator.addFunction(sudoswapProxy.address, sudoswapFunctionSelector);
 
   const [, , buyer] = await ethers.getSigners();
+
+  // Because we are forking from the mainnet, the aggregator/proxy address might have a nonzero
+  // balance, causing our test (balance comparison) to fail.
+  await ethers.provider.send("hardhat_setBalance", [aggregator.address, "0x0"]);
+  await ethers.provider.send("hardhat_setBalance", [looksRareProxy.address, "0x0"]);
+  await ethers.provider.send("hardhat_setBalance", [seaportProxy.address, "0x0"]);
+  await ethers.provider.send("hardhat_setBalance", [sudoswapProxy.address, "0x0"]);
 
   await ethers.provider.send("hardhat_setBalance", [
     buyer.address,
