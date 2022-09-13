@@ -41,6 +41,8 @@ contract SudoswapProxy is TokenLogic, IProxy {
         uint256 ordersLength = orders.length;
         if (ordersLength == 0) revert InvalidOrderLength();
 
+        uint256 ethValue;
+
         if (isAtomic) {
             ISudoswapRouter.PairSwapSpecific[] memory swapList = new ISudoswapRouter.PairSwapSpecific[](orders.length);
 
@@ -52,12 +54,14 @@ contract SudoswapProxy is TokenLogic, IProxy {
 
                 swapList[i] = pairSwapSpecific;
 
+                ethValue += orders[i].price;
+
                 unchecked {
                     ++i;
                 }
             }
 
-            marketplace.swapETHForSpecificNFTs{value: msg.value}(
+            marketplace.swapETHForSpecificNFTs{value: ethValue}(
                 swapList,
                 payable(recipient),
                 recipient,
@@ -72,6 +76,7 @@ contract SudoswapProxy is TokenLogic, IProxy {
                 ISudoswapRouter.RobustPairSwapSpecific memory robustPairSwapSpecific;
                 ISudoswapRouter.PairSwapSpecific memory pairSwapSpecific;
                 robustPairSwapSpecific.maxCost = orders[i].price;
+                ethValue += orders[i].price;
                 // here the collection is the AMM pool address
                 pairSwapSpecific.pair = orders[i].collection;
                 pairSwapSpecific.nftIds = orders[i].tokenIds;
@@ -89,7 +94,7 @@ contract SudoswapProxy is TokenLogic, IProxy {
             //       to wait for Sudoswap's router V2 to go live to re-integrate
             //       as it allows partial fills.
 
-            marketplace.robustSwapETHForSpecificNFTs{value: msg.value}(
+            marketplace.robustSwapETHForSpecificNFTs{value: ethValue}(
                 swapList,
                 payable(recipient),
                 recipient,
