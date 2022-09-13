@@ -7,6 +7,7 @@ import {BasicOrder, TokenTransfer} from "./libraries/OrderStructs.sol";
 import {TokenLogic} from "./TokenLogic.sol";
 import {TokenReceiver} from "./TokenReceiver.sol";
 import {ILooksRareAggregator} from "./interfaces/ILooksRareAggregator.sol";
+import {FeeData} from "./libraries/OrderStructs.sol";
 
 /**
  * @title LooksRareAggregator
@@ -16,6 +17,7 @@ import {ILooksRareAggregator} from "./interfaces/ILooksRareAggregator.sol";
  */
 contract LooksRareAggregator is TokenLogic, TokenReceiver, ILooksRareAggregator {
     mapping(address => mapping(bytes4 => bool)) private _proxyFunctionSelectors;
+    mapping(address => FeeData) private _proxyFeeData;
 
     /**
      * @notice Execute NFT sweeps in different marketplaces in a single transaction
@@ -90,6 +92,24 @@ contract LooksRareAggregator is TokenLogic, TokenReceiver, ILooksRareAggregator 
     function removeFunction(address proxy, bytes4 selector) external onlyOwner {
         delete _proxyFunctionSelectors[proxy][selector];
         emit FunctionRemoved(proxy, selector);
+    }
+
+    /**
+     * @param proxy Proxy to apply the fee to
+     * @param bp Fee basis point
+     * @param recipient Fee recipient
+     */
+    function setFee(
+        address proxy,
+        uint16 bp,
+        address recipient
+    ) external onlyOwner {
+        if (bp > 10000) revert FeeTooHigh();
+        // TODO: if (bp > 0 && recipient == address(0)) revert;
+        _proxyFeeData[proxy].bp = bp;
+        _proxyFeeData[proxy].recipient = recipient;
+
+        emit FeeUpdated(proxy, bp, recipient);
     }
 
     /**

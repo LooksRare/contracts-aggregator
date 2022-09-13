@@ -20,3 +20,8 @@ struct TokenTransfer {
     uint256 amount;
     address currency;
 }
+
+struct FeeData {
+    uint16 bp;
+    address recipient;
+}

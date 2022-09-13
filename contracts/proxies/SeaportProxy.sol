@@ -75,23 +75,6 @@ contract SeaportProxy is TokenLogic, IProxy {
     }
 
     /**
-     * @inheritdoc IProxy
-     */
-    function setFeeBp(uint256 _feeBp) external override onlyOwner {
-        if (_feeBp > 10000) revert FeeTooHigh();
-        feeBp = _feeBp;
-        emit FeeUpdated(_feeBp);
-    }
-
-    /**
-     * @inheritdoc IProxy
-     */
-    function setFeeRecipient(address _feeRecipient) external override onlyOwner {
-        feeRecipient = _feeRecipient;
-        emit FeeRecipientUpdated(_feeRecipient);
-    }
-
-    /**
      * @dev If fulfillAvailableAdvancedOrders fails, the ETH paid to Seaport
      *      is refunded to the proxy contract. The proxy then has to refund
      *      the ETH back to the user through _returnETHIfAny.

@@ -102,22 +102,6 @@ contract LooksRareProxy is IProxy, TokenReceiver, TokenLogic, SignatureChecker {
         return executedCount > 0;
     }
 
-    /**
-     * @notice Always revert as we already charge a fee in LooksRareExchange,
-     *         but it inherits from IProxy so it still has to be implemented.
-     */
-    function setFeeBp(uint256) external view override onlyOwner {
-        revert UncallableFunction();
-    }
-
-    /**
-     * @notice Always revert as we already charge a fee in LooksRareExchange,
-     *         but it inherits from IProxy so it still has to be implemented.
-     */
-    function setFeeRecipient(address) external view override onlyOwner {
-        revert UncallableFunction();
-    }
-
     function _executeSingleOrder(
         OrderTypes.TakerOrder memory takerBid,
         OrderTypes.MakerOrder memory makerAsk,

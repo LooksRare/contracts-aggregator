@@ -14,8 +14,6 @@ import {TokenLogic} from "../TokenLogic.sol";
  */
 contract CryptoPunksProxy is IProxy, TokenLogic {
     ICryptoPunks public immutable marketplace;
-    uint256 public feeBp;
-    address public feeRecipient;
 
     /**
      * @param _marketplace CryptoPunks' address
@@ -63,22 +61,5 @@ contract CryptoPunksProxy is IProxy, TokenLogic {
         }
 
         return executedCount > 0;
-    }
-
-    /**
-     * @inheritdoc IProxy
-     */
-    function setFeeBp(uint256 _feeBp) external override onlyOwner {
-        if (_feeBp > 10000) revert FeeTooHigh();
-        feeBp = _feeBp;
-        emit FeeUpdated(_feeBp);
-    }
-
-    /**
-     * @inheritdoc IProxy
-     */
-    function setFeeRecipient(address _feeRecipient) external override onlyOwner {
-        feeRecipient = _feeRecipient;
-        emit FeeRecipientUpdated(_feeRecipient);
     }
 }

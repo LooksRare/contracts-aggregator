@@ -15,6 +15,14 @@ interface ILooksRareAggregator {
     }
 
     /**
+     * @dev Emitted when fee is updated
+     * @param proxy Proxy to apply the fee to
+     * @param bp Fee basis point
+     * @param recipient Fee recipient
+     */
+    event FeeUpdated(address proxy, uint16 bp, address recipient);
+
+    /**
      * @notice Emitted when a marketplace proxy's function is enabled.
      * @param proxy The marketplace proxy's address
      * @param selector The marketplace proxy's function selector
@@ -37,6 +45,7 @@ interface ILooksRareAggregator {
      */
     event Sweep(address indexed sweeper, uint256 tradeCount, uint256 successCount);
 
+    error FeeTooHigh();
     error InvalidFunction();
     error InvalidOrderLength();
     error TradeExecutionFailed();
