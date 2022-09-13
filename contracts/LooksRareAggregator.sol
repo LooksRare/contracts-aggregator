@@ -38,7 +38,7 @@ contract LooksRareAggregator is TokenLogic, ILooksRareAggregator {
         for (uint256 i; i < tradeData.length; ) {
             if (!_proxyFunctionSelectors[tradeData[i].proxy][tradeData[i].selector]) revert InvalidFunction();
 
-            (bool success, bytes memory returnData) = tradeData[i].proxy.call{value: tradeData[i].value}(
+            (bool success, bytes memory returnData) = tradeData[i].proxy.delegatecall(
                 _encodeCalldata(tradeData[i], recipient, isAtomic)
             );
 
