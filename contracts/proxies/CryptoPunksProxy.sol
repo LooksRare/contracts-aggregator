@@ -63,8 +63,6 @@ contract CryptoPunksProxy is IProxy, TokenLogic {
             }
         }
 
-        _returnETHIfAny();
-
         return executedCount > 0;
     }
 

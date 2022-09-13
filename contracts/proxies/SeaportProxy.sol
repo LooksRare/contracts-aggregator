@@ -72,12 +72,10 @@ contract SeaportProxy is TokenLogic, IProxy {
         if (isAtomic) {
             _executeAtomicOrders(orders, ordersExtraData, extraData, recipient);
             if (tokenTransfers.length > 0) _returnERC20TokensIfAny(tokenTransfers, msg.sender);
-            _returnETHIfAny();
             return true;
         } else {
             uint256 executedCount = _executeNonAtomicOrders(orders, ordersExtraData, recipient);
             if (tokenTransfers.length > 0) _returnERC20TokensIfAny(tokenTransfers, msg.sender);
-            _returnETHIfAny();
             return executedCount > 0;
         }
     }

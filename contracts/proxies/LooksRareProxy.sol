@@ -100,8 +100,6 @@ contract LooksRareProxy is IProxy, TokenReceiver, TokenLogic, SignatureChecker {
             }
         }
 
-        _returnETHIfAny();
-
         return executedCount > 0;
     }
 
