@@ -57,24 +57,6 @@ contract SeaportProxyTest is TestParameters, TestHelpers, TokenLogicTest, Seapor
         );
     }
 
-    function testBuyWithETHOrdersRecipientZeroAddress() public {
-        BasicOrder memory order = validBAYCId2518Order();
-        BasicOrder[] memory orders = new BasicOrder[](1);
-        orders[0] = order;
-
-        bytes[] memory ordersExtraData = new bytes[](1);
-        ordersExtraData[0] = validBAYCId2518OrderExtraData();
-
-        vm.expectRevert(IProxy.ZeroAddress.selector);
-        seaportProxy.execute{value: orders[0].price}(
-            orders,
-            ordersExtraData,
-            validSingleBAYCExtraData(),
-            address(0),
-            false
-        );
-    }
-
     function testApprove() public {
         MockERC20 erc20 = new MockERC20();
         assertEq(erc20.allowance(address(seaportProxy), SEAPORT), 0);

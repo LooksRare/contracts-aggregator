@@ -47,16 +47,6 @@ contract X2Y2ProxyTest is TestParameters, TestHelpers, TokenLogicTest {
         x2y2Proxy.execute{value: orders[0].price}(orders, ordersExtraData, "", _buyer, false);
     }
 
-    function testBuyWithETHOrdersRecipientZeroAddress() public {
-        BasicOrder[] memory orders = validBAYCOrder();
-
-        bytes[] memory ordersExtraData = new bytes[](1);
-        ordersExtraData[0] = validBAYCOrderExtraData();
-
-        vm.expectRevert(IProxy.ZeroAddress.selector);
-        x2y2Proxy.execute{value: orders[0].price}(orders, ordersExtraData, "", address(0), false);
-    }
-
     function testRescueETH() public {
         _testRescueETH(tokenRescuer);
     }

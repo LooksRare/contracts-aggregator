@@ -139,7 +139,6 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
 
         bytes memory data = abi.encodeWithSelector(
             SeaportProxy.execute.selector,
-            new TokenTransfer[](0),
             orders,
             ordersExtraData,
             extraData,
@@ -336,7 +335,6 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         uint256 totalPrice = orders[0].price + orders[1].price;
         bytes memory data = abi.encodeWithSelector(
             SeaportProxy.execute.selector,
-            new TokenTransfer[](0),
             orders,
             ordersExtraData,
             extraData,

@@ -5,6 +5,7 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {LooksRareProxy} from "./proxies/LooksRareProxy.sol";
 import {BasicOrder, TokenTransfer} from "./libraries/OrderStructs.sol";
 import {TokenLogic} from "./TokenLogic.sol";
+import {TokenReceiver} from "./TokenReceiver.sol";
 import {ILooksRareAggregator} from "./interfaces/ILooksRareAggregator.sol";
 
 /**
@@ -13,7 +14,7 @@ import {ILooksRareAggregator} from "./interfaces/ILooksRareAggregator.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract LooksRareAggregator is TokenLogic, ILooksRareAggregator {
+contract LooksRareAggregator is TokenLogic, TokenReceiver, ILooksRareAggregator {
     mapping(address => mapping(bytes4 => bool)) private _proxyFunctionSelectors;
 
     /**

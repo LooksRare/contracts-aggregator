@@ -46,23 +46,6 @@ contract LooksRareProxyTest is TestParameters, TestHelpers, TokenLogicTest, Look
         looksRareProxy.execute{value: orders[0].price + orders[1].price}(orders, ordersExtraData, "", _buyer, false);
     }
 
-    function testBuyWithETHOrdersRecipientZeroAddress() public {
-        BasicOrder[] memory orders = validBAYCOrders();
-
-        bytes[] memory ordersExtraData = new bytes[](2);
-        ordersExtraData[0] = abi.encode(orders[0].price, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE);
-        ordersExtraData[0] = abi.encode(orders[1].price, 8500, 0, LOOKSRARE_STRATEGY_FIXED_PRICE);
-
-        vm.expectRevert(IProxy.ZeroAddress.selector);
-        looksRareProxy.execute{value: orders[0].price + orders[1].price}(
-            orders,
-            ordersExtraData,
-            "",
-            address(0),
-            false
-        );
-    }
-
     function testRescueETH() public {
         _testRescueETH(tokenRescuer);
     }

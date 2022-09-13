@@ -34,14 +34,6 @@ contract SudoswapProxyTest is TestParameters, TestHelpers, TokenLogicTest {
         sudoswapProxy.execute(orders, ordersExtraData, "", _buyer, false);
     }
 
-    function testBuyWithETHOrdersRecipientZeroAddress() public {
-        BasicOrder[] memory orders = validMoodieOrder();
-        bytes[] memory ordersExtraData = new bytes[](0);
-
-        vm.expectRevert(IProxy.ZeroAddress.selector);
-        sudoswapProxy.execute{value: orders[0].price}(orders, ordersExtraData, "", address(0), false);
-    }
-
     function testRescueETH() public {
         _testRescueETH(tokenRescuer);
     }

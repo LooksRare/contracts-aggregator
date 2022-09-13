@@ -8,7 +8,7 @@ import {OrderTypes} from "@looksrare/contracts-exchange-v1/contracts/libraries/O
 import {SignatureChecker} from "@looksrare/contracts-libs/contracts/SignatureChecker.sol";
 import {BasicOrder} from "../libraries/OrderStructs.sol";
 import {CollectionType} from "../libraries/OrderEnums.sol";
-import {TokenReceiver} from "./TokenReceiver.sol";
+import {TokenReceiver} from "../TokenReceiver.sol";
 import {TokenLogic} from "../TokenLogic.sol";
 import {IProxy} from "./IProxy.sol";
 

@@ -132,7 +132,6 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
 
         bytes memory data = abi.encodeWithSelector(
             LooksRareProxy.execute.selector,
-            new TokenTransfer[](0),
             orders,
             ordersExtraData,
             "",
@@ -204,7 +203,6 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
 
         bytes memory data = abi.encodeWithSelector(
             LooksRareProxy.execute.selector,
-            new TokenTransfer[](0),
             orders,
             ordersExtraData,
             "",
