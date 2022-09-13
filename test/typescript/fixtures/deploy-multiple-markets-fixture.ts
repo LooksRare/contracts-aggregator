@@ -27,7 +27,7 @@ export default async function deployLooksRareFixture(): Promise<MultipleMarketsF
 
   // Because we are forking from the mainnet, the proxy address somehow already had a contract deployed to
   // the same address with ether balance, causing our test (balance comparison) to fail.
-  await ethers.provider.send("hardhat_setBalance", [looksRareProxy.address, "0x0"]);
+  await ethers.provider.send("hardhat_setBalance", [aggregator.address, "0x0"]);
 
   const looksRareFunctionSelector = await getSignature("LooksRareProxy.json", "execute");
   await aggregator.addFunction(looksRareProxy.address, looksRareFunctionSelector);
@@ -36,20 +36,12 @@ export default async function deployLooksRareFixture(): Promise<MultipleMarketsF
   const seaportProxy = await SeaportProxy.deploy(SEAPORT);
   await seaportProxy.deployed();
 
-  // Because we are forking from the mainnet, the proxy address somehow already had a contract deployed to
-  // the same address with ether balance, causing our test (balance comparison) to fail.
-  await ethers.provider.send("hardhat_setBalance", [seaportProxy.address, "0x0"]);
-
   const seaportFunctionSelector = await getSignature("SeaportProxy.json", "execute");
   await aggregator.addFunction(seaportProxy.address, seaportFunctionSelector);
 
   const SudoswapProxy = await ethers.getContractFactory("SudoswapProxy");
   const sudoswapProxy = await SudoswapProxy.deploy(SUDOSWAP);
   await sudoswapProxy.deployed();
-
-  // Because we are forking from the mainnet, the proxy address somehow already had a contract deployed to
-  // the same address with ether balance, causing our test (balance comparison) to fail.
-  await ethers.provider.send("hardhat_setBalance", [sudoswapProxy.address, "0x0"]);
 
   const sudoswapFunctionSelector = await getSignature("SudoswapProxy.json", "execute");
   await aggregator.addFunction(sudoswapProxy.address, sudoswapFunctionSelector);
