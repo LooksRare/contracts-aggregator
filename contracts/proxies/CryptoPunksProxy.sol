@@ -40,7 +40,6 @@ contract CryptoPunksProxy is IProxy, TokenLogic {
         address recipient,
         bool isAtomic
     ) external payable override returns (bool) {
-        if (recipient == address(0)) revert ZeroAddress();
         uint256 ordersLength = orders.length;
         if (ordersLength == 0) revert InvalidOrderLength();
 

@@ -43,8 +43,6 @@ contract SudoswapProxy is TokenLogic, IProxy {
         uint256 ordersLength = orders.length;
         if (ordersLength == 0) revert InvalidOrderLength();
 
-        if (recipient == address(0)) revert ZeroAddress();
-
         if (isAtomic) {
             ISudoswapRouter.PairSwapSpecific[] memory swapList = new ISudoswapRouter.PairSwapSpecific[](orders.length);
 

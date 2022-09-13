@@ -59,8 +59,6 @@ contract X2Y2Proxy is TokenReceiverProxy, TokenLogic, SignatureChecker {
         address recipient,
         bool isAtomic
     ) external payable override returns (bool) {
-        if (recipient == address(0)) revert ZeroAddress();
-
         uint256 ordersLength = orders.length;
         if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();
 

@@ -66,7 +66,6 @@ contract SeaportProxy is TokenLogic, IProxy {
     ) external payable override returns (bool) {
         uint256 ordersLength = orders.length;
         if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();
-        if (recipient == address(0)) revert ZeroAddress();
 
         if (tokenTransfers.length > 0) _pullERC20Tokens(tokenTransfers, msg.sender);
 
