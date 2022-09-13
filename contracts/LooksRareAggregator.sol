@@ -126,7 +126,6 @@ contract LooksRareAggregator is TokenLogic, ILooksRareAggregator {
         return
             abi.encodeWithSelector(
                 singleTradeData.selector,
-                singleTradeData.tokenTransfers,
                 singleTradeData.orders,
                 singleTradeData.ordersExtraData,
                 singleTradeData.extraData,
