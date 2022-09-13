@@ -140,8 +140,7 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
     const priceTwoBeforeFee = combineConsiderationAmount(orderTwo.parameters.consideration);
     const priceTwo = priceTwoBeforeFee.mul(10250).div(10000); // Fee
 
-    await proxy.setFeeBp(250);
-    await proxy.setFeeRecipient(protocolFeeRecipient.address);
+    await aggregator.setFee(proxy.address, 250, protocolFeeRecipient.address);
     await aggregator.approve(SEAPORT, USDC);
 
     await airdropUSDC(buyer.address, priceOne);

@@ -158,8 +158,7 @@ export default function behavesLikeSeaportERC721(isAtomic: boolean): void {
     const priceTwo = priceTwoBeforeFee.mul(10250).div(10000); // Fee
     const price = priceOne.add(priceTwo);
 
-    await proxy.setFeeBp(250);
-    await proxy.setFeeRecipient(protocolFeeRecipient.address);
+    await aggregator.setFee(proxy.address, 250, protocolFeeRecipient.address);
 
     const tradeData = [
       {

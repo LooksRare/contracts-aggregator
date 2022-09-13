@@ -10,7 +10,7 @@ import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
 import {V0Aggregator} from "../../contracts/V0Aggregator.sol";
 import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggregator.sol";
 import {IProxy} from "../../contracts/proxies/IProxy.sol";
-import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
+import {BasicOrder, TokenTransfer, FeeData} from "../../contracts/libraries/OrderStructs.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {LooksRareProxyTestHelpers} from "./LooksRareProxyTestHelpers.sol";
 
@@ -79,6 +79,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
     }
 
     function testBuyWithETHDirectlyFromProxySingleOrder() public {
+        FeeData memory feeData;
         BasicOrder[] memory validOrders = validBAYCOrders();
         BasicOrder[] memory orders = new BasicOrder[](1);
         orders[0] = validOrders[0];
@@ -87,7 +88,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         ordersExtraData[0] = abi.encode(orders[0].price, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE);
 
         uint256 gasRemaining = gasleft();
-        looksRareProxy.execute{value: orders[0].price}(orders, ordersExtraData, "", _buyer, false);
+        looksRareProxy.execute{value: orders[0].price}(orders, ordersExtraData, "", _buyer, false, feeData);
         uint256 gasConsumed = gasRemaining - gasleft();
         emit log_named_uint("LooksRare single NFT purchase through the proxy consumed: ", gasConsumed);
 
@@ -151,6 +152,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
     }
 
     function testBuyWithETHDirectlyFromProxyTwoOrders() public {
+        FeeData memory feeData;
         BasicOrder[] memory orders = validBAYCOrders();
 
         bytes[] memory ordersExtraData = new bytes[](2);
@@ -158,7 +160,14 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         ordersExtraData[1] = abi.encode(orders[1].price, 8500, 50, LOOKSRARE_STRATEGY_FIXED_PRICE);
 
         uint256 gasRemaining = gasleft();
-        looksRareProxy.execute{value: orders[0].price + orders[1].price}(orders, ordersExtraData, "", _buyer, false);
+        looksRareProxy.execute{value: orders[0].price + orders[1].price}(
+            orders,
+            ordersExtraData,
+            "",
+            _buyer,
+            false,
+            feeData
+        );
         uint256 gasConsumed = gasRemaining - gasleft();
         emit log_named_uint("LooksRare multiple NFT purchase through the proxy consumed: ", gasConsumed);
 

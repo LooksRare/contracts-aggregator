@@ -6,7 +6,7 @@ import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSte
 import {LooksRareProxy} from "../../contracts/proxies/LooksRareProxy.sol";
 import {TokenLogic} from "../../contracts/TokenLogic.sol";
 import {IProxy} from "../../contracts/proxies/IProxy.sol";
-import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
+import {BasicOrder, TokenTransfer, FeeData} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TokenLogicTest} from "./TokenLogic.t.sol";
@@ -29,21 +29,30 @@ contract LooksRareProxyTest is TestParameters, TestHelpers, TokenLogicTest, Look
     }
 
     function testBuyWithETHZeroOrders() public asPrankedUser(_buyer) {
+        FeeData memory feeData;
         BasicOrder[] memory orders = new BasicOrder[](0);
         bytes[] memory ordersExtraData = new bytes[](0);
 
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        looksRareProxy.execute(orders, ordersExtraData, "", _buyer, false);
+        looksRareProxy.execute(orders, ordersExtraData, "", _buyer, false, feeData);
     }
 
     function testBuyWithETHOrdersLengthMismatch() public asPrankedUser(_buyer) {
+        FeeData memory feeData;
         BasicOrder[] memory orders = validBAYCOrders();
 
         bytes[] memory ordersExtraData = new bytes[](1);
         ordersExtraData[0] = abi.encode(orders[0].price, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE);
 
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        looksRareProxy.execute{value: orders[0].price + orders[1].price}(orders, ordersExtraData, "", _buyer, false);
+        looksRareProxy.execute{value: orders[0].price + orders[1].price}(
+            orders,
+            ordersExtraData,
+            "",
+            _buyer,
+            false,
+            feeData
+        );
     }
 
     function testRescueETH() public {

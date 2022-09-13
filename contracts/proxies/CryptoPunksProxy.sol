@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.14;
 
-import {BasicOrder} from "../libraries/OrderStructs.sol";
+import {BasicOrder, FeeData} from "../libraries/OrderStructs.sol";
 import {ICryptoPunks} from "../interfaces/ICryptoPunks.sol";
 import {IProxy} from "./IProxy.sol";
 import {TokenLogic} from "../TokenLogic.sol";
@@ -35,7 +35,8 @@ contract CryptoPunksProxy is IProxy, TokenLogic {
         bytes[] calldata,
         bytes memory,
         address recipient,
-        bool isAtomic
+        bool isAtomic,
+        FeeData memory
     ) external payable override returns (bool) {
         uint256 ordersLength = orders.length;
         if (ordersLength == 0) revert InvalidOrderLength();

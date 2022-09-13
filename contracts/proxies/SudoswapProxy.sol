@@ -2,7 +2,7 @@
 pragma solidity 0.8.14;
 
 import {ISudoswapRouter} from "../interfaces/ISudoswapRouter.sol";
-import {BasicOrder} from "../libraries/OrderStructs.sol";
+import {BasicOrder, FeeData} from "../libraries/OrderStructs.sol";
 import {TokenLogic} from "../TokenLogic.sol";
 import {IProxy} from "./IProxy.sol";
 
@@ -35,7 +35,8 @@ contract SudoswapProxy is TokenLogic, IProxy {
         bytes[] calldata,
         bytes memory,
         address recipient,
-        bool isAtomic
+        bool isAtomic,
+        FeeData memory
     ) external payable override returns (bool) {
         uint256 ordersLength = orders.length;
         if (ordersLength == 0) revert InvalidOrderLength();

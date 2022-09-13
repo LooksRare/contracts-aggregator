@@ -5,7 +5,7 @@ pragma solidity 0.8.14;
 import {CryptoPunksProxy} from "../../contracts/proxies/CryptoPunksProxy.sol";
 import {TokenLogic} from "../../contracts/TokenLogic.sol";
 import {IProxy} from "../../contracts/proxies/IProxy.sol";
-import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
+import {BasicOrder, TokenTransfer, FeeData} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TokenLogicTest} from "./TokenLogic.t.sol";
@@ -26,11 +26,12 @@ contract CryptoPunksProxyTest is TestParameters, TestHelpers, TokenLogicTest {
     }
 
     function testBuyWithETHZeroOrders() public asPrankedUser(_buyer) {
+        FeeData memory feeData;
         BasicOrder[] memory orders = new BasicOrder[](0);
         bytes[] memory ordersExtraData = new bytes[](0);
 
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        cryptoPunksProxy.execute(orders, ordersExtraData, "", _buyer, false);
+        cryptoPunksProxy.execute(orders, ordersExtraData, "", _buyer, false, feeData);
     }
 
     function testRescueETH() public {

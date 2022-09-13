@@ -6,7 +6,7 @@ import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {ILooksRareExchange} from "@looksrare/contracts-exchange-v1/contracts/interfaces/ILooksRareExchange.sol";
 import {OrderTypes} from "@looksrare/contracts-exchange-v1/contracts/libraries/OrderTypes.sol";
 import {SignatureChecker} from "@looksrare/contracts-libs/contracts/SignatureChecker.sol";
-import {BasicOrder} from "../libraries/OrderStructs.sol";
+import {BasicOrder, FeeData} from "../libraries/OrderStructs.sol";
 import {CollectionType} from "../libraries/OrderEnums.sol";
 import {TokenReceiver} from "../TokenReceiver.sol";
 import {TokenLogic} from "../TokenLogic.sol";
@@ -37,7 +37,7 @@ contract LooksRareProxy is IProxy, TokenReceiver, TokenLogic, SignatureChecker {
 
     /**
      * @notice Execute LooksRare NFT sweeps in a single transaction
-     * @dev The 1st argument tokenTransfers and the 4th argument extraData are not used
+     * @dev extraData and feeData are not used
      * @param orders Orders to be executed by LooksRare
      * @param ordersExtraData Extra data for each order
      * @param recipient The address to receive the purchased NFTs
@@ -49,7 +49,8 @@ contract LooksRareProxy is IProxy, TokenReceiver, TokenLogic, SignatureChecker {
         bytes[] calldata ordersExtraData,
         bytes memory,
         address recipient,
-        bool isAtomic
+        bool isAtomic,
+        FeeData memory
     ) external payable override returns (bool) {
         uint256 ordersLength = orders.length;
         if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();

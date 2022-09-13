@@ -7,7 +7,7 @@ import {TokenLogic} from "../../contracts/TokenLogic.sol";
 import {OrderType} from "../../contracts/libraries/seaport/ConsiderationEnums.sol";
 import {AdditionalRecipient, Fulfillment, FulfillmentComponent} from "../../contracts/libraries/seaport/ConsiderationStructs.sol";
 import {IProxy} from "../../contracts/proxies/IProxy.sol";
-import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
+import {BasicOrder, TokenTransfer, FeeData} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TokenLogicTest} from "./TokenLogic.t.sol";
@@ -33,12 +33,14 @@ contract SeaportProxyTest is TestParameters, TestHelpers, TokenLogicTest, Seapor
     function testBuyWithETHZeroOrders() public asPrankedUser(_buyer) {
         BasicOrder[] memory orders = new BasicOrder[](0);
         bytes[] memory ordersExtraData = new bytes[](0);
+        FeeData memory feeData;
 
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        seaportProxy.execute(orders, ordersExtraData, validSingleBAYCExtraData(), _buyer, false);
+        seaportProxy.execute(orders, ordersExtraData, validSingleBAYCExtraData(), _buyer, false, feeData);
     }
 
     function testBuyWithETHOrdersLengthMismatch() public asPrankedUser(_buyer) {
+        FeeData memory feeData;
         BasicOrder memory order = validBAYCId2518Order();
         BasicOrder[] memory orders = new BasicOrder[](1);
         orders[0] = order;
@@ -53,40 +55,9 @@ contract SeaportProxyTest is TestParameters, TestHelpers, TokenLogicTest, Seapor
             ordersExtraData,
             validSingleBAYCExtraData(),
             _buyer,
-            false
+            false,
+            feeData
         );
-    }
-
-    function testApprove() public {
-        MockERC20 erc20 = new MockERC20();
-        assertEq(erc20.allowance(address(seaportProxy), SEAPORT), 0);
-        seaportProxy.approve(address(erc20));
-        assertEq(erc20.allowance(address(seaportProxy), SEAPORT), type(uint256).max);
-    }
-
-    function testApproveNotOwner() public {
-        MockERC20 erc20 = new MockERC20();
-        vm.expectRevert(OwnableTwoSteps.NotOwner.selector);
-        vm.prank(_buyer);
-        seaportProxy.approve(address(erc20));
-    }
-
-    function testRevoke() public {
-        MockERC20 erc20 = new MockERC20();
-        assertEq(erc20.allowance(address(seaportProxy), SEAPORT), 0);
-
-        seaportProxy.approve(address(erc20));
-        assertEq(erc20.allowance(address(seaportProxy), SEAPORT), type(uint256).max);
-
-        seaportProxy.revoke(address(erc20));
-        assertEq(erc20.allowance(address(seaportProxy), SEAPORT), 0);
-    }
-
-    function testRevokeNotOwner() public {
-        MockERC20 erc20 = new MockERC20();
-        vm.expectRevert(OwnableTwoSteps.NotOwner.selector);
-        vm.prank(_buyer);
-        seaportProxy.revoke(address(erc20));
     }
 
     function testRescueETH() public {
