@@ -8,9 +8,10 @@ import {BasicOrder, TokenTransfer} from "../libraries/OrderStructs.sol";
 import {Market} from "../libraries/x2y2/MarketConsts.sol";
 import {SignatureChecker} from "@looksrare/contracts-libs/contracts/SignatureChecker.sol";
 import {CollectionType} from "../libraries/OrderEnums.sol";
-import {TokenReceiverProxy} from "./TokenReceiverProxy.sol";
+import {TokenReceiver} from "./TokenReceiver.sol";
 import {TokenLogic} from "../TokenLogic.sol";
 import {LowLevelETH} from "../lowLevelCallers/LowLevelETH.sol";
+import {IProxy} from "./IProxy.sol";
 
 /**
  * @title X2Y2Proxy
@@ -18,7 +19,7 @@ import {LowLevelETH} from "../lowLevelCallers/LowLevelETH.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract X2Y2Proxy is TokenReceiverProxy, TokenLogic, SignatureChecker {
+contract X2Y2Proxy is IProxy, TokenReceiver, TokenLogic, SignatureChecker {
     IX2Y2 public immutable marketplace;
     uint256 public feeBp;
     address public feeRecipient;
