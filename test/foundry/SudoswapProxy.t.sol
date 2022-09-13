@@ -27,21 +27,19 @@ contract SudoswapProxyTest is TestParameters, TestHelpers, TokenLogicTest {
     }
 
     function testBuyWithETHZeroOrders() public asPrankedUser(_buyer) {
-        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder[] memory orders = new BasicOrder[](0);
         bytes[] memory ordersExtraData = new bytes[](0);
 
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        sudoswapProxy.execute(tokenTransfers, orders, ordersExtraData, "", _buyer, false);
+        sudoswapProxy.execute(orders, ordersExtraData, "", _buyer, false);
     }
 
     function testBuyWithETHOrdersRecipientZeroAddress() public {
-        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder[] memory orders = validMoodieOrder();
         bytes[] memory ordersExtraData = new bytes[](0);
 
         vm.expectRevert(IProxy.ZeroAddress.selector);
-        sudoswapProxy.execute{value: orders[0].price}(tokenTransfers, orders, ordersExtraData, "", address(0), false);
+        sudoswapProxy.execute{value: orders[0].price}(orders, ordersExtraData, "", address(0), false);
     }
 
     function testRescueETH() public {

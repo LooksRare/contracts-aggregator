@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.14;
 
-import {BasicOrder, TokenTransfer} from "../libraries/OrderStructs.sol";
+import {BasicOrder} from "../libraries/OrderStructs.sol";
 import {ICryptoPunks} from "../interfaces/ICryptoPunks.sol";
 import {IProxy} from "./IProxy.sol";
 import {TokenLogic} from "../TokenLogic.sol";
@@ -33,7 +33,6 @@ contract CryptoPunksProxy is IProxy, TokenLogic {
      * @return Whether at least 1 out of N trades succeeded
      */
     function execute(
-        TokenTransfer[] calldata,
         BasicOrder[] calldata orders,
         bytes[] calldata,
         bytes memory,

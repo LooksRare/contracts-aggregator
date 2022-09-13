@@ -29,16 +29,14 @@ contract X2Y2ProxyTest is TestParameters, TestHelpers, TokenLogicTest {
     }
 
     function testBuyWithETHZeroOrders() public asPrankedUser(_buyer) {
-        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder[] memory orders = new BasicOrder[](0);
         bytes[] memory ordersExtraData = new bytes[](0);
 
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        x2y2Proxy.execute(tokenTransfers, orders, ordersExtraData, "", _buyer, false);
+        x2y2Proxy.execute(orders, ordersExtraData, "", _buyer, false);
     }
 
     function testBuyWithETHOrdersLengthMismatch() public asPrankedUser(_buyer) {
-        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder[] memory orders = validBAYCOrder();
 
         bytes[] memory ordersExtraData = new bytes[](2);
@@ -46,18 +44,17 @@ contract X2Y2ProxyTest is TestParameters, TestHelpers, TokenLogicTest {
         ordersExtraData[1] = validBAYCOrderExtraData();
 
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        x2y2Proxy.execute{value: orders[0].price}(tokenTransfers, orders, ordersExtraData, "", _buyer, false);
+        x2y2Proxy.execute{value: orders[0].price}(orders, ordersExtraData, "", _buyer, false);
     }
 
     function testBuyWithETHOrdersRecipientZeroAddress() public {
-        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder[] memory orders = validBAYCOrder();
 
         bytes[] memory ordersExtraData = new bytes[](1);
         ordersExtraData[0] = validBAYCOrderExtraData();
 
         vm.expectRevert(IProxy.ZeroAddress.selector);
-        x2y2Proxy.execute{value: orders[0].price}(tokenTransfers, orders, ordersExtraData, "", address(0), false);
+        x2y2Proxy.execute{value: orders[0].price}(orders, ordersExtraData, "", address(0), false);
     }
 
     function testRescueETH() public {

@@ -31,16 +31,14 @@ contract SeaportProxyTest is TestParameters, TestHelpers, TokenLogicTest, Seapor
     }
 
     function testBuyWithETHZeroOrders() public asPrankedUser(_buyer) {
-        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder[] memory orders = new BasicOrder[](0);
         bytes[] memory ordersExtraData = new bytes[](0);
 
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        seaportProxy.execute(tokenTransfers, orders, ordersExtraData, validSingleBAYCExtraData(), _buyer, false);
+        seaportProxy.execute(orders, ordersExtraData, validSingleBAYCExtraData(), _buyer, false);
     }
 
     function testBuyWithETHOrdersLengthMismatch() public asPrankedUser(_buyer) {
-        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder memory order = validBAYCId2518Order();
         BasicOrder[] memory orders = new BasicOrder[](1);
         orders[0] = order;
@@ -51,7 +49,6 @@ contract SeaportProxyTest is TestParameters, TestHelpers, TokenLogicTest, Seapor
 
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
         seaportProxy.execute{value: orders[0].price}(
-            tokenTransfers,
             orders,
             ordersExtraData,
             validSingleBAYCExtraData(),
@@ -61,7 +58,6 @@ contract SeaportProxyTest is TestParameters, TestHelpers, TokenLogicTest, Seapor
     }
 
     function testBuyWithETHOrdersRecipientZeroAddress() public {
-        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder memory order = validBAYCId2518Order();
         BasicOrder[] memory orders = new BasicOrder[](1);
         orders[0] = order;
@@ -71,7 +67,6 @@ contract SeaportProxyTest is TestParameters, TestHelpers, TokenLogicTest, Seapor
 
         vm.expectRevert(IProxy.ZeroAddress.selector);
         seaportProxy.execute{value: orders[0].price}(
-            tokenTransfers,
             orders,
             ordersExtraData,
             validSingleBAYCExtraData(),

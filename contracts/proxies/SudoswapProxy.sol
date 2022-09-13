@@ -2,7 +2,7 @@
 pragma solidity 0.8.14;
 
 import {ISudoswapRouter} from "../interfaces/ISudoswapRouter.sol";
-import {BasicOrder, TokenTransfer} from "../libraries/OrderStructs.sol";
+import {BasicOrder} from "../libraries/OrderStructs.sol";
 import {TokenLogic} from "../TokenLogic.sol";
 import {IProxy} from "./IProxy.sol";
 
@@ -33,7 +33,6 @@ contract SudoswapProxy is TokenLogic, IProxy {
      * @return Whether at least 1 out of N trades succeeded
      */
     function execute(
-        TokenTransfer[] calldata,
         BasicOrder[] calldata orders,
         bytes[] calldata,
         bytes memory,

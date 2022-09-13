@@ -3,7 +3,7 @@ pragma solidity 0.8.14;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SeaportInterface} from "../interfaces/SeaportInterface.sol";
-import {BasicOrder, TokenTransfer} from "../libraries/OrderStructs.sol";
+import {BasicOrder} from "../libraries/OrderStructs.sol";
 import {CollectionType} from "../libraries/OrderEnums.sol";
 import {AdvancedOrder, CriteriaResolver, OrderParameters, OfferItem, ConsiderationItem, FulfillmentComponent, AdditionalRecipient} from "../libraries/seaport/ConsiderationStructs.sol";
 import {ItemType, OrderType} from "../libraries/seaport/ConsiderationEnums.sol";
@@ -48,7 +48,6 @@ contract SeaportProxy is TokenLogic, IProxy {
 
     /**
      * @notice Execute Seaport NFT sweeps in a single transaction
-     * @param tokenTransfers Aggregated ERC-20 token transfers for all orders
      * @param orders Orders to be executed by Seaport
      * @param ordersExtraData Extra data for each order
      * @param extraData Extra data for the whole transaction
@@ -57,7 +56,6 @@ contract SeaportProxy is TokenLogic, IProxy {
      * @return Whether at least 1 out of N trades succeeded
      */
     function execute(
-        TokenTransfer[] calldata tokenTransfers,
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,
         bytes calldata extraData,
@@ -67,15 +65,11 @@ contract SeaportProxy is TokenLogic, IProxy {
         uint256 ordersLength = orders.length;
         if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();
 
-        if (tokenTransfers.length > 0) _pullERC20Tokens(tokenTransfers, msg.sender);
-
         if (isAtomic) {
             _executeAtomicOrders(orders, ordersExtraData, extraData, recipient);
-            if (tokenTransfers.length > 0) _returnERC20TokensIfAny(tokenTransfers, msg.sender);
             return true;
         } else {
             uint256 executedCount = _executeNonAtomicOrders(orders, ordersExtraData, recipient);
-            if (tokenTransfers.length > 0) _returnERC20TokensIfAny(tokenTransfers, msg.sender);
             return executedCount > 0;
         }
     }

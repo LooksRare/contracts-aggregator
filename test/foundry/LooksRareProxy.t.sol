@@ -29,30 +29,21 @@ contract LooksRareProxyTest is TestParameters, TestHelpers, TokenLogicTest, Look
     }
 
     function testBuyWithETHZeroOrders() public asPrankedUser(_buyer) {
-        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder[] memory orders = new BasicOrder[](0);
         bytes[] memory ordersExtraData = new bytes[](0);
 
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        looksRareProxy.execute(tokenTransfers, orders, ordersExtraData, "", _buyer, false);
+        looksRareProxy.execute(orders, ordersExtraData, "", _buyer, false);
     }
 
     function testBuyWithETHOrdersLengthMismatch() public asPrankedUser(_buyer) {
-        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder[] memory orders = validBAYCOrders();
 
         bytes[] memory ordersExtraData = new bytes[](1);
         ordersExtraData[0] = abi.encode(orders[0].price, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE);
 
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        looksRareProxy.execute{value: orders[0].price + orders[1].price}(
-            tokenTransfers,
-            orders,
-            ordersExtraData,
-            "",
-            _buyer,
-            false
-        );
+        looksRareProxy.execute{value: orders[0].price + orders[1].price}(orders, ordersExtraData, "", _buyer, false);
     }
 
     function testBuyWithETHOrdersRecipientZeroAddress() public {

@@ -6,7 +6,7 @@ import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {ILooksRareExchange} from "@looksrare/contracts-exchange-v1/contracts/interfaces/ILooksRareExchange.sol";
 import {OrderTypes} from "@looksrare/contracts-exchange-v1/contracts/libraries/OrderTypes.sol";
 import {SignatureChecker} from "@looksrare/contracts-libs/contracts/SignatureChecker.sol";
-import {BasicOrder, TokenTransfer} from "../libraries/OrderStructs.sol";
+import {BasicOrder} from "../libraries/OrderStructs.sol";
 import {CollectionType} from "../libraries/OrderEnums.sol";
 import {TokenReceiver} from "./TokenReceiver.sol";
 import {TokenLogic} from "../TokenLogic.sol";
@@ -45,7 +45,6 @@ contract LooksRareProxy is IProxy, TokenReceiver, TokenLogic, SignatureChecker {
      * @return Whether at least 1 out of N trades succeeded
      */
     function execute(
-        TokenTransfer[] calldata,
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,
         bytes memory,
