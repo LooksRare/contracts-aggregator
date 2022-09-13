@@ -25,8 +25,9 @@ export default async function deployLooksRareFixture(): Promise<MultipleMarketsF
   const looksRareProxy = await LooksRareProxy.deploy(LOOKSRARE_V1);
   await looksRareProxy.deployed();
 
-  // Because we are forking from the mainnet, the proxy address somehow already had a contract deployed to
-  // the same address with ether balance, causing our test (balance comparison) to fail.
+  // Because we are forking from the mainnet, the aggregator/proxy address might have a nonzero
+  // balance, causing our test (balance comparison) to fail.
+  await ethers.provider.send("hardhat_setBalance", [proxy.address, "0x0"]);
   await ethers.provider.send("hardhat_setBalance", [aggregator.address, "0x0"]);
 
   const looksRareFunctionSelector = await getSignature("LooksRareProxy.json", "execute");
