@@ -125,6 +125,8 @@ contract SeaportProxy is TokenLogic, IProxy {
         ExtraData memory extraDataStruct = abi.decode(extraData, (ExtraData));
         CriteriaResolver[] memory criteriaResolver = new CriteriaResolver[](0);
 
+        uint256 ethValue;
+
         for (uint256 i; i < ordersLength; ) {
             OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
             advancedOrders[i].parameters = _populateParameters(orders[i], orderExtraData);
@@ -132,15 +134,14 @@ contract SeaportProxy is TokenLogic, IProxy {
             advancedOrders[i].denominator = orderExtraData.denominator;
             advancedOrders[i].signature = orders[i].signature;
 
+            ethValue += orders[i].price;
+
             unchecked {
                 ++i;
             }
         }
 
-        address _feeRecipient = feeRecipient;
-        uint256 ethFee = _feeRecipient == address(0) ? 0 : msg.value - (msg.value * 10000) / (10000 + feeBp);
-
-        (bool[] memory availableOrders, ) = marketplace.fulfillAvailableAdvancedOrders{value: msg.value - ethFee}(
+        (bool[] memory availableOrders, ) = marketplace.fulfillAvailableAdvancedOrders{value: ethValue}(
             advancedOrders,
             criteriaResolver,
             extraDataStruct.offerFulfillments,
@@ -157,32 +158,26 @@ contract SeaportProxy is TokenLogic, IProxy {
             }
         }
 
-        if (_feeRecipient != address(0)) {
-            _handleAtomicOrdersERC20OrdersFees(orders);
-            if (ethFee > 0) _transferETH(_feeRecipient, ethFee);
-        }
+        _handleFees(orders);
     }
 
-    function _handleAtomicOrdersERC20OrdersFees(BasicOrder[] calldata orders) private {
+    function _handleFees(BasicOrder[] calldata orders) private {
+        address _feeRecipient = feeRecipient;
+        if (_feeRecipient == address(0)) return;
+
         address lastOrderCurrency;
         uint256 fee;
 
         for (uint256 i; i < orders.length; ) {
             address currency = orders[i].currency;
 
-            // Atomic orders handle fees differently as the total ETH fee is calculated
-            // before we even submit the orders to Seaport. It's all or nothing, so we do
-            // not have to loop each order to add the ETH fee.
-            if (currency != address(0)) {
-                uint256 price = orders[i].price;
-                uint256 orderFee = (price * feeBp) / 10000;
-                if (currency == lastOrderCurrency) {
-                    fee += orderFee;
-                } else {
-                    if (fee > 0) _executeERC20DirectTransfer(lastOrderCurrency, feeRecipient, fee);
-                    fee = orderFee;
-                    lastOrderCurrency = currency;
-                }
+            if (currency == lastOrderCurrency) {
+                fee += (orders[i].price * feeBp) / 10000;
+            } else {
+                if (fee > 0) _transferFee(fee, lastOrderCurrency, _feeRecipient);
+
+                lastOrderCurrency = currency;
+                fee = (orders[i].price * feeBp) / 10000;
             }
 
             unchecked {
@@ -190,7 +185,19 @@ contract SeaportProxy is TokenLogic, IProxy {
             }
         }
 
-        if (fee > 0) _executeERC20DirectTransfer(lastOrderCurrency, feeRecipient, fee);
+        if (fee > 0) _transferFee(fee, lastOrderCurrency, _feeRecipient);
+    }
+
+    function _transferFee(
+        uint256 fee,
+        address lastOrderCurrency,
+        address _feeRecipient
+    ) private {
+        if (lastOrderCurrency == address(0)) {
+            _transferETH(_feeRecipient, fee);
+        } else {
+            _executeERC20DirectTransfer(lastOrderCurrency, _feeRecipient, fee);
+        }
     }
 
     function _executeNonAtomicOrders(
@@ -219,13 +226,7 @@ contract SeaportProxy is TokenLogic, IProxy {
                     if (orders[i].currency == lastOrderCurrency) {
                         fee += (orders[i].price * feeBp) / 10000;
                     } else {
-                        if (fee > 0) {
-                            if (lastOrderCurrency == address(0)) {
-                                _transferETH(_feeRecipient, fee);
-                            } else {
-                                _executeERC20DirectTransfer(lastOrderCurrency, _feeRecipient, fee);
-                            }
-                        }
+                        if (fee > 0) _transferFee(fee, lastOrderCurrency, _feeRecipient);
 
                         lastOrderCurrency = orders[i].currency;
                         fee = (orders[i].price * feeBp) / 10000;
@@ -238,13 +239,7 @@ contract SeaportProxy is TokenLogic, IProxy {
             }
         }
 
-        if (fee > 0) {
-            if (lastOrderCurrency == address(0)) {
-                _transferETH(_feeRecipient, fee);
-            } else {
-                _executeERC20DirectTransfer(lastOrderCurrency, _feeRecipient, fee);
-            }
-        }
+        if (fee > 0) _transferFee(fee, lastOrderCurrency, _feeRecipient);
     }
 
     function _populateParameters(BasicOrder calldata order, OrderExtraData memory orderExtraData)
