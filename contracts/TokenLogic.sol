@@ -37,24 +37,4 @@ contract TokenLogic is OwnableTwoSteps, LowLevelETH, LowLevelERC20 {
         if (withdrawAmount == 0) revert InsufficientAmount();
         _executeERC20DirectTransfer(currency, to, withdrawAmount);
     }
-
-    function _pullERC20Tokens(TokenTransfer[] calldata tokenTransfers, address source) internal {
-        for (uint256 i; i < tokenTransfers.length; ) {
-            _executeERC20Transfer(tokenTransfers[i].currency, source, address(this), tokenTransfers[i].amount);
-            unchecked {
-                ++i;
-            }
-        }
-    }
-
-    function _returnERC20TokensIfAny(TokenTransfer[] calldata tokenTransfers, address recipient) internal {
-        for (uint256 i; i < tokenTransfers.length; ) {
-            uint256 balance = IERC20(tokenTransfers[i].currency).balanceOf(address(this));
-            if (balance > 0) _executeERC20DirectTransfer(tokenTransfers[i].currency, recipient, balance);
-
-            unchecked {
-                ++i;
-            }
-        }
-    }
 }
