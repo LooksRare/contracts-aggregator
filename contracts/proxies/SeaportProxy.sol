@@ -17,7 +17,7 @@ import {IProxy} from "../proxies/IProxy.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract SeaportProxy is TokenLogic, IProxy {
+contract SeaportProxy is IProxy, TokenLogic {
     SeaportInterface public immutable marketplace;
 
     error TradeExecutionFailed();

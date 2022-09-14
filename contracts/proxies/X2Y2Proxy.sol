@@ -19,7 +19,7 @@ import {IProxy} from "./IProxy.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract X2Y2Proxy is IProxy, TokenReceiver, TokenLogic, SignatureChecker {
+contract X2Y2Proxy is IProxy, TokenLogic, TokenReceiver, SignatureChecker {
     IX2Y2 public immutable marketplace;
 
     struct OrderExtraData {

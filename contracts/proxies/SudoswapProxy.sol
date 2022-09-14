@@ -12,7 +12,7 @@ import {IProxy} from "./IProxy.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract SudoswapProxy is TokenLogic, IProxy {
+contract SudoswapProxy is IProxy, TokenLogic {
     ISudoswapRouter public immutable marketplace;
 
     /**

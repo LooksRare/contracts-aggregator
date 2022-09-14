@@ -15,7 +15,7 @@ import {FeeData} from "./libraries/OrderStructs.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract LooksRareAggregator is TokenLogic, TokenReceiver, ILooksRareAggregator {
+contract LooksRareAggregator is ILooksRareAggregator, TokenLogic, TokenReceiver {
     mapping(address => mapping(bytes4 => bool)) private _proxyFunctionSelectors;
     mapping(address => FeeData) private _proxyFeeData;
 

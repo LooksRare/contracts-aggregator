@@ -18,7 +18,7 @@ import {IProxy} from "./IProxy.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract LooksRareProxy is IProxy, TokenReceiver, TokenLogic, SignatureChecker {
+contract LooksRareProxy is IProxy, TokenLogic, TokenReceiver, SignatureChecker {
     struct OrderExtraData {
         uint256 makerAskPrice; // Maker ask price, which is not necessarily equal to the taker bid price
         uint256 minPercentageToAsk; // The maker's minimum % to receive from the sale
