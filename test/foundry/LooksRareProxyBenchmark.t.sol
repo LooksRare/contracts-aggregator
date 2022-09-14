@@ -78,23 +78,6 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         assertEq(IERC721(BAYC).ownerOf(7139), _buyer);
     }
 
-    function testBuyWithETHDirectlyFromProxySingleOrder() public {
-        FeeData memory feeData;
-        BasicOrder[] memory validOrders = validBAYCOrders();
-        BasicOrder[] memory orders = new BasicOrder[](1);
-        orders[0] = validOrders[0];
-
-        bytes[] memory ordersExtraData = new bytes[](1);
-        ordersExtraData[0] = abi.encode(orders[0].price, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE);
-
-        uint256 gasRemaining = gasleft();
-        looksRareProxy.execute{value: orders[0].price}(orders, ordersExtraData, "", _buyer, false, feeData);
-        uint256 gasConsumed = gasRemaining - gasleft();
-        emit log_named_uint("LooksRare single NFT purchase through the proxy consumed: ", gasConsumed);
-
-        assertEq(IERC721(BAYC).ownerOf(7139), _buyer);
-    }
-
     function testBuyWithETHThroughAggregatorSingleOrder() public {
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder[] memory validOrders = validBAYCOrders();
@@ -149,30 +132,6 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         emit log_named_uint("LooksRare single NFT purchase through the V0 aggregator consumed: ", gasConsumed);
 
         assertEq(IERC721(BAYC).ownerOf(7139), _buyer);
-    }
-
-    function testBuyWithETHDirectlyFromProxyTwoOrders() public {
-        FeeData memory feeData;
-        BasicOrder[] memory orders = validBAYCOrders();
-
-        bytes[] memory ordersExtraData = new bytes[](2);
-        ordersExtraData[0] = abi.encode(orders[0].price, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE);
-        ordersExtraData[1] = abi.encode(orders[1].price, 8500, 50, LOOKSRARE_STRATEGY_FIXED_PRICE);
-
-        uint256 gasRemaining = gasleft();
-        looksRareProxy.execute{value: orders[0].price + orders[1].price}(
-            orders,
-            ordersExtraData,
-            "",
-            _buyer,
-            false,
-            feeData
-        );
-        uint256 gasConsumed = gasRemaining - gasleft();
-        emit log_named_uint("LooksRare multiple NFT purchase through the proxy consumed: ", gasConsumed);
-
-        assertEq(IERC721(BAYC).ownerOf(7139), _buyer);
-        assertEq(IERC721(BAYC).ownerOf(3939), _buyer);
     }
 
     function testBuyWithETHThroughAggregatorTwoOrders() public {

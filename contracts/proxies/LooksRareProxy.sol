@@ -8,7 +8,7 @@ import {OrderTypes} from "@looksrare/contracts-exchange-v1/contracts/libraries/O
 import {SignatureChecker} from "@looksrare/contracts-libs/contracts/SignatureChecker.sol";
 import {BasicOrder, FeeData} from "../libraries/OrderStructs.sol";
 import {CollectionType} from "../libraries/OrderEnums.sol";
-import {TokenReceiver} from "../TokenReceiver.sol";
+import {TokenTransferrer} from "../TokenTransferrer.sol";
 import {TokenLogic} from "../TokenLogic.sol";
 import {IProxy} from "./IProxy.sol";
 
@@ -18,7 +18,7 @@ import {IProxy} from "./IProxy.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract LooksRareProxy is IProxy, TokenLogic, TokenReceiver, SignatureChecker {
+contract LooksRareProxy is IProxy, TokenLogic, TokenTransferrer, SignatureChecker {
     struct OrderExtraData {
         uint256 makerAskPrice; // Maker ask price, which is not necessarily equal to the taker bid price
         uint256 minPercentageToAsk; // The maker's minimum % to receive from the sale

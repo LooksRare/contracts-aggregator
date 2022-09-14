@@ -128,6 +128,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
     }
 
     function testBuyWithETHThroughV0AggregatorSingleOrder() public {
+        FeeData memory feeData;
         BasicOrder memory order = validBAYCId2518Order();
         BasicOrder[] memory orders = new BasicOrder[](1);
         orders[0] = order;
@@ -144,7 +145,8 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
             ordersExtraData,
             extraData,
             _buyer,
-            true
+            true,
+            feeData
         );
 
         V0Aggregator.TradeData[] memory tradeData = new V0Aggregator.TradeData[](1);
@@ -317,11 +319,10 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
     }
 
     function testBuyWithETHThroughV0AggregatorTwoOrders() public {
-        BasicOrder memory orderOne = validBAYCId2518Order();
-        BasicOrder memory orderTwo = validBAYCId8498Order();
+        FeeData memory feeData;
         BasicOrder[] memory orders = new BasicOrder[](2);
-        orders[0] = orderOne;
-        orders[1] = orderTwo;
+        orders[0] = validBAYCId2518Order();
+        orders[1] = validBAYCId8498Order();
 
         bytes memory orderOneExtraData = validBAYCId2518OrderExtraData();
         bytes memory orderTwoExtraData = validBAYCId8498OrderExtraData();
@@ -339,7 +340,8 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
             ordersExtraData,
             extraData,
             _buyer,
-            true
+            true,
+            feeData
         );
         tradeData[0] = V0Aggregator.TradeData({proxy: address(seaportProxy), value: totalPrice, data: data});
 

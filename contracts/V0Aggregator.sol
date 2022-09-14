@@ -3,6 +3,7 @@ pragma solidity 0.8.14;
 
 import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
 import {TokenLogic} from "./TokenLogic.sol";
+import {TokenReceiver} from "./TokenReceiver.sol";
 
 /**
  * @title V0Aggregator
@@ -10,7 +11,7 @@ import {TokenLogic} from "./TokenLogic.sol";
  *         by passing bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract V0Aggregator is TokenLogic {
+contract V0Aggregator is TokenLogic, TokenReceiver {
     struct TradeData {
         address proxy;
         bytes data;
@@ -43,7 +44,7 @@ contract V0Aggregator is TokenLogic {
             address proxy = tradeData[i].proxy;
             if (!_proxyFunctionSelectors[proxy][selector]) revert InvalidFunction();
 
-            (bool success, bytes memory returnData) = proxy.call{value: tradeData[i].value}(data);
+            (bool success, bytes memory returnData) = proxy.delegatecall(data);
 
             if (!success) {
                 if (returnData.length > 0) {
