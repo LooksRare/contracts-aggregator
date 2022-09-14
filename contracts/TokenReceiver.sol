@@ -45,7 +45,7 @@ abstract contract TokenReceiver {
         if (collectionType == CollectionType.ERC721) {
             IERC721(collection).transferFrom(address(this), recipient, tokenId);
         } else if (collectionType == CollectionType.ERC1155) {
-            IERC1155(collection).safeTransferFrom(address(this), recipient, tokenId, amount, "0x");
+            IERC1155(collection).safeTransferFrom(address(this), recipient, tokenId, amount, "");
         }
     }
 }
