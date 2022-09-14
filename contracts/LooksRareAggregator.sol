@@ -105,7 +105,6 @@ contract LooksRareAggregator is TokenLogic, TokenReceiver, ILooksRareAggregator 
         address recipient
     ) external onlyOwner {
         if (bp > 10000) revert FeeTooHigh();
-        // TODO: if (bp > 0 && recipient == address(0)) revert;
         _proxyFeeData[proxy].bp = bp;
         _proxyFeeData[proxy].recipient = recipient;
 
