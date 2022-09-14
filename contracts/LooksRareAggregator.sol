@@ -121,7 +121,7 @@ contract LooksRareAggregator is TokenLogic, TokenReceiver, ILooksRareAggregator 
     }
 
     /**
-     * @notice Revoke marketplaces to transfer ERC-20 tokens from the aggregator
+     * @notice Revoke a marketplace's approval to transfer ERC-20 tokens from the aggregator
      * @param marketplace The address of the marketplace to revoke
      * @param currency The address of the ERC-20 token to revoke
      */
