@@ -26,17 +26,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
     LooksRareProxy looksRareProxy;
 
     function setUp() public {
-        aggregator = new LooksRareAggregator();
-        looksRareProxy = new LooksRareProxy(LOOKSRARE_V1, address(aggregator));
-
         vm.deal(_buyer, 100 ether);
-        // Since we are forking mainnet, we have to make sure it has 0 ETH.
-        vm.deal(address(looksRareProxy), 0);
-
-        aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
-
-        v0Aggregator = new V0Aggregator();
-        v0Aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
     }
 
     function testBuyWithETHDirectlySingleOrder() public asPrankedUser(_buyer) {
@@ -80,6 +70,8 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
     }
 
     function testBuyWithETHThroughAggregatorSingleOrder() public {
+        _aggregatorSetUp();
+
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder[] memory validOrders = validBAYCOrders();
         BasicOrder[] memory orders = new BasicOrder[](1);
@@ -107,6 +99,8 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
     }
 
     function testBuyWithETHThroughV0AggregatorSingleOrder() public {
+        _v0AggregatorSetUp();
+
         BasicOrder[] memory validOrders = validBAYCOrders();
         BasicOrder[] memory orders = new BasicOrder[](1);
         orders[0] = validOrders[0];
@@ -135,6 +129,8 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
     }
 
     function testBuyWithETHThroughAggregatorTwoOrders() public {
+        _aggregatorSetUp();
+
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder[] memory orders = validBAYCOrders();
 
@@ -162,6 +158,8 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
     }
 
     function testBuyWithETHThroughV0AggregatorTwoOrders() public {
+        _v0AggregatorSetUp();
+
         BasicOrder[] memory orders = validBAYCOrders();
 
         bytes[] memory ordersExtraData = new bytes[](2);
@@ -189,5 +187,25 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
 
         assertEq(IERC721(BAYC).ownerOf(7139), _buyer);
         assertEq(IERC721(BAYC).ownerOf(3939), _buyer);
+    }
+
+    function _aggregatorSetUp() private {
+        aggregator = new LooksRareAggregator();
+        looksRareProxy = new LooksRareProxy(LOOKSRARE_V1, address(aggregator));
+
+        // Since we are forking mainnet, we have to make sure it has 0 ETH.
+        vm.deal(address(looksRareProxy), 0);
+
+        aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
+    }
+
+    function _v0AggregatorSetUp() private {
+        v0Aggregator = new V0Aggregator();
+        looksRareProxy = new LooksRareProxy(LOOKSRARE_V1, address(v0Aggregator));
+
+        // Since we are forking mainnet, we have to make sure it has 0 ETH.
+        vm.deal(address(looksRareProxy), 0);
+
+        v0Aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
     }
 }
