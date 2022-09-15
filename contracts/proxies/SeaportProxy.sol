@@ -19,6 +19,7 @@ import {IProxy} from "../proxies/IProxy.sol";
  */
 contract SeaportProxy is IProxy, TokenLogic {
     SeaportInterface public immutable marketplace;
+    address public immutable aggregator;
 
     error TradeExecutionFailed();
 
@@ -40,9 +41,11 @@ contract SeaportProxy is IProxy, TokenLogic {
 
     /**
      * @param _marketplace Seaport's address
+     * @param _aggregator LooksRareAggregator's address
      */
-    constructor(address _marketplace) {
+    constructor(address _marketplace, address _aggregator) {
         marketplace = SeaportInterface(_marketplace);
+        aggregator = _aggregator;
     }
 
     /**
@@ -63,6 +66,8 @@ contract SeaportProxy is IProxy, TokenLogic {
         bool isAtomic,
         FeeData memory feeData
     ) external payable override returns (bool) {
+        if (address(this) != aggregator) revert InvalidCaller();
+
         uint256 ordersLength = orders.length;
         if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();
 

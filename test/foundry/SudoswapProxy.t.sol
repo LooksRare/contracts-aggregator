@@ -3,6 +3,7 @@
 pragma solidity 0.8.14;
 
 import {SudoswapProxy} from "../../contracts/proxies/SudoswapProxy.sol";
+import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
 import {TokenLogic} from "../../contracts/TokenLogic.sol";
 import {IProxy} from "../../contracts/proxies/IProxy.sol";
 import {BasicOrder, TokenTransfer, FeeData} from "../../contracts/libraries/OrderStructs.sol";
@@ -17,11 +18,13 @@ abstract contract TestParameters {
 }
 
 contract SudoswapProxyTest is TestParameters, TestHelpers, TokenLogicTest {
+    LooksRareAggregator aggregator;
     SudoswapProxy sudoswapProxy;
     TokenLogic tokenRescuer;
 
     function setUp() public {
-        sudoswapProxy = new SudoswapProxy(SUDOSWAP);
+        aggregator = new LooksRareAggregator();
+        sudoswapProxy = new SudoswapProxy(SUDOSWAP, address(aggregator));
         tokenRescuer = TokenLogic(address(sudoswapProxy));
         vm.deal(_buyer, 100 ether);
     }

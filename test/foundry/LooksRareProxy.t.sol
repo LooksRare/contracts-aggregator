@@ -4,6 +4,7 @@ pragma solidity 0.8.14;
 
 import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
 import {LooksRareProxy} from "../../contracts/proxies/LooksRareProxy.sol";
+import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
 import {TokenLogic} from "../../contracts/TokenLogic.sol";
 import {IProxy} from "../../contracts/proxies/IProxy.sol";
 import {BasicOrder, TokenTransfer, FeeData} from "../../contracts/libraries/OrderStructs.sol";
@@ -19,11 +20,13 @@ abstract contract TestParameters {
 }
 
 contract LooksRareProxyTest is TestParameters, TestHelpers, TokenLogicTest, LooksRareProxyTestHelpers {
+    LooksRareAggregator aggregator;
     LooksRareProxy looksRareProxy;
     TokenLogic tokenRescuer;
 
     function setUp() public {
-        looksRareProxy = new LooksRareProxy(LOOKSRARE_V1);
+        aggregator = new LooksRareAggregator();
+        looksRareProxy = new LooksRareProxy(LOOKSRARE_V1, address(aggregator));
         tokenRescuer = TokenLogic(address(looksRareProxy));
         vm.deal(_buyer, 200 ether);
     }

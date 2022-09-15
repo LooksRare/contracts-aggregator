@@ -14,12 +14,15 @@ import {TokenLogic} from "../TokenLogic.sol";
  */
 contract CryptoPunksProxy is IProxy, TokenLogic {
     ICryptoPunks public immutable marketplace;
+    address public immutable aggregator;
 
     /**
      * @param _marketplace CryptoPunks' address
+     * @param _aggregator LooksRareAggregator's address
      */
-    constructor(address _marketplace) {
+    constructor(address _marketplace, address _aggregator) {
         marketplace = ICryptoPunks(_marketplace);
+        aggregator = _aggregator;
     }
 
     /**
@@ -38,6 +41,8 @@ contract CryptoPunksProxy is IProxy, TokenLogic {
         bool isAtomic,
         FeeData memory
     ) external payable override returns (bool) {
+        if (address(this) != aggregator) revert InvalidCaller();
+
         uint256 ordersLength = orders.length;
         if (ordersLength == 0) revert InvalidOrderLength();
 

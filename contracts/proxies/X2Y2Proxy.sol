@@ -21,6 +21,7 @@ import {IProxy} from "./IProxy.sol";
  */
 contract X2Y2Proxy is IProxy, TokenLogic, TokenTransferrer, SignatureChecker {
     IX2Y2 public immutable marketplace;
+    address public immutable aggregator;
 
     struct OrderExtraData {
         uint256 salt; // An arbitrary source of entropy for the order (per trade)
@@ -36,9 +37,11 @@ contract X2Y2Proxy is IProxy, TokenLogic, TokenTransferrer, SignatureChecker {
 
     /**
      * @param _marketplace X2Y2's address
+     * @param _aggregator LooksRareAggregator's address
      */
-    constructor(address _marketplace) {
+    constructor(address _marketplace, address _aggregator) {
         marketplace = IX2Y2(_marketplace);
+        aggregator = _aggregator;
     }
 
     /**
@@ -58,6 +61,8 @@ contract X2Y2Proxy is IProxy, TokenLogic, TokenTransferrer, SignatureChecker {
         bool isAtomic,
         FeeData memory
     ) external payable override returns (bool) {
+        if (address(this) != aggregator) revert InvalidCaller();
+
         uint256 ordersLength = orders.length;
         if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();
 

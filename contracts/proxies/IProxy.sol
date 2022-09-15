@@ -4,6 +4,7 @@ pragma solidity 0.8.14;
 import {BasicOrder, FeeData} from "../libraries/OrderStructs.sol";
 
 interface IProxy {
+    error InvalidCaller();
     error InvalidOrderLength();
     error ZeroAddress();
 

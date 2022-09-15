@@ -100,10 +100,10 @@ contract GemSwapBenchmarkTest is TestParameters, TestHelpers, SeaportProxyTestHe
     function _testBuyFromLooksRareAggregator(bool isAtomic) private {
         LooksRareAggregator aggregator = new LooksRareAggregator();
 
-        SeaportProxy seaportProxy = new SeaportProxy(SEAPORT);
+        SeaportProxy seaportProxy = new SeaportProxy(SEAPORT, address(aggregator));
         aggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);
 
-        LooksRareProxy looksRareProxy = new LooksRareProxy(LOOKSRARE_V1);
+        LooksRareProxy looksRareProxy = new LooksRareProxy(LOOKSRARE_V1, address(aggregator));
         aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
 
         ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](2);
@@ -162,10 +162,10 @@ contract GemSwapBenchmarkTest is TestParameters, TestHelpers, SeaportProxyTestHe
     function _testBuyFromLooksRareAggregatorTwoNFTsEachMarketplace(bool isAtomic) private {
         LooksRareAggregator aggregator = new LooksRareAggregator();
 
-        SeaportProxy seaportProxy = new SeaportProxy(SEAPORT);
+        SeaportProxy seaportProxy = new SeaportProxy(SEAPORT, address(aggregator));
         aggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);
 
-        LooksRareProxy looksRareProxy = new LooksRareProxy(LOOKSRARE_V1);
+        LooksRareProxy looksRareProxy = new LooksRareProxy(LOOKSRARE_V1, address(aggregator));
         aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
 
         ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](2);

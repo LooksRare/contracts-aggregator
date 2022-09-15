@@ -21,11 +21,13 @@ abstract contract TestParameters {
 }
 
 contract SeaportProxyTest is TestParameters, TestHelpers, TokenLogicTest, SeaportProxyTestHelpers {
+    LooksRareAggregator aggregator;
     SeaportProxy seaportProxy;
     TokenLogic tokenRescuer;
 
     function setUp() public {
-        seaportProxy = new SeaportProxy(SEAPORT);
+        aggregator = new LooksRareAggregator();
+        seaportProxy = new SeaportProxy(SEAPORT, address(aggregator));
         tokenRescuer = TokenLogic(address(seaportProxy));
         vm.deal(_buyer, 100 ether);
     }

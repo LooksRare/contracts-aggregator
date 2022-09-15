@@ -27,12 +27,15 @@ contract LooksRareProxy is IProxy, TokenLogic, TokenTransferrer, SignatureChecke
     }
 
     ILooksRareExchange public immutable marketplace;
+    address public immutable aggregator;
 
     /**
      * @param _marketplace LooksRareExchange's address
+     * @param _aggregator LooksRareAggregator's address
      */
-    constructor(address _marketplace) {
+    constructor(address _marketplace, address _aggregator) {
         marketplace = ILooksRareExchange(_marketplace);
+        aggregator = _aggregator;
     }
 
     /**
@@ -52,6 +55,8 @@ contract LooksRareProxy is IProxy, TokenLogic, TokenTransferrer, SignatureChecke
         bool isAtomic,
         FeeData memory
     ) external payable override returns (bool) {
+        if (address(this) != aggregator) revert InvalidCaller();
+
         uint256 ordersLength = orders.length;
         if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();
 

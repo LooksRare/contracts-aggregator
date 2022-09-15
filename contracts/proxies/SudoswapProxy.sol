@@ -14,12 +14,15 @@ import {IProxy} from "./IProxy.sol";
  */
 contract SudoswapProxy is IProxy, TokenLogic {
     ISudoswapRouter public immutable marketplace;
+    address public immutable aggregator;
 
     /**
      * @param _marketplace Sudoswap router's address
+     * @param _aggregator LooksRareAggregator's address
      */
-    constructor(address _marketplace) {
+    constructor(address _marketplace, address _aggregator) {
         marketplace = ISudoswapRouter(_marketplace);
+        aggregator = _aggregator;
     }
 
     /**
@@ -38,6 +41,8 @@ contract SudoswapProxy is IProxy, TokenLogic {
         bool isAtomic,
         FeeData memory
     ) external payable override returns (bool) {
+        if (address(this) != aggregator) revert InvalidCaller();
+
         uint256 ordersLength = orders.length;
         if (ordersLength == 0) revert InvalidOrderLength();
 

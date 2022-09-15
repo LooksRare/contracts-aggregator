@@ -3,6 +3,7 @@
 pragma solidity 0.8.14;
 
 import {CryptoPunksProxy} from "../../contracts/proxies/CryptoPunksProxy.sol";
+import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
 import {TokenLogic} from "../../contracts/TokenLogic.sol";
 import {IProxy} from "../../contracts/proxies/IProxy.sol";
 import {BasicOrder, TokenTransfer, FeeData} from "../../contracts/libraries/OrderStructs.sol";
@@ -16,11 +17,13 @@ abstract contract TestParameters {
 }
 
 contract CryptoPunksProxyTest is TestParameters, TestHelpers, TokenLogicTest {
+    LooksRareAggregator aggregator;
     CryptoPunksProxy cryptoPunksProxy;
     TokenLogic tokenRescuer;
 
     function setUp() public {
-        cryptoPunksProxy = new CryptoPunksProxy(CRYPTOPUNKS);
+        aggregator = new LooksRareAggregator();
+        cryptoPunksProxy = new CryptoPunksProxy(CRYPTOPUNKS, address(aggregator));
         tokenRescuer = TokenLogic(address(cryptoPunksProxy));
         vm.deal(_buyer, 100 ether);
     }

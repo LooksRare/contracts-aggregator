@@ -19,7 +19,7 @@ export default async function deploySeaportFixture(): Promise<SeaportFixture> {
   await aggregator.deployed();
 
   const SeaportProxy = await ethers.getContractFactory("SeaportProxy");
-  const proxy = await SeaportProxy.deploy(SEAPORT);
+  const proxy = await SeaportProxy.deploy(SEAPORT, aggregator.address);
   await proxy.deployed();
 
   // Because we are forking from the mainnet, the aggregator/proxy address might have a nonzero

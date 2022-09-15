@@ -22,21 +22,21 @@ export default async function deployLooksRareFixture(): Promise<MultipleMarketsF
   await aggregator.deployed();
 
   const LooksRareProxy = await ethers.getContractFactory("LooksRareProxy");
-  const looksRareProxy = await LooksRareProxy.deploy(LOOKSRARE_V1);
+  const looksRareProxy = await LooksRareProxy.deploy(LOOKSRARE_V1, aggregator.address);
   await looksRareProxy.deployed();
 
   const looksRareFunctionSelector = await getSignature("LooksRareProxy.json", "execute");
   await aggregator.addFunction(looksRareProxy.address, looksRareFunctionSelector);
 
   const SeaportProxy = await ethers.getContractFactory("SeaportProxy");
-  const seaportProxy = await SeaportProxy.deploy(SEAPORT);
+  const seaportProxy = await SeaportProxy.deploy(SEAPORT, aggregator.address);
   await seaportProxy.deployed();
 
   const seaportFunctionSelector = await getSignature("SeaportProxy.json", "execute");
   await aggregator.addFunction(seaportProxy.address, seaportFunctionSelector);
 
   const SudoswapProxy = await ethers.getContractFactory("SudoswapProxy");
-  const sudoswapProxy = await SudoswapProxy.deploy(SUDOSWAP);
+  const sudoswapProxy = await SudoswapProxy.deploy(SUDOSWAP, aggregator.address);
   await sudoswapProxy.deployed();
 
   const sudoswapFunctionSelector = await getSignature("SudoswapProxy.json", "execute");

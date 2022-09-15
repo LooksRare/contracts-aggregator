@@ -26,7 +26,7 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenLogicTest,
     function setUp() public {
         aggregator = new LooksRareAggregator();
         tokenRescuer = TokenLogic(address(aggregator));
-        looksRareProxy = new LooksRareProxy(LOOKSRARE_V1);
+        looksRareProxy = new LooksRareProxy(LOOKSRARE_V1, address(aggregator));
     }
 
     function testAddFunction() public {

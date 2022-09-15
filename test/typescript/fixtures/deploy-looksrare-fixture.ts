@@ -18,7 +18,7 @@ export default async function deployLooksRareFixture(): Promise<LooksRareFixture
   await aggregator.deployed();
 
   const LooksRareProxy = await ethers.getContractFactory("LooksRareProxy");
-  const proxy = await LooksRareProxy.deploy(LOOKSRARE_V1);
+  const proxy = await LooksRareProxy.deploy(LOOKSRARE_V1, aggregator.address);
   await proxy.deployed();
 
   // Because we are forking from the mainnet, the aggregator/proxy address might have a nonzero

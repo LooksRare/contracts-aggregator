@@ -28,7 +28,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
 
     function setUp() public {
         aggregator = new LooksRareAggregator();
-        seaportProxy = new SeaportProxy(SEAPORT);
+        seaportProxy = new SeaportProxy(SEAPORT, address(aggregator));
 
         aggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);
 
