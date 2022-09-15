@@ -3,7 +3,6 @@
 pragma solidity 0.8.14;
 
 import {CryptoPunksProxy} from "../../contracts/proxies/CryptoPunksProxy.sol";
-import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
 import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
 import {IProxy} from "../../contracts/proxies/IProxy.sol";
 import {BasicOrder, TokenTransfer, FeeData} from "../../contracts/libraries/OrderStructs.sol";
@@ -13,17 +12,16 @@ import {TokenRescuerTest} from "./TokenRescuer.t.sol";
 
 abstract contract TestParameters {
     address internal constant CRYPTOPUNKS = 0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB;
-    address internal _buyer = address(1);
+    address internal constant _buyer = address(1);
+    address internal constant _fakeAggregator = address(69420);
 }
 
 contract CryptoPunksProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
-    LooksRareAggregator aggregator;
     CryptoPunksProxy cryptoPunksProxy;
     TokenRescuer tokenRescuer;
 
     function setUp() public {
-        aggregator = new LooksRareAggregator();
-        cryptoPunksProxy = new CryptoPunksProxy(CRYPTOPUNKS, address(aggregator));
+        cryptoPunksProxy = new CryptoPunksProxy(CRYPTOPUNKS, _fakeAggregator);
         tokenRescuer = TokenRescuer(address(cryptoPunksProxy));
         vm.deal(_buyer, 100 ether);
     }
@@ -33,8 +31,9 @@ contract CryptoPunksProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
         BasicOrder[] memory orders = new BasicOrder[](0);
         bytes[] memory ordersExtraData = new bytes[](0);
 
+        vm.etch(address(_fakeAggregator), address(cryptoPunksProxy).code);
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        cryptoPunksProxy.execute(orders, ordersExtraData, "", _buyer, false, feeData);
+        IProxy(_fakeAggregator).execute(orders, ordersExtraData, "", _buyer, false, feeData);
     }
 
     function testRescueETH() public {

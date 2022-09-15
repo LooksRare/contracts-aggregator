@@ -3,7 +3,6 @@
 pragma solidity 0.8.14;
 
 import {SudoswapProxy} from "../../contracts/proxies/SudoswapProxy.sol";
-import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
 import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
 import {IProxy} from "../../contracts/proxies/IProxy.sol";
 import {BasicOrder, TokenTransfer, FeeData} from "../../contracts/libraries/OrderStructs.sol";
@@ -14,17 +13,16 @@ import {TokenRescuerTest} from "./TokenRescuer.t.sol";
 abstract contract TestParameters {
     address internal constant SUDOSWAP = 0x2B2e8cDA09bBA9660dCA5cB6233787738Ad68329;
     address internal constant MOODIE = 0x0F23939EE95350F26D9C1B818Ee0Cc1C8Fd2b99D;
-    address internal _buyer = address(1);
+    address internal constant _buyer = address(1);
+    address internal constant _fakeAggregator = address(69420);
 }
 
 contract SudoswapProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
-    LooksRareAggregator aggregator;
     SudoswapProxy sudoswapProxy;
     TokenRescuer tokenRescuer;
 
     function setUp() public {
-        aggregator = new LooksRareAggregator();
-        sudoswapProxy = new SudoswapProxy(SUDOSWAP, address(aggregator));
+        sudoswapProxy = new SudoswapProxy(SUDOSWAP, _fakeAggregator);
         tokenRescuer = TokenRescuer(address(sudoswapProxy));
         vm.deal(_buyer, 100 ether);
     }
@@ -34,8 +32,9 @@ contract SudoswapProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
         BasicOrder[] memory orders = new BasicOrder[](0);
         bytes[] memory ordersExtraData = new bytes[](0);
 
+        vm.etch(_fakeAggregator, address(sudoswapProxy).code);
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        sudoswapProxy.execute(orders, ordersExtraData, "", _buyer, false, feeData);
+        IProxy(_fakeAggregator).execute(orders, ordersExtraData, "", _buyer, false, feeData);
     }
 
     function testRescueETH() public {

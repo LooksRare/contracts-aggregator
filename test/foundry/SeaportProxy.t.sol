@@ -2,7 +2,6 @@ pragma solidity 0.8.14;
 
 import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
 import {SeaportProxy} from "../../contracts/proxies/SeaportProxy.sol";
-import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
 import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
 import {OrderType} from "../../contracts/libraries/seaport/ConsiderationEnums.sol";
 import {AdditionalRecipient, Fulfillment, FulfillmentComponent} from "../../contracts/libraries/seaport/ConsiderationStructs.sol";
@@ -17,17 +16,16 @@ import {MockERC20} from "./utils/MockERC20.sol";
 abstract contract TestParameters {
     address internal constant SEAPORT = 0x00000000006c3852cbEf3e08E8dF289169EdE581;
     address internal constant BAYC = 0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D;
-    address internal _buyer = address(1);
+    address internal constant _buyer = address(1);
+    address internal constant _fakeAggregator = address(69420);
 }
 
 contract SeaportProxyTest is TestParameters, TestHelpers, TokenRescuerTest, SeaportProxyTestHelpers {
-    LooksRareAggregator aggregator;
     SeaportProxy seaportProxy;
     TokenRescuer tokenRescuer;
 
     function setUp() public {
-        aggregator = new LooksRareAggregator();
-        seaportProxy = new SeaportProxy(SEAPORT, address(aggregator));
+        seaportProxy = new SeaportProxy(SEAPORT, _fakeAggregator);
         tokenRescuer = TokenRescuer(address(seaportProxy));
         vm.deal(_buyer, 100 ether);
     }
@@ -37,8 +35,9 @@ contract SeaportProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Seap
         bytes[] memory ordersExtraData = new bytes[](0);
         FeeData memory feeData;
 
+        vm.etch(address(_fakeAggregator), address(seaportProxy).code);
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        seaportProxy.execute(orders, ordersExtraData, validSingleBAYCExtraData(), _buyer, false, feeData);
+        IProxy(_fakeAggregator).execute(orders, ordersExtraData, validSingleBAYCExtraData(), _buyer, false, feeData);
     }
 
     function testBuyWithETHOrdersLengthMismatch() public asPrankedUser(_buyer) {
@@ -51,8 +50,9 @@ contract SeaportProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Seap
         ordersExtraData[0] = validBAYCId2518OrderExtraData();
         ordersExtraData[1] = validBAYCId8498OrderExtraData();
 
+        vm.etch(address(_fakeAggregator), address(seaportProxy).code);
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        seaportProxy.execute{value: orders[0].price}(
+        IProxy(_fakeAggregator).execute{value: orders[0].price}(
             orders,
             ordersExtraData,
             validSingleBAYCExtraData(),

@@ -3,7 +3,6 @@
 pragma solidity 0.8.14;
 
 import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
-import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
 import {X2Y2Proxy} from "../../contracts/proxies/X2Y2Proxy.sol";
 import {IProxy} from "../../contracts/proxies/IProxy.sol";
 import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
@@ -16,17 +15,16 @@ import {TokenRescuerTest} from "./TokenRescuer.t.sol";
 abstract contract TestParameters {
     address internal constant X2Y2 = 0x74312363e45DCaBA76c59ec49a7Aa8A65a67EeD3;
     address internal constant BAYC = 0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D;
-    address internal _buyer = address(1);
+    address internal constant _buyer = address(1);
+    address internal constant _fakeAggregator = address(69420);
 }
 
 contract X2Y2ProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
-    LooksRareAggregator aggregator;
     X2Y2Proxy x2y2Proxy;
     TokenRescuer tokenRescuer;
 
     function setUp() public {
-        aggregator = new LooksRareAggregator();
-        x2y2Proxy = new X2Y2Proxy(X2Y2, address(aggregator));
+        x2y2Proxy = new X2Y2Proxy(X2Y2, _fakeAggregator);
         tokenRescuer = TokenRescuer(address(x2y2Proxy));
         vm.deal(_buyer, 100 ether);
     }
@@ -36,8 +34,9 @@ contract X2Y2ProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
         BasicOrder[] memory orders = new BasicOrder[](0);
         bytes[] memory ordersExtraData = new bytes[](0);
 
+        vm.etch(address(_fakeAggregator), address(x2y2Proxy).code);
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        x2y2Proxy.execute(orders, ordersExtraData, "", _buyer, false, feeData);
+        IProxy(_fakeAggregator).execute(orders, ordersExtraData, "", _buyer, false, feeData);
     }
 
     function testBuyWithETHOrdersLengthMismatch() public asPrankedUser(_buyer) {
@@ -48,8 +47,9 @@ contract X2Y2ProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
         ordersExtraData[0] = validBAYCOrderExtraData();
         ordersExtraData[1] = validBAYCOrderExtraData();
 
+        vm.etch(address(_fakeAggregator), address(x2y2Proxy).code);
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        x2y2Proxy.execute{value: orders[0].price}(orders, ordersExtraData, "", _buyer, false, feeData);
+        IProxy(_fakeAggregator).execute{value: orders[0].price}(orders, ordersExtraData, "", _buyer, false, feeData);
     }
 
     function testRescueETH() public {
