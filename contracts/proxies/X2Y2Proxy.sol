@@ -4,13 +4,14 @@ pragma solidity 0.8.14;
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {IX2Y2} from "../interfaces/IX2Y2.sol";
-import {BasicOrder, TokenTransfer} from "../libraries/OrderStructs.sol";
+import {BasicOrder, FeeData} from "../libraries/OrderStructs.sol";
 import {Market} from "../libraries/x2y2/MarketConsts.sol";
 import {SignatureChecker} from "@looksrare/contracts-libs/contracts/SignatureChecker.sol";
 import {CollectionType} from "../libraries/OrderEnums.sol";
-import {TokenReceiverProxy} from "./TokenReceiverProxy.sol";
-import {TokenLogic} from "../TokenLogic.sol";
+import {TokenTransferrer} from "../TokenTransferrer.sol";
+import {TokenRescuer} from "../TokenRescuer.sol";
 import {LowLevelETH} from "../lowLevelCallers/LowLevelETH.sol";
+import {IProxy} from "./IProxy.sol";
 
 /**
  * @title X2Y2Proxy
@@ -18,10 +19,9 @@ import {LowLevelETH} from "../lowLevelCallers/LowLevelETH.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract X2Y2Proxy is TokenReceiverProxy, TokenLogic, SignatureChecker {
+contract X2Y2Proxy is IProxy, TokenRescuer, TokenTransferrer, SignatureChecker {
     IX2Y2 public immutable marketplace;
-    uint256 public feeBp;
-    address public feeRecipient;
+    address public immutable aggregator;
 
     struct OrderExtraData {
         uint256 salt; // An arbitrary source of entropy for the order (per trade)
@@ -37,14 +37,16 @@ contract X2Y2Proxy is TokenReceiverProxy, TokenLogic, SignatureChecker {
 
     /**
      * @param _marketplace X2Y2's address
+     * @param _aggregator LooksRareAggregator's address
      */
-    constructor(address _marketplace) {
+    constructor(address _marketplace, address _aggregator) {
         marketplace = IX2Y2(_marketplace);
+        aggregator = _aggregator;
     }
 
     /**
      * @notice Execute X2Y2 NFT sweeps in a single transaction
-     * @dev The 4th argument extraData is not used
+     * @dev extraData and feeData are not used
      * @param orders Orders to be executed by Seaport
      * @param ordersExtraData Extra data for each order
      * @param recipient The address to receive the purchased NFTs
@@ -52,14 +54,14 @@ contract X2Y2Proxy is TokenReceiverProxy, TokenLogic, SignatureChecker {
      * @return Whether at least 1 out of N trades succeeded
      */
     function execute(
-        TokenTransfer[] calldata,
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,
         bytes calldata,
         address recipient,
-        bool isAtomic
+        bool isAtomic,
+        FeeData memory
     ) external payable override returns (bool) {
-        if (recipient == address(0)) revert ZeroAddress();
+        if (address(this) != aggregator) revert InvalidCaller();
 
         uint256 ordersLength = orders.length;
         if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();
@@ -74,8 +76,6 @@ contract X2Y2Proxy is TokenReceiverProxy, TokenLogic, SignatureChecker {
                 ++i;
             }
         }
-
-        _returnETHIfAny();
 
         return executedCount > 0;
     }
@@ -159,25 +159,6 @@ contract X2Y2Proxy is TokenReceiverProxy, TokenLogic, SignatureChecker {
                     item
                 )
             );
-    }
-
-    /**
-     * @notice Set fee basis point
-     * @param _feeBp The new fee basis point
-     */
-    function setFeeBp(uint256 _feeBp) external override onlyOwner {
-        if (_feeBp > 10000) revert FeeTooHigh();
-        feeBp = _feeBp;
-        emit FeeUpdated(_feeBp);
-    }
-
-    /**
-     * @notice Set fee recipient
-     * @param _feeRecipient The new fee recipient
-     */
-    function setFeeRecipient(address _feeRecipient) external override onlyOwner {
-        feeRecipient = _feeRecipient;
-        emit FeeRecipientUpdated(_feeRecipient);
     }
 
     /**

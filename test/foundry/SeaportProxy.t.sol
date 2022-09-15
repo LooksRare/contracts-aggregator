@@ -2,45 +2,46 @@ pragma solidity 0.8.14;
 
 import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
 import {SeaportProxy} from "../../contracts/proxies/SeaportProxy.sol";
-import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
-import {TokenLogic} from "../../contracts/TokenLogic.sol";
+import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
 import {OrderType} from "../../contracts/libraries/seaport/ConsiderationEnums.sol";
 import {AdditionalRecipient, Fulfillment, FulfillmentComponent} from "../../contracts/libraries/seaport/ConsiderationStructs.sol";
 import {IProxy} from "../../contracts/proxies/IProxy.sol";
-import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
+import {BasicOrder, FeeData} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {TestHelpers} from "./TestHelpers.sol";
-import {TokenLogicTest} from "./TokenLogic.t.sol";
+import {TokenRescuerTest} from "./TokenRescuer.t.sol";
 import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
 import {MockERC20} from "./utils/MockERC20.sol";
 
 abstract contract TestParameters {
     address internal constant SEAPORT = 0x00000000006c3852cbEf3e08E8dF289169EdE581;
     address internal constant BAYC = 0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D;
-    address internal _buyer = address(1);
+    address internal constant _buyer = address(1);
+    address internal constant _fakeAggregator = address(69420);
 }
 
-contract SeaportProxyTest is TestParameters, TestHelpers, TokenLogicTest, SeaportProxyTestHelpers {
+contract SeaportProxyTest is TestParameters, TestHelpers, TokenRescuerTest, SeaportProxyTestHelpers {
     SeaportProxy seaportProxy;
-    TokenLogic tokenRescuer;
+    TokenRescuer tokenRescuer;
 
     function setUp() public {
-        seaportProxy = new SeaportProxy(SEAPORT);
-        tokenRescuer = TokenLogic(address(seaportProxy));
+        seaportProxy = new SeaportProxy(SEAPORT, _fakeAggregator);
+        tokenRescuer = TokenRescuer(address(seaportProxy));
         vm.deal(_buyer, 100 ether);
     }
 
     function testBuyWithETHZeroOrders() public asPrankedUser(_buyer) {
-        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder[] memory orders = new BasicOrder[](0);
         bytes[] memory ordersExtraData = new bytes[](0);
+        FeeData memory feeData;
 
+        vm.etch(address(_fakeAggregator), address(seaportProxy).code);
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        seaportProxy.execute(tokenTransfers, orders, ordersExtraData, validSingleBAYCExtraData(), _buyer, false);
+        IProxy(_fakeAggregator).execute(orders, ordersExtraData, validSingleBAYCExtraData(), _buyer, false, feeData);
     }
 
     function testBuyWithETHOrdersLengthMismatch() public asPrankedUser(_buyer) {
-        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
+        FeeData memory feeData;
         BasicOrder memory order = validBAYCId2518Order();
         BasicOrder[] memory orders = new BasicOrder[](1);
         orders[0] = order;
@@ -49,67 +50,16 @@ contract SeaportProxyTest is TestParameters, TestHelpers, TokenLogicTest, Seapor
         ordersExtraData[0] = validBAYCId2518OrderExtraData();
         ordersExtraData[1] = validBAYCId8498OrderExtraData();
 
+        vm.etch(address(_fakeAggregator), address(seaportProxy).code);
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        seaportProxy.execute{value: orders[0].price}(
-            tokenTransfers,
+        IProxy(_fakeAggregator).execute{value: orders[0].price}(
             orders,
             ordersExtraData,
             validSingleBAYCExtraData(),
             _buyer,
-            false
+            false,
+            feeData
         );
-    }
-
-    function testBuyWithETHOrdersRecipientZeroAddress() public {
-        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
-        BasicOrder memory order = validBAYCId2518Order();
-        BasicOrder[] memory orders = new BasicOrder[](1);
-        orders[0] = order;
-
-        bytes[] memory ordersExtraData = new bytes[](1);
-        ordersExtraData[0] = validBAYCId2518OrderExtraData();
-
-        vm.expectRevert(IProxy.ZeroAddress.selector);
-        seaportProxy.execute{value: orders[0].price}(
-            tokenTransfers,
-            orders,
-            ordersExtraData,
-            validSingleBAYCExtraData(),
-            address(0),
-            false
-        );
-    }
-
-    function testApprove() public {
-        MockERC20 erc20 = new MockERC20();
-        assertEq(erc20.allowance(address(seaportProxy), SEAPORT), 0);
-        seaportProxy.approve(address(erc20));
-        assertEq(erc20.allowance(address(seaportProxy), SEAPORT), type(uint256).max);
-    }
-
-    function testApproveNotOwner() public {
-        MockERC20 erc20 = new MockERC20();
-        vm.expectRevert(OwnableTwoSteps.NotOwner.selector);
-        vm.prank(_buyer);
-        seaportProxy.approve(address(erc20));
-    }
-
-    function testRevoke() public {
-        MockERC20 erc20 = new MockERC20();
-        assertEq(erc20.allowance(address(seaportProxy), SEAPORT), 0);
-
-        seaportProxy.approve(address(erc20));
-        assertEq(erc20.allowance(address(seaportProxy), SEAPORT), type(uint256).max);
-
-        seaportProxy.revoke(address(erc20));
-        assertEq(erc20.allowance(address(seaportProxy), SEAPORT), 0);
-    }
-
-    function testRevokeNotOwner() public {
-        MockERC20 erc20 = new MockERC20();
-        vm.expectRevert(OwnableTwoSteps.NotOwner.selector);
-        vm.prank(_buyer);
-        seaportProxy.revoke(address(erc20));
     }
 
     function testRescueETH() public {

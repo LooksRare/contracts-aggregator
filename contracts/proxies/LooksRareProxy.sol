@@ -6,10 +6,11 @@ import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {ILooksRareExchange} from "@looksrare/contracts-exchange-v1/contracts/interfaces/ILooksRareExchange.sol";
 import {OrderTypes} from "@looksrare/contracts-exchange-v1/contracts/libraries/OrderTypes.sol";
 import {SignatureChecker} from "@looksrare/contracts-libs/contracts/SignatureChecker.sol";
-import {BasicOrder, TokenTransfer} from "../libraries/OrderStructs.sol";
+import {BasicOrder, FeeData} from "../libraries/OrderStructs.sol";
 import {CollectionType} from "../libraries/OrderEnums.sol";
-import {TokenReceiverProxy} from "./TokenReceiverProxy.sol";
-import {TokenLogic} from "../TokenLogic.sol";
+import {TokenTransferrer} from "../TokenTransferrer.sol";
+import {TokenRescuer} from "../TokenRescuer.sol";
+import {IProxy} from "./IProxy.sol";
 
 /**
  * @title LooksRareProxy
@@ -17,7 +18,7 @@ import {TokenLogic} from "../TokenLogic.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract LooksRareProxy is TokenReceiverProxy, TokenLogic, SignatureChecker {
+contract LooksRareProxy is IProxy, TokenRescuer, TokenTransferrer, SignatureChecker {
     struct OrderExtraData {
         uint256 makerAskPrice; // Maker ask price, which is not necessarily equal to the taker bid price
         uint256 minPercentageToAsk; // The maker's minimum % to receive from the sale
@@ -26,17 +27,20 @@ contract LooksRareProxy is TokenReceiverProxy, TokenLogic, SignatureChecker {
     }
 
     ILooksRareExchange public immutable marketplace;
+    address public immutable aggregator;
 
     /**
      * @param _marketplace LooksRareExchange's address
+     * @param _aggregator LooksRareAggregator's address
      */
-    constructor(address _marketplace) {
+    constructor(address _marketplace, address _aggregator) {
         marketplace = ILooksRareExchange(_marketplace);
+        aggregator = _aggregator;
     }
 
     /**
      * @notice Execute LooksRare NFT sweeps in a single transaction
-     * @dev The 1st argument tokenTransfers and the 4th argument extraData are not used
+     * @dev extraData and feeData are not used
      * @param orders Orders to be executed by LooksRare
      * @param ordersExtraData Extra data for each order
      * @param recipient The address to receive the purchased NFTs
@@ -44,14 +48,14 @@ contract LooksRareProxy is TokenReceiverProxy, TokenLogic, SignatureChecker {
      * @return Whether at least 1 out of N trades succeeded
      */
     function execute(
-        TokenTransfer[] calldata,
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,
         bytes memory,
         address recipient,
-        bool isAtomic
+        bool isAtomic,
+        FeeData memory
     ) external payable override returns (bool) {
-        if (recipient == address(0)) revert ZeroAddress();
+        if (address(this) != aggregator) revert InvalidCaller();
 
         uint256 ordersLength = orders.length;
         if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();
@@ -101,25 +105,7 @@ contract LooksRareProxy is TokenReceiverProxy, TokenLogic, SignatureChecker {
             }
         }
 
-        _returnETHIfAny();
-
         return executedCount > 0;
-    }
-
-    /**
-     * @notice Always revert as we already charge a fee in LooksRareExchange,
-     *         but it inherits from IProxy so it still has to be implemented.
-     */
-    function setFeeBp(uint256) external view override onlyOwner {
-        revert UncallableFunction();
-    }
-
-    /**
-     * @notice Always revert as we already charge a fee in LooksRareExchange,
-     *         but it inherits from IProxy so it still has to be implemented.
-     */
-    function setFeeRecipient(address) external view override onlyOwner {
-        revert UncallableFunction();
     }
 
     function _executeSingleOrder(

@@ -2,8 +2,8 @@
 pragma solidity 0.8.14;
 
 import {ISudoswapRouter} from "../interfaces/ISudoswapRouter.sol";
-import {BasicOrder, TokenTransfer} from "../libraries/OrderStructs.sol";
-import {TokenLogic} from "../TokenLogic.sol";
+import {BasicOrder, FeeData} from "../libraries/OrderStructs.sol";
+import {TokenRescuer} from "../TokenRescuer.sol";
 import {IProxy} from "./IProxy.sol";
 
 /**
@@ -12,38 +12,41 @@ import {IProxy} from "./IProxy.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract SudoswapProxy is TokenLogic, IProxy {
+contract SudoswapProxy is IProxy, TokenRescuer {
     ISudoswapRouter public immutable marketplace;
-    uint256 public feeBp;
-    address public feeRecipient;
+    address public immutable aggregator;
 
     /**
      * @param _marketplace Sudoswap router's address
+     * @param _aggregator LooksRareAggregator's address
      */
-    constructor(address _marketplace) {
+    constructor(address _marketplace, address _aggregator) {
         marketplace = ISudoswapRouter(_marketplace);
+        aggregator = _aggregator;
     }
 
     /**
      * @notice Execute Sudoswap NFT sweeps in a single transaction
-     * @dev tokenTransfers, ordersExtraData and extraData are not used
+     * @dev ordersExtraData, extraData and feeData are not used
      * @param orders Orders to be executed by Seaport
      * @param recipient The address to receive the purchased NFTs
      * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
      * @return Whether at least 1 out of N trades succeeded
      */
     function execute(
-        TokenTransfer[] calldata,
         BasicOrder[] calldata orders,
         bytes[] calldata,
         bytes memory,
         address recipient,
-        bool isAtomic
+        bool isAtomic,
+        FeeData memory
     ) external payable override returns (bool) {
+        if (address(this) != aggregator) revert InvalidCaller();
+
         uint256 ordersLength = orders.length;
         if (ordersLength == 0) revert InvalidOrderLength();
 
-        if (recipient == address(0)) revert ZeroAddress();
+        uint256 ethValue;
 
         if (isAtomic) {
             ISudoswapRouter.PairSwapSpecific[] memory swapList = new ISudoswapRouter.PairSwapSpecific[](orders.length);
@@ -56,12 +59,14 @@ contract SudoswapProxy is TokenLogic, IProxy {
 
                 swapList[i] = pairSwapSpecific;
 
+                ethValue += orders[i].price;
+
                 unchecked {
                     ++i;
                 }
             }
 
-            marketplace.swapETHForSpecificNFTs{value: msg.value}(
+            marketplace.swapETHForSpecificNFTs{value: ethValue}(
                 swapList,
                 payable(recipient),
                 recipient,
@@ -76,6 +81,7 @@ contract SudoswapProxy is TokenLogic, IProxy {
                 ISudoswapRouter.RobustPairSwapSpecific memory robustPairSwapSpecific;
                 ISudoswapRouter.PairSwapSpecific memory pairSwapSpecific;
                 robustPairSwapSpecific.maxCost = orders[i].price;
+                ethValue += orders[i].price;
                 // here the collection is the AMM pool address
                 pairSwapSpecific.pair = orders[i].collection;
                 pairSwapSpecific.nftIds = orders[i].tokenIds;
@@ -93,7 +99,7 @@ contract SudoswapProxy is TokenLogic, IProxy {
             //       to wait for Sudoswap's router V2 to go live to re-integrate
             //       as it allows partial fills.
 
-            marketplace.robustSwapETHForSpecificNFTs{value: msg.value}(
+            marketplace.robustSwapETHForSpecificNFTs{value: ethValue}(
                 swapList,
                 payable(recipient),
                 recipient,
@@ -102,22 +108,5 @@ contract SudoswapProxy is TokenLogic, IProxy {
         }
 
         return true;
-    }
-
-    /**
-     * @inheritdoc IProxy
-     */
-    function setFeeBp(uint256 _feeBp) external override onlyOwner {
-        if (_feeBp > 10000) revert FeeTooHigh();
-        feeBp = _feeBp;
-        emit FeeUpdated(_feeBp);
-    }
-
-    /**
-     * @inheritdoc IProxy
-     */
-    function setFeeRecipient(address _feeRecipient) external override onlyOwner {
-        feeRecipient = _feeRecipient;
-        emit FeeRecipientUpdated(_feeRecipient);
     }
 }

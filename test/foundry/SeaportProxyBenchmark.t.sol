@@ -9,7 +9,7 @@ import {V0Aggregator} from "../../contracts/V0Aggregator.sol";
 import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggregator.sol";
 import {SeaportInterface} from "../../contracts/interfaces/SeaportInterface.sol";
 import {IProxy} from "../../contracts/proxies/IProxy.sol";
-import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
+import {BasicOrder, TokenTransfer, FeeData} from "../../contracts/libraries/OrderStructs.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
 import {BasicOrderParameters, AdditionalRecipient, AdvancedOrder, OrderParameters, OfferItem, ConsiderationItem, CriteriaResolver} from "../../contracts/libraries/seaport/ConsiderationStructs.sol";
@@ -27,17 +27,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
     SeaportProxy seaportProxy;
 
     function setUp() public {
-        aggregator = new LooksRareAggregator();
-        seaportProxy = new SeaportProxy(SEAPORT);
-
-        aggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);
-
-        v0Aggregator = new V0Aggregator();
-        v0Aggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);
-
         vm.deal(_buyer, 100 ether);
-        // Since we are forking mainnet, we have to make sure it has 0 ETH.
-        vm.deal(address(seaportProxy), 0);
     }
 
     function testBuyWithETHDirectlySingleOrder() public asPrankedUser(_buyer) {
@@ -77,26 +67,9 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         assertEq(IERC721(BAYC).ownerOf(2518), _buyer);
     }
 
-    function testBuyWithETHDirectlyFromProxySingleOrder() public {
-        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
-        BasicOrder memory order = validBAYCId2518Order();
-        BasicOrder[] memory orders = new BasicOrder[](1);
-        orders[0] = order;
-
-        bytes memory orderExtraData = validBAYCId2518OrderExtraData();
-        bytes[] memory ordersExtraData = new bytes[](1);
-        ordersExtraData[0] = orderExtraData;
-        bytes memory extraData = validSingleBAYCExtraData();
-
-        uint256 gasRemaining = gasleft();
-        seaportProxy.execute{value: order.price}(tokenTransfers, orders, ordersExtraData, extraData, _buyer, true);
-        uint256 gasConsumed = gasRemaining - gasleft();
-        emit log_named_uint("Seaport single NFT purchase through the proxy consumed: ", gasConsumed);
-
-        assertEq(IERC721(BAYC).ownerOf(2518), _buyer);
-    }
-
     function testBuyWithETHThroughAggregatorSingleOrder() public {
+        _aggregatorSetUp();
+
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder memory order = validBAYCId2518Order();
         BasicOrder[] memory orders = new BasicOrder[](1);
@@ -115,8 +88,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
             value: order.price,
             orders: orders,
             ordersExtraData: ordersExtraData,
-            extraData: extraData,
-            tokenTransfers: new TokenTransfer[](0)
+            extraData: extraData
         });
 
         uint256 gasRemaining = gasleft();
@@ -128,6 +100,9 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
     }
 
     function testBuyWithETHThroughV0AggregatorSingleOrder() public {
+        _v0AggregatorSetUp();
+
+        FeeData memory feeData;
         BasicOrder memory order = validBAYCId2518Order();
         BasicOrder[] memory orders = new BasicOrder[](1);
         orders[0] = order;
@@ -140,12 +115,12 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
 
         bytes memory data = abi.encodeWithSelector(
             SeaportProxy.execute.selector,
-            new TokenTransfer[](0),
             orders,
             ordersExtraData,
             extraData,
             _buyer,
-            true
+            true,
+            feeData
         );
 
         V0Aggregator.TradeData[] memory tradeData = new V0Aggregator.TradeData[](1);
@@ -255,35 +230,9 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         assertEq(IERC721(BAYC).ownerOf(8498), _buyer);
     }
 
-    function testBuyWithETHDirectlyFromProxyTwoOrders() public {
-        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
-
-        BasicOrder memory orderOne = validBAYCId2518Order();
-        BasicOrder memory orderTwo = validBAYCId8498Order();
-        BasicOrder[] memory orders = new BasicOrder[](2);
-        orders[0] = orderOne;
-        orders[1] = orderTwo;
-
-        bytes memory orderOneExtraData = validBAYCId2518OrderExtraData();
-        bytes memory orderTwoExtraData = validBAYCId8498OrderExtraData();
-        bytes[] memory ordersExtraData = new bytes[](2);
-        ordersExtraData[0] = orderOneExtraData;
-        ordersExtraData[1] = orderTwoExtraData;
-
-        bytes memory extraData = validMultipleBAYCExtraData();
-
-        uint256 totalPrice = orders[0].price + orders[1].price;
-
-        uint256 gasRemaining = gasleft();
-        seaportProxy.execute{value: totalPrice}(tokenTransfers, orders, ordersExtraData, extraData, _buyer, true);
-        uint256 gasConsumed = gasRemaining - gasleft();
-        emit log_named_uint("Seaport multiple NFT purchase through the proxy consumed: ", gasConsumed);
-
-        assertEq(IERC721(BAYC).ownerOf(2518), _buyer);
-        assertEq(IERC721(BAYC).ownerOf(8498), _buyer);
-    }
-
     function testBuyWithETHThroughAggregatorTwoOrders() public {
+        _aggregatorSetUp();
+
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         BasicOrder memory orderOne = validBAYCId2518Order();
         BasicOrder memory orderTwo = validBAYCId8498Order();
@@ -307,8 +256,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
             value: totalPrice,
             orders: orders,
             ordersExtraData: ordersExtraData,
-            extraData: extraData,
-            tokenTransfers: new TokenTransfer[](0)
+            extraData: extraData
         });
 
         uint256 gasRemaining = gasleft();
@@ -321,11 +269,12 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
     }
 
     function testBuyWithETHThroughV0AggregatorTwoOrders() public {
-        BasicOrder memory orderOne = validBAYCId2518Order();
-        BasicOrder memory orderTwo = validBAYCId8498Order();
+        _v0AggregatorSetUp();
+
+        FeeData memory feeData;
         BasicOrder[] memory orders = new BasicOrder[](2);
-        orders[0] = orderOne;
-        orders[1] = orderTwo;
+        orders[0] = validBAYCId2518Order();
+        orders[1] = validBAYCId8498Order();
 
         bytes memory orderOneExtraData = validBAYCId2518OrderExtraData();
         bytes memory orderTwoExtraData = validBAYCId8498OrderExtraData();
@@ -339,12 +288,12 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         uint256 totalPrice = orders[0].price + orders[1].price;
         bytes memory data = abi.encodeWithSelector(
             SeaportProxy.execute.selector,
-            new TokenTransfer[](0),
             orders,
             ordersExtraData,
             extraData,
             _buyer,
-            true
+            true,
+            feeData
         );
         tradeData[0] = V0Aggregator.TradeData({proxy: address(seaportProxy), value: totalPrice, data: data});
 
@@ -355,5 +304,25 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
 
         assertEq(IERC721(BAYC).ownerOf(2518), _buyer);
         assertEq(IERC721(BAYC).ownerOf(8498), _buyer);
+    }
+
+    function _aggregatorSetUp() private {
+        aggregator = new LooksRareAggregator();
+        seaportProxy = new SeaportProxy(SEAPORT, address(aggregator));
+
+        aggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);
+
+        // Since we are forking mainnet, we have to make sure it has 0 ETH.
+        vm.deal(address(seaportProxy), 0);
+    }
+
+    function _v0AggregatorSetUp() private {
+        v0Aggregator = new V0Aggregator();
+        seaportProxy = new SeaportProxy(SEAPORT, address(v0Aggregator));
+
+        v0Aggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);
+
+        // Since we are forking mainnet, we have to make sure it has 0 ETH.
+        vm.deal(address(seaportProxy), 0);
     }
 }

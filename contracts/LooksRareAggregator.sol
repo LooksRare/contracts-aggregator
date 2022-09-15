@@ -4,8 +4,10 @@ pragma solidity 0.8.14;
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {LooksRareProxy} from "./proxies/LooksRareProxy.sol";
 import {BasicOrder, TokenTransfer} from "./libraries/OrderStructs.sol";
-import {TokenLogic} from "./TokenLogic.sol";
+import {TokenRescuer} from "./TokenRescuer.sol";
+import {TokenReceiver} from "./TokenReceiver.sol";
 import {ILooksRareAggregator} from "./interfaces/ILooksRareAggregator.sol";
+import {FeeData} from "./libraries/OrderStructs.sol";
 
 /**
  * @title LooksRareAggregator
@@ -13,8 +15,9 @@ import {ILooksRareAggregator} from "./interfaces/ILooksRareAggregator.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract LooksRareAggregator is TokenLogic, ILooksRareAggregator {
+contract LooksRareAggregator is ILooksRareAggregator, TokenRescuer, TokenReceiver {
     mapping(address => mapping(bytes4 => bool)) private _proxyFunctionSelectors;
+    mapping(address => FeeData) private _proxyFeeData;
 
     /**
      * @notice Execute NFT sweeps in different marketplaces in a single transaction
@@ -38,7 +41,7 @@ contract LooksRareAggregator is TokenLogic, ILooksRareAggregator {
         for (uint256 i; i < tradeData.length; ) {
             if (!_proxyFunctionSelectors[tradeData[i].proxy][tradeData[i].selector]) revert InvalidFunction();
 
-            (bool success, bytes memory returnData) = tradeData[i].proxy.call{value: tradeData[i].value}(
+            (bool success, bytes memory returnData) = tradeData[i].proxy.delegatecall(
                 _encodeCalldata(tradeData[i], recipient, isAtomic)
             );
 
@@ -92,21 +95,38 @@ contract LooksRareAggregator is TokenLogic, ILooksRareAggregator {
     }
 
     /**
-     * @notice Approve proxies to transfer ERC-20 tokens from the aggregator
-     * @param proxy The address of the proxy to approve
-     * @param currency The address of the ERC-20 token to approve
+     * @param proxy Proxy to apply the fee to
+     * @param bp Fee basis point
+     * @param recipient Fee recipient
      */
-    function approve(address proxy, address currency) external onlyOwner {
-        IERC20(currency).approve(proxy, type(uint256).max);
+    function setFee(
+        address proxy,
+        uint16 bp,
+        address recipient
+    ) external onlyOwner {
+        if (bp > 10000) revert FeeTooHigh();
+        _proxyFeeData[proxy].bp = bp;
+        _proxyFeeData[proxy].recipient = recipient;
+
+        emit FeeUpdated(proxy, bp, recipient);
     }
 
     /**
-     * @notice Revoke proxies to transfer ERC-20 tokens from the aggregator
-     * @param proxy The address of the proxy to revoke
+     * @notice Approve marketplaces to transfer ERC-20 tokens from the aggregator
+     * @param marketplace The address of the marketplace to approve
+     * @param currency The address of the ERC-20 token to approve
+     */
+    function approve(address marketplace, address currency) external onlyOwner {
+        IERC20(currency).approve(marketplace, type(uint256).max);
+    }
+
+    /**
+     * @notice Revoke a marketplace's approval to transfer ERC-20 tokens from the aggregator
+     * @param marketplace The address of the marketplace to revoke
      * @param currency The address of the ERC-20 token to revoke
      */
-    function revoke(address proxy, address currency) external onlyOwner {
-        IERC20(currency).approve(proxy, 0);
+    function revoke(address marketplace, address currency) external onlyOwner {
+        IERC20(currency).approve(marketplace, 0);
     }
 
     /**
@@ -122,18 +142,40 @@ contract LooksRareAggregator is TokenLogic, ILooksRareAggregator {
         TradeData calldata singleTradeData,
         address recipient,
         bool isAtomic
-    ) private pure returns (bytes memory) {
+    ) private view returns (bytes memory) {
         return
             abi.encodeWithSelector(
                 singleTradeData.selector,
-                singleTradeData.tokenTransfers,
                 singleTradeData.orders,
                 singleTradeData.ordersExtraData,
                 singleTradeData.extraData,
                 recipient,
-                isAtomic
+                isAtomic,
+                _proxyFeeData[singleTradeData.proxy]
             );
     }
 
     receive() external payable {}
+
+    function _pullERC20Tokens(TokenTransfer[] calldata tokenTransfers, address source) private {
+        uint256 tokenTransfersLength = tokenTransfers.length;
+        for (uint256 i; i < tokenTransfersLength; ) {
+            _executeERC20Transfer(tokenTransfers[i].currency, source, address(this), tokenTransfers[i].amount);
+            unchecked {
+                ++i;
+            }
+        }
+    }
+
+    function _returnERC20TokensIfAny(TokenTransfer[] calldata tokenTransfers, address recipient) private {
+        uint256 tokenTransfersLength = tokenTransfers.length;
+        for (uint256 i; i < tokenTransfersLength; ) {
+            uint256 balance = IERC20(tokenTransfers[i].currency).balanceOf(address(this));
+            if (balance > 0) _executeERC20DirectTransfer(tokenTransfers[i].currency, recipient, balance);
+
+            unchecked {
+                ++i;
+            }
+        }
+    }
 }

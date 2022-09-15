@@ -3,45 +3,38 @@
 pragma solidity 0.8.14;
 
 import {SudoswapProxy} from "../../contracts/proxies/SudoswapProxy.sol";
-import {TokenLogic} from "../../contracts/TokenLogic.sol";
+import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
 import {IProxy} from "../../contracts/proxies/IProxy.sol";
-import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
+import {BasicOrder, FeeData} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {TestHelpers} from "./TestHelpers.sol";
-import {TokenLogicTest} from "./TokenLogic.t.sol";
+import {TokenRescuerTest} from "./TokenRescuer.t.sol";
 
 abstract contract TestParameters {
     address internal constant SUDOSWAP = 0x2B2e8cDA09bBA9660dCA5cB6233787738Ad68329;
     address internal constant MOODIE = 0x0F23939EE95350F26D9C1B818Ee0Cc1C8Fd2b99D;
-    address internal _buyer = address(1);
+    address internal constant _buyer = address(1);
+    address internal constant _fakeAggregator = address(69420);
 }
 
-contract SudoswapProxyTest is TestParameters, TestHelpers, TokenLogicTest {
+contract SudoswapProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
     SudoswapProxy sudoswapProxy;
-    TokenLogic tokenRescuer;
+    TokenRescuer tokenRescuer;
 
     function setUp() public {
-        sudoswapProxy = new SudoswapProxy(SUDOSWAP);
-        tokenRescuer = TokenLogic(address(sudoswapProxy));
+        sudoswapProxy = new SudoswapProxy(SUDOSWAP, _fakeAggregator);
+        tokenRescuer = TokenRescuer(address(sudoswapProxy));
         vm.deal(_buyer, 100 ether);
     }
 
     function testBuyWithETHZeroOrders() public asPrankedUser(_buyer) {
-        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
+        FeeData memory feeData;
         BasicOrder[] memory orders = new BasicOrder[](0);
         bytes[] memory ordersExtraData = new bytes[](0);
 
+        vm.etch(_fakeAggregator, address(sudoswapProxy).code);
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        sudoswapProxy.execute(tokenTransfers, orders, ordersExtraData, "", _buyer, false);
-    }
-
-    function testBuyWithETHOrdersRecipientZeroAddress() public {
-        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
-        BasicOrder[] memory orders = validMoodieOrder();
-        bytes[] memory ordersExtraData = new bytes[](0);
-
-        vm.expectRevert(IProxy.ZeroAddress.selector);
-        sudoswapProxy.execute{value: orders[0].price}(tokenTransfers, orders, ordersExtraData, "", address(0), false);
+        IProxy(_fakeAggregator).execute(orders, ordersExtraData, "", _buyer, false, feeData);
     }
 
     function testRescueETH() public {

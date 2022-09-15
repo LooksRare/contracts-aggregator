@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.14;
 
-import {BasicOrder, TokenTransfer} from "../libraries/OrderStructs.sol";
+import {BasicOrder, FeeData} from "../libraries/OrderStructs.sol";
 import {ICryptoPunks} from "../interfaces/ICryptoPunks.sol";
 import {IProxy} from "./IProxy.sol";
-import {TokenLogic} from "../TokenLogic.sol";
+import {TokenRescuer} from "../TokenRescuer.sol";
 
 /**
  * @title CryptoPunksProxy
@@ -12,35 +12,37 @@ import {TokenLogic} from "../TokenLogic.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract CryptoPunksProxy is IProxy, TokenLogic {
+contract CryptoPunksProxy is IProxy, TokenRescuer {
     ICryptoPunks public immutable marketplace;
-    uint256 public feeBp;
-    address public feeRecipient;
+    address public immutable aggregator;
 
     /**
      * @param _marketplace CryptoPunks' address
+     * @param _aggregator LooksRareAggregator's address
      */
-    constructor(address _marketplace) {
+    constructor(address _marketplace, address _aggregator) {
         marketplace = ICryptoPunks(_marketplace);
+        aggregator = _aggregator;
     }
 
     /**
      * @notice Execute CryptoPunks NFT sweeps in a single transaction
-     * @dev Only orders, recipient and isAtomic are used
+     * @dev ordersExtraData, extraData and feeData are not used
      * @param orders Orders to be executed by CryptoPunks
      * @param recipient The address to receive the purchased NFTs
      * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
      * @return Whether at least 1 out of N trades succeeded
      */
     function execute(
-        TokenTransfer[] calldata,
         BasicOrder[] calldata orders,
         bytes[] calldata,
         bytes memory,
         address recipient,
-        bool isAtomic
+        bool isAtomic,
+        FeeData memory
     ) external payable override returns (bool) {
-        if (recipient == address(0)) revert ZeroAddress();
+        if (address(this) != aggregator) revert InvalidCaller();
+
         uint256 ordersLength = orders.length;
         if (ordersLength == 0) revert InvalidOrderLength();
 
@@ -64,25 +66,6 @@ contract CryptoPunksProxy is IProxy, TokenLogic {
             }
         }
 
-        _returnETHIfAny();
-
         return executedCount > 0;
-    }
-
-    /**
-     * @inheritdoc IProxy
-     */
-    function setFeeBp(uint256 _feeBp) external override onlyOwner {
-        if (_feeBp > 10000) revert FeeTooHigh();
-        feeBp = _feeBp;
-        emit FeeUpdated(_feeBp);
-    }
-
-    /**
-     * @inheritdoc IProxy
-     */
-    function setFeeRecipient(address _feeRecipient) external override onlyOwner {
-        feeRecipient = _feeRecipient;
-        emit FeeRecipientUpdated(_feeRecipient);
     }
 }

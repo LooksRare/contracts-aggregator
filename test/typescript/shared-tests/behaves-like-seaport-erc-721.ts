@@ -46,7 +46,6 @@ export default function behavesLikeSeaportERC721(isAtomic: boolean): void {
         orders: [getSeaportOrderJson(orderOne), getSeaportOrderJson(orderTwo)],
         ordersExtraData: [getSeaportOrderExtraData(orderOne), getSeaportOrderExtraData(orderTwo)],
         extraData: isAtomic ? encodedExtraData() : ethers.constants.HashZero,
-        tokenTransfers: [],
       },
     ];
 
@@ -79,7 +78,6 @@ export default function behavesLikeSeaportERC721(isAtomic: boolean): void {
         orders: [getSeaportOrderJson(orderOne), getSeaportOrderJson(orderTwo)],
         ordersExtraData: [getSeaportOrderExtraData(orderOne), getSeaportOrderExtraData(orderTwo)],
         extraData: isAtomic ? encodedExtraData() : ethers.constants.HashZero,
-        tokenTransfers: [],
       },
     ];
 
@@ -121,7 +119,6 @@ export default function behavesLikeSeaportERC721(isAtomic: boolean): void {
         orders: [getSeaportOrderJson(orderOne), getSeaportOrderJson(orderTwo)],
         ordersExtraData: [getSeaportOrderExtraData(orderOne), getSeaportOrderExtraData(orderTwo)],
         extraData: isAtomic ? encodedExtraData() : ethers.constants.HashZero,
-        tokenTransfers: [],
       },
     ];
 
@@ -158,8 +155,7 @@ export default function behavesLikeSeaportERC721(isAtomic: boolean): void {
     const priceTwo = priceTwoBeforeFee.mul(10250).div(10000); // Fee
     const price = priceOne.add(priceTwo);
 
-    await proxy.setFeeBp(250);
-    await proxy.setFeeRecipient(protocolFeeRecipient.address);
+    await aggregator.setFee(proxy.address, 250, protocolFeeRecipient.address);
 
     const tradeData = [
       {
@@ -169,7 +165,6 @@ export default function behavesLikeSeaportERC721(isAtomic: boolean): void {
         orders: [getSeaportOrderJson(orderOne), getSeaportOrderJson(orderTwo)],
         ordersExtraData: [getSeaportOrderExtraData(orderOne), getSeaportOrderExtraData(orderTwo)],
         extraData: isAtomic ? encodedExtraData() : ethers.constants.HashZero,
-        tokenTransfers: [],
       },
     ];
 

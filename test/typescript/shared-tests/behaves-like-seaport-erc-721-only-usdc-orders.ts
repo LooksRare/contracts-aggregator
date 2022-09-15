@@ -9,6 +9,7 @@ import {
   SEAPORT_OFFER_FULFILLMENT_TWO_ITEMS,
   SEAPORT_CONSIDERATION_FULFILLMENTS_TWO_ORDERS_SAME_COLLECTION,
   USDC,
+  SEAPORT,
 } from "../../constants";
 import validateSweepEvent from "../utils/validate-sweep-event";
 import { expect } from "chai";
@@ -43,9 +44,8 @@ export default function behavesLikeSeaportERC721OnlyUSDCOrders(isAtomic: boolean
     const priceTwo = priceTwoBeforeFee.mul(10250).div(10000); // Fee
     const price = priceOne.add(priceTwo);
 
-    await proxy.approve(USDC);
-    await proxy.setFeeBp(250);
-    await proxy.setFeeRecipient(protocolFeeRecipient.address);
+    await aggregator.approve(SEAPORT, USDC);
+    await aggregator.setFee(proxy.address, 250, protocolFeeRecipient.address);
 
     await airdropUSDC(buyer.address, price);
 

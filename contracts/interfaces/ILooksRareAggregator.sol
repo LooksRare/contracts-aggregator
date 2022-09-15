@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.14;
 
-import {BasicOrder, TokenTransfer} from "../libraries/OrderStructs.sol";
+import {BasicOrder} from "../libraries/OrderStructs.sol";
 
 interface ILooksRareAggregator {
     struct TradeData {
@@ -11,8 +11,15 @@ interface ILooksRareAggregator {
         BasicOrder[] orders; // Orders to be executed by the marketplace
         bytes[] ordersExtraData; // Extra data for each order, specific for each marketplace
         bytes extraData; // Extra data specific for each marketplace
-        TokenTransfer[] tokenTransfers;
     }
+
+    /**
+     * @dev Emitted when fee is updated
+     * @param proxy Proxy to apply the fee to
+     * @param bp Fee basis point
+     * @param recipient Fee recipient
+     */
+    event FeeUpdated(address proxy, uint16 bp, address recipient);
 
     /**
      * @notice Emitted when a marketplace proxy's function is enabled.
@@ -37,6 +44,7 @@ interface ILooksRareAggregator {
      */
     event Sweep(address indexed sweeper, uint256 tradeCount, uint256 successCount);
 
+    error FeeTooHigh();
     error InvalidFunction();
     error InvalidOrderLength();
     error TradeExecutionFailed();

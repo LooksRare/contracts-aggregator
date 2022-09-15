@@ -54,7 +54,6 @@ describe("Aggregator", () => {
         ],
         ordersExtraData: [HashZero, HashZero],
         extraData: HashZero,
-        tokenTransfers: [],
       },
     ];
 
@@ -106,7 +105,6 @@ describe("Aggregator", () => {
         ],
         ordersExtraData: [HashZero, HashZero],
         extraData: HashZero,
-        tokenTransfers: [],
       },
     ];
 
@@ -153,7 +151,6 @@ describe("Aggregator", () => {
         ],
         ordersExtraData: [HashZero, HashZero],
         extraData: HashZero,
-        tokenTransfers: [],
       },
     ];
 
@@ -205,7 +202,6 @@ describe("Aggregator", () => {
         ],
         ordersExtraData: [HashZero, HashZero],
         extraData: HashZero,
-        tokenTransfers: [],
       },
     ];
 

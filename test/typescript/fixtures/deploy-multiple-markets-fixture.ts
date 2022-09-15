@@ -22,39 +22,34 @@ export default async function deployLooksRareFixture(): Promise<MultipleMarketsF
   await aggregator.deployed();
 
   const LooksRareProxy = await ethers.getContractFactory("LooksRareProxy");
-  const looksRareProxy = await LooksRareProxy.deploy(LOOKSRARE_V1);
+  const looksRareProxy = await LooksRareProxy.deploy(LOOKSRARE_V1, aggregator.address);
   await looksRareProxy.deployed();
-
-  // Because we are forking from the mainnet, the proxy address somehow already had a contract deployed to
-  // the same address with ether balance, causing our test (balance comparison) to fail.
-  await ethers.provider.send("hardhat_setBalance", [looksRareProxy.address, "0x0"]);
 
   const looksRareFunctionSelector = await getSignature("LooksRareProxy.json", "execute");
   await aggregator.addFunction(looksRareProxy.address, looksRareFunctionSelector);
 
   const SeaportProxy = await ethers.getContractFactory("SeaportProxy");
-  const seaportProxy = await SeaportProxy.deploy(SEAPORT);
+  const seaportProxy = await SeaportProxy.deploy(SEAPORT, aggregator.address);
   await seaportProxy.deployed();
-
-  // Because we are forking from the mainnet, the proxy address somehow already had a contract deployed to
-  // the same address with ether balance, causing our test (balance comparison) to fail.
-  await ethers.provider.send("hardhat_setBalance", [seaportProxy.address, "0x0"]);
 
   const seaportFunctionSelector = await getSignature("SeaportProxy.json", "execute");
   await aggregator.addFunction(seaportProxy.address, seaportFunctionSelector);
 
   const SudoswapProxy = await ethers.getContractFactory("SudoswapProxy");
-  const sudoswapProxy = await SudoswapProxy.deploy(SUDOSWAP);
+  const sudoswapProxy = await SudoswapProxy.deploy(SUDOSWAP, aggregator.address);
   await sudoswapProxy.deployed();
-
-  // Because we are forking from the mainnet, the proxy address somehow already had a contract deployed to
-  // the same address with ether balance, causing our test (balance comparison) to fail.
-  await ethers.provider.send("hardhat_setBalance", [sudoswapProxy.address, "0x0"]);
 
   const sudoswapFunctionSelector = await getSignature("SudoswapProxy.json", "execute");
   await aggregator.addFunction(sudoswapProxy.address, sudoswapFunctionSelector);
 
   const [, , buyer] = await ethers.getSigners();
+
+  // Because we are forking from the mainnet, the aggregator/proxy address might have a nonzero
+  // balance, causing our test (balance comparison) to fail.
+  await ethers.provider.send("hardhat_setBalance", [aggregator.address, "0x0"]);
+  await ethers.provider.send("hardhat_setBalance", [looksRareProxy.address, "0x0"]);
+  await ethers.provider.send("hardhat_setBalance", [seaportProxy.address, "0x0"]);
+  await ethers.provider.send("hardhat_setBalance", [sudoswapProxy.address, "0x0"]);
 
   await ethers.provider.send("hardhat_setBalance", [
     buyer.address,

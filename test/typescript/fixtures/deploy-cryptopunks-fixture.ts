@@ -18,7 +18,7 @@ export default async function deployCryptoPunksFixture(): Promise<CryptoPunksFix
   await aggregator.deployed();
 
   const CryptoPunksProxy = await ethers.getContractFactory("CryptoPunksProxy");
-  const proxy = await CryptoPunksProxy.deploy(CRYPTOPUNKS);
+  const proxy = await CryptoPunksProxy.deploy(CRYPTOPUNKS, aggregator.address);
   await proxy.deployed();
 
   const [buyer] = await ethers.getSigners();
@@ -26,9 +26,10 @@ export default async function deployCryptoPunksFixture(): Promise<CryptoPunksFix
   const functionSelector = await getSignature("CryptoPunksProxy.json", "execute");
   await aggregator.addFunction(proxy.address, functionSelector);
 
-  // Because we are forking from the mainnet, the proxy address somehow already had a contract deployed to
-  // the same address with ether balance, causing our test (balance comparison) to fail.
+  // Because we are forking from the mainnet, the aggregator/proxy address might have a nonzero
+  // balance, causing our test (balance comparison) to fail.
   await ethers.provider.send("hardhat_setBalance", [proxy.address, "0x0"]);
+  await ethers.provider.send("hardhat_setBalance", [aggregator.address, "0x0"]);
 
   await ethers.provider.send("hardhat_setBalance", [
     buyer.address,

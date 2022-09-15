@@ -4,7 +4,7 @@ import deploySeaportFixture from "../fixtures/deploy-seaport-fixture";
 import combineConsiderationAmount from "../utils/combine-consideration-amount";
 import getSeaportOrderJson, { OrderJson } from "../utils/get-seaport-order-json";
 import getSeaportOrderExtraData from "../utils/get-seaport-order-extra-data";
-import { SEAPORT_EXTRA_DATA_SCHEMA, USDC } from "../../constants";
+import { SEAPORT, SEAPORT_EXTRA_DATA_SCHEMA, USDC } from "../../constants";
 import validateSweepEvent from "../utils/validate-sweep-event";
 import { expect } from "chai";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
@@ -93,9 +93,8 @@ export default function behavesLikeSeaportMultipleCurrenciesRandomOrderFees(isAt
     protocolFeeRecipient: SignerWithAddress,
     usdcAirdropAmount: BigNumber
   ): Promise<void> => {
-    await proxy.approve(USDC);
-    await proxy.setFeeBp(250);
-    await proxy.setFeeRecipient(protocolFeeRecipient.address);
+    await aggregator.approve(SEAPORT, USDC);
+    await aggregator.setFee(proxy.address, 250, protocolFeeRecipient.address);
 
     await airdropUSDC(buyer.address, usdcAirdropAmount);
 

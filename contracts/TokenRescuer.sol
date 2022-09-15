@@ -5,14 +5,13 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
 import {LowLevelETH} from "./lowLevelCallers/LowLevelETH.sol";
 import {LowLevelERC20} from "./lowLevelCallers/LowLevelERC20.sol";
-import {TokenTransfer} from "./libraries/OrderStructs.sol";
 
 /**
- * @title TokenLogic
+ * @title TokenRescuer
  * @notice This contract contains functions to move tokens
  * @author LooksRare protocol team (👀,💎)
  */
-contract TokenLogic is OwnableTwoSteps, LowLevelETH, LowLevelERC20 {
+contract TokenRescuer is OwnableTwoSteps, LowLevelETH, LowLevelERC20 {
     error InsufficientAmount();
 
     /**
@@ -36,25 +35,5 @@ contract TokenLogic is OwnableTwoSteps, LowLevelETH, LowLevelERC20 {
         uint256 withdrawAmount = IERC20(currency).balanceOf(address(this)) - 1;
         if (withdrawAmount == 0) revert InsufficientAmount();
         _executeERC20DirectTransfer(currency, to, withdrawAmount);
-    }
-
-    function _pullERC20Tokens(TokenTransfer[] calldata tokenTransfers, address source) internal {
-        for (uint256 i; i < tokenTransfers.length; ) {
-            _executeERC20Transfer(tokenTransfers[i].currency, source, address(this), tokenTransfers[i].amount);
-            unchecked {
-                ++i;
-            }
-        }
-    }
-
-    function _returnERC20TokensIfAny(TokenTransfer[] calldata tokenTransfers, address recipient) internal {
-        for (uint256 i; i < tokenTransfers.length; ) {
-            uint256 balance = IERC20(tokenTransfers[i].currency).balanceOf(address(this));
-            if (balance > 0) _executeERC20DirectTransfer(tokenTransfers[i].currency, recipient, balance);
-
-            unchecked {
-                ++i;
-            }
-        }
     }
 }

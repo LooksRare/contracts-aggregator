@@ -3,11 +3,12 @@ pragma solidity 0.8.14;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SeaportInterface} from "../interfaces/SeaportInterface.sol";
-import {BasicOrder, TokenTransfer} from "../libraries/OrderStructs.sol";
+import {BasicOrder} from "../libraries/OrderStructs.sol";
 import {CollectionType} from "../libraries/OrderEnums.sol";
 import {AdvancedOrder, CriteriaResolver, OrderParameters, OfferItem, ConsiderationItem, FulfillmentComponent, AdditionalRecipient} from "../libraries/seaport/ConsiderationStructs.sol";
 import {ItemType, OrderType} from "../libraries/seaport/ConsiderationEnums.sol";
-import {TokenLogic} from "../TokenLogic.sol";
+import {FeeData} from "../libraries/OrderStructs.sol";
+import {TokenRescuer} from "../TokenRescuer.sol";
 import {IProxy} from "../proxies/IProxy.sol";
 
 /**
@@ -16,10 +17,9 @@ import {IProxy} from "../proxies/IProxy.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract SeaportProxy is TokenLogic, IProxy {
+contract SeaportProxy is IProxy, TokenRescuer {
     SeaportInterface public immutable marketplace;
-    uint256 public feeBp;
-    address public feeRecipient;
+    address public immutable aggregator;
 
     error TradeExecutionFailed();
 
@@ -41,79 +41,43 @@ contract SeaportProxy is TokenLogic, IProxy {
 
     /**
      * @param _marketplace Seaport's address
+     * @param _aggregator LooksRareAggregator's address
      */
-    constructor(address _marketplace) {
+    constructor(address _marketplace, address _aggregator) {
         marketplace = SeaportInterface(_marketplace);
+        aggregator = _aggregator;
     }
 
     /**
      * @notice Execute Seaport NFT sweeps in a single transaction
-     * @param tokenTransfers Aggregated ERC-20 token transfers for all orders
      * @param orders Orders to be executed by Seaport
      * @param ordersExtraData Extra data for each order
      * @param extraData Extra data for the whole transaction
      * @param recipient The address to receive the purchased NFTs
      * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
+     * @param feeData Fee basis point and recipient
      * @return Whether at least 1 out of N trades succeeded
      */
     function execute(
-        TokenTransfer[] calldata tokenTransfers,
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,
         bytes calldata extraData,
         address recipient,
-        bool isAtomic
+        bool isAtomic,
+        FeeData memory feeData
     ) external payable override returns (bool) {
+        if (address(this) != aggregator) revert InvalidCaller();
+
         uint256 ordersLength = orders.length;
         if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();
-        if (recipient == address(0)) revert ZeroAddress();
-
-        if (tokenTransfers.length > 0) _pullERC20Tokens(tokenTransfers, msg.sender);
 
         if (isAtomic) {
-            _executeAtomicOrders(orders, ordersExtraData, extraData, recipient);
-            if (tokenTransfers.length > 0) _returnERC20TokensIfAny(tokenTransfers, msg.sender);
-            _returnETHIfAny();
+            _executeAtomicOrders(orders, ordersExtraData, extraData, recipient, feeData);
             return true;
         } else {
-            uint256 executedCount = _executeNonAtomicOrders(orders, ordersExtraData, recipient);
-            if (tokenTransfers.length > 0) _returnERC20TokensIfAny(tokenTransfers, msg.sender);
-            _returnETHIfAny();
+            uint256 executedCount = _executeNonAtomicOrders(orders, ordersExtraData, recipient, feeData);
             return executedCount > 0;
         }
-    }
-
-    /**
-     * @notice Approve Seaport to transfer ERC-20 tokens from the proxy
-     * @param currency The address of the ERC-20 token to approve
-     */
-    function approve(address currency) external onlyOwner {
-        IERC20(currency).approve(address(marketplace), type(uint256).max);
-    }
-
-    /**
-     * @notice Revoke Seaport's approval to transfer ERC-20 tokens from the proxy
-     * @param currency The address of the ERC-20 token to revoke
-     */
-    function revoke(address currency) external onlyOwner {
-        IERC20(currency).approve(address(marketplace), 0);
-    }
-
-    /**
-     * @inheritdoc IProxy
-     */
-    function setFeeBp(uint256 _feeBp) external override onlyOwner {
-        if (_feeBp > 10000) revert FeeTooHigh();
-        feeBp = _feeBp;
-        emit FeeUpdated(_feeBp);
-    }
-
-    /**
-     * @inheritdoc IProxy
-     */
-    function setFeeRecipient(address _feeRecipient) external override onlyOwner {
-        feeRecipient = _feeRecipient;
-        emit FeeRecipientUpdated(_feeRecipient);
     }
 
     /**
@@ -127,12 +91,15 @@ contract SeaportProxy is TokenLogic, IProxy {
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,
         bytes calldata extraData,
-        address recipient
+        address recipient,
+        FeeData memory feeData
     ) private {
         uint256 ordersLength = orders.length;
         AdvancedOrder[] memory advancedOrders = new AdvancedOrder[](ordersLength);
         ExtraData memory extraDataStruct = abi.decode(extraData, (ExtraData));
         CriteriaResolver[] memory criteriaResolver = new CriteriaResolver[](0);
+
+        uint256 ethValue;
 
         for (uint256 i; i < ordersLength; ) {
             OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
@@ -141,15 +108,14 @@ contract SeaportProxy is TokenLogic, IProxy {
             advancedOrders[i].denominator = orderExtraData.denominator;
             advancedOrders[i].signature = orders[i].signature;
 
+            if (orders[i].currency == address(0)) ethValue += orders[i].price;
+
             unchecked {
                 ++i;
             }
         }
 
-        address _feeRecipient = feeRecipient;
-        uint256 ethFee = _feeRecipient == address(0) ? 0 : msg.value - (msg.value * 10000) / (10000 + feeBp);
-
-        (bool[] memory availableOrders, ) = marketplace.fulfillAvailableAdvancedOrders{value: msg.value - ethFee}(
+        (bool[] memory availableOrders, ) = marketplace.fulfillAvailableAdvancedOrders{value: ethValue}(
             advancedOrders,
             criteriaResolver,
             extraDataStruct.offerFulfillments,
@@ -166,32 +132,25 @@ contract SeaportProxy is TokenLogic, IProxy {
             }
         }
 
-        if (_feeRecipient != address(0)) {
-            _handleAtomicOrdersERC20OrdersFees(orders);
-            if (ethFee > 0) _transferETH(_feeRecipient, ethFee);
-        }
+        _handleFees(orders, feeData);
     }
 
-    function _handleAtomicOrdersERC20OrdersFees(BasicOrder[] calldata orders) private {
+    function _handleFees(BasicOrder[] calldata orders, FeeData memory feeData) private {
+        if (feeData.recipient == address(0)) return;
+
         address lastOrderCurrency;
         uint256 fee;
 
         for (uint256 i; i < orders.length; ) {
             address currency = orders[i].currency;
 
-            // Atomic orders handle fees differently as the total ETH fee is calculated
-            // before we even submit the orders to Seaport. It's all or nothing, so we do
-            // not have to loop each order to add the ETH fee.
-            if (currency != address(0)) {
-                uint256 price = orders[i].price;
-                uint256 orderFee = (price * feeBp) / 10000;
-                if (currency == lastOrderCurrency) {
-                    fee += orderFee;
-                } else {
-                    if (fee > 0) _executeERC20DirectTransfer(lastOrderCurrency, feeRecipient, fee);
-                    fee = orderFee;
-                    lastOrderCurrency = currency;
-                }
+            if (currency == lastOrderCurrency) {
+                fee += (orders[i].price * feeData.bp) / 10000;
+            } else {
+                if (fee > 0) _transferFee(fee, lastOrderCurrency, feeData.recipient);
+
+                lastOrderCurrency = currency;
+                fee = (orders[i].price * feeData.bp) / 10000;
             }
 
             unchecked {
@@ -199,18 +158,30 @@ contract SeaportProxy is TokenLogic, IProxy {
             }
         }
 
-        if (fee > 0) _executeERC20DirectTransfer(lastOrderCurrency, feeRecipient, fee);
+        if (fee > 0) _transferFee(fee, lastOrderCurrency, feeData.recipient);
+    }
+
+    function _transferFee(
+        uint256 fee,
+        address lastOrderCurrency,
+        address recipient
+    ) private {
+        if (lastOrderCurrency == address(0)) {
+            _transferETH(recipient, fee);
+        } else {
+            _executeERC20DirectTransfer(lastOrderCurrency, recipient, fee);
+        }
     }
 
     function _executeNonAtomicOrders(
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,
-        address recipient
+        address recipient,
+        FeeData memory feeData
     ) private returns (uint256 executedCount) {
         CriteriaResolver[] memory criteriaResolver = new CriteriaResolver[](0);
         uint256 fee;
         address lastOrderCurrency;
-        address _feeRecipient = feeRecipient;
         for (uint256 i; i < orders.length; ) {
             OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
             AdvancedOrder memory advancedOrder;
@@ -224,20 +195,14 @@ contract SeaportProxy is TokenLogic, IProxy {
             try marketplace.fulfillAdvancedOrder{value: price}(advancedOrder, criteriaResolver, bytes32(0), recipient) {
                 executedCount += 1;
 
-                if (_feeRecipient != address(0)) {
+                if (feeData.recipient != address(0)) {
                     if (orders[i].currency == lastOrderCurrency) {
-                        fee += (orders[i].price * feeBp) / 10000;
+                        fee += (orders[i].price * feeData.bp) / 10000;
                     } else {
-                        if (fee > 0) {
-                            if (lastOrderCurrency == address(0)) {
-                                _transferETH(_feeRecipient, fee);
-                            } else {
-                                _executeERC20DirectTransfer(lastOrderCurrency, _feeRecipient, fee);
-                            }
-                        }
+                        if (fee > 0) _transferFee(fee, lastOrderCurrency, feeData.recipient);
 
                         lastOrderCurrency = orders[i].currency;
-                        fee = (orders[i].price * feeBp) / 10000;
+                        fee = (orders[i].price * feeData.bp) / 10000;
                     }
                 }
             } catch {}
@@ -247,13 +212,7 @@ contract SeaportProxy is TokenLogic, IProxy {
             }
         }
 
-        if (fee > 0) {
-            if (lastOrderCurrency == address(0)) {
-                _transferETH(_feeRecipient, fee);
-            } else {
-                _executeERC20DirectTransfer(lastOrderCurrency, _feeRecipient, fee);
-            }
-        }
+        if (fee > 0) _transferFee(fee, lastOrderCurrency, feeData.recipient);
     }
 
     function _populateParameters(BasicOrder calldata order, OrderExtraData memory orderExtraData)
