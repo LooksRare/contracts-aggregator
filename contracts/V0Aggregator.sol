@@ -2,7 +2,7 @@
 pragma solidity 0.8.14;
 
 import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
-import {TokenLogic} from "./TokenLogic.sol";
+import {TokenRescuer} from "./TokenRescuer.sol";
 import {TokenReceiver} from "./TokenReceiver.sol";
 
 /**
@@ -11,7 +11,7 @@ import {TokenReceiver} from "./TokenReceiver.sol";
  *         by passing bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract V0Aggregator is TokenLogic, TokenReceiver {
+contract V0Aggregator is TokenRescuer, TokenReceiver {
     struct TradeData {
         address proxy;
         bytes data;

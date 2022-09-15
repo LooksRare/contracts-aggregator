@@ -4,7 +4,7 @@ pragma solidity 0.8.14;
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {LooksRareProxy} from "./proxies/LooksRareProxy.sol";
 import {BasicOrder, TokenTransfer} from "./libraries/OrderStructs.sol";
-import {TokenLogic} from "./TokenLogic.sol";
+import {TokenRescuer} from "./TokenRescuer.sol";
 import {TokenReceiver} from "./TokenReceiver.sol";
 import {ILooksRareAggregator} from "./interfaces/ILooksRareAggregator.sol";
 import {FeeData} from "./libraries/OrderStructs.sol";
@@ -15,7 +15,7 @@ import {FeeData} from "./libraries/OrderStructs.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract LooksRareAggregator is ILooksRareAggregator, TokenLogic, TokenReceiver {
+contract LooksRareAggregator is ILooksRareAggregator, TokenRescuer, TokenReceiver {
     mapping(address => mapping(bytes4 => bool)) private _proxyFunctionSelectors;
     mapping(address => FeeData) private _proxyFeeData;
 

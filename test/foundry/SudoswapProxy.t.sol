@@ -4,12 +4,12 @@ pragma solidity 0.8.14;
 
 import {SudoswapProxy} from "../../contracts/proxies/SudoswapProxy.sol";
 import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
-import {TokenLogic} from "../../contracts/TokenLogic.sol";
+import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
 import {IProxy} from "../../contracts/proxies/IProxy.sol";
 import {BasicOrder, TokenTransfer, FeeData} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {TestHelpers} from "./TestHelpers.sol";
-import {TokenLogicTest} from "./TokenLogic.t.sol";
+import {TokenRescuerTest} from "./TokenRescuer.t.sol";
 
 abstract contract TestParameters {
     address internal constant SUDOSWAP = 0x2B2e8cDA09bBA9660dCA5cB6233787738Ad68329;
@@ -17,15 +17,15 @@ abstract contract TestParameters {
     address internal _buyer = address(1);
 }
 
-contract SudoswapProxyTest is TestParameters, TestHelpers, TokenLogicTest {
+contract SudoswapProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
     LooksRareAggregator aggregator;
     SudoswapProxy sudoswapProxy;
-    TokenLogic tokenRescuer;
+    TokenRescuer tokenRescuer;
 
     function setUp() public {
         aggregator = new LooksRareAggregator();
         sudoswapProxy = new SudoswapProxy(SUDOSWAP, address(aggregator));
-        tokenRescuer = TokenLogic(address(sudoswapProxy));
+        tokenRescuer = TokenRescuer(address(sudoswapProxy));
         vm.deal(_buyer, 100 ether);
     }
 

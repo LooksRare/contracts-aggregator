@@ -3,7 +3,7 @@ pragma solidity 0.8.14;
 
 import {ISudoswapRouter} from "../interfaces/ISudoswapRouter.sol";
 import {BasicOrder, FeeData} from "../libraries/OrderStructs.sol";
-import {TokenLogic} from "../TokenLogic.sol";
+import {TokenRescuer} from "../TokenRescuer.sol";
 import {IProxy} from "./IProxy.sol";
 
 /**
@@ -12,7 +12,7 @@ import {IProxy} from "./IProxy.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract SudoswapProxy is IProxy, TokenLogic {
+contract SudoswapProxy is IProxy, TokenRescuer {
     ISudoswapRouter public immutable marketplace;
     address public immutable aggregator;
 

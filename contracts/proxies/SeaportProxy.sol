@@ -8,7 +8,7 @@ import {CollectionType} from "../libraries/OrderEnums.sol";
 import {AdvancedOrder, CriteriaResolver, OrderParameters, OfferItem, ConsiderationItem, FulfillmentComponent, AdditionalRecipient} from "../libraries/seaport/ConsiderationStructs.sol";
 import {ItemType, OrderType} from "../libraries/seaport/ConsiderationEnums.sol";
 import {FeeData} from "../libraries/OrderStructs.sol";
-import {TokenLogic} from "../TokenLogic.sol";
+import {TokenRescuer} from "../TokenRescuer.sol";
 import {IProxy} from "../proxies/IProxy.sol";
 
 /**
@@ -17,7 +17,7 @@ import {IProxy} from "../proxies/IProxy.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract SeaportProxy is IProxy, TokenLogic {
+contract SeaportProxy is IProxy, TokenRescuer {
     SeaportInterface public immutable marketplace;
     address public immutable aggregator;
 

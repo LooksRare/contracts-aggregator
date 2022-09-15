@@ -5,12 +5,12 @@ pragma solidity 0.8.14;
 import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
 import {LooksRareProxy} from "../../contracts/proxies/LooksRareProxy.sol";
 import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
-import {TokenLogic} from "../../contracts/TokenLogic.sol";
+import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
 import {IProxy} from "../../contracts/proxies/IProxy.sol";
 import {BasicOrder, TokenTransfer, FeeData} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {TestHelpers} from "./TestHelpers.sol";
-import {TokenLogicTest} from "./TokenLogic.t.sol";
+import {TokenRescuerTest} from "./TokenRescuer.t.sol";
 import {LooksRareProxyTestHelpers} from "./LooksRareProxyTestHelpers.sol";
 
 abstract contract TestParameters {
@@ -19,15 +19,15 @@ abstract contract TestParameters {
     address internal constant _buyer = address(1);
 }
 
-contract LooksRareProxyTest is TestParameters, TestHelpers, TokenLogicTest, LooksRareProxyTestHelpers {
+contract LooksRareProxyTest is TestParameters, TestHelpers, TokenRescuerTest, LooksRareProxyTestHelpers {
     LooksRareAggregator aggregator;
     LooksRareProxy looksRareProxy;
-    TokenLogic tokenRescuer;
+    TokenRescuer tokenRescuer;
 
     function setUp() public {
         aggregator = new LooksRareAggregator();
         looksRareProxy = new LooksRareProxy(LOOKSRARE_V1, address(aggregator));
-        tokenRescuer = TokenLogic(address(looksRareProxy));
+        tokenRescuer = TokenRescuer(address(looksRareProxy));
         vm.deal(_buyer, 200 ether);
     }
 

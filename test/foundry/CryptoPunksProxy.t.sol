@@ -4,27 +4,27 @@ pragma solidity 0.8.14;
 
 import {CryptoPunksProxy} from "../../contracts/proxies/CryptoPunksProxy.sol";
 import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
-import {TokenLogic} from "../../contracts/TokenLogic.sol";
+import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
 import {IProxy} from "../../contracts/proxies/IProxy.sol";
 import {BasicOrder, TokenTransfer, FeeData} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {TestHelpers} from "./TestHelpers.sol";
-import {TokenLogicTest} from "./TokenLogic.t.sol";
+import {TokenRescuerTest} from "./TokenRescuer.t.sol";
 
 abstract contract TestParameters {
     address internal constant CRYPTOPUNKS = 0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB;
     address internal _buyer = address(1);
 }
 
-contract CryptoPunksProxyTest is TestParameters, TestHelpers, TokenLogicTest {
+contract CryptoPunksProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
     LooksRareAggregator aggregator;
     CryptoPunksProxy cryptoPunksProxy;
-    TokenLogic tokenRescuer;
+    TokenRescuer tokenRescuer;
 
     function setUp() public {
         aggregator = new LooksRareAggregator();
         cryptoPunksProxy = new CryptoPunksProxy(CRYPTOPUNKS, address(aggregator));
-        tokenRescuer = TokenLogic(address(cryptoPunksProxy));
+        tokenRescuer = TokenRescuer(address(cryptoPunksProxy));
         vm.deal(_buyer, 100 ether);
     }
 

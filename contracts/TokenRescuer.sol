@@ -8,11 +8,11 @@ import {LowLevelERC20} from "./lowLevelCallers/LowLevelERC20.sol";
 import {TokenTransfer} from "./libraries/OrderStructs.sol";
 
 /**
- * @title TokenLogic
+ * @title TokenRescuer
  * @notice This contract contains functions to move tokens
  * @author LooksRare protocol team (👀,💎)
  */
-contract TokenLogic is OwnableTwoSteps, LowLevelETH, LowLevelERC20 {
+contract TokenRescuer is OwnableTwoSteps, LowLevelETH, LowLevelERC20 {
     error InsufficientAmount();
 
     /**
