@@ -6,7 +6,7 @@ import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSte
 import {LooksRareProxy} from "../../contracts/proxies/LooksRareProxy.sol";
 import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
 import {IProxy} from "../../contracts/proxies/IProxy.sol";
-import {BasicOrder, TokenTransfer, FeeData} from "../../contracts/libraries/OrderStructs.sol";
+import {BasicOrder, FeeData} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TokenRescuerTest} from "./TokenRescuer.t.sol";

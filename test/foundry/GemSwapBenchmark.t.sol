@@ -122,8 +122,7 @@ contract GemSwapBenchmarkTest is TestParameters, TestHelpers, SeaportProxyTestHe
                 value: seaportOrders[0].price,
                 orders: seaportOrders,
                 ordersExtraData: seaportOrdersExtraData,
-                extraData: isAtomic ? validSingleBAYCExtraData() : new bytes(0),
-                tokenTransfers: tokenTransfers
+                extraData: isAtomic ? validSingleBAYCExtraData() : new bytes(0)
             });
 
             BasicOrder[] memory looksRareOrders = new BasicOrder[](1);
@@ -142,8 +141,7 @@ contract GemSwapBenchmarkTest is TestParameters, TestHelpers, SeaportProxyTestHe
                 value: looksRareOrders[0].price,
                 orders: looksRareOrders,
                 ordersExtraData: looksRareOrdersExtraData,
-                extraData: new bytes(0),
-                tokenTransfers: tokenTransfers
+                extraData: new bytes(0)
             });
         }
 
@@ -186,8 +184,7 @@ contract GemSwapBenchmarkTest is TestParameters, TestHelpers, SeaportProxyTestHe
                 value: seaportOrders[0].price + seaportOrders[1].price,
                 orders: seaportOrders,
                 ordersExtraData: seaportOrdersExtraData,
-                extraData: isAtomic ? validMultipleBAYCExtraData() : new bytes(0),
-                tokenTransfers: tokenTransfers
+                extraData: isAtomic ? validMultipleBAYCExtraData() : new bytes(0)
             });
 
             BasicOrder[] memory looksRareOrders = new BasicOrder[](2);
@@ -208,8 +205,7 @@ contract GemSwapBenchmarkTest is TestParameters, TestHelpers, SeaportProxyTestHe
                 value: looksRareOrders[0].price + looksRareOrders[1].price,
                 orders: looksRareOrders,
                 ordersExtraData: looksRareOrdersExtraData,
-                extraData: new bytes(0),
-                tokenTransfers: tokenTransfers
+                extraData: new bytes(0)
             });
         }
 

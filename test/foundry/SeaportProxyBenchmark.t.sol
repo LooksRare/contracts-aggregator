@@ -115,8 +115,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
             value: order.price,
             orders: orders,
             ordersExtraData: ordersExtraData,
-            extraData: extraData,
-            tokenTransfers: tokenTransfers
+            extraData: extraData
         });
 
         uint256 gasRemaining = gasleft();
@@ -305,8 +304,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
             value: totalPrice,
             orders: orders,
             ordersExtraData: ordersExtraData,
-            extraData: extraData,
-            tokenTransfers: new TokenTransfer[](0)
+            extraData: extraData
         });
 
         uint256 gasRemaining = gasleft();

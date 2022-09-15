@@ -95,8 +95,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
             value: orders[0].price,
             orders: orders,
             ordersExtraData: ordersExtraData,
-            extraData: "",
-            tokenTransfers: new TokenTransfer[](0)
+            extraData: ""
         });
 
         uint256 gasRemaining = gasleft();
@@ -150,8 +149,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
             value: orders[0].price + orders[1].price,
             orders: orders,
             ordersExtraData: ordersExtraData,
-            extraData: "",
-            tokenTransfers: new TokenTransfer[](0)
+            extraData: ""
         });
 
         uint256 gasRemaining = gasleft();
