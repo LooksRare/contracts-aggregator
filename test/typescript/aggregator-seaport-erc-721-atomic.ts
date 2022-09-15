@@ -47,7 +47,6 @@ describe("Aggregator", () => {
         orders: [getSeaportOrderJson(orderOne), getSeaportOrderJson(orderTwo)],
         ordersExtraData: [getSeaportOrderExtraData(orderOne), getSeaportOrderExtraData(orderTwo)],
         extraData: encodedExtraData(),
-        tokenTransfers: [],
       },
     ];
 

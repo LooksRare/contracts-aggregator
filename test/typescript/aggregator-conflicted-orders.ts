@@ -56,7 +56,6 @@ describe("Aggregator", () => {
             },
           ]
         ),
-        tokenTransfers: [],
       },
       {
         proxy: looksRareProxy.address,
@@ -81,7 +80,6 @@ describe("Aggregator", () => {
           abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [looksRarePrice, 9550, 2, LOOKSRARE_STRATEGY_FIXED_PRICE]),
         ],
         extraData: ethers.constants.HashZero,
-        tokenTransfers: [],
       },
     ];
 
@@ -137,7 +135,6 @@ describe("Aggregator", () => {
             },
           ]
         ),
-        tokenTransfers: [],
       },
       {
         proxy: looksRareProxy.address,
@@ -162,7 +159,6 @@ describe("Aggregator", () => {
           abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [looksRarePrice, 9550, 2, LOOKSRARE_STRATEGY_FIXED_PRICE]),
         ],
         extraData: ethers.constants.HashZero,
-        tokenTransfers: [],
       },
     ];
 

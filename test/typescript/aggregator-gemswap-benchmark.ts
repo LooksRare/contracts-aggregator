@@ -39,10 +39,7 @@ describe("Aggregator", () => {
         proxy: seaportProxy.address,
         selector: seaportFunctionSelector,
         value: seaportPrice,
-        orders: [
-          getSeaportOrderJson(seaportOrderOne, seaportPriceOne),
-          getSeaportOrderJson(seaportOrderTwo, seaportPriceTwo),
-        ],
+        orders: [getSeaportOrderJson(seaportOrderOne), getSeaportOrderJson(seaportOrderTwo)],
         ordersExtraData: [getSeaportOrderExtraData(seaportOrderOne), getSeaportOrderExtraData(seaportOrderTwo)],
         extraData: abiCoder.encode(
           [SEAPORT_EXTRA_DATA_SCHEMA],
@@ -53,7 +50,6 @@ describe("Aggregator", () => {
             },
           ]
         ),
-        tokenTransfers: [],
       },
       {
         proxy: looksRareProxy.address,
@@ -92,7 +88,6 @@ describe("Aggregator", () => {
           abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [looksRarePriceTwo, 9550, 9, LOOKSRARE_STRATEGY_FIXED_PRICE]),
         ],
         extraData: ethers.constants.HashZero,
-        tokenTransfers: [],
       },
     ];
 

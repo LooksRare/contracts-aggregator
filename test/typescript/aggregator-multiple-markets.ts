@@ -60,7 +60,6 @@ describe("Aggregator", () => {
             },
           ]
         ),
-        tokenTransfers: [],
       },
       {
         proxy: looksRareProxy.address,
@@ -85,7 +84,6 @@ describe("Aggregator", () => {
           abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [looksRarePrice, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE]),
         ],
         extraData: ethers.constants.HashZero,
-        tokenTransfers: [],
       },
       {
         proxy: sudoswapProxy.address,
@@ -107,7 +105,6 @@ describe("Aggregator", () => {
         ],
         ordersExtraData: [HashZero, HashZero],
         extraData: HashZero,
-        tokenTransfers: [],
       },
     ];
 
@@ -162,7 +159,6 @@ describe("Aggregator", () => {
             },
           ]
         ),
-        tokenTransfers: [],
       },
       {
         proxy: looksRareProxy.address,
@@ -187,7 +183,6 @@ describe("Aggregator", () => {
           abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [looksRarePrice, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE]),
         ],
         extraData: HashZero,
-        tokenTransfers: [],
       },
       {
         proxy: sudoswapProxy.address,
@@ -209,7 +204,6 @@ describe("Aggregator", () => {
         ],
         ordersExtraData: [HashZero, HashZero],
         extraData: HashZero,
-        tokenTransfers: [],
       },
     ];
     // Duplicating the orders to make the 2nd batch fail
@@ -277,7 +271,6 @@ describe("Aggregator", () => {
             },
           ]
         ),
-        tokenTransfers: [],
       },
       {
         proxy: looksRareProxy.address,
@@ -302,7 +295,6 @@ describe("Aggregator", () => {
           abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [looksRarePrice, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE]),
         ],
         extraData: ethers.constants.HashZero,
-        tokenTransfers: [],
       },
       {
         proxy: sudoswapProxy.address,
@@ -324,7 +316,6 @@ describe("Aggregator", () => {
         ],
         ordersExtraData: [HashZero, HashZero],
         extraData: HashZero,
-        tokenTransfers: [],
       },
     ];
     // Duplicating the orders to make the 2nd batch fail
