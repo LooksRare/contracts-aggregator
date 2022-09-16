@@ -1,7 +1,7 @@
 {
-  "name": "solidity-template",
+  "name": "@looksrare/contracts-aggregator",
   "version": "1.0.0",
-  "description": "Solidity smart contracts template ",
+  "description": "LooksRare aggregator",
   "main": "index.js",
   "author": "LooksRare",
   "license": "MIT",
@@ -10,10 +10,10 @@
     "looksrare"
   ],
   "homepage": "https://looksrare.org/",
-  "bugs": "https://github.com/LooksRare/solidity-template/issues",
+  "bugs": "https://github.com/LooksRare/aggregator/issues",
   "repository": {
     "type": "git",
-    "url": "https://github.com/LooksRare/solidity-template.git"
+    "url": "https://github.com/LooksRare/aggregator.git"
   },
   "scripts": {
     "compile": "hardhat compile",
