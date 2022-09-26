@@ -1,11 +1,10 @@
 import { ethers } from "hardhat";
 import { SEAPORT_ORDER_EXTRA_DATA_SCHEMA } from "../../constants";
-import Consideration from "../interfaces/seaport/consideration";
-import SeaportOrder from "../interfaces/seaport/order";
+import { ConsiderationItem, AdvancedOrder } from "@opensea/seaport-js/lib/types";
 
-export default function getSeaportOrderExtraData(order: SeaportOrder): string {
+export default function getSeaportOrderExtraData(order: AdvancedOrder): string {
   const abiCoder = ethers.utils.defaultAbiCoder;
-  const recipients = order.parameters.consideration.map((item: Consideration) => ({
+  const recipients = order.parameters.consideration.map((item: ConsiderationItem) => ({
     amount: item.endAmount,
     recipient: item.recipient,
   }));
