@@ -2,7 +2,6 @@
   "name": "@looksrare/contracts-aggregator",
   "version": "1.0.0",
   "description": "LooksRare aggregator",
-  "main": "index.js",
   "author": "LooksRare",
   "license": "MIT",
   "private": true,
