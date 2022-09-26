@@ -4,51 +4,28 @@ This is an aggregator that allows NFT sweepers to buy NFTs from multiple sources
 
 ## About this repo
 
-### How to interact with the contracts
-
-LooksRareAggregator is the entrypoint for a batch transaction. Clients should submit a list of trade data for different marketplaces to the aggregator. However, it is only recommended when the trade data belongs to different marketplaces. It is cheaper to interact with the proxy (LooksRare, X2Y2, CryptoPunks) or even the marketplace directly (Seaport, Sudoswap) when the sweeping is only targeting one marketplace.
-Generally speaking, if the marketplace supports buying multiple NFTs at once, the client should avoid the proxy. Using a proxy is only beneficial if the marketplace does not support submitting multiple orders at once.
-
 ### Structure
 
 It is a hybrid [Hardhat](https://hardhat.org/) repo that also requires [Foundry](https://book.getfoundry.sh/index.html) to run Solidity tests powered by the [ds-test library](https://github.com/dapphub/ds-test/).
 
 > To install Foundry, please follow the instructions [here](https://book.getfoundry.sh/getting-started/installation.html).
 
+### Architecture
+
+- `LooksRareAggregator` is the entrypoint for a batch transaction. Clients should submit a list of trade data for different marketplaces to the aggregator.
+
+- The `proxies` folder contains the proxy contracts for each marketplace. All proxies should be named in the format of `${Marketplace}Proxy` and inherit from the interface `IProxy`.
+
+- The `libraries` folder contains various structs and enums required. Objects that are specific to a marketplace should be put inside the `${marketplace}` child folder.
+
+- In order to create more realistic tests, real listings from real collections are fetched from each marketplace. For listing objects that are full API responses, they are put inside the `test/typescript/fixtures/${marketplace}` folder. For marketplaces like CryptoPunks and Sudoswap, it is ok to just put the data in the tests.
+
+- Any contract that's prefixed with V0 will not go live. They come from our first iteration. We are only keeping them for now for reference.
+
 ### Run tests
 
 - TypeScript tests are included in the `typescript` folder in the `test` folder at the root of the repo.
 - Solidity tests are included in the `foundry` folder in the `test` folder at the root of the repo.
-
-### Example of Foundry/Forge commands
-
-```shell
-forge build
-forge test
-forge test -vv
-forge tree
-```
-
-### Example of Hardhat commands
-
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-npx hardhat help
-REPORT_GAS=true npx hardhat test
-npx hardhat coverage
-npx hardhat run scripts/deploy.ts
-TS_NODE_FILES=true npx ts-node scripts/deploy.ts
-npx eslint '**/*.{js,ts}'
-npx eslint '**/*.{js,ts}' --fix
-npx prettier '**/*.{json,sol,md}' --check
-npx prettier '**/*.{json,sol,md}' --write
-npx solhint 'contracts/**/*.sol'
-npx solhint 'contracts/**/*.sol' --fix
-```
 
 ### Running tests for each marketplace
 
