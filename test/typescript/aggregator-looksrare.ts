@@ -62,7 +62,7 @@ describe("LooksRareAggregator", () => {
 
     const tx = await aggregator.connect(buyer).execute([], tradeData, buyer.address, false, { value: totalValue });
     const receipt = await tx.wait();
-    validateSweepEvent(receipt, buyer.address, 1, 1);
+    validateSweepEvent(receipt, buyer.address);
 
     expect(await bayc.balanceOf(aggregator.address)).to.equal(0);
     expect(await bayc.balanceOf(buyer.address)).to.equal(2);
@@ -130,7 +130,7 @@ describe("LooksRareAggregator", () => {
     const receipt = await tx.wait();
     const txFee = await calculateTxFee(tx);
 
-    validateSweepEvent(receipt, buyer.address, 1, 1);
+    validateSweepEvent(receipt, buyer.address);
 
     expect(await bayc.balanceOf(aggregator.address)).to.equal(0);
     expect(await bayc.balanceOf(buyer.address)).to.equal(2);
@@ -186,7 +186,7 @@ describe("LooksRareAggregator", () => {
     const receipt = await tx.wait();
     const txFee = await calculateTxFee(tx);
 
-    validateSweepEvent(receipt, buyer.address, 1, 1);
+    validateSweepEvent(receipt, buyer.address);
 
     expect(await bayc.balanceOf(aggregator.address)).to.equal(0);
     expect(await bayc.balanceOf(buyer.address)).to.equal(1);

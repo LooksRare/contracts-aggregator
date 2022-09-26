@@ -31,7 +31,6 @@ contract SudoswapProxy is IProxy, TokenRescuer {
      * @param orders Orders to be executed by Seaport
      * @param recipient The address to receive the purchased NFTs
      * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
-     * @return Whether at least 1 out of N trades succeeded
      */
     function execute(
         BasicOrder[] calldata orders,
@@ -40,7 +39,7 @@ contract SudoswapProxy is IProxy, TokenRescuer {
         address recipient,
         bool isAtomic,
         FeeData memory
-    ) external payable override returns (bool) {
+    ) external payable override {
         if (address(this) != aggregator) revert InvalidCaller();
 
         uint256 ordersLength = orders.length;
@@ -106,7 +105,5 @@ contract SudoswapProxy is IProxy, TokenRescuer {
                 block.timestamp
             );
         }
-
-        return true;
     }
 }

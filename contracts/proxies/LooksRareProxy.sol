@@ -45,7 +45,6 @@ contract LooksRareProxy is IProxy, TokenRescuer, TokenTransferrer, SignatureChec
      * @param ordersExtraData Extra data for each order
      * @param recipient The address to receive the purchased NFTs
      * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
-     * @return Whether at least 1 out of N trades succeeded
      */
     function execute(
         BasicOrder[] calldata orders,
@@ -54,13 +53,12 @@ contract LooksRareProxy is IProxy, TokenRescuer, TokenTransferrer, SignatureChec
         address recipient,
         bool isAtomic,
         FeeData memory
-    ) external payable override returns (bool) {
+    ) external payable override {
         if (address(this) != aggregator) revert InvalidCaller();
 
         uint256 ordersLength = orders.length;
         if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();
 
-        uint256 executedCount;
         for (uint256 i; i < ordersLength; ) {
             BasicOrder memory order = orders[i];
 
@@ -96,16 +94,12 @@ contract LooksRareProxy is IProxy, TokenRescuer, TokenTransferrer, SignatureChec
                 takerBid.minPercentageToAsk = orderExtraData.minPercentageToAsk;
             }
 
-            if (_executeSingleOrder(takerBid, makerAsk, recipient, order.collectionType, isAtomic)) {
-                executedCount += 1;
-            }
+            _executeSingleOrder(takerBid, makerAsk, recipient, order.collectionType, isAtomic);
 
             unchecked {
                 ++i;
             }
         }
-
-        return executedCount > 0;
     }
 
     function _executeSingleOrder(

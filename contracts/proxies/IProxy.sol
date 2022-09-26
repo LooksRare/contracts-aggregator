@@ -24,5 +24,5 @@ interface IProxy {
         address recipient,
         bool isAtomic,
         FeeData memory feeData
-    ) external payable returns (bool);
+    ) external payable;
 }

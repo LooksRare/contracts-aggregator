@@ -37,7 +37,6 @@ contract LooksRareAggregator is ILooksRareAggregator, TokenRescuer, TokenReceive
 
         if (tokenTransfers.length > 0) _pullERC20Tokens(tokenTransfers, msg.sender);
 
-        uint256 successCount;
         for (uint256 i; i < tradeData.length; ) {
             if (!_proxyFunctionSelectors[tradeData[i].proxy][tradeData[i].selector]) revert InvalidFunction();
 
@@ -45,10 +44,7 @@ contract LooksRareAggregator is ILooksRareAggregator, TokenRescuer, TokenReceive
                 _encodeCalldata(tradeData[i], recipient, isAtomic)
             );
 
-            if (success) {
-                bool someExecuted = abi.decode(returnData, (bool));
-                if (someExecuted) successCount += 1;
-            } else {
+            if (!success) {
                 if (isAtomic) {
                     if (returnData.length > 0) {
                         assembly {
@@ -69,7 +65,7 @@ contract LooksRareAggregator is ILooksRareAggregator, TokenRescuer, TokenReceive
         if (tokenTransfers.length > 0) _returnERC20TokensIfAny(tokenTransfers, msg.sender);
         _returnETHIfAny();
 
-        emit Sweep(msg.sender, tradeData.length, successCount);
+        emit Sweep(msg.sender);
     }
 
     /**

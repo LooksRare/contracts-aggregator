@@ -51,7 +51,6 @@ contract X2Y2Proxy is IProxy, TokenRescuer, TokenTransferrer, SignatureChecker {
      * @param ordersExtraData Extra data for each order
      * @param recipient The address to receive the purchased NFTs
      * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
-     * @return Whether at least 1 out of N trades succeeded
      */
     function execute(
         BasicOrder[] calldata orders,
@@ -60,24 +59,20 @@ contract X2Y2Proxy is IProxy, TokenRescuer, TokenTransferrer, SignatureChecker {
         address recipient,
         bool isAtomic,
         FeeData memory
-    ) external payable override returns (bool) {
+    ) external payable override {
         if (address(this) != aggregator) revert InvalidCaller();
 
         uint256 ordersLength = orders.length;
         if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();
 
-        uint256 executedCount;
         for (uint256 i; i < ordersLength; ) {
             OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
-            bool executed = _executeSingleOrder(orders[i], orderExtraData, recipient, isAtomic);
-            if (executed) executedCount += 1;
+            _executeSingleOrder(orders[i], orderExtraData, recipient, isAtomic);
 
             unchecked {
                 ++i;
             }
         }
-
-        return executedCount > 0;
     }
 
     function _executeSingleOrder(
@@ -85,7 +80,7 @@ contract X2Y2Proxy is IProxy, TokenRescuer, TokenTransferrer, SignatureChecker {
         OrderExtraData memory orderExtraData,
         address recipient,
         bool isAtomic
-    ) private returns (bool executed) {
+    ) private {
         Market.RunInput memory runInput;
 
         runInput.r = orderExtraData.inputR;
@@ -135,11 +130,9 @@ contract X2Y2Proxy is IProxy, TokenRescuer, TokenTransferrer, SignatureChecker {
         if (isAtomic) {
             marketplace.run{value: order.price}(runInput);
             _redirectTokenToRecipient(order, recipient);
-            executed = true;
         } else {
             try marketplace.run{value: order.price}(runInput) {
                 _redirectTokenToRecipient(order, recipient);
-                executed = true;
             } catch {}
         }
     }

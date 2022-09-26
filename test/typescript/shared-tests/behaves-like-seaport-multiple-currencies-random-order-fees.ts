@@ -192,7 +192,7 @@ export default function behavesLikeSeaportMultipleCurrenciesRandomOrderFees(isAt
       expect(feeRecipientUSDCBalanceAfter.sub(feeRecipientUSDCBalanceBefore)).to.equal(usdcFees());
       expect(feeRecipientEthBalanceAfter.sub(feeRecipientEthBalanceBefore)).to.equal(ethFees());
 
-      validateSweepEvent(receipt, buyer.address, 1, 1);
+      validateSweepEvent(receipt, buyer.address);
 
       expect(await bayc.balanceOf(buyer.address)).to.equal(4);
       expect(await bayc.ownerOf(9948)).to.equal(buyer.address);

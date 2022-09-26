@@ -66,7 +66,7 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
       .execute(tokenTransfers, tradeData, buyer.address, isAtomic, { value: priceTwo });
     const receipt = await tx.wait();
 
-    validateSweepEvent(receipt, buyer.address, 1, 1);
+    validateSweepEvent(receipt, buyer.address);
 
     expect(await bayc.balanceOf(buyer.address)).to.equal(2);
     expect(await bayc.ownerOf(9996)).to.equal(buyer.address);
@@ -113,7 +113,7 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
       .execute(tokenTransfers, tradeData, buyer.address, isAtomic, { value: priceTwo });
     const receipt = await tx.wait();
 
-    validateSweepEvent(receipt, buyer.address, 1, 1);
+    validateSweepEvent(receipt, buyer.address);
 
     expect(await bayc.balanceOf(buyer.address)).to.equal(2);
     expect(await bayc.ownerOf(9996)).to.equal(buyer.address);
@@ -169,7 +169,7 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
       .execute(tokenTransfers, tradeData, buyer.address, isAtomic, { value: priceTwo });
     const receipt = await tx.wait();
 
-    validateSweepEvent(receipt, buyer.address, 1, 1);
+    validateSweepEvent(receipt, buyer.address);
 
     const feeRecipientUsdcBalanceAfter = await usdc.balanceOf(protocolFeeRecipient.address);
     const feeRecipientEthBalanceAfter = await getBalance(protocolFeeRecipient.address);

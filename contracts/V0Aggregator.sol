@@ -22,7 +22,7 @@ contract V0Aggregator is TokenRescuer, TokenReceiver {
 
     event FunctionAdded(address indexed proxy, bytes4 selector);
     event FunctionRemoved(address indexed proxy, bytes4 selector);
-    event Sweep(address indexed sweeper, uint256 tradeCount, uint256 successCount);
+    event Sweep(address indexed sweeper);
 
     error InvalidFunction();
     error InvalidOrderLength();
@@ -30,8 +30,6 @@ contract V0Aggregator is TokenRescuer, TokenReceiver {
     function execute(TradeData[] calldata tradeData) external payable {
         uint256 tradeCount = tradeData.length;
         if (tradeCount == 0) revert InvalidOrderLength();
-
-        uint256 successCount;
 
         for (uint256 i; i < tradeCount; ) {
             bytes calldata data = tradeData[i].data;
@@ -52,8 +50,6 @@ contract V0Aggregator is TokenRescuer, TokenReceiver {
                         let returnDataSize := mload(returnData)
                         revert(add(32, returnData), returnDataSize)
                     }
-                } else {
-                    successCount += 1;
                 }
             }
 
@@ -64,7 +60,7 @@ contract V0Aggregator is TokenRescuer, TokenReceiver {
 
         _returnETHIfAny();
 
-        emit Sweep(msg.sender, tradeData.length, successCount);
+        emit Sweep(msg.sender);
     }
 
     function addFunction(address proxy, bytes4 selector) external onlyOwner {
