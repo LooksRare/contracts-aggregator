@@ -5,7 +5,7 @@ import { BAYC, PARALLEL, X2Y2_ORDER_EXTRA_DATA_SCHEMA } from "../constants";
 import { BigNumber } from "ethers";
 import { expect } from "chai";
 import getFixture from "./utils/get-fixture";
-import { Fee, RunInput, X2Y2Order } from "./interfaces/x2y2";
+import { Fee, RunInput, X2Y2Order } from "@x2y2-io/sdk/src/types";
 import calculateTxFee from "./utils/calculate-tx-fee";
 import validateSweepEvent from "./utils/validate-sweep-event";
 
