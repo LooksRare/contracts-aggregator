@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.14;
+pragma solidity 0.8.17;
 
 import {CryptoPunksProxy} from "../../contracts/proxies/CryptoPunksProxy.sol";
 import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
