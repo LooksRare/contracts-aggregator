@@ -96,8 +96,7 @@ describe("Aggregator", () => {
 
     const tx = await aggregator.connect(buyer).execute([], tradeData, buyer.address, false, { value: price });
     const receipt = await tx.wait();
-    console.log(receipt.gasUsed.toString());
-    validateSweepEvent(receipt, buyer.address, 2, 2);
+    validateSweepEvent(receipt, buyer.address);
 
     expect(await bayc.balanceOf(buyer.address)).to.equal(4);
     expect(await bayc.ownerOf(9477)).to.equal(buyer.address);
@@ -140,7 +139,6 @@ describe("Aggregator", () => {
 
     const tx = await aggregator.connect(buyer).batchBuyWithETH(tradeDetails, { value: price });
     const receipt = await tx.wait();
-    console.log(receipt.gasUsed.toString());
 
     expect(await bayc.balanceOf(buyer.address)).to.equal(4);
     expect(await bayc.ownerOf(9477)).to.equal(buyer.address);

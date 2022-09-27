@@ -60,7 +60,7 @@ describe("Aggregator", () => {
     const tx = await aggregator.connect(buyer).execute([], tradeData, buyer.address, false, { value: price });
     const receipt = await tx.wait();
 
-    validateSweepEvent(receipt, buyer.address, 1, 1);
+    validateSweepEvent(receipt, buyer.address);
 
     expect(await moodie.balanceOf(buyer.address)).to.equal(2);
     expect(await moodie.ownerOf(tokenIdOne)).to.equal(buyer.address);
@@ -157,7 +157,7 @@ describe("Aggregator", () => {
     const tx = await aggregator.connect(buyer).execute([], tradeData, buyer.address, false, { value: price });
     const receipt = await tx.wait();
 
-    validateSweepEvent(receipt, buyer.address, 1, 1);
+    validateSweepEvent(receipt, buyer.address);
 
     expect(await moodie.balanceOf(buyer.address)).to.equal(1);
     expect(await moodie.ownerOf(tokenIdOne)).to.equal(buyer.address);
@@ -211,7 +211,7 @@ describe("Aggregator", () => {
     const receipt = await tx.wait();
     const txFee = await calculateTxFee(tx);
 
-    validateSweepEvent(receipt, buyer.address, 1, 1);
+    validateSweepEvent(receipt, buyer.address);
 
     expect(await moodie.balanceOf(buyer.address)).to.equal(2);
     expect(await moodie.ownerOf(tokenIdOne)).to.equal(buyer.address);

@@ -38,11 +38,8 @@ interface ILooksRareAggregator {
     /**
      * @notice Emitted when execute is complete
      * @param sweeper The address that submitted the transaction
-     * @param tradeCount Total trade count
-     * @param successCount Successful trade count (if only 1 out of N trades in
-     *                     an order succeeds, it is consider successful)
      */
-    event Sweep(address indexed sweeper, uint256 tradeCount, uint256 successCount);
+    event Sweep(address indexed sweeper);
 
     error FeeTooHigh();
     error InvalidFunction();

@@ -78,7 +78,7 @@ export default function behavesLikeSeaportERC721OnlyUSDCOrders(isAtomic: boolean
       priceOne.sub(priceOneBeforeFee).add(priceTwo.sub(priceTwoBeforeFee))
     );
 
-    validateSweepEvent(receipt, buyer.address, 1, 1);
+    validateSweepEvent(receipt, buyer.address);
 
     expect(await bayc.balanceOf(buyer.address)).to.equal(2);
     expect(await bayc.ownerOf(9948)).to.equal(buyer.address);

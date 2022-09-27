@@ -53,7 +53,7 @@ export default function behavesLikeSeaportERC1155(isAtomic: boolean): void {
     const tx = await aggregator.connect(buyer).execute([], tradeData, buyer.address, isAtomic, { value: price });
     const receipt = await tx.wait();
 
-    validateSweepEvent(receipt, buyer.address, 1, 1);
+    validateSweepEvent(receipt, buyer.address);
 
     expect(await cityDao.balanceOf(buyer.address, 42)).to.equal(2);
   });
@@ -89,7 +89,7 @@ export default function behavesLikeSeaportERC1155(isAtomic: boolean): void {
     const receipt = await tx.wait();
     const txFee = await calculateTxFee(tx);
 
-    validateSweepEvent(receipt, buyer.address, 1, 1);
+    validateSweepEvent(receipt, buyer.address);
 
     expect(await cityDao.balanceOf(buyer.address, 42)).to.equal(2);
     expect(await getBalance(aggregator.address)).to.equal(0);
@@ -127,7 +127,7 @@ export default function behavesLikeSeaportERC1155(isAtomic: boolean): void {
     const receipt = await tx.wait();
     const txFee = await calculateTxFee(tx);
 
-    validateSweepEvent(receipt, buyer.address, 1, 1);
+    validateSweepEvent(receipt, buyer.address);
 
     expect(await cityDao.balanceOf(buyer.address, 42)).to.equal(2);
     expect(await getBalance(aggregator.address)).to.equal(0);

@@ -61,7 +61,7 @@ describe("LooksRareAggregator", () => {
       { value: totalValue }
     );
     const receipt = await tx.wait();
-    validateSweepEvent(receipt, buyer.address, 1, 1);
+    validateSweepEvent(receipt, buyer.address);
 
     expect(await cryptopunks.balanceOf(buyer.address)).to.equal(2);
     expect(await cryptopunks.punkIndexToAddress(tokenIdOne)).to.equal(buyer.address);
@@ -131,7 +131,7 @@ describe("LooksRareAggregator", () => {
     );
     const receipt = await tx.wait();
     const txFee = await calculateTxFee(tx);
-    validateSweepEvent(receipt, buyer.address, 1, 1);
+    validateSweepEvent(receipt, buyer.address);
 
     expect(await cryptopunks.balanceOf(buyer.address)).to.equal(2);
     expect(await cryptopunks.punkIndexToAddress(tokenIdOne)).to.equal(buyer.address);

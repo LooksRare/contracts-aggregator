@@ -89,7 +89,7 @@ describe("Aggregator", () => {
     const receipt = await tx.wait();
     const txFee = await calculateTxFee(tx);
 
-    validateSweepEvent(receipt, buyer.address, 2, 1);
+    validateSweepEvent(receipt, buyer.address);
 
     expect(await bayc.balanceOf(buyer.address)).to.equal(1);
     expect(await bayc.ownerOf(tokenId)).to.equal(buyer.address);

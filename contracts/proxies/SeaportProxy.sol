@@ -56,7 +56,6 @@ contract SeaportProxy is IProxy, TokenRescuer {
      * @param recipient The address to receive the purchased NFTs
      * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
      * @param feeData Fee basis point and recipient
-     * @return Whether at least 1 out of N trades succeeded
      */
     function execute(
         BasicOrder[] calldata orders,
@@ -65,7 +64,7 @@ contract SeaportProxy is IProxy, TokenRescuer {
         address recipient,
         bool isAtomic,
         FeeData memory feeData
-    ) external payable override returns (bool) {
+    ) external payable override {
         if (address(this) != aggregator) revert InvalidCaller();
 
         uint256 ordersLength = orders.length;
@@ -73,10 +72,8 @@ contract SeaportProxy is IProxy, TokenRescuer {
 
         if (isAtomic) {
             _executeAtomicOrders(orders, ordersExtraData, extraData, recipient, feeData);
-            return true;
         } else {
-            uint256 executedCount = _executeNonAtomicOrders(orders, ordersExtraData, recipient, feeData);
-            return executedCount > 0;
+            _executeNonAtomicOrders(orders, ordersExtraData, recipient, feeData);
         }
     }
 
@@ -178,7 +175,7 @@ contract SeaportProxy is IProxy, TokenRescuer {
         bytes[] calldata ordersExtraData,
         address recipient,
         FeeData memory feeData
-    ) private returns (uint256 executedCount) {
+    ) private {
         CriteriaResolver[] memory criteriaResolver = new CriteriaResolver[](0);
         uint256 fee;
         address lastOrderCurrency;
@@ -193,8 +190,6 @@ contract SeaportProxy is IProxy, TokenRescuer {
             uint256 price = orders[i].currency == address(0) ? orders[i].price : 0;
 
             try marketplace.fulfillAdvancedOrder{value: price}(advancedOrder, criteriaResolver, bytes32(0), recipient) {
-                executedCount += 1;
-
                 if (feeData.recipient != address(0)) {
                     if (orders[i].currency == lastOrderCurrency) {
                         fee += (orders[i].price * feeData.bp) / 10000;

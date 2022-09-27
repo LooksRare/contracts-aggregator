@@ -48,7 +48,7 @@ describe("Aggregator", () => {
     const tx = await aggregator.connect(buyer).execute([], tradeData, buyer.address, false, { value: price });
     const receipt = await tx.wait();
 
-    validateSweepEvent(receipt, buyer.address, 1, 1);
+    validateSweepEvent(receipt, buyer.address);
 
     expect(await bayc.balanceOf(buyer.address)).to.equal(1);
     expect(await cityDao.balanceOf(buyer.address, 42)).to.equal(1);
