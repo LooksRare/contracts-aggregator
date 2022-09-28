@@ -108,7 +108,7 @@ contract LooksRareProxy is IProxy, TokenRescuer, TokenTransferrer, SignatureChec
         address recipient,
         CollectionType collectionType,
         bool isAtomic
-    ) private returns (bool executed) {
+    ) private {
         if (isAtomic) {
             marketplace.matchAskWithTakerBidUsingETHAndWETH{value: takerBid.price}(takerBid, makerAsk);
             _transferTokenToRecipient(
@@ -118,7 +118,6 @@ contract LooksRareProxy is IProxy, TokenRescuer, TokenTransferrer, SignatureChec
                 makerAsk.tokenId,
                 makerAsk.amount
             );
-            executed = true;
         } else {
             try marketplace.matchAskWithTakerBidUsingETHAndWETH{value: takerBid.price}(takerBid, makerAsk) {
                 _transferTokenToRecipient(
@@ -128,7 +127,6 @@ contract LooksRareProxy is IProxy, TokenRescuer, TokenTransferrer, SignatureChec
                     makerAsk.tokenId,
                     makerAsk.amount
                 );
-                executed = true;
             } catch {}
         }
     }
