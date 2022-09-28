@@ -240,15 +240,17 @@ contract SeaportProxy is IProxy, TokenRescuer {
         offer[0].itemType = ItemType(uint8(order.collectionType) + 2);
         offer[0].token = order.collection;
         offer[0].identifierOrCriteria = order.tokenIds[0];
-        offer[0].startAmount = order.amounts[0];
-        offer[0].endAmount = order.amounts[0];
+        uint256 amount = order.amounts[0];
+        offer[0].startAmount = amount;
+        offer[0].endAmount = amount;
         parameters.offer = offer;
 
         ConsiderationItem[] memory consideration = new ConsiderationItem[](recipientsLength);
         for (uint256 j; j < recipientsLength; ) {
             // We don't need to assign value to identifierOrCriteria as it is always 0.
-            consideration[j].startAmount = orderExtraData.recipients[j].amount;
-            consideration[j].endAmount = orderExtraData.recipients[j].amount;
+            uint256 recipientAmount = orderExtraData.recipients[j].amount;
+            consideration[j].startAmount = recipientAmount;
+            consideration[j].endAmount = recipientAmount;
             consideration[j].recipient = payable(orderExtraData.recipients[j].recipient);
             consideration[j].itemType = order.currency == address(0) ? ItemType.NATIVE : ItemType.ERC20;
             consideration[j].token = order.currency;
