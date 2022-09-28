@@ -187,17 +187,25 @@ contract SeaportProxy is IProxy, TokenRescuer {
             advancedOrder.signature = orders[i].signature;
 
             address currency = orders[i].currency;
-            uint256 price = currency == address(0) ? orders[i].price : 0;
+            uint256 price = orders[i].price;
+            uint256 ethValue = currency == address(0) ? orders[i].price : 0;
 
-            try marketplace.fulfillAdvancedOrder{value: price}(advancedOrder, criteriaResolver, bytes32(0), recipient) {
+            try
+                marketplace.fulfillAdvancedOrder{value: ethValue}(
+                    advancedOrder,
+                    criteriaResolver,
+                    bytes32(0),
+                    recipient
+                )
+            {
                 if (feeData.recipient != address(0)) {
                     if (orders[i].currency == lastOrderCurrency) {
-                        fee += (orders[i].price * feeData.bp) / 10000;
+                        fee += (price * feeData.bp) / 10000;
                     } else {
                         if (fee > 0) _transferFee(fee, lastOrderCurrency, feeData.recipient);
 
                         lastOrderCurrency = currency;
-                        fee = (orders[i].price * feeData.bp) / 10000;
+                        fee = (price * feeData.bp) / 10000;
                     }
                 }
             } catch {}
