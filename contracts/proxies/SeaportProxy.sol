@@ -190,7 +190,7 @@ contract SeaportProxy is IProxy, TokenRescuer {
 
             address currency = orders[i].currency;
             uint256 price = orders[i].price;
-            uint256 ethValue = currency == address(0) ? orders[i].price : 0;
+            uint256 ethValue = currency == address(0) ? price : 0;
 
             try
                 marketplace.fulfillAdvancedOrder{value: ethValue}(
