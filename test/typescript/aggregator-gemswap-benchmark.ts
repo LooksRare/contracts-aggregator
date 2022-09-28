@@ -138,7 +138,7 @@ describe("Aggregator", () => {
     ];
 
     const tx = await aggregator.connect(buyer).batchBuyWithETH(tradeDetails, { value: price });
-    const receipt = await tx.wait();
+    await tx.wait();
 
     expect(await bayc.balanceOf(buyer.address)).to.equal(4);
     expect(await bayc.ownerOf(9477)).to.equal(buyer.address);
