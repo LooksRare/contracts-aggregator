@@ -82,7 +82,7 @@ contract V0LooksRareProxy {
         uint256,
         uint256,
         bytes memory
-    ) public virtual returns (bytes4) {
+    ) external virtual returns (bytes4) {
         return this.onERC1155Received.selector;
     }
 
@@ -92,7 +92,7 @@ contract V0LooksRareProxy {
         uint256[] memory,
         uint256[] memory,
         bytes memory
-    ) public virtual returns (bytes4) {
+    ) external virtual returns (bytes4) {
         return this.onERC1155BatchReceived.selector;
     }
 }
