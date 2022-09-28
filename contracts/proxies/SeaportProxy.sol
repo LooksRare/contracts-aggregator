@@ -135,6 +135,7 @@ contract SeaportProxy is IProxy, TokenRescuer {
     function _handleFees(BasicOrder[] calldata orders, FeeData memory feeData) private {
         address lastOrderCurrency;
         uint256 fee;
+        address feeRecipient = feeData.recipient;
 
         for (uint256 i; i < orders.length; ) {
             address currency = orders[i].currency;
@@ -143,7 +144,7 @@ contract SeaportProxy is IProxy, TokenRescuer {
             if (currency == lastOrderCurrency) {
                 fee += orderFee;
             } else {
-                if (fee > 0) _transferFee(fee, lastOrderCurrency, feeData.recipient);
+                if (fee > 0) _transferFee(fee, lastOrderCurrency, feeRecipient);
 
                 lastOrderCurrency = currency;
                 fee = orderFee;
@@ -154,7 +155,7 @@ contract SeaportProxy is IProxy, TokenRescuer {
             }
         }
 
-        if (fee > 0) _transferFee(fee, lastOrderCurrency, feeData.recipient);
+        if (fee > 0) _transferFee(fee, lastOrderCurrency, feeRecipient);
     }
 
     function _transferFee(
@@ -178,6 +179,7 @@ contract SeaportProxy is IProxy, TokenRescuer {
         CriteriaResolver[] memory criteriaResolver = new CriteriaResolver[](0);
         uint256 fee;
         address lastOrderCurrency;
+        address feeRecipient = feeData.recipient;
         for (uint256 i; i < orders.length; ) {
             OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
             AdvancedOrder memory advancedOrder;
@@ -198,11 +200,11 @@ contract SeaportProxy is IProxy, TokenRescuer {
                     recipient
                 )
             {
-                if (feeData.recipient != address(0)) {
+                if (feeRecipient != address(0)) {
                     if (orders[i].currency == lastOrderCurrency) {
                         fee += (price * feeData.bp) / 10000;
                     } else {
-                        if (fee > 0) _transferFee(fee, lastOrderCurrency, feeData.recipient);
+                        if (fee > 0) _transferFee(fee, lastOrderCurrency, feeRecipient);
 
                         lastOrderCurrency = currency;
                         fee = (price * feeData.bp) / 10000;
@@ -215,7 +217,7 @@ contract SeaportProxy is IProxy, TokenRescuer {
             }
         }
 
-        if (fee > 0) _transferFee(fee, lastOrderCurrency, feeData.recipient);
+        if (fee > 0) _transferFee(fee, lastOrderCurrency, feeRecipient);
     }
 
     function _populateParameters(BasicOrder calldata order, OrderExtraData memory orderExtraData)
