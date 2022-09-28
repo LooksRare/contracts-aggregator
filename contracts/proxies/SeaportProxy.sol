@@ -186,7 +186,8 @@ contract SeaportProxy is IProxy, TokenRescuer {
             advancedOrder.denominator = orderExtraData.denominator;
             advancedOrder.signature = orders[i].signature;
 
-            uint256 price = orders[i].currency == address(0) ? orders[i].price : 0;
+            address currency = orders[i].currency;
+            uint256 price = currency == address(0) ? orders[i].price : 0;
 
             try marketplace.fulfillAdvancedOrder{value: price}(advancedOrder, criteriaResolver, bytes32(0), recipient) {
                 if (feeData.recipient != address(0)) {
@@ -195,7 +196,7 @@ contract SeaportProxy is IProxy, TokenRescuer {
                     } else {
                         if (fee > 0) _transferFee(fee, lastOrderCurrency, feeData.recipient);
 
-                        lastOrderCurrency = orders[i].currency;
+                        lastOrderCurrency = currency;
                         fee = (orders[i].price * feeData.bp) / 10000;
                     }
                 }
