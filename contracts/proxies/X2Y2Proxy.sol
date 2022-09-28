@@ -10,7 +10,6 @@ import {SignatureChecker} from "@looksrare/contracts-libs/contracts/SignatureChe
 import {CollectionType} from "../libraries/OrderEnums.sol";
 import {TokenTransferrer} from "../TokenTransferrer.sol";
 import {TokenRescuer} from "../TokenRescuer.sol";
-import {LowLevelETH} from "../lowLevelCallers/LowLevelETH.sol";
 import {IProxy} from "./IProxy.sol";
 
 /**
