@@ -129,12 +129,10 @@ contract SeaportProxy is IProxy, TokenRescuer {
             }
         }
 
-        _handleFees(orders, feeData);
+        if (feeData.recipient != address(0)) _handleFees(orders, feeData);
     }
 
     function _handleFees(BasicOrder[] calldata orders, FeeData memory feeData) private {
-        if (feeData.recipient == address(0)) return;
-
         address lastOrderCurrency;
         uint256 fee;
 
