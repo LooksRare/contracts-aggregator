@@ -90,8 +90,8 @@ contract LooksRareProxy is IProxy, TokenRescuer, TokenTransferrer, SignatureChec
                 takerBid.isOrderAsk = false;
                 takerBid.taker = address(this);
                 takerBid.price = order.price;
-                takerBid.tokenId = order.tokenIds[0];
-                takerBid.minPercentageToAsk = orderExtraData.minPercentageToAsk;
+                takerBid.tokenId = makerAsk.tokenId;
+                takerBid.minPercentageToAsk = makerAsk.minPercentageToAsk;
             }
 
             _executeSingleOrder(takerBid, makerAsk, recipient, order.collectionType, isAtomic);
