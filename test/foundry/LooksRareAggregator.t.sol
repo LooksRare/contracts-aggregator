@@ -7,7 +7,7 @@ import {LooksRareProxy} from "../../contracts/proxies/LooksRareProxy.sol";
 import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
 import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggregator.sol";
 import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
-import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
+import {IOwnableTwoSteps} from "@looksrare/contracts-libs/contracts/interfaces/IOwnableTwoSteps.sol";
 import {MockERC20} from "./utils/MockERC20.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TokenRescuerTest} from "./TokenRescuer.t.sol";
@@ -39,7 +39,7 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTes
 
     function testAddFunctionNotOwner() public {
         vm.prank(_notOwner);
-        vm.expectRevert(OwnableTwoSteps.NotOwner.selector);
+        vm.expectRevert(IOwnableTwoSteps.NotOwner.selector);
         aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
     }
 
@@ -58,7 +58,7 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTes
         aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
 
         vm.prank(_notOwner);
-        vm.expectRevert(OwnableTwoSteps.NotOwner.selector);
+        vm.expectRevert(IOwnableTwoSteps.NotOwner.selector);
         aggregator.removeFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
     }
 
@@ -72,7 +72,7 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTes
     function testApproveNotOwner() public {
         MockERC20 erc20 = new MockERC20();
         vm.prank(_buyer);
-        vm.expectRevert(OwnableTwoSteps.NotOwner.selector);
+        vm.expectRevert(IOwnableTwoSteps.NotOwner.selector);
         aggregator.approve(address(erc20), address(looksRareProxy));
     }
 
@@ -89,7 +89,7 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTes
     function testRevokeNotOwner() public {
         MockERC20 erc20 = new MockERC20();
         vm.prank(_buyer);
-        vm.expectRevert(OwnableTwoSteps.NotOwner.selector);
+        vm.expectRevert(IOwnableTwoSteps.NotOwner.selector);
         aggregator.revoke(address(looksRareProxy), address(erc20));
     }
 

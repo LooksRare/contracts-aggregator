@@ -3,8 +3,8 @@ pragma solidity 0.8.17;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
-import {LowLevelETH} from "./lowLevelCallers/LowLevelETH.sol";
-import {LowLevelERC20} from "./lowLevelCallers/LowLevelERC20.sol";
+import {LowLevelERC20} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelERC20.sol";
+import {LowLevelETH} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelETH.sol";
 
 /**
  * @title TokenRescuer

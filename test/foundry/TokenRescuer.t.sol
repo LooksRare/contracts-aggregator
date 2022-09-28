@@ -4,7 +4,7 @@ pragma solidity 0.8.17;
 
 import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
 import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
-import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
+import {IOwnableTwoSteps} from "@looksrare/contracts-libs/contracts/interfaces/IOwnableTwoSteps.sol";
 import {MockERC20} from "./utils/MockERC20.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 
@@ -32,7 +32,7 @@ contract TokenRescuerTest is TestParameters, TestHelpers {
     function _testRescueETHNotOwner(TokenRescuer tokenRescuer) internal {
         vm.deal(address(tokenRescuer), luckyNumber);
         vm.prank(luckyUser);
-        vm.expectRevert(OwnableTwoSteps.NotOwner.selector);
+        vm.expectRevert(IOwnableTwoSteps.NotOwner.selector);
         tokenRescuer.rescueETH(luckyUser);
         assertEq(address(luckyUser).balance, 0);
         assertEq(address(tokenRescuer).balance, luckyNumber);
@@ -50,7 +50,7 @@ contract TokenRescuerTest is TestParameters, TestHelpers {
         MockERC20 mockERC20 = new MockERC20();
         mockERC20.mint(address(tokenRescuer), luckyNumber);
         vm.prank(luckyUser);
-        vm.expectRevert(OwnableTwoSteps.NotOwner.selector);
+        vm.expectRevert(IOwnableTwoSteps.NotOwner.selector);
         tokenRescuer.rescueERC20(address(mockERC20), luckyUser);
         assertEq(mockERC20.balanceOf(address(luckyUser)), 0);
         assertEq(mockERC20.balanceOf(address(tokenRescuer)), luckyNumber);

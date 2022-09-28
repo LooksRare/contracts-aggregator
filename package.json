@@ -71,7 +71,7 @@
   },
   "dependencies": {
     "@looksrare/contracts-exchange-v1": "^1.1.0",
-    "@looksrare/contracts-libs": "^1.1.0",
+    "@looksrare/contracts-libs": "^2.0.1",
     "@openzeppelin/contracts": "^4.7.3"
   }
 }
