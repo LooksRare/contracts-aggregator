@@ -45,7 +45,7 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
 
     await airdropUSDC(buyer.address, priceOne);
 
-    const usdc = await ethers.getContractAt("IERC20", USDC);
+    const usdc = await ethers.getContractAt("@openzeppelin/contracts/token/ERC20/IERC20.sol:IERC20", USDC);
     await usdc.connect(buyer).approve(aggregator.address, priceOne);
 
     const tokenTransfers = [{ amount: priceOne, currency: USDC }];
@@ -92,7 +92,7 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
 
     await airdropUSDC(buyer.address, priceOne.add(excess));
 
-    const usdc = await ethers.getContractAt("IERC20", USDC);
+    const usdc = await ethers.getContractAt("@openzeppelin/contracts/token/ERC20/IERC20.sol:IERC20", USDC);
     await usdc.connect(buyer).approve(aggregator.address, priceOne.add(excess));
 
     const tokenTransfers = [{ amount: priceOne.add(excess), currency: USDC }];
@@ -145,7 +145,7 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
 
     await airdropUSDC(buyer.address, priceOne);
 
-    const usdc = await ethers.getContractAt("IERC20", USDC);
+    const usdc = await ethers.getContractAt("@openzeppelin/contracts/token/ERC20/IERC20.sol:IERC20", USDC);
     await usdc.connect(buyer).approve(aggregator.address, priceOne);
 
     const tokenTransfers = [{ amount: priceOne, currency: USDC }];
