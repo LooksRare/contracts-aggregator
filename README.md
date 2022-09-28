@@ -62,3 +62,13 @@ FORKED_BLOCK_NUMBER=15282897 npx hardhat test test/typescript/v0-aggregator-look
 forge test --match-contract LooksRareProxyBenchmarkTest  --fork-url $ETH_RPC_URL --fork-block-number 15282897 --chain-id 1 -vv
 forge test --match-contract SeaportProxyBenchmarkTest  --fork-url $ETH_RPC_URL --fork-block-number 15300884 --chain-id 1 -vv
 ```
+
+### Static analysis
+
+```
+pip3 install slither-analyzer
+pip3 install solc-select
+solc-select install 0.8.17
+solc-select use 0.8.17
+slither --solc solc-0.8.17 --solc-remaps @openzeppelin=node_modules/@openzeppelin .
+```
