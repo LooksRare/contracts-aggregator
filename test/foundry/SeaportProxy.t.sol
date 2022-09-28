@@ -1,4 +1,4 @@
-pragma solidity 0.8.14;
+pragma solidity 0.8.17;
 
 import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
 import {SeaportProxy} from "../../contracts/proxies/SeaportProxy.sol";
