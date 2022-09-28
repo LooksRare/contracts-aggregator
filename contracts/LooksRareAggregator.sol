@@ -33,11 +33,13 @@ contract LooksRareAggregator is ILooksRareAggregator, TokenRescuer, TokenReceive
         bool isAtomic
     ) external payable {
         if (recipient == address(0)) revert ZeroAddress();
-        if (tradeData.length == 0) revert InvalidOrderLength();
+        uint256 tradeDataLength = tradeData.length;
+        if (tradeDataLength == 0) revert InvalidOrderLength();
 
-        if (tokenTransfers.length > 0) _pullERC20Tokens(tokenTransfers, msg.sender);
+        uint256 tokenTransfersLength = tokenTransfers.length;
+        if (tokenTransfersLength > 0) _pullERC20Tokens(tokenTransfers, msg.sender);
 
-        for (uint256 i; i < tradeData.length; ) {
+        for (uint256 i; i < tradeDataLength; ) {
             if (!_proxyFunctionSelectors[tradeData[i].proxy][tradeData[i].selector]) revert InvalidFunction();
 
             (bool success, bytes memory returnData) = tradeData[i].proxy.delegatecall(
@@ -62,7 +64,7 @@ contract LooksRareAggregator is ILooksRareAggregator, TokenRescuer, TokenReceive
             }
         }
 
-        if (tokenTransfers.length > 0) _returnERC20TokensIfAny(tokenTransfers, msg.sender);
+        if (tokenTransfersLength > 0) _returnERC20TokensIfAny(tokenTransfers, msg.sender);
         _returnETHIfAny();
 
         emit Sweep(msg.sender);

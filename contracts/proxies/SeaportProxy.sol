@@ -136,8 +136,9 @@ contract SeaportProxy is IProxy, TokenRescuer {
         address lastOrderCurrency;
         uint256 fee;
         address feeRecipient = feeData.recipient;
+        uint256 ordersLength = orders.length;
 
-        for (uint256 i; i < orders.length; ) {
+        for (uint256 i; i < ordersLength; ) {
             address currency = orders[i].currency;
             uint256 orderFee = (orders[i].price * feeData.bp) / 10000;
 
@@ -180,7 +181,8 @@ contract SeaportProxy is IProxy, TokenRescuer {
         uint256 fee;
         address lastOrderCurrency;
         address feeRecipient = feeData.recipient;
-        for (uint256 i; i < orders.length; ) {
+        uint256 ordersLength = orders.length;
+        for (uint256 i; i < ordersLength; ) {
             OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
             AdvancedOrder memory advancedOrder;
             advancedOrder.parameters = _populateParameters(orders[i], orderExtraData);
