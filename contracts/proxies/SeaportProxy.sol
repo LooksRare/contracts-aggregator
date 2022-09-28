@@ -138,14 +138,15 @@ contract SeaportProxy is IProxy, TokenRescuer {
 
         for (uint256 i; i < orders.length; ) {
             address currency = orders[i].currency;
+            uint256 orderFee = (orders[i].price * feeData.bp) / 10000;
 
             if (currency == lastOrderCurrency) {
-                fee += (orders[i].price * feeData.bp) / 10000;
+                fee += orderFee;
             } else {
                 if (fee > 0) _transferFee(fee, lastOrderCurrency, feeData.recipient);
 
                 lastOrderCurrency = currency;
-                fee = (orders[i].price * feeData.bp) / 10000;
+                fee = orderFee;
             }
 
             unchecked {
