@@ -129,25 +129,26 @@ contract SeaportProxy is IProxy, TokenRescuer {
             }
         }
 
-        _handleFees(orders, feeData);
+        if (feeData.recipient != address(0)) _handleFees(orders, feeData);
     }
 
     function _handleFees(BasicOrder[] calldata orders, FeeData memory feeData) private {
-        if (feeData.recipient == address(0)) return;
-
         address lastOrderCurrency;
         uint256 fee;
+        address feeRecipient = feeData.recipient;
+        uint256 ordersLength = orders.length;
 
-        for (uint256 i; i < orders.length; ) {
+        for (uint256 i; i < ordersLength; ) {
             address currency = orders[i].currency;
+            uint256 orderFee = (orders[i].price * feeData.bp) / 10000;
 
             if (currency == lastOrderCurrency) {
-                fee += (orders[i].price * feeData.bp) / 10000;
+                fee += orderFee;
             } else {
-                if (fee > 0) _transferFee(fee, lastOrderCurrency, feeData.recipient);
+                if (fee > 0) _transferFee(fee, lastOrderCurrency, feeRecipient);
 
                 lastOrderCurrency = currency;
-                fee = (orders[i].price * feeData.bp) / 10000;
+                fee = orderFee;
             }
 
             unchecked {
@@ -155,7 +156,7 @@ contract SeaportProxy is IProxy, TokenRescuer {
             }
         }
 
-        if (fee > 0) _transferFee(fee, lastOrderCurrency, feeData.recipient);
+        if (fee > 0) _transferFee(fee, lastOrderCurrency, feeRecipient);
     }
 
     function _transferFee(
@@ -179,7 +180,9 @@ contract SeaportProxy is IProxy, TokenRescuer {
         CriteriaResolver[] memory criteriaResolver = new CriteriaResolver[](0);
         uint256 fee;
         address lastOrderCurrency;
-        for (uint256 i; i < orders.length; ) {
+        address feeRecipient = feeData.recipient;
+        uint256 ordersLength = orders.length;
+        for (uint256 i; i < ordersLength; ) {
             OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
             AdvancedOrder memory advancedOrder;
             advancedOrder.parameters = _populateParameters(orders[i], orderExtraData);
@@ -187,17 +190,26 @@ contract SeaportProxy is IProxy, TokenRescuer {
             advancedOrder.denominator = orderExtraData.denominator;
             advancedOrder.signature = orders[i].signature;
 
-            uint256 price = orders[i].currency == address(0) ? orders[i].price : 0;
+            address currency = orders[i].currency;
+            uint256 price = orders[i].price;
+            uint256 ethValue = currency == address(0) ? price : 0;
 
-            try marketplace.fulfillAdvancedOrder{value: price}(advancedOrder, criteriaResolver, bytes32(0), recipient) {
-                if (feeData.recipient != address(0)) {
+            try
+                marketplace.fulfillAdvancedOrder{value: ethValue}(
+                    advancedOrder,
+                    criteriaResolver,
+                    bytes32(0),
+                    recipient
+                )
+            {
+                if (feeRecipient != address(0)) {
                     if (orders[i].currency == lastOrderCurrency) {
-                        fee += (orders[i].price * feeData.bp) / 10000;
+                        fee += (price * feeData.bp) / 10000;
                     } else {
-                        if (fee > 0) _transferFee(fee, lastOrderCurrency, feeData.recipient);
+                        if (fee > 0) _transferFee(fee, lastOrderCurrency, feeRecipient);
 
-                        lastOrderCurrency = orders[i].currency;
-                        fee = (orders[i].price * feeData.bp) / 10000;
+                        lastOrderCurrency = currency;
+                        fee = (price * feeData.bp) / 10000;
                     }
                 }
             } catch {}
@@ -207,7 +219,7 @@ contract SeaportProxy is IProxy, TokenRescuer {
             }
         }
 
-        if (fee > 0) _transferFee(fee, lastOrderCurrency, feeData.recipient);
+        if (fee > 0) _transferFee(fee, lastOrderCurrency, feeRecipient);
     }
 
     function _populateParameters(BasicOrder calldata order, OrderExtraData memory orderExtraData)
@@ -232,15 +244,17 @@ contract SeaportProxy is IProxy, TokenRescuer {
         offer[0].itemType = ItemType(uint8(order.collectionType) + 2);
         offer[0].token = order.collection;
         offer[0].identifierOrCriteria = order.tokenIds[0];
-        offer[0].startAmount = order.amounts[0];
-        offer[0].endAmount = order.amounts[0];
+        uint256 amount = order.amounts[0];
+        offer[0].startAmount = amount;
+        offer[0].endAmount = amount;
         parameters.offer = offer;
 
         ConsiderationItem[] memory consideration = new ConsiderationItem[](recipientsLength);
         for (uint256 j; j < recipientsLength; ) {
             // We don't need to assign value to identifierOrCriteria as it is always 0.
-            consideration[j].startAmount = orderExtraData.recipients[j].amount;
-            consideration[j].endAmount = orderExtraData.recipients[j].amount;
+            uint256 recipientAmount = orderExtraData.recipients[j].amount;
+            consideration[j].startAmount = recipientAmount;
+            consideration[j].endAmount = recipientAmount;
             consideration[j].recipient = payable(orderExtraData.recipients[j].recipient);
             consideration[j].itemType = order.currency == address(0) ? ItemType.NATIVE : ItemType.ERC20;
             consideration[j].token = order.currency;
