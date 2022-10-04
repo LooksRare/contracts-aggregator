@@ -31,7 +31,9 @@ const encodedExtraData = () => {
 
 export default function behavesLikeSeaportERC721OnlyUSDCOrders(isAtomic: boolean): void {
   it("Should be able to charge a fee", async function () {
-    const { aggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(deploySeaportFixture);
+    const { aggregator, erc20TransferManager, buyer, proxy, functionSelector, bayc } = await loadFixture(
+      deploySeaportFixture
+    );
 
     const [, protocolFeeRecipient] = await ethers.getSigners();
 
@@ -50,7 +52,7 @@ export default function behavesLikeSeaportERC721OnlyUSDCOrders(isAtomic: boolean
     await airdropUSDC(buyer.address, price);
 
     const usdc = await ethers.getContractAt("@openzeppelin/contracts/token/ERC20/IERC20.sol:IERC20", USDC);
-    await usdc.connect(buyer).approve(aggregator.address, price);
+    await usdc.connect(buyer).approve(erc20TransferManager.address, price);
 
     const tokenTransfers = [{ amount: price, currency: USDC }];
 

@@ -88,6 +88,7 @@ const encodedExtraData = (givenOrders: Array<string>): string => {
 export default function behavesLikeSeaportMultipleCurrenciesRandomOrderFees(isAtomic: boolean): void {
   const setUp = async (
     aggregator: Contract,
+    erc20TransferManager: Contract,
     proxy: Contract,
     buyer: SignerWithAddress,
     protocolFeeRecipient: SignerWithAddress,
@@ -99,7 +100,7 @@ export default function behavesLikeSeaportMultipleCurrenciesRandomOrderFees(isAt
     await airdropUSDC(buyer.address, usdcAirdropAmount);
 
     const usdc = await ethers.getContractAt("@openzeppelin/contracts/token/ERC20/IERC20.sol:IERC20", USDC);
-    await usdc.connect(buyer).approve(aggregator.address, usdcAirdropAmount);
+    await usdc.connect(buyer).approve(erc20TransferManager.address, usdcAirdropAmount);
   };
 
   const usdcOrders = () => {
@@ -132,7 +133,9 @@ export default function behavesLikeSeaportMultipleCurrenciesRandomOrderFees(isAt
 
   const runTestInSpecificOrder = (givenOrders: Array<string>) => {
     it("Should be able to charge a fee", async function () {
-      const { aggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(deploySeaportFixture);
+      const { aggregator, erc20TransferManager, buyer, proxy, functionSelector, bayc } = await loadFixture(
+        deploySeaportFixture
+      );
       const { getBalance } = ethers.provider;
 
       const [, protocolFeeRecipient] = await ethers.getSigners();
@@ -140,7 +143,7 @@ export default function behavesLikeSeaportMultipleCurrenciesRandomOrderFees(isAt
       const [usdcOrderOne, usdcOrderTwo] = usdcOrders();
       const [ethOrderOne, ethOrderTwo] = ethOrders();
 
-      await setUp(aggregator, proxy, buyer, protocolFeeRecipient, priceInUSDC());
+      await setUp(aggregator, erc20TransferManager, proxy, buyer, protocolFeeRecipient, priceInUSDC());
 
       const tokenTransfers = [{ amount: priceInUSDC(), currency: USDC }];
 

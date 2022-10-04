@@ -3,6 +3,7 @@
 pragma solidity 0.8.17;
 
 import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
+import {ERC20TransferManager} from "../../contracts/ERC20TransferManager.sol";
 import {LooksRareProxy} from "../../contracts/proxies/LooksRareProxy.sol";
 import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
 import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggregator.sol";
@@ -27,6 +28,31 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTes
         aggregator = new LooksRareAggregator();
         tokenRescuer = TokenRescuer(address(aggregator));
         looksRareProxy = new LooksRareProxy(LOOKSRARE_V1, address(aggregator));
+    }
+
+    function testSetERC20TransferManager() public {
+        assertEq(address(aggregator.erc20TransferManager()), address(0));
+        vm.expectEmit(true, false, false, false);
+        emit ERC20TransferManagerSet();
+        address erc20TransferManager = address(new ERC20TransferManager(address(aggregator)));
+        aggregator.setERC20TransferManager(erc20TransferManager);
+        assertEq(address(aggregator.erc20TransferManager()), erc20TransferManager);
+    }
+
+    function testSetERC20TransferManagerAlreadySet() public {
+        address erc20TransferManager = address(new ERC20TransferManager(address(aggregator)));
+        aggregator.setERC20TransferManager(erc20TransferManager);
+        assertEq(address(aggregator.erc20TransferManager()), erc20TransferManager);
+
+        vm.expectRevert(ILooksRareAggregator.AlreadySet.selector);
+        aggregator.setERC20TransferManager(erc20TransferManager);
+    }
+
+    function testSetERC20TransferManagerNotOwner() public {
+        address erc20TransferManager = address(new ERC20TransferManager(address(aggregator)));
+        vm.prank(_notOwner);
+        vm.expectRevert(IOwnableTwoSteps.NotOwner.selector);
+        aggregator.setERC20TransferManager(erc20TransferManager);
     }
 
     function testAddFunction() public {
@@ -113,6 +139,18 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTes
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](0);
         vm.expectRevert(ILooksRareAggregator.InvalidOrderLength.selector);
+        aggregator.execute(tokenTransfers, tradeData, _buyer, false);
+    }
+
+    function testBuyWithERC20ButTransferManagerIsNotSet() public {
+        MockERC20 erc20 = new MockERC20();
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](1);
+        tokenTransfers[0].amount = 1 ether;
+        tokenTransfers[0].currency = address(erc20);
+
+        ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
+
+        vm.expectRevert(ILooksRareAggregator.ZeroAddress.selector);
         aggregator.execute(tokenTransfers, tradeData, _buyer, false);
     }
 }

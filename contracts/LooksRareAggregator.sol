@@ -6,6 +6,7 @@ import {LooksRareProxy} from "./proxies/LooksRareProxy.sol";
 import {BasicOrder, TokenTransfer} from "./libraries/OrderStructs.sol";
 import {TokenRescuer} from "./TokenRescuer.sol";
 import {TokenReceiver} from "./TokenReceiver.sol";
+import {ERC20TransferManager} from "./ERC20TransferManager.sol";
 import {ILooksRareAggregator} from "./interfaces/ILooksRareAggregator.sol";
 import {FeeData} from "./libraries/OrderStructs.sol";
 
@@ -16,6 +17,7 @@ import {FeeData} from "./libraries/OrderStructs.sol";
  * @author LooksRare protocol team (👀,💎)
  */
 contract LooksRareAggregator is ILooksRareAggregator, TokenRescuer, TokenReceiver {
+    ERC20TransferManager public erc20TransferManager;
     mapping(address => mapping(bytes4 => bool)) private _proxyFunctionSelectors;
     mapping(address => FeeData) private _proxyFeeData;
 
@@ -37,7 +39,11 @@ contract LooksRareAggregator is ILooksRareAggregator, TokenRescuer, TokenReceive
         if (tradeDataLength == 0) revert InvalidOrderLength();
 
         uint256 tokenTransfersLength = tokenTransfers.length;
-        if (tokenTransfersLength > 0) _pullERC20Tokens(tokenTransfers, msg.sender);
+        if (tokenTransfersLength > 0) {
+            ERC20TransferManager _erc20TransferManager = erc20TransferManager;
+            if (address(_erc20TransferManager) == address(0)) revert ZeroAddress();
+            _erc20TransferManager.pullERC20Tokens(tokenTransfers, msg.sender);
+        }
 
         for (uint256 i; i < tradeDataLength; ) {
             if (!_proxyFunctionSelectors[tradeData[i].proxy][tradeData[i].selector]) revert InvalidFunction();
@@ -68,6 +74,18 @@ contract LooksRareAggregator is ILooksRareAggregator, TokenRescuer, TokenReceive
         _returnETHIfAny();
 
         emit Sweep(msg.sender);
+    }
+
+    /**
+     * @notice Enable making ERC-20 trades by setting the ERC-20 transfer manager
+     * @dev Must be called by the current owner. It can only be set once to prevent
+     *      a malicious transfer manager from being set in case of an ownership compromise.
+     * @param _erc20TransferManager The ERC-20 transfer manager's address
+     */
+    function setERC20TransferManager(address _erc20TransferManager) external onlyOwner {
+        if (address(erc20TransferManager) != address(0)) revert AlreadySet();
+        erc20TransferManager = ERC20TransferManager(_erc20TransferManager);
+        emit ERC20TransferManagerSet();
     }
 
     /**

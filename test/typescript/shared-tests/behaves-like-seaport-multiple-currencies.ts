@@ -32,7 +32,9 @@ const encodedExtraData = () => {
 
 export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean): void {
   it("Should be able to handle OpenSea trades", async function () {
-    const { aggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(deploySeaportFixture);
+    const { aggregator, erc20TransferManager, buyer, proxy, functionSelector, bayc } = await loadFixture(
+      deploySeaportFixture
+    );
 
     const orderOne = getFixture("seaport", "bayc-9996-order.json");
     const orderTwo = getFixture("seaport", "bayc-5509-order.json");
@@ -46,7 +48,7 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
     await airdropUSDC(buyer.address, priceOne);
 
     const usdc = await ethers.getContractAt("@openzeppelin/contracts/token/ERC20/IERC20.sol:IERC20", USDC);
-    await usdc.connect(buyer).approve(aggregator.address, priceOne);
+    await usdc.connect(buyer).approve(erc20TransferManager.address, priceOne);
 
     const tokenTransfers = [{ amount: priceOne, currency: USDC }];
     const tradeData = [
@@ -77,7 +79,9 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
   });
 
   it("Should be able to refund extra ERC-20 tokens paid", async function () {
-    const { aggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(deploySeaportFixture);
+    const { aggregator, erc20TransferManager, buyer, proxy, functionSelector, bayc } = await loadFixture(
+      deploySeaportFixture
+    );
 
     const orderOne = getFixture("seaport", "bayc-9996-order.json");
     const orderTwo = getFixture("seaport", "bayc-5509-order.json");
@@ -93,7 +97,7 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
     await airdropUSDC(buyer.address, priceOne.add(excess));
 
     const usdc = await ethers.getContractAt("@openzeppelin/contracts/token/ERC20/IERC20.sol:IERC20", USDC);
-    await usdc.connect(buyer).approve(aggregator.address, priceOne.add(excess));
+    await usdc.connect(buyer).approve(erc20TransferManager.address, priceOne.add(excess));
 
     const tokenTransfers = [{ amount: priceOne.add(excess), currency: USDC }];
     const tradeData = [
@@ -126,7 +130,9 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
   });
 
   it("Should be able to charge a fee", async function () {
-    const { aggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(deploySeaportFixture);
+    const { aggregator, erc20TransferManager, buyer, proxy, functionSelector, bayc } = await loadFixture(
+      deploySeaportFixture
+    );
     const { getBalance } = ethers.provider;
 
     const [, protocolFeeRecipient] = await ethers.getSigners();
@@ -146,7 +152,7 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
     await airdropUSDC(buyer.address, priceOne);
 
     const usdc = await ethers.getContractAt("@openzeppelin/contracts/token/ERC20/IERC20.sol:IERC20", USDC);
-    await usdc.connect(buyer).approve(aggregator.address, priceOne);
+    await usdc.connect(buyer).approve(erc20TransferManager.address, priceOne);
 
     const tokenTransfers = [{ amount: priceOne, currency: USDC }];
     const tradeData = [

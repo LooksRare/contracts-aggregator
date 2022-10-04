@@ -14,6 +14,11 @@ interface ILooksRareAggregator {
     }
 
     /**
+     * @dev Emitted when erc20TransferManager is set
+     */
+    event ERC20TransferManagerSet();
+
+    /**
      * @dev Emitted when fee is updated
      * @param proxy Proxy to apply the fee to
      * @param bp Fee basis point
@@ -41,6 +46,7 @@ interface ILooksRareAggregator {
      */
     event Sweep(address indexed sweeper);
 
+    error AlreadySet();
     error FeeTooHigh();
     error InvalidFunction();
     error InvalidOrderLength();
