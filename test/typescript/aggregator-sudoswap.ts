@@ -57,7 +57,9 @@ describe("Aggregator", () => {
       },
     ];
 
-    const tx = await aggregator.connect(buyer).execute([], tradeData, buyer.address, false, { value: price });
+    const tx = await aggregator
+      .connect(buyer)
+      .execute([], tradeData, buyer.address, buyer.address, false, { value: price });
     const receipt = await tx.wait();
 
     validateSweepEvent(receipt, buyer.address);
@@ -109,7 +111,7 @@ describe("Aggregator", () => {
     ];
 
     await expect(
-      aggregator.connect(buyer).execute([], tradeData, buyer.address, true, { value: price })
+      aggregator.connect(buyer).execute([], tradeData, buyer.address, buyer.address, true, { value: price })
     ).to.be.revertedWith("TradeExecutionFailed()");
   });
 
@@ -154,7 +156,9 @@ describe("Aggregator", () => {
       },
     ];
 
-    const tx = await aggregator.connect(buyer).execute([], tradeData, buyer.address, false, { value: price });
+    const tx = await aggregator
+      .connect(buyer)
+      .execute([], tradeData, buyer.address, buyer.address, false, { value: price });
     const receipt = await tx.wait();
 
     validateSweepEvent(receipt, buyer.address);
@@ -207,7 +211,9 @@ describe("Aggregator", () => {
 
     const buyerBalanceBefore = await getBalance(buyer.address);
 
-    const tx = await aggregator.connect(buyer).execute([], tradeData, buyer.address, false, { value: price });
+    const tx = await aggregator
+      .connect(buyer)
+      .execute([], tradeData, buyer.address, buyer.address, false, { value: price });
     const receipt = await tx.wait();
     const txFee = await calculateTxFee(tx);
 

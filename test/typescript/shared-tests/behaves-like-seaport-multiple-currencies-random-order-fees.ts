@@ -88,7 +88,7 @@ const encodedExtraData = (givenOrders: Array<string>): string => {
 export default function behavesLikeSeaportMultipleCurrenciesRandomOrderFees(isAtomic: boolean): void {
   const setUp = async (
     aggregator: Contract,
-    erc20TransferManager: Contract,
+    erc20EnabledLooksRareAggregator: Contract,
     proxy: Contract,
     buyer: SignerWithAddress,
     protocolFeeRecipient: SignerWithAddress,
@@ -100,7 +100,7 @@ export default function behavesLikeSeaportMultipleCurrenciesRandomOrderFees(isAt
     await airdropUSDC(buyer.address, usdcAirdropAmount);
 
     const usdc = await ethers.getContractAt("@openzeppelin/contracts/token/ERC20/IERC20.sol:IERC20", USDC);
-    await usdc.connect(buyer).approve(erc20TransferManager.address, usdcAirdropAmount);
+    await usdc.connect(buyer).approve(erc20EnabledLooksRareAggregator.address, usdcAirdropAmount);
   };
 
   const usdcOrders = () => {
@@ -133,7 +133,7 @@ export default function behavesLikeSeaportMultipleCurrenciesRandomOrderFees(isAt
 
   const runTestInSpecificOrder = (givenOrders: Array<string>) => {
     it("Should be able to charge a fee", async function () {
-      const { aggregator, erc20TransferManager, buyer, proxy, functionSelector, bayc } = await loadFixture(
+      const { aggregator, erc20EnabledLooksRareAggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(
         deploySeaportFixture
       );
       const { getBalance } = ethers.provider;
@@ -143,7 +143,7 @@ export default function behavesLikeSeaportMultipleCurrenciesRandomOrderFees(isAt
       const [usdcOrderOne, usdcOrderTwo] = usdcOrders();
       const [ethOrderOne, ethOrderTwo] = ethOrders();
 
-      await setUp(aggregator, erc20TransferManager, proxy, buyer, protocolFeeRecipient, priceInUSDC());
+      await setUp(aggregator, erc20EnabledLooksRareAggregator, proxy, buyer, protocolFeeRecipient, priceInUSDC());
 
       const tokenTransfers = [{ amount: priceInUSDC(), currency: USDC }];
 
@@ -184,7 +184,7 @@ export default function behavesLikeSeaportMultipleCurrenciesRandomOrderFees(isAt
       const feeRecipientUSDCBalanceBefore = await usdc.balanceOf(protocolFeeRecipient.address);
       const feeRecipientEthBalanceBefore = await getBalance(protocolFeeRecipient.address);
 
-      const tx = await aggregator
+      const tx = await erc20EnabledLooksRareAggregator
         .connect(buyer)
         .execute(tokenTransfers, tradeData, buyer.address, isAtomic, { value: priceInETH() });
       const receipt = await tx.wait();

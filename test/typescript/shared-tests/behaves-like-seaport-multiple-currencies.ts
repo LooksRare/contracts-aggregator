@@ -32,7 +32,7 @@ const encodedExtraData = () => {
 
 export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean): void {
   it("Should be able to handle OpenSea trades", async function () {
-    const { aggregator, erc20TransferManager, buyer, proxy, functionSelector, bayc } = await loadFixture(
+    const { aggregator, erc20EnabledLooksRareAggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(
       deploySeaportFixture
     );
 
@@ -48,7 +48,7 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
     await airdropUSDC(buyer.address, priceOne);
 
     const usdc = await ethers.getContractAt("@openzeppelin/contracts/token/ERC20/IERC20.sol:IERC20", USDC);
-    await usdc.connect(buyer).approve(erc20TransferManager.address, priceOne);
+    await usdc.connect(buyer).approve(erc20EnabledLooksRareAggregator.address, priceOne);
 
     const tokenTransfers = [{ amount: priceOne, currency: USDC }];
     const tradeData = [
@@ -63,7 +63,7 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
       },
     ];
 
-    const tx = await aggregator
+    const tx = await erc20EnabledLooksRareAggregator
       .connect(buyer)
       .execute(tokenTransfers, tradeData, buyer.address, isAtomic, { value: priceTwo });
     const receipt = await tx.wait();
@@ -75,11 +75,11 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
     expect(await bayc.ownerOf(5509)).to.equal(buyer.address);
 
     expect(await usdc.balanceOf(buyer.address)).to.equal(0);
-    expect(await usdc.allowance(buyer.address, aggregator.address)).to.equal(0);
+    expect(await usdc.allowance(buyer.address, erc20EnabledLooksRareAggregator.address)).to.equal(0);
   });
 
   it("Should be able to refund extra ERC-20 tokens paid", async function () {
-    const { aggregator, erc20TransferManager, buyer, proxy, functionSelector, bayc } = await loadFixture(
+    const { aggregator, erc20EnabledLooksRareAggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(
       deploySeaportFixture
     );
 
@@ -97,7 +97,7 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
     await airdropUSDC(buyer.address, priceOne.add(excess));
 
     const usdc = await ethers.getContractAt("@openzeppelin/contracts/token/ERC20/IERC20.sol:IERC20", USDC);
-    await usdc.connect(buyer).approve(erc20TransferManager.address, priceOne.add(excess));
+    await usdc.connect(buyer).approve(erc20EnabledLooksRareAggregator.address, priceOne.add(excess));
 
     const tokenTransfers = [{ amount: priceOne.add(excess), currency: USDC }];
     const tradeData = [
@@ -112,7 +112,7 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
       },
     ];
 
-    const tx = await aggregator
+    const tx = await erc20EnabledLooksRareAggregator
       .connect(buyer)
       .execute(tokenTransfers, tradeData, buyer.address, isAtomic, { value: priceTwo });
     const receipt = await tx.wait();
@@ -123,14 +123,15 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
     expect(await bayc.ownerOf(9996)).to.equal(buyer.address);
     expect(await bayc.ownerOf(5509)).to.equal(buyer.address);
 
+    expect(await usdc.balanceOf(erc20EnabledLooksRareAggregator.address)).to.equal(0);
     expect(await usdc.balanceOf(aggregator.address)).to.equal(0);
     expect(await usdc.balanceOf(proxy.address)).to.equal(0);
     expect(await usdc.balanceOf(buyer.address)).to.equal(excess);
-    expect(await usdc.allowance(buyer.address, aggregator.address)).to.equal(0);
+    expect(await usdc.allowance(buyer.address, erc20EnabledLooksRareAggregator.address)).to.equal(0);
   });
 
   it("Should be able to charge a fee", async function () {
-    const { aggregator, erc20TransferManager, buyer, proxy, functionSelector, bayc } = await loadFixture(
+    const { aggregator, erc20EnabledLooksRareAggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(
       deploySeaportFixture
     );
     const { getBalance } = ethers.provider;
@@ -152,7 +153,7 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
     await airdropUSDC(buyer.address, priceOne);
 
     const usdc = await ethers.getContractAt("@openzeppelin/contracts/token/ERC20/IERC20.sol:IERC20", USDC);
-    await usdc.connect(buyer).approve(erc20TransferManager.address, priceOne);
+    await usdc.connect(buyer).approve(erc20EnabledLooksRareAggregator.address, priceOne);
 
     const tokenTransfers = [{ amount: priceOne, currency: USDC }];
     const tradeData = [
@@ -170,7 +171,7 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
     const feeRecipientUsdcBalanceBefore = await usdc.balanceOf(protocolFeeRecipient.address);
     const feeRecipientEthBalanceBefore = await getBalance(protocolFeeRecipient.address);
 
-    const tx = await aggregator
+    const tx = await erc20EnabledLooksRareAggregator
       .connect(buyer)
       .execute(tokenTransfers, tradeData, buyer.address, isAtomic, { value: priceTwo });
     const receipt = await tx.wait();
@@ -188,6 +189,6 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
     expect(await bayc.ownerOf(5509)).to.equal(buyer.address);
 
     expect(await usdc.balanceOf(buyer.address)).to.equal(0);
-    expect(await usdc.allowance(buyer.address, aggregator.address)).to.equal(0);
+    expect(await usdc.allowance(buyer.address, erc20EnabledLooksRareAggregator.address)).to.equal(0);
   });
 }

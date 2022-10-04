@@ -6,7 +6,6 @@ import {LooksRareProxy} from "./proxies/LooksRareProxy.sol";
 import {BasicOrder, TokenTransfer} from "./libraries/OrderStructs.sol";
 import {TokenRescuer} from "./TokenRescuer.sol";
 import {TokenReceiver} from "./TokenReceiver.sol";
-import {ERC20TransferManager} from "./ERC20TransferManager.sol";
 import {ILooksRareAggregator} from "./interfaces/ILooksRareAggregator.sol";
 import {FeeData} from "./libraries/OrderStructs.sol";
 
@@ -17,32 +16,27 @@ import {FeeData} from "./libraries/OrderStructs.sol";
  * @author LooksRare protocol team (👀,💎)
  */
 contract LooksRareAggregator is ILooksRareAggregator, TokenRescuer, TokenReceiver {
-    ERC20TransferManager public erc20TransferManager;
+    address public erc20EnabledLooksRareAggregator;
     mapping(address => mapping(bytes4 => bool)) private _proxyFunctionSelectors;
     mapping(address => FeeData) private _proxyFeeData;
 
     /**
-     * @notice Execute NFT sweeps in different marketplaces in a single transaction
-     * @param tokenTransfers Aggregated ERC-20 token transfers for all markets
-     * @param tradeData Data object to be passed downstream to each marketplace's proxy for execution
-     * @param recipient The address to receive the purchased NFTs
-     * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
+     * @inheritdoc ILooksRareAggregator
      */
     function execute(
         TokenTransfer[] calldata tokenTransfers,
         TradeData[] calldata tradeData,
+        address originator,
         address recipient,
         bool isAtomic
     ) external payable {
-        if (recipient == address(0)) revert ZeroAddress();
+        if (originator == address(0) || recipient == address(0)) revert ZeroAddress();
         uint256 tradeDataLength = tradeData.length;
         if (tradeDataLength == 0) revert InvalidOrderLength();
 
         uint256 tokenTransfersLength = tokenTransfers.length;
         if (tokenTransfersLength > 0) {
-            ERC20TransferManager _erc20TransferManager = erc20TransferManager;
-            if (address(_erc20TransferManager) == address(0)) revert ZeroAddress();
-            _erc20TransferManager.pullERC20Tokens(tokenTransfers, msg.sender);
+            if (msg.sender != erc20EnabledLooksRareAggregator) revert UseERC20EnabledLooksRareAggregator();
         }
 
         for (uint256 i; i < tradeDataLength; ) {
@@ -70,22 +64,28 @@ contract LooksRareAggregator is ILooksRareAggregator, TokenRescuer, TokenReceive
             }
         }
 
-        if (tokenTransfersLength > 0) _returnERC20TokensIfAny(tokenTransfers, msg.sender);
-        _returnETHIfAny();
+        if (tokenTransfersLength > 0) _returnERC20TokensIfAny(tokenTransfers, originator);
+        // TODO: add this function to contracts-libs
+        // _returnETHIfAny();
+        assembly {
+            if gt(selfbalance(), 0) {
+                let status := call(gas(), originator, selfbalance(), 0, 0, 0, 0)
+            }
+        }
 
-        emit Sweep(msg.sender);
+        emit Sweep(originator);
     }
 
     /**
-     * @notice Enable making ERC-20 trades by setting the ERC-20 transfer manager
+     * @notice Enable making ERC-20 trades by setting the ERC-20 enabled LooksRare aggregator
      * @dev Must be called by the current owner. It can only be set once to prevent
-     *      a malicious transfer manager from being set in case of an ownership compromise.
-     * @param _erc20TransferManager The ERC-20 transfer manager's address
+     *      a malicious aggregator from being set in case of an ownership compromise.
+     * @param _erc20EnabledLooksRareAggregator The ERC-20 enabled LooksRare aggregator's address
      */
-    function setERC20TransferManager(address _erc20TransferManager) external onlyOwner {
-        if (address(erc20TransferManager) != address(0)) revert AlreadySet();
-        erc20TransferManager = ERC20TransferManager(_erc20TransferManager);
-        emit ERC20TransferManagerSet();
+    function setERC20EnabledLooksRareAggregator(address _erc20EnabledLooksRareAggregator) external onlyOwner {
+        if (erc20EnabledLooksRareAggregator != address(0)) revert AlreadySet();
+        erc20EnabledLooksRareAggregator = _erc20EnabledLooksRareAggregator;
+        emit ERC20EnabledLooksRareAggregatorSet();
     }
 
     /**

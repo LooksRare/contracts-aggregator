@@ -57,6 +57,7 @@ describe("LooksRareAggregator", () => {
         },
       ],
       buyer.address,
+      buyer.address,
       false,
       { value: totalValue }
     );
@@ -125,6 +126,7 @@ describe("LooksRareAggregator", () => {
           extraData: HashZero,
         },
       ],
+      buyer.address,
       buyer.address,
       false,
       { value: totalValue.add(priceOne) }
@@ -199,6 +201,7 @@ describe("LooksRareAggregator", () => {
             extraData: HashZero,
           },
         ],
+        buyer.address,
         buyer.address,
         true,
         { value: totalValue.add(priceOne) }

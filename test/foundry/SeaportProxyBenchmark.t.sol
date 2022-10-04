@@ -92,7 +92,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         });
 
         uint256 gasRemaining = gasleft();
-        aggregator.execute{value: order.price}(tokenTransfers, tradeData, _buyer, true);
+        aggregator.execute{value: order.price}(tokenTransfers, tradeData, _buyer, _buyer, true);
         uint256 gasConsumed = gasRemaining - gasleft();
         emit log_named_uint("Seaport single NFT purchase through the aggregator consumed: ", gasConsumed);
 
@@ -260,7 +260,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         });
 
         uint256 gasRemaining = gasleft();
-        aggregator.execute{value: totalPrice}(tokenTransfers, tradeData, _buyer, true);
+        aggregator.execute{value: totalPrice}(tokenTransfers, tradeData, _buyer, _buyer, true);
         uint256 gasConsumed = gasRemaining - gasleft();
         emit log_named_uint("Seaport multiple NFT purchase through the aggregator consumed: ", gasConsumed);
 

@@ -2,7 +2,7 @@
 pragma solidity 0.8.17;
 
 import {Script} from "forge-std/Script.sol";
-import {ERC20TransferManager} from "../contracts/ERC20TransferManager.sol";
+import {ERC20EnabledLooksRareAggregator} from "../contracts/ERC20EnabledLooksRareAggregator.sol";
 import {LooksRareAggregator} from "../contracts/LooksRareAggregator.sol";
 import {LooksRareProxy} from "../contracts/proxies/LooksRareProxy.sol";
 import {SeaportProxy} from "../contracts/proxies/SeaportProxy.sol";
@@ -19,7 +19,7 @@ contract GoerliDeploymentParameters {
 }
 
 contract Deployment is Script {
-    ERC20TransferManager internal erc20TransferManager;
+    ERC20EnabledLooksRareAggregator internal erc20EnabledLooksRareAggregator;
     LooksRareAggregator internal looksRareAggregator;
     LooksRareProxy internal looksRareProxy;
     SeaportProxy internal seaportProxy;
@@ -34,8 +34,8 @@ contract Deployment is Script {
 
         looksRareAggregator = new LooksRareAggregator();
 
-        erc20TransferManager = new ERC20TransferManager(address(looksRareAggregator));
-        looksRareAggregator.setERC20TransferManager(address(erc20TransferManager));
+        erc20EnabledLooksRareAggregator = new ERC20EnabledLooksRareAggregator(address(looksRareAggregator));
+        looksRareAggregator.setERC20EnabledLooksRareAggregator(address(erc20EnabledLooksRareAggregator));
 
         _deployLooksRareProxy(looksrare);
         _deploySeaportProxy(seaport);
