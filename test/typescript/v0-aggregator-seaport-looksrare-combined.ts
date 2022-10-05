@@ -43,7 +43,7 @@ describe("Aggregator", () => {
       ethers.utils.parseEther("400").toHexString().replace("0x0", "0x"),
     ]);
 
-    bayc = await ethers.getContractAt("IERC721", BAYC);
+    bayc = await ethers.getContractAt("@openzeppelin/contracts/token/ERC721/IERC721.sol:IERC721", BAYC);
   });
 
   it("Should be able to handle LooksRare/OpenSea trades together", async function () {

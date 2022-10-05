@@ -1,8 +1,9 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
-import { IERC721, LooksRareAggregator, LooksRareProxy, SeaportProxy, SudoswapProxy } from "../../../typechain";
+import { LooksRareAggregator, LooksRareProxy, SeaportProxy, SudoswapProxy } from "../../../typechain";
 import getSignature from "../utils/get-signature";
 import { BAYC, LOOKSRARE_V1, SEAPORT, SUDOSWAP } from "../../constants";
+import { Contract } from "ethers";
 
 interface MultipleMarketsFixture {
   aggregator: LooksRareAggregator;
@@ -13,7 +14,7 @@ interface MultipleMarketsFixture {
   sudoswapProxy: SudoswapProxy;
   sudoswapFunctionSelector: string;
   buyer: SignerWithAddress;
-  bayc: IERC721;
+  bayc: Contract;
 }
 
 export default async function deployLooksRareFixture(): Promise<MultipleMarketsFixture> {
@@ -56,7 +57,7 @@ export default async function deployLooksRareFixture(): Promise<MultipleMarketsF
     ethers.utils.parseEther("600").toHexString().replace("0x0", "0x"),
   ]);
 
-  const bayc = await ethers.getContractAt("IERC721", BAYC);
+  const bayc = await ethers.getContractAt("@openzeppelin/contracts/token/ERC721/IERC721.sol:IERC721", BAYC);
 
   return {
     aggregator,

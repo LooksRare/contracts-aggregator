@@ -1,16 +1,17 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
-import { IERC1155, IERC721, LooksRareAggregator, SeaportProxy } from "../../../typechain";
+import { LooksRareAggregator, SeaportProxy } from "../../../typechain";
 import getSignature from "../utils/get-signature";
 import { BAYC, CITY_DAO, SEAPORT, USDC } from "../../constants";
+import { Contract } from "ethers";
 
 interface SeaportFixture {
   aggregator: LooksRareAggregator;
   proxy: SeaportProxy;
   buyer: SignerWithAddress;
   functionSelector: string;
-  bayc: IERC721;
-  cityDao: IERC1155;
+  bayc: Contract;
+  cityDao: Contract;
 }
 
 export default async function deploySeaportFixture(): Promise<SeaportFixture> {
@@ -38,8 +39,8 @@ export default async function deploySeaportFixture(): Promise<SeaportFixture> {
     ethers.utils.parseEther("200").toHexString().replace("0x0", "0x"),
   ]);
 
-  const bayc = await ethers.getContractAt("IERC721", BAYC);
-  const cityDao = await ethers.getContractAt("IERC1155", CITY_DAO);
+  const bayc = await ethers.getContractAt("@openzeppelin/contracts/token/ERC721/IERC721.sol:IERC721", BAYC);
+  const cityDao = await ethers.getContractAt("@openzeppelin/contracts/token/ERC1155/IERC1155.sol:IERC1155", CITY_DAO);
 
   return { aggregator, proxy, functionSelector, buyer, bayc, cityDao };
 }

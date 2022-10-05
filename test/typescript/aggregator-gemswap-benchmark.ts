@@ -109,7 +109,7 @@ describe("Aggregator", () => {
     const aggregator = await ethers.getContractAt("IGemSwap", "0x83C8F28c26bF6aaca652Df1DbBE0e1b56F8baBa2");
     await ethers.provider.send("hardhat_impersonateAccount", ["0xbF3aEB96e164ae67E763D9e050FF124e7c3Fdd28"]);
     const buyer = await ethers.getSigner("0xbF3aEB96e164ae67E763D9e050FF124e7c3Fdd28");
-    const bayc = await ethers.getContractAt("IERC721", BAYC);
+    const bayc = await ethers.getContractAt("@openzeppelin/contracts/token/ERC721/IERC721.sol:IERC721", BAYC);
 
     const seaportOrderOne = getFixture("seaport", "bayc-9477-order.json");
     const seaportOrderTwo = getFixture("seaport", "bayc-4560-order.json");

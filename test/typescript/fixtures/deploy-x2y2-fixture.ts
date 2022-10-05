@@ -1,6 +1,7 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { Contract } from "ethers";
 import { ethers } from "hardhat";
-import { IERC1155, IERC721, LooksRareAggregator, X2Y2Proxy } from "../../../typechain";
+import { LooksRareAggregator, X2Y2Proxy } from "../../../typechain";
 import { BAYC, PARALLEL, X2Y2 } from "../../constants";
 import getSignature from "../utils/get-signature";
 
@@ -9,8 +10,8 @@ interface X2Y2Fixture {
   functionSelector: string;
   proxy: X2Y2Proxy;
   buyer: SignerWithAddress;
-  bayc: IERC721;
-  parallel: IERC1155;
+  bayc: Contract;
+  parallel: Contract;
 }
 
 export default async function deployX2Y2Fixture(): Promise<X2Y2Fixture> {
@@ -45,8 +46,8 @@ export default async function deployX2Y2Fixture(): Promise<X2Y2Fixture> {
   const buyerBalance = ethers.utils.parseEther("200").toHexString().replace("0x0", "0x");
   await send("hardhat_setBalance", [buyer.address, buyerBalance]);
 
-  const bayc = await ethers.getContractAt("IERC721", BAYC);
-  const parallel = await ethers.getContractAt("IERC1155", PARALLEL);
+  const bayc = await ethers.getContractAt("@openzeppelin/contracts/token/ERC721/IERC721.sol:IERC721", BAYC);
+  const parallel = await ethers.getContractAt("@openzeppelin/contracts/token/ERC1155/IERC1155.sol:IERC1155", PARALLEL);
 
   return { aggregator, functionSelector, proxy, buyer, bayc, parallel };
 }
