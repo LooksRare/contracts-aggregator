@@ -2,6 +2,7 @@
 pragma solidity 0.8.17;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {LooksRareProxy} from "./proxies/LooksRareProxy.sol";
 import {BasicOrder, TokenTransfer} from "./libraries/OrderStructs.sol";
 import {TokenRescuer} from "./TokenRescuer.sol";
@@ -16,6 +17,8 @@ import {FeeData} from "./libraries/OrderStructs.sol";
  * @author LooksRare protocol team (👀,💎)
  */
 contract LooksRareAggregator is ILooksRareAggregator, TokenRescuer, TokenReceiver {
+    using SafeERC20 for IERC20;
+
     /**
      * @notice Transactions that only involve ETH orders should be submitted to this contract
      *         directly. Transactions that involve ERC-20 orders should be submitted to the contract
@@ -145,7 +148,7 @@ contract LooksRareAggregator is ILooksRareAggregator, TokenRescuer, TokenReceive
      * @param currency The address of the ERC-20 token to approve
      */
     function approve(address marketplace, address currency) external onlyOwner {
-        IERC20(currency).approve(marketplace, type(uint256).max);
+        IERC20(currency).safeApprove(marketplace, type(uint256).max);
     }
 
     /**
@@ -154,7 +157,7 @@ contract LooksRareAggregator is ILooksRareAggregator, TokenRescuer, TokenReceive
      * @param currency The address of the ERC-20 token to revoke
      */
     function revoke(address marketplace, address currency) external onlyOwner {
-        IERC20(currency).approve(marketplace, 0);
+        IERC20(currency).safeApprove(marketplace, 0);
     }
 
     /**
