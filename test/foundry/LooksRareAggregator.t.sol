@@ -152,13 +152,6 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTes
         aggregator.execute(tokenTransfers, tradeData, _buyer, _buyer, false);
     }
 
-    function testBuyWithETHZeroOriginator() public {
-        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
-        ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
-        vm.expectRevert(ILooksRareAggregator.ZeroAddress.selector);
-        aggregator.execute(tokenTransfers, tradeData, address(0), _buyer, false);
-    }
-
     function testBuyWithETHZeroRecipient() public {
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);

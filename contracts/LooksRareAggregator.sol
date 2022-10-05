@@ -30,13 +30,15 @@ contract LooksRareAggregator is ILooksRareAggregator, TokenRescuer, TokenReceive
         address recipient,
         bool isAtomic
     ) external payable {
-        if (originator == address(0) || recipient == address(0)) revert ZeroAddress();
+        if (recipient == address(0)) revert ZeroAddress();
         uint256 tradeDataLength = tradeData.length;
         if (tradeDataLength == 0) revert InvalidOrderLength();
 
         uint256 tokenTransfersLength = tokenTransfers.length;
-        if (tokenTransfersLength > 0) {
-            if (msg.sender != erc20EnabledLooksRareAggregator) revert UseERC20EnabledLooksRareAggregator();
+        if (tokenTransfersLength == 0) {
+            originator = msg.sender;
+        } else if (msg.sender != erc20EnabledLooksRareAggregator) {
+            revert UseERC20EnabledLooksRareAggregator();
         }
 
         for (uint256 i; i < tradeDataLength; ) {
