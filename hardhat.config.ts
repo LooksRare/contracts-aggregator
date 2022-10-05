@@ -56,7 +56,7 @@ const config: HardhatUserConfig = {
     clear: true,
     flat: true,
     pretty: false,
-    except: ["test*", "IERC20$"],
+    except: ["test*", "IERC20$", "IERC721$", "IERC1155$"],
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS === "true",

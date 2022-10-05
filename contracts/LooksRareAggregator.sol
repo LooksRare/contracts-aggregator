@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
+import {LowLevelERC721} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelERC721.sol";
+import {LowLevelERC1155} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelERC1155.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {LooksRareProxy} from "./proxies/LooksRareProxy.sol";
 import {BasicOrder, TokenTransfer} from "./libraries/OrderStructs.sol";
@@ -15,7 +17,7 @@ import {FeeData} from "./libraries/OrderStructs.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract LooksRareAggregator is ILooksRareAggregator, TokenRescuer, TokenReceiver {
+contract LooksRareAggregator is ILooksRareAggregator, TokenRescuer, TokenReceiver, LowLevelERC721, LowLevelERC1155 {
     mapping(address => mapping(bytes4 => bool)) private _proxyFunctionSelectors;
     mapping(address => FeeData) private _proxyFeeData;
 
@@ -134,6 +136,38 @@ contract LooksRareAggregator is ILooksRareAggregator, TokenRescuer, TokenReceive
      */
     function supportsProxyFunction(address proxy, bytes4 selector) external view returns (bool) {
         return _proxyFunctionSelectors[proxy][selector];
+    }
+
+    /**
+     * @notice Rescue any of the contract's trapped ERC-721 tokens
+     * @dev Must be called by the current owner
+     * @param collection The address of the ERC-721 token to rescue from the contract
+     * @param tokenId The token ID of the ERC-721 token to rescue from the contract
+     * @param to Send the contract's specified ERC-721 token ID to this address
+     */
+    function rescueERC721(
+        address collection,
+        uint256 tokenId,
+        address to
+    ) external onlyOwner {
+        _executeERC721TransferFrom(collection, address(this), to, tokenId);
+    }
+
+    /**
+     * @notice Rescue any of the contract's trapped ERC-1155 tokens
+     * @dev Must be called by the current owner
+     * @param collection The address of the ERC-1155 token to rescue from the contract
+     * @param tokenIds The token IDs of the ERC-1155 token to rescue from the contract
+     * @param amounts The amount of each token ID to rescue
+     * @param to Send the contract's specified ERC-1155 token ID to this address
+     */
+    function rescueERC1155(
+        address collection,
+        uint256[] calldata tokenIds,
+        uint256[] calldata amounts,
+        address to
+    ) external onlyOwner {
+        _executeERC1155SafeBatchTransferFrom(collection, address(this), to, tokenIds, amounts);
     }
 
     function _encodeCalldata(
