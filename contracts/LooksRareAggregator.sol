@@ -9,6 +9,7 @@ import {TokenRescuer} from "./TokenRescuer.sol";
 import {TokenReceiver} from "./TokenReceiver.sol";
 import {ILooksRareAggregator} from "./interfaces/ILooksRareAggregator.sol";
 import {FeeData} from "./libraries/OrderStructs.sol";
+import {ReentrancyGuard} from "@looksrare/contracts-libs/contracts/ReentrancyGuard.sol";
 
 /**
  * @title LooksRareAggregator
@@ -16,7 +17,7 @@ import {FeeData} from "./libraries/OrderStructs.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract LooksRareAggregator is ILooksRareAggregator, TokenRescuer, TokenReceiver {
+contract LooksRareAggregator is ILooksRareAggregator, TokenRescuer, TokenReceiver, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
     /**
@@ -42,7 +43,7 @@ contract LooksRareAggregator is ILooksRareAggregator, TokenRescuer, TokenReceive
         address originator,
         address recipient,
         bool isAtomic
-    ) external payable {
+    ) external payable nonReentrant {
         if (recipient == address(0)) revert ZeroAddress();
         uint256 tradeDataLength = tradeData.length;
         if (tradeDataLength == 0) revert InvalidOrderLength();
