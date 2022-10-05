@@ -16,6 +16,16 @@ import {FeeData} from "./libraries/OrderStructs.sol";
  * @author LooksRare protocol team (👀,💎)
  */
 contract LooksRareAggregator is ILooksRareAggregator, TokenRescuer, TokenReceiver {
+    /**
+     * @notice Transactions that only involve ETH orders should be submitted to this contract
+     *         directly. Transactions that involve ERC-20 orders should be submitted to the contract
+     *         ERC20EnabledLooksRareAggregator and it will call this contract's execution function.
+     *         The purpose is to prevent a malicious proxy from stealing users' ERC-20 tokens if
+     *         this contract's ownership is compromised. By not providing any allowances to this
+     *         aggregator, even if a malicious proxy is added, it cannot call
+     *         token.transferFrom(victim, attacker, amount) inside the proxy within the context of the
+     *         aggregator.
+     */
     address public erc20EnabledLooksRareAggregator;
     mapping(address => mapping(bytes4 => bool)) private _proxyFunctionSelectors;
     mapping(address => FeeData) private _proxyFeeData;

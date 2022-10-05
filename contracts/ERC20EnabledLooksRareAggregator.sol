@@ -6,6 +6,12 @@ import {ILooksRareAggregator} from "./interfaces/ILooksRareAggregator.sol";
 import {IERC20EnabledLooksRareAggregator} from "./interfaces/IERC20EnabledLooksRareAggregator.sol";
 import {TokenTransfer} from "./libraries/OrderStructs.sol";
 
+/**
+ * @title ERC20EnabledLooksRareAggregator
+ * @notice This contract allows NFT sweepers to buy NFTs from different marketplaces using ERC-20 tokens
+ *         by passing high-level structs + low-level bytes as calldata.
+ * @author LooksRare protocol team (👀,💎)
+ */
 contract ERC20EnabledLooksRareAggregator is IERC20EnabledLooksRareAggregator, LowLevelERC20 {
     ILooksRareAggregator public immutable aggregator;
 
