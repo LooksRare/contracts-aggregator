@@ -2,13 +2,12 @@
 pragma solidity 0.8.17;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {SeaportInterface} from "../interfaces/SeaportInterface.sol";
-import {BasicOrder} from "../libraries/OrderStructs.sol";
-import {CollectionType} from "../libraries/OrderEnums.sol";
-import {AdvancedOrder, CriteriaResolver, OrderParameters, OfferItem, ConsiderationItem, FulfillmentComponent, AdditionalRecipient} from "../libraries/seaport/ConsiderationStructs.sol";
-import {ItemType, OrderType} from "../libraries/seaport/ConsiderationEnums.sol";
-import {FeeData} from "../libraries/OrderStructs.sol";
 import {TokenRescuer} from "../TokenRescuer.sol";
+import {SeaportInterface} from "../interfaces/SeaportInterface.sol";
+import {CollectionType} from "../libraries/OrderEnums.sol";
+import {BasicOrder, FeeData} from "../libraries/OrderStructs.sol";
+import {ItemType, OrderType} from "../libraries/seaport/ConsiderationEnums.sol";
+import {AdvancedOrder, CriteriaResolver, OrderParameters, OfferItem, ConsiderationItem, FulfillmentComponent, AdditionalRecipient} from "../libraries/seaport/ConsiderationStructs.sol";
 import {IProxy} from "../proxies/IProxy.sol";
 
 /**

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import {BasicOrder, FeeData} from "../libraries/OrderStructs.sol";
 import {ICryptoPunks} from "../interfaces/ICryptoPunks.sol";
+import {BasicOrder, FeeData} from "../libraries/OrderStructs.sol";
 import {IProxy} from "./IProxy.sol";
 import {TokenRescuer} from "../TokenRescuer.sol";
 

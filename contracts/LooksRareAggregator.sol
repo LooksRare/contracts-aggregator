@@ -1,15 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
+import {ReentrancyGuard} from "@looksrare/contracts-libs/contracts/ReentrancyGuard.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import {LooksRareProxy} from "./proxies/LooksRareProxy.sol";
-import {BasicOrder, TokenTransfer} from "./libraries/OrderStructs.sol";
-import {TokenRescuer} from "./TokenRescuer.sol";
-import {TokenReceiver} from "./TokenReceiver.sol";
 import {ILooksRareAggregator} from "./interfaces/ILooksRareAggregator.sol";
-import {FeeData} from "./libraries/OrderStructs.sol";
-import {ReentrancyGuard} from "@looksrare/contracts-libs/contracts/ReentrancyGuard.sol";
+import {BasicOrder, FeeData, TokenTransfer} from "./libraries/OrderStructs.sol";
+import {LooksRareProxy} from "./proxies/LooksRareProxy.sol";
+import {TokenReceiver} from "./TokenReceiver.sol";
+import {TokenRescuer} from "./TokenRescuer.sol";
 
 /**
  * @title LooksRareAggregator

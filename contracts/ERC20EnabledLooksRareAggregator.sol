@@ -2,8 +2,8 @@
 pragma solidity 0.8.17;
 
 import {LowLevelERC20} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelERC20.sol";
-import {ILooksRareAggregator} from "./interfaces/ILooksRareAggregator.sol";
 import {IERC20EnabledLooksRareAggregator} from "./interfaces/IERC20EnabledLooksRareAggregator.sol";
+import {ILooksRareAggregator} from "./interfaces/ILooksRareAggregator.sol";
 import {TokenTransfer} from "./libraries/OrderStructs.sol";
 
 /**
