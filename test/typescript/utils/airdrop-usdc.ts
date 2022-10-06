@@ -5,7 +5,10 @@ import { USDC, USDC_WHALE } from "../../constants";
 export default async function airdropUSDC(recipient: string, amount: BigNumber): Promise<void> {
   await ethers.provider.send("hardhat_impersonateAccount", [USDC_WHALE]);
   const ftx = await ethers.getSigner(USDC_WHALE);
-  const usdc = await ethers.getContractAt("@openzeppelin/contracts/token/ERC20/IERC20.sol:IERC20", USDC);
+  const usdc = await ethers.getContractAt(
+    "@looksrare/contracts-libs/contracts/interfaces/generic/IERC20.sol:IERC20",
+    USDC
+  );
   await usdc.connect(ftx).transfer(recipient, amount);
   await ethers.provider.send("hardhat_stopImpersonatingAccount", [USDC_WHALE]);
 }

@@ -37,7 +37,10 @@ export default async function deployLooksRareFixture(): Promise<LooksRareFixture
     ethers.utils.parseEther("200").toHexString().replace("0x0", "0x"),
   ]);
 
-  const bayc = await ethers.getContractAt("@openzeppelin/contracts/token/ERC721/IERC721.sol:IERC721", BAYC);
+  const bayc = await ethers.getContractAt(
+    "@looksrare/contracts-libs/contracts/interfaces/generic/IERC721.sol:IERC721",
+    BAYC
+  );
 
   return { aggregator, proxy, functionSelector, buyer, bayc };
 }

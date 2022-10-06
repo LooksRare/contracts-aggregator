@@ -32,7 +32,10 @@ export default async function deploySudoswapFixture(): Promise<SudoswapFixture> 
     ethers.utils.parseEther("200").toHexString().replace("0x0", "0x"),
   ]);
 
-  const moodie = await ethers.getContractAt("@openzeppelin/contracts/token/ERC721/IERC721.sol:IERC721", MOODIE);
+  const moodie = await ethers.getContractAt(
+    "@looksrare/contracts-libs/contracts/interfaces/generic/IERC721.sol:IERC721",
+    MOODIE
+  );
 
   return { aggregator, proxy, buyer, functionSelector, moodie };
 }

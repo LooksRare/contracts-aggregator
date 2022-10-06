@@ -39,8 +39,14 @@ export default async function deploySeaportFixture(): Promise<SeaportFixture> {
     ethers.utils.parseEther("200").toHexString().replace("0x0", "0x"),
   ]);
 
-  const bayc = await ethers.getContractAt("@openzeppelin/contracts/token/ERC721/IERC721.sol:IERC721", BAYC);
-  const cityDao = await ethers.getContractAt("@openzeppelin/contracts/token/ERC1155/IERC1155.sol:IERC1155", CITY_DAO);
+  const bayc = await ethers.getContractAt(
+    "@looksrare/contracts-libs/contracts/interfaces/generic/IERC721.sol:IERC721",
+    BAYC
+  );
+  const cityDao = await ethers.getContractAt(
+    "@looksrare/contracts-libs/contracts/interfaces/generic/IERC1155.sol:IERC1155",
+    CITY_DAO
+  );
 
   return { aggregator, proxy, functionSelector, buyer, bayc, cityDao };
 }

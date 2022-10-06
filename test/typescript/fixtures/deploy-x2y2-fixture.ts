@@ -46,8 +46,14 @@ export default async function deployX2Y2Fixture(): Promise<X2Y2Fixture> {
   const buyerBalance = ethers.utils.parseEther("200").toHexString().replace("0x0", "0x");
   await send("hardhat_setBalance", [buyer.address, buyerBalance]);
 
-  const bayc = await ethers.getContractAt("@openzeppelin/contracts/token/ERC721/IERC721.sol:IERC721", BAYC);
-  const parallel = await ethers.getContractAt("@openzeppelin/contracts/token/ERC1155/IERC1155.sol:IERC1155", PARALLEL);
+  const bayc = await ethers.getContractAt(
+    "@looksrare/contracts-libs/contracts/interfaces/generic/IERC721.sol:IERC721",
+    BAYC
+  );
+  const parallel = await ethers.getContractAt(
+    "@looksrare/contracts-libs/contracts/interfaces/generic/IERC1155.sol:IERC1155",
+    PARALLEL
+  );
 
   return { aggregator, functionSelector, proxy, buyer, bayc, parallel };
 }
