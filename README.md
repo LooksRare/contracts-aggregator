@@ -59,8 +59,9 @@ FORKED_BLOCK_NUMBER=15282897 npx hardhat test test/typescript/v0-aggregator-look
 ### Gas benchmark
 
 ```
-forge test --match-contract LooksRareProxyBenchmarkTest  --fork-url $ETH_RPC_URL --fork-block-number 15282897 --chain-id 1 -vv
-forge test --match-contract SeaportProxyBenchmarkTest  --fork-url $ETH_RPC_URL --fork-block-number 15300884 --chain-id 1 -vv
+forge test --match-contract GemSwapBenchmarkTest
+forge test --match-contract LooksRareProxyBenchmarkTest
+forge test --match-contract SeaportProxyBenchmarkTest
 ```
 
 ### Static analysis
