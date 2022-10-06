@@ -49,6 +49,7 @@ describe("Aggregator", () => {
         proxy: seaportProxy.address,
         selector: seaportFunctionSelector,
         value: seaportPrice,
+        maxFeeBp: 0,
         orders: [getSeaportOrderJson(seaportOrder)],
         ordersExtraData: [getSeaportOrderExtraData(seaportOrder)],
         extraData: abiCoder.encode(
@@ -65,6 +66,7 @@ describe("Aggregator", () => {
         proxy: looksRareProxy.address,
         selector: looksRareFunctionSelector,
         value: looksRarePrice,
+        maxFeeBp: 0,
         orders: [
           {
             signer: "0xCd46DEe6e832e3ffa3FdC394b8dC673D6CA843dd",
@@ -89,6 +91,7 @@ describe("Aggregator", () => {
         proxy: sudoswapProxy.address,
         selector: sudoswapFunctionSelector,
         value: sudoswapPrice,
+        maxFeeBp: 0,
         orders: [
           {
             signer: AddressZero,
@@ -150,6 +153,7 @@ describe("Aggregator", () => {
         proxy: seaportProxy.address,
         selector: seaportFunctionSelector,
         value: seaportPrice,
+        maxFeeBp: 0,
         orders: [getSeaportOrderJson(seaportOrder)],
         ordersExtraData: [getSeaportOrderExtraData(seaportOrder)],
         extraData: abiCoder.encode(
@@ -166,6 +170,7 @@ describe("Aggregator", () => {
         proxy: looksRareProxy.address,
         selector: looksRareFunctionSelector,
         value: looksRarePrice,
+        maxFeeBp: 0,
         orders: [
           {
             signer: "0xCd46DEe6e832e3ffa3FdC394b8dC673D6CA843dd",
@@ -190,6 +195,7 @@ describe("Aggregator", () => {
         proxy: sudoswapProxy.address,
         selector: sudoswapFunctionSelector,
         value: sudoswapPrice,
+        maxFeeBp: 0,
         orders: [
           {
             signer: AddressZero,
@@ -264,6 +270,7 @@ describe("Aggregator", () => {
         proxy: seaportProxy.address,
         selector: seaportFunctionSelector,
         value: seaportPrice,
+        maxFeeBp: 0,
         orders: [getSeaportOrderJson(seaportOrder)],
         ordersExtraData: [getSeaportOrderExtraData(seaportOrder)],
         extraData: abiCoder.encode(
@@ -280,6 +287,7 @@ describe("Aggregator", () => {
         proxy: looksRareProxy.address,
         selector: looksRareFunctionSelector,
         value: looksRarePrice,
+        maxFeeBp: 0,
         orders: [
           {
             signer: "0xCd46DEe6e832e3ffa3FdC394b8dC673D6CA843dd",
@@ -304,6 +312,7 @@ describe("Aggregator", () => {
         proxy: sudoswapProxy.address,
         selector: sudoswapFunctionSelector,
         value: sudoswapPrice,
+        maxFeeBp: 0,
         orders: [
           {
             signer: AddressZero,

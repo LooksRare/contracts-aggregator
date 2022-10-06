@@ -69,6 +69,14 @@ contract LooksRareAggregator is
         for (uint256 i; i < tradeDataLength; ) {
             if (!_proxyFunctionSelectors[tradeData[i].proxy][tradeData[i].selector]) revert InvalidFunction();
 
+            if (tradeData[i].maxFeeBp < _proxyFeeData[tradeData[i].proxy].bp) {
+                if (isAtomic) {
+                    revert FeeTooHigh();
+                } else {
+                    continue;
+                }
+            }
+
             (bool success, bytes memory returnData) = tradeData[i].proxy.delegatecall(
                 _encodeCalldata(tradeData[i], recipient, isAtomic)
             );

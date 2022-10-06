@@ -39,6 +39,7 @@ describe("Aggregator", () => {
         proxy: seaportProxy.address,
         selector: seaportFunctionSelector,
         value: seaportPrice,
+        maxFeeBp: 0,
         orders: [getSeaportOrderJson(seaportOrderOne), getSeaportOrderJson(seaportOrderTwo)],
         ordersExtraData: [getSeaportOrderExtraData(seaportOrderOne), getSeaportOrderExtraData(seaportOrderTwo)],
         extraData: abiCoder.encode(
@@ -55,6 +56,7 @@ describe("Aggregator", () => {
         proxy: looksRareProxy.address,
         selector: looksRareFunctionSelector,
         value: looksRarePrice,
+        maxFeeBp: 0,
         orders: [
           {
             signer: "0x17331428346E388f32013e6bEc0Aba29303857FD",

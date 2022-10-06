@@ -88,6 +88,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
             proxy: address(seaportProxy),
             selector: SeaportProxy.execute.selector,
             value: order.price,
+            maxFeeBp: 0,
             orders: orders,
             ordersExtraData: ordersExtraData,
             extraData: extraData
@@ -256,6 +257,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
             proxy: address(seaportProxy),
             selector: SeaportProxy.execute.selector,
             value: totalPrice,
+            maxFeeBp: 0,
             orders: orders,
             ordersExtraData: ordersExtraData,
             extraData: extraData

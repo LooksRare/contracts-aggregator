@@ -45,6 +45,7 @@ describe("Aggregator", () => {
         proxy: seaportProxy.address,
         selector: seaportFunctionSelector,
         value: seaportPrice,
+        maxFeeBp: 0,
         orders: [getSeaportOrderJson(seaportOrder)],
         ordersExtraData: [getSeaportOrderExtraData(seaportOrder)],
         extraData: abiCoder.encode(
@@ -61,6 +62,7 @@ describe("Aggregator", () => {
         proxy: looksRareProxy.address,
         selector: looksRareFunctionSelector,
         value: looksRarePrice,
+        maxFeeBp: 0,
         orders: [
           {
             signer: "0x3445A938F98EaAeb6AF3ce90e71FC5994a23F897",
@@ -126,6 +128,7 @@ describe("Aggregator", () => {
         proxy: seaportProxy.address,
         selector: seaportFunctionSelector,
         value: seaportPrice,
+        maxFeeBp: 0,
         orders: [getSeaportOrderJson(seaportOrder)],
         ordersExtraData: [getSeaportOrderExtraData(seaportOrder)],
         extraData: abiCoder.encode(
@@ -142,6 +145,7 @@ describe("Aggregator", () => {
         proxy: looksRareProxy.address,
         selector: looksRareFunctionSelector,
         value: looksRarePrice,
+        maxFeeBp: 0,
         orders: [
           {
             signer: "0x3445A938F98EaAeb6AF3ce90e71FC5994a23F897",

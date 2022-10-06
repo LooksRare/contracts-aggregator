@@ -87,6 +87,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
             proxy: address(looksRareProxy),
             selector: LooksRareProxy.execute.selector,
             value: orders[0].price,
+            maxFeeBp: 0,
             orders: orders,
             ordersExtraData: ordersExtraData,
             extraData: ""
@@ -145,6 +146,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
             proxy: address(looksRareProxy),
             selector: LooksRareProxy.execute.selector,
             value: orders[0].price + orders[1].price,
+            maxFeeBp: 0,
             orders: orders,
             ordersExtraData: ordersExtraData,
             extraData: ""

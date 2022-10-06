@@ -38,6 +38,7 @@ describe("LooksRareAggregator", () => {
           proxy: proxy.address,
           selector: functionSelector,
           value: totalValue,
+          maxFeeBp: 0,
           orders: [
             {
               // eslint-disable-next-line node/no-unsupported-features/es-syntax
@@ -102,6 +103,7 @@ describe("LooksRareAggregator", () => {
           proxy: proxy.address,
           selector: functionSelector,
           value: totalValue.add(priceOne),
+          maxFeeBp: 0,
           orders: [
             {
               // eslint-disable-next-line node/no-unsupported-features/es-syntax
@@ -177,6 +179,7 @@ describe("LooksRareAggregator", () => {
             proxy: proxy.address,
             selector: functionSelector,
             value: totalValue.add(priceOne),
+            maxFeeBp: 0,
             orders: [
               {
                 // eslint-disable-next-line node/no-unsupported-features/es-syntax
