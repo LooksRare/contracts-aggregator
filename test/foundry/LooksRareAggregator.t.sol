@@ -113,7 +113,7 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTes
 
     function testRescueERC721() public {
         MockERC721 mockERC721 = new MockERC721();
-        mockERC721.mint(address(aggregator));
+        mockERC721.mint(address(aggregator), 0);
         aggregator.rescueERC721(address(mockERC721), luckyUser, 0);
         assertEq(mockERC721.balanceOf(address(luckyUser)), 1);
         assertEq(mockERC721.balanceOf(address(aggregator)), 0);
@@ -122,7 +122,7 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTes
 
     function testRescueERC721NotOwner() public {
         MockERC721 mockERC721 = new MockERC721();
-        mockERC721.mint(address(aggregator));
+        mockERC721.mint(address(aggregator), 0);
         vm.prank(luckyUser);
         vm.expectRevert(IOwnableTwoSteps.NotOwner.selector);
         aggregator.rescueERC721(address(mockERC721), luckyUser, 0);

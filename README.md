@@ -70,5 +70,5 @@ pip3 install slither-analyzer
 pip3 install solc-select
 solc-select install 0.8.17
 solc-select use 0.8.17
-slither --solc solc-0.8.17 --solc-remaps @openzeppelin=node_modules/@openzeppelin .
+slither --solc solc-0.8.17 .
 ```

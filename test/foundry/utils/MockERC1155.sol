@@ -1,11 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import {ERC1155} from "solmate/src/tokens/ERC1155.sol";
 
 contract MockERC1155 is ERC1155 {
-    constructor() ERC1155("MockERC1155") {}
-
     function mint(
         address account,
         uint256 id,
@@ -13,5 +11,9 @@ contract MockERC1155 is ERC1155 {
         bytes memory data
     ) public {
         _mint(account, id, amount, data);
+    }
+
+    function uri(uint256) public pure override returns (string memory) {
+        return "uri";
     }
 }
