@@ -1,4 +1,6 @@
-# Aggregator
+# @looksrare/contracts-aggregator
+
+[![Tests](https://github.com/LooksRare/contracts-aggregator/actions/workflows/tests.yaml/badge.svg)](https://github.com/LooksRare/contracts-aggregator/actions/workflows/tests.yaml)
 
 This is an aggregator that allows NFT sweepers to buy NFTs from multiple sources in a single transaction (LooksRare, Seaport, X2Y2, Sudoswap, etc).
 
