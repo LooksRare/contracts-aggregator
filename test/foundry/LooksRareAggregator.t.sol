@@ -114,7 +114,7 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTes
     function testRescueERC721() public {
         MockERC721 mockERC721 = new MockERC721();
         mockERC721.mint(address(aggregator));
-        aggregator.rescueERC721(address(mockERC721), 0, luckyUser);
+        aggregator.rescueERC721(address(mockERC721), luckyUser, 0);
         assertEq(mockERC721.balanceOf(address(luckyUser)), 1);
         assertEq(mockERC721.balanceOf(address(aggregator)), 0);
         assertEq(mockERC721.ownerOf(0), luckyUser);
@@ -125,7 +125,7 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTes
         mockERC721.mint(address(aggregator));
         vm.prank(luckyUser);
         vm.expectRevert(IOwnableTwoSteps.NotOwner.selector);
-        aggregator.rescueERC721(address(mockERC721), 0, luckyUser);
+        aggregator.rescueERC721(address(mockERC721), luckyUser, 0);
         assertEq(mockERC721.balanceOf(address(luckyUser)), 0);
         assertEq(mockERC721.balanceOf(address(aggregator)), 1);
         assertEq(mockERC721.ownerOf(0), address(aggregator));
@@ -138,7 +138,7 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTes
         tokenIds[0] = 0;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 2;
-        aggregator.rescueERC1155(address(mockERC1155), tokenIds, amounts, luckyUser);
+        aggregator.rescueERC1155(address(mockERC1155), luckyUser, tokenIds, amounts);
         assertEq(mockERC1155.balanceOf(address(luckyUser), 0), 2);
         assertEq(mockERC1155.balanceOf(address(aggregator), 0), 0);
     }
@@ -152,7 +152,7 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTes
         amounts[0] = 2;
         vm.prank(luckyUser);
         vm.expectRevert(IOwnableTwoSteps.NotOwner.selector);
-        aggregator.rescueERC1155(address(mockERC1155), tokenIds, amounts, luckyUser);
+        aggregator.rescueERC1155(address(mockERC1155), luckyUser, tokenIds, amounts);
         assertEq(mockERC1155.balanceOf(address(luckyUser), 0), 0);
         assertEq(mockERC1155.balanceOf(address(aggregator), 0), 2);
     }

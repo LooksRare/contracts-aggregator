@@ -147,8 +147,8 @@ contract LooksRareAggregator is ILooksRareAggregator, TokenRescuer, TokenReceive
      */
     function rescueERC721(
         address collection,
-        uint256 tokenId,
-        address to
+        address to,
+        uint256 tokenId
     ) external onlyOwner {
         _executeERC721TransferFrom(collection, address(this), to, tokenId);
     }
@@ -163,9 +163,9 @@ contract LooksRareAggregator is ILooksRareAggregator, TokenRescuer, TokenReceive
      */
     function rescueERC1155(
         address collection,
+        address to,
         uint256[] calldata tokenIds,
-        uint256[] calldata amounts,
-        address to
+        uint256[] calldata amounts
     ) external onlyOwner {
         _executeERC1155SafeBatchTransferFrom(collection, address(this), to, tokenIds, amounts);
     }
