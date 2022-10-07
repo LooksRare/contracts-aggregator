@@ -32,7 +32,10 @@ describe("V0Aggregator", () => {
       ethers.utils.parseEther("200").toHexString().replace("0x0", "0x"),
     ]);
 
-    bayc = await ethers.getContractAt("IERC721", BAYC);
+    bayc = await ethers.getContractAt(
+      "@looksrare/contracts-libs/contracts/interfaces/generic/IERC721.sol:IERC721",
+      BAYC
+    );
   });
 
   it("Should be able to handle LooksRare V1 trades (matchAskWithTakerBidUsingETHAndWETH)", async function () {

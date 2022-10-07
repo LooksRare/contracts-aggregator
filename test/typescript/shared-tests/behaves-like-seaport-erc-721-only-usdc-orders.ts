@@ -49,7 +49,10 @@ export default function behavesLikeSeaportERC721OnlyUSDCOrders(isAtomic: boolean
 
     await airdropUSDC(buyer.address, price);
 
-    const usdc = await ethers.getContractAt("@openzeppelin/contracts/token/ERC20/IERC20.sol:IERC20", USDC);
+    const usdc = await ethers.getContractAt(
+      "@looksrare/contracts-libs/contracts/interfaces/generic/IERC20.sol:IERC20",
+      USDC
+    );
     await usdc.connect(buyer).approve(aggregator.address, price);
 
     const tokenTransfers = [{ amount: price, currency: USDC }];

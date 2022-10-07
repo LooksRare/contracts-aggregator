@@ -1,15 +1,16 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
-import { IERC721, LooksRareAggregator, LooksRareProxy } from "../../../typechain";
+import { LooksRareAggregator, LooksRareProxy } from "../../../typechain";
 import getSignature from "../utils/get-signature";
 import { BAYC, LOOKSRARE_V1 } from "../../constants";
+import { Contract } from "ethers";
 
 interface LooksRareFixture {
   aggregator: LooksRareAggregator;
   proxy: LooksRareProxy;
   buyer: SignerWithAddress;
   functionSelector: string;
-  bayc: IERC721;
+  bayc: Contract;
 }
 
 export default async function deployLooksRareFixture(): Promise<LooksRareFixture> {
@@ -36,7 +37,10 @@ export default async function deployLooksRareFixture(): Promise<LooksRareFixture
     ethers.utils.parseEther("200").toHexString().replace("0x0", "0x"),
   ]);
 
-  const bayc = await ethers.getContractAt("IERC721", BAYC);
+  const bayc = await ethers.getContractAt(
+    "@looksrare/contracts-libs/contracts/interfaces/generic/IERC721.sol:IERC721",
+    BAYC
+  );
 
   return { aggregator, proxy, functionSelector, buyer, bayc };
 }

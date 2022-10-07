@@ -1,15 +1,16 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
-import { IERC721, LooksRareAggregator, SudoswapProxy } from "../../../typechain";
+import { LooksRareAggregator, SudoswapProxy } from "../../../typechain";
 import getSignature from "../utils/get-signature";
 import { MOODIE, SUDOSWAP } from "../../constants";
+import { Contract } from "ethers";
 
 interface SudoswapFixture {
   aggregator: LooksRareAggregator;
   proxy: SudoswapProxy;
   buyer: SignerWithAddress;
   functionSelector: string;
-  moodie: IERC721;
+  moodie: Contract;
 }
 
 export default async function deploySudoswapFixture(): Promise<SudoswapFixture> {
@@ -31,7 +32,10 @@ export default async function deploySudoswapFixture(): Promise<SudoswapFixture> 
     ethers.utils.parseEther("200").toHexString().replace("0x0", "0x"),
   ]);
 
-  const moodie = await ethers.getContractAt("IERC721", MOODIE);
+  const moodie = await ethers.getContractAt(
+    "@looksrare/contracts-libs/contracts/interfaces/generic/IERC721.sol:IERC721",
+    MOODIE
+  );
 
   return { aggregator, proxy, buyer, functionSelector, moodie };
 }
