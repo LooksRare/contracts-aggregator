@@ -30,17 +30,15 @@ contract LooksRareProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Lo
     }
 
     function testBuyWithETHZeroOrders() public asPrankedUser(_buyer) {
-        FeeData memory feeData;
         BasicOrder[] memory orders = new BasicOrder[](0);
         bytes[] memory ordersExtraData = new bytes[](0);
 
         vm.etch(address(_fakeAggregator), address(looksRareProxy).code);
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        IProxy(_fakeAggregator).execute(orders, ordersExtraData, "", _buyer, false, feeData);
+        IProxy(_fakeAggregator).execute(orders, ordersExtraData, "", _buyer, false, 0, address(0));
     }
 
     function testBuyWithETHOrdersLengthMismatch() public asPrankedUser(_buyer) {
-        FeeData memory feeData;
         BasicOrder[] memory orders = validBAYCOrders();
 
         bytes[] memory ordersExtraData = new bytes[](1);
@@ -54,7 +52,8 @@ contract LooksRareProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Lo
             "",
             _buyer,
             false,
-            feeData
+            0,
+            address(0)
         );
     }
 

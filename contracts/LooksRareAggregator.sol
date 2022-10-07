@@ -69,7 +69,9 @@ contract LooksRareAggregator is
         for (uint256 i; i < tradeDataLength; ) {
             if (!_proxyFunctionSelectors[tradeData[i].proxy][tradeData[i].selector]) revert InvalidFunction();
 
-            if (tradeData[i].maxFeeBp < _proxyFeeData[tradeData[i].proxy].bp) {
+            uint16 feeBp = _proxyFeeData[tradeData[i].proxy].bp;
+
+            if (tradeData[i].maxFeeBp < feeBp) {
                 if (isAtomic) {
                     revert FeeTooHigh();
                 } else {
@@ -81,7 +83,7 @@ contract LooksRareAggregator is
             }
 
             (bool success, bytes memory returnData) = tradeData[i].proxy.delegatecall(
-                _encodeCalldata(tradeData[i], recipient, isAtomic)
+                _encodeCalldata(tradeData[i], recipient, isAtomic, feeBp)
             );
 
             if (!success) {
@@ -217,7 +219,8 @@ contract LooksRareAggregator is
     function _encodeCalldata(
         TradeData calldata singleTradeData,
         address recipient,
-        bool isAtomic
+        bool isAtomic,
+        uint16 feeBp
     ) private view returns (bytes memory) {
         return
             abi.encodeWithSelector(
@@ -227,7 +230,8 @@ contract LooksRareAggregator is
                 singleTradeData.extraData,
                 recipient,
                 isAtomic,
-                _proxyFeeData[singleTradeData.proxy]
+                uint256(feeBp),
+                _proxyFeeData[singleTradeData.proxy].recipient
             );
     }
 

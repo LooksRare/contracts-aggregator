@@ -2,7 +2,7 @@
 pragma solidity 0.8.17;
 
 import {ICryptoPunks} from "../interfaces/ICryptoPunks.sol";
-import {BasicOrder, FeeData} from "../libraries/OrderStructs.sol";
+import {BasicOrder} from "../libraries/OrderStructs.sol";
 import {IProxy} from "./IProxy.sol";
 import {TokenRescuer} from "../TokenRescuer.sol";
 
@@ -27,7 +27,7 @@ contract CryptoPunksProxy is IProxy, TokenRescuer {
 
     /**
      * @notice Execute CryptoPunks NFT sweeps in a single transaction
-     * @dev ordersExtraData, extraData and feeData are not used
+     * @dev ordersExtraData, extraData, feeBp and feeRecipient are not used
      * @param orders Orders to be executed by CryptoPunks
      * @param recipient The address to receive the purchased NFTs
      * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
@@ -38,7 +38,8 @@ contract CryptoPunksProxy is IProxy, TokenRescuer {
         bytes memory,
         address recipient,
         bool isAtomic,
-        FeeData memory
+        uint256,
+        address
     ) external payable override {
         if (address(this) != aggregator) revert InvalidCaller();
 

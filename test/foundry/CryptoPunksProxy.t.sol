@@ -27,13 +27,12 @@ contract CryptoPunksProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
     }
 
     function testBuyWithETHZeroOrders() public asPrankedUser(_buyer) {
-        FeeData memory feeData;
         BasicOrder[] memory orders = new BasicOrder[](0);
         bytes[] memory ordersExtraData = new bytes[](0);
 
         vm.etch(address(_fakeAggregator), address(cryptoPunksProxy).code);
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        IProxy(_fakeAggregator).execute(orders, ordersExtraData, "", _buyer, false, feeData);
+        IProxy(_fakeAggregator).execute(orders, ordersExtraData, "", _buyer, false, 0, address(0));
     }
 
     function testRescueETH() public {

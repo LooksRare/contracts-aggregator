@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import {BasicOrder, FeeData} from "../libraries/OrderStructs.sol";
+import {BasicOrder} from "../libraries/OrderStructs.sol";
 
 interface IProxy {
     error InvalidCaller();
@@ -15,7 +15,8 @@ interface IProxy {
      * @param extraData Extra data for the whole transaction
      * @param recipient The address to receive the purchased NFTs
      * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
-     * @param feeData Fee basis point and recipient
+     * @param feeBp Fee basis point to pay for the trade, set by the aggregator
+     * @param feeRecipient Fee recipient for the trade, set by the aggregator
      */
     function execute(
         BasicOrder[] calldata orders,
@@ -23,6 +24,7 @@ interface IProxy {
         bytes calldata extraData,
         address recipient,
         bool isAtomic,
-        FeeData memory feeData
+        uint256 feeBp,
+        address feeRecipient
     ) external payable;
 }

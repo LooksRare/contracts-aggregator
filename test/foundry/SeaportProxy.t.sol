@@ -33,15 +33,21 @@ contract SeaportProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Seap
     function testBuyWithETHZeroOrders() public asPrankedUser(_buyer) {
         BasicOrder[] memory orders = new BasicOrder[](0);
         bytes[] memory ordersExtraData = new bytes[](0);
-        FeeData memory feeData;
 
         vm.etch(address(_fakeAggregator), address(seaportProxy).code);
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        IProxy(_fakeAggregator).execute(orders, ordersExtraData, validSingleBAYCExtraData(), _buyer, false, feeData);
+        IProxy(_fakeAggregator).execute(
+            orders,
+            ordersExtraData,
+            validSingleBAYCExtraData(),
+            _buyer,
+            false,
+            0,
+            address(0)
+        );
     }
 
     function testBuyWithETHOrdersLengthMismatch() public asPrankedUser(_buyer) {
-        FeeData memory feeData;
         BasicOrder memory order = validBAYCId2518Order();
         BasicOrder[] memory orders = new BasicOrder[](1);
         orders[0] = order;
@@ -58,7 +64,8 @@ contract SeaportProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Seap
             validSingleBAYCExtraData(),
             _buyer,
             false,
-            feeData
+            0,
+            address(0)
         );
     }
 

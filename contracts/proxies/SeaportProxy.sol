@@ -54,7 +54,8 @@ contract SeaportProxy is IProxy, TokenRescuer {
      * @param extraData Extra data for the whole transaction
      * @param recipient The address to receive the purchased NFTs
      * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
-     * @param feeData Fee basis point and recipient
+     * @param feeBp Fee basis point to pay for the trade, set by the aggregator
+     * @param feeRecipient Fee recipient for the trade, set by the aggregator
      */
     function execute(
         BasicOrder[] calldata orders,
@@ -62,7 +63,8 @@ contract SeaportProxy is IProxy, TokenRescuer {
         bytes calldata extraData,
         address recipient,
         bool isAtomic,
-        FeeData memory feeData
+        uint256 feeBp,
+        address feeRecipient
     ) external payable override {
         if (address(this) != aggregator) revert InvalidCaller();
 
@@ -70,9 +72,9 @@ contract SeaportProxy is IProxy, TokenRescuer {
         if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();
 
         if (isAtomic) {
-            _executeAtomicOrders(orders, ordersExtraData, extraData, recipient, feeData);
+            _executeAtomicOrders(orders, ordersExtraData, extraData, recipient, feeBp, feeRecipient);
         } else {
-            _executeNonAtomicOrders(orders, ordersExtraData, recipient, feeData);
+            _executeNonAtomicOrders(orders, ordersExtraData, recipient, feeBp, feeRecipient);
         }
     }
 
@@ -88,7 +90,8 @@ contract SeaportProxy is IProxy, TokenRescuer {
         bytes[] calldata ordersExtraData,
         bytes calldata extraData,
         address recipient,
-        FeeData memory feeData
+        uint256 feeBp,
+        address feeRecipient
     ) private {
         uint256 ordersLength = orders.length;
         AdvancedOrder[] memory advancedOrders = new AdvancedOrder[](ordersLength);
@@ -128,18 +131,21 @@ contract SeaportProxy is IProxy, TokenRescuer {
             }
         }
 
-        if (feeData.recipient != address(0)) _handleFees(orders, feeData);
+        if (feeRecipient != address(0)) _handleFees(orders, feeBp, feeRecipient);
     }
 
-    function _handleFees(BasicOrder[] calldata orders, FeeData memory feeData) private {
+    function _handleFees(
+        BasicOrder[] calldata orders,
+        uint256 feeBp,
+        address feeRecipient
+    ) private {
         address lastOrderCurrency;
         uint256 fee;
-        address feeRecipient = feeData.recipient;
         uint256 ordersLength = orders.length;
 
         for (uint256 i; i < ordersLength; ) {
             address currency = orders[i].currency;
-            uint256 orderFee = (orders[i].price * feeData.bp) / 10000;
+            uint256 orderFee = (orders[i].price * feeBp) / 10000;
 
             if (currency == lastOrderCurrency) {
                 fee += orderFee;
@@ -174,12 +180,12 @@ contract SeaportProxy is IProxy, TokenRescuer {
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,
         address recipient,
-        FeeData memory feeData
+        uint256 feeBp,
+        address feeRecipient
     ) private {
         CriteriaResolver[] memory criteriaResolver = new CriteriaResolver[](0);
         uint256 fee;
         address lastOrderCurrency;
-        address feeRecipient = feeData.recipient;
         uint256 ordersLength = orders.length;
         for (uint256 i; i < ordersLength; ) {
             OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
@@ -203,12 +209,12 @@ contract SeaportProxy is IProxy, TokenRescuer {
             {
                 if (feeRecipient != address(0)) {
                     if (orders[i].currency == lastOrderCurrency) {
-                        fee += (price * feeData.bp) / 10000;
+                        fee += (price * feeBp) / 10000;
                     } else {
                         if (fee > 0) _transferFee(fee, lastOrderCurrency, feeRecipient);
 
                         lastOrderCurrency = currency;
-                        fee = (price * feeData.bp) / 10000;
+                        fee = (price * feeBp) / 10000;
                     }
                 }
             } catch {}

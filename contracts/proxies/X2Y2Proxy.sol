@@ -9,7 +9,7 @@ import {TokenRescuer} from "../TokenRescuer.sol";
 import {TokenTransferrer} from "../TokenTransferrer.sol";
 import {IX2Y2} from "../interfaces/IX2Y2.sol";
 import {CollectionType} from "../libraries/OrderEnums.sol";
-import {BasicOrder, FeeData} from "../libraries/OrderStructs.sol";
+import {BasicOrder} from "../libraries/OrderStructs.sol";
 import {Market} from "../libraries/x2y2/MarketConsts.sol";
 
 /**
@@ -45,7 +45,7 @@ contract X2Y2Proxy is IProxy, TokenRescuer, TokenTransferrer, SignatureChecker {
 
     /**
      * @notice Execute X2Y2 NFT sweeps in a single transaction
-     * @dev extraData and feeData are not used
+     * @dev extraData, feeBp and feeRecipient are not used
      * @param orders Orders to be executed by Seaport
      * @param ordersExtraData Extra data for each order
      * @param recipient The address to receive the purchased NFTs
@@ -57,7 +57,8 @@ contract X2Y2Proxy is IProxy, TokenRescuer, TokenTransferrer, SignatureChecker {
         bytes calldata,
         address recipient,
         bool isAtomic,
-        FeeData memory
+        uint256,
+        address
     ) external payable override {
         if (address(this) != aggregator) revert InvalidCaller();
 
