@@ -43,7 +43,7 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
     const priceOne = combineConsiderationAmount(orderOne.parameters.consideration);
     const priceTwo = combineConsiderationAmount(orderTwo.parameters.consideration);
 
-    await aggregator.approve(SEAPORT, USDC);
+    await aggregator.approve(SEAPORT, USDC, ethers.constants.MaxUint256);
 
     await airdropUSDC(buyer.address, priceOne);
 
@@ -93,7 +93,7 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
     const priceOne = combineConsiderationAmount(orderOne.parameters.consideration);
     const priceTwo = combineConsiderationAmount(orderTwo.parameters.consideration);
 
-    await aggregator.approve(SEAPORT, USDC);
+    await aggregator.approve(SEAPORT, USDC, ethers.constants.MaxUint256);
 
     const excess = ethers.utils.parseUnits("100", USDC_DECIMALS);
 
@@ -154,7 +154,7 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
     const priceTwo = priceTwoBeforeFee.mul(10250).div(10000); // Fee
 
     await aggregator.setFee(proxy.address, 250, protocolFeeRecipient.address);
-    await aggregator.approve(SEAPORT, USDC);
+    await aggregator.approve(SEAPORT, USDC, ethers.constants.MaxUint256);
 
     await airdropUSDC(buyer.address, priceOne);
 

@@ -94,7 +94,7 @@ export default function behavesLikeSeaportMultipleCurrenciesRandomOrderFees(isAt
     protocolFeeRecipient: SignerWithAddress,
     usdcAirdropAmount: BigNumber
   ): Promise<void> => {
-    await aggregator.approve(SEAPORT, USDC);
+    await aggregator.approve(SEAPORT, USDC, ethers.constants.MaxUint256);
     await aggregator.setFee(proxy.address, 250, protocolFeeRecipient.address);
 
     await airdropUSDC(buyer.address, usdcAirdropAmount);

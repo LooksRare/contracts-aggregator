@@ -37,7 +37,7 @@ export default async function deploySeaportFixture(): Promise<SeaportFixture> {
 
   const functionSelector = await getSignature("SeaportProxy.json", "execute");
   await aggregator.addFunction(proxy.address, functionSelector);
-  await aggregator.approve(proxy.address, USDC);
+  await aggregator.approve(proxy.address, USDC, ethers.constants.MaxUint256);
 
   const [, , buyer] = await ethers.getSigners();
 

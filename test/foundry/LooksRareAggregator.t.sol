@@ -102,33 +102,17 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTes
 
     function testApprove() public {
         MockERC20 erc20 = new MockERC20();
+        uint256 amount = type(uint256).max;
         assertEq(erc20.allowance(address(aggregator), address(looksRareProxy)), 0);
-        aggregator.approve(address(looksRareProxy), address(erc20));
-        assertEq(erc20.allowance(address(aggregator), address(looksRareProxy)), type(uint256).max);
+        aggregator.approve(address(looksRareProxy), address(erc20), amount);
+        assertEq(erc20.allowance(address(aggregator), address(looksRareProxy)), amount);
     }
 
     function testApproveNotOwner() public {
         MockERC20 erc20 = new MockERC20();
         vm.prank(_buyer);
         vm.expectRevert(IOwnableTwoSteps.NotOwner.selector);
-        aggregator.approve(address(erc20), address(looksRareProxy));
-    }
-
-    function testRevoke() public {
-        MockERC20 erc20 = new MockERC20();
-
-        aggregator.approve(address(looksRareProxy), address(erc20));
-        assertEq(erc20.allowance(address(aggregator), address(looksRareProxy)), type(uint256).max);
-
-        aggregator.revoke(address(looksRareProxy), address(erc20));
-        assertEq(erc20.allowance(address(aggregator), address(looksRareProxy)), 0);
-    }
-
-    function testRevokeNotOwner() public {
-        MockERC20 erc20 = new MockERC20();
-        vm.prank(_buyer);
-        vm.expectRevert(IOwnableTwoSteps.NotOwner.selector);
-        aggregator.revoke(address(looksRareProxy), address(erc20));
+        aggregator.approve(address(erc20), address(looksRareProxy), type(uint256).max);
     }
 
     function testRescueETH() public {

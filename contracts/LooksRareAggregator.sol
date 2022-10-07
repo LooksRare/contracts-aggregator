@@ -2,6 +2,7 @@
 pragma solidity 0.8.17;
 
 import {ReentrancyGuard} from "@looksrare/contracts-libs/contracts/ReentrancyGuard.sol";
+import {LowLevelERC20Approve} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelERC20Approve.sol";
 import {LowLevelERC721Transfer} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelERC721Transfer.sol";
 import {LowLevelERC1155Transfer} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelERC1155Transfer.sol";
 import {IERC20} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC20.sol";
@@ -26,6 +27,7 @@ contract LooksRareAggregator is
     TokenRescuer,
     TokenReceiver,
     ReentrancyGuard,
+    LowLevelERC20Approve,
     LowLevelERC721Transfer,
     LowLevelERC1155Transfer
 {
@@ -148,20 +150,16 @@ contract LooksRareAggregator is
 
     /**
      * @notice Approve marketplaces to transfer ERC-20 tokens from the aggregator
-     * @param marketplace The address of the marketplace to approve
-     * @param currency The address of the ERC-20 token to approve
+     * @param marketplace The marketplace address to approve
+     * @param currency The ERC-20 token address to approve
+     * @param amount The amount of
      */
-    function approve(address marketplace, address currency) external onlyOwner {
-        IERC20(currency).approve(marketplace, type(uint256).max);
-    }
-
-    /**
-     * @notice Revoke a marketplace's approval to transfer ERC-20 tokens from the aggregator
-     * @param marketplace The address of the marketplace to revoke
-     * @param currency The address of the ERC-20 token to revoke
-     */
-    function revoke(address marketplace, address currency) external onlyOwner {
-        IERC20(currency).approve(marketplace, 0);
+    function approve(
+        address marketplace,
+        address currency,
+        uint256 amount
+    ) external onlyOwner {
+        _executeERC20Approve(currency, marketplace, amount);
     }
 
     /**

@@ -46,7 +46,7 @@ export default function behavesLikeSeaportERC721OnlyUSDCOrders(isAtomic: boolean
     const priceTwo = priceTwoBeforeFee.mul(10250).div(10000); // Fee
     const price = priceOne.add(priceTwo);
 
-    await aggregator.approve(SEAPORT, USDC);
+    await aggregator.approve(SEAPORT, USDC, ethers.constants.MaxUint256);
     await aggregator.setFee(proxy.address, 250, protocolFeeRecipient.address);
 
     await airdropUSDC(buyer.address, price);
