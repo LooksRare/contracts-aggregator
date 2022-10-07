@@ -20,7 +20,7 @@ import calculateTxFee from "./utils/calculate-tx-fee";
 import validateSweepEvent from "./utils/validate-sweep-event";
 
 describe("Aggregator", () => {
-  it("Should be able to handle trades from multiple markets", async function () {
+  const setUp = async () => {
     const { AddressZero, HashZero } = ethers.constants;
     const {
       aggregator,
@@ -111,6 +111,11 @@ describe("Aggregator", () => {
       },
     ];
 
+    return { aggregator, bayc, buyer, looksRareProxy, price, seaportProxy, sudoswapProxy, tradeData };
+  };
+
+  it("Should be able to handle trades from multiple markets", async function () {
+    const { aggregator, bayc, buyer, price, tradeData } = await setUp();
     const tx = await aggregator
       .connect(buyer)
       .execute([], tradeData, buyer.address, buyer.address, false, { value: price });
@@ -124,104 +129,15 @@ describe("Aggregator", () => {
   });
 
   it("Should be able to handle partial trades", async function () {
-    const { AddressZero, HashZero } = ethers.constants;
     const { getBalance } = ethers.provider;
-    const {
-      aggregator,
-      buyer,
-      looksRareProxy,
-      looksRareFunctionSelector,
-      seaportProxy,
-      seaportFunctionSelector,
-      sudoswapProxy,
-      sudoswapFunctionSelector,
-      bayc,
-    } = await loadFixture(deployMultipleMarketFixtures);
-    const sudoswapPair = await ethers.getContractAt("ISudoswapPair", "0xc44b755cb278b682de1Cb07c7B3D15C44be62c34");
-    const sudoswapQuote = await sudoswapPair.getBuyNFTQuote(1);
-
-    const seaportOrder = getFixture("seaport", "bayc-6092-order.json");
-
-    const seaportPrice = combineConsiderationAmount(seaportOrder.parameters.consideration);
-    const looksRarePrice = ethers.utils.parseEther("78.69");
-    const sudoswapPrice = sudoswapQuote[3];
-    const price = seaportPrice.add(looksRarePrice).add(sudoswapPrice);
-
-    const abiCoder = ethers.utils.defaultAbiCoder;
-    let tradeData = [
-      {
-        proxy: seaportProxy.address,
-        selector: seaportFunctionSelector,
-        value: seaportPrice,
-        maxFeeBp: 0,
-        orders: [getSeaportOrderJson(seaportOrder)],
-        ordersExtraData: [getSeaportOrderExtraData(seaportOrder)],
-        extraData: abiCoder.encode(
-          [SEAPORT_EXTRA_DATA_SCHEMA],
-          [
-            {
-              offerFulfillments: SEAPORT_OFFER_FULFILLMENT_ONE_ITEM,
-              considerationFulfillments: SEAPORT_CONSIDERATION_FULFILLMENTS_ONE_ORDER,
-            },
-          ]
-        ),
-      },
-      {
-        proxy: looksRareProxy.address,
-        selector: looksRareFunctionSelector,
-        value: looksRarePrice,
-        maxFeeBp: 0,
-        orders: [
-          {
-            signer: "0xCd46DEe6e832e3ffa3FdC394b8dC673D6CA843dd",
-            collection: BAYC,
-            collectionType: 0,
-            tokenIds: [2491],
-            amounts: [1],
-            price: looksRarePrice,
-            currency: WETH,
-            startTime: 1660231310,
-            endTime: 1668007269,
-            signature:
-              "0x7b37474f79837ee4e56faf1e766a30a9d9c6ed3a7984457bcb212381f2b6b8f95a641ec95eca31f060a15a3c9ff2d4fbccbf481c766e8630be72b6e3e3aeca561b",
-          },
-        ],
-        ordersExtraData: [
-          abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [looksRarePrice, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE]),
-        ],
-        extraData: HashZero,
-      },
-      {
-        proxy: sudoswapProxy.address,
-        selector: sudoswapFunctionSelector,
-        value: sudoswapPrice,
-        maxFeeBp: 0,
-        orders: [
-          {
-            signer: AddressZero,
-            collection: "0xc44b755cb278b682de1Cb07c7B3D15C44be62c34",
-            collectionType: 0,
-            tokenIds: [8167],
-            amounts: [1],
-            price: sudoswapPrice,
-            currency: AddressZero,
-            startTime: 0,
-            endTime: 0,
-            signature: HashZero,
-          },
-        ],
-        ordersExtraData: [HashZero, HashZero],
-        extraData: HashZero,
-      },
-    ];
-    // Duplicating the orders to make the 2nd batch fail
-    tradeData = tradeData.concat(tradeData);
+    const { aggregator, bayc, buyer, looksRareProxy, price, seaportProxy, sudoswapProxy, tradeData } = await setUp();
 
     const buyerBalanceBefore = await getBalance(buyer.address);
 
+    // Duplicating the orders to make the 2nd batch fail
     const tx = await aggregator
       .connect(buyer)
-      .execute([], tradeData, buyer.address, buyer.address, false, { value: price.mul(2) });
+      .execute([], tradeData.concat(tradeData), buyer.address, buyer.address, false, { value: price.mul(2) });
     const receipt = await tx.wait();
     const txFee = await calculateTxFee(tx);
 
@@ -241,103 +157,16 @@ describe("Aggregator", () => {
   });
 
   it("Should be able to handle atomic trades", async function () {
-    const { AddressZero, HashZero } = ethers.constants;
     const { getBalance } = ethers.provider;
-    const {
-      aggregator,
-      buyer,
-      looksRareProxy,
-      looksRareFunctionSelector,
-      seaportProxy,
-      seaportFunctionSelector,
-      sudoswapProxy,
-      sudoswapFunctionSelector,
-      bayc,
-    } = await loadFixture(deployMultipleMarketFixtures);
-    const sudoswapPair = await ethers.getContractAt("ISudoswapPair", "0xc44b755cb278b682de1Cb07c7B3D15C44be62c34");
-    const sudoswapQuote = await sudoswapPair.getBuyNFTQuote(1);
-
-    const seaportOrder = getFixture("seaport", "bayc-6092-order.json");
-
-    const seaportPrice = combineConsiderationAmount(seaportOrder.parameters.consideration);
-    const looksRarePrice = ethers.utils.parseEther("78.69");
-    const sudoswapPrice = sudoswapQuote[3];
-    const price = seaportPrice.add(looksRarePrice).add(sudoswapPrice);
-
-    const abiCoder = ethers.utils.defaultAbiCoder;
-    let tradeData = [
-      {
-        proxy: seaportProxy.address,
-        selector: seaportFunctionSelector,
-        value: seaportPrice,
-        maxFeeBp: 0,
-        orders: [getSeaportOrderJson(seaportOrder)],
-        ordersExtraData: [getSeaportOrderExtraData(seaportOrder)],
-        extraData: abiCoder.encode(
-          [SEAPORT_EXTRA_DATA_SCHEMA],
-          [
-            {
-              offerFulfillments: SEAPORT_OFFER_FULFILLMENT_ONE_ITEM,
-              considerationFulfillments: SEAPORT_CONSIDERATION_FULFILLMENTS_ONE_ORDER,
-            },
-          ]
-        ),
-      },
-      {
-        proxy: looksRareProxy.address,
-        selector: looksRareFunctionSelector,
-        value: looksRarePrice,
-        maxFeeBp: 0,
-        orders: [
-          {
-            signer: "0xCd46DEe6e832e3ffa3FdC394b8dC673D6CA843dd",
-            collection: BAYC,
-            collectionType: 0,
-            tokenIds: [2491],
-            amounts: [1],
-            price: looksRarePrice,
-            currency: WETH,
-            startTime: 1660231310,
-            endTime: 1668007269,
-            signature:
-              "0x7b37474f79837ee4e56faf1e766a30a9d9c6ed3a7984457bcb212381f2b6b8f95a641ec95eca31f060a15a3c9ff2d4fbccbf481c766e8630be72b6e3e3aeca561b",
-          },
-        ],
-        ordersExtraData: [
-          abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [looksRarePrice, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE]),
-        ],
-        extraData: ethers.constants.HashZero,
-      },
-      {
-        proxy: sudoswapProxy.address,
-        selector: sudoswapFunctionSelector,
-        value: sudoswapPrice,
-        maxFeeBp: 0,
-        orders: [
-          {
-            signer: AddressZero,
-            collection: "0xc44b755cb278b682de1Cb07c7B3D15C44be62c34",
-            collectionType: 0,
-            tokenIds: [8167],
-            amounts: [1],
-            price: sudoswapPrice,
-            currency: AddressZero,
-            startTime: 0,
-            endTime: 0,
-            signature: HashZero,
-          },
-        ],
-        ordersExtraData: [HashZero, HashZero],
-        extraData: HashZero,
-      },
-    ];
-    // Duplicating the orders to make the 2nd batch fail
-    tradeData = tradeData.concat(tradeData);
+    const { aggregator, bayc, buyer, looksRareProxy, price, seaportProxy, sudoswapProxy, tradeData } = await setUp();
 
     const buyerBalanceBefore = await getBalance(buyer.address);
 
+    // Duplicating the orders to make the 2nd batch fail
     await expect(
-      aggregator.connect(buyer).execute([], tradeData, buyer.address, buyer.address, true, { value: price.mul(2) })
+      aggregator
+        .connect(buyer)
+        .execute([], tradeData.concat(tradeData), buyer.address, buyer.address, true, { value: price.mul(2) })
     ).to.be.reverted;
 
     expect(await bayc.balanceOf(buyer.address)).to.equal(0);
