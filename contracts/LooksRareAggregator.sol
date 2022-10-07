@@ -2,8 +2,13 @@
 pragma solidity 0.8.17;
 
 import {ReentrancyGuard} from "@looksrare/contracts-libs/contracts/ReentrancyGuard.sol";
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {LowLevelERC721} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelERC721.sol";
+import {LowLevelERC1155} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelERC1155.sol";
+import {IERC20} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC20.sol";
+import {LooksRareProxy} from "./proxies/LooksRareProxy.sol";
+import {BasicOrder, TokenTransfer} from "./libraries/OrderStructs.sol";
+import {TokenRescuer} from "./TokenRescuer.sol";
+import {TokenReceiver} from "./TokenReceiver.sol";
 import {ILooksRareAggregator} from "./interfaces/ILooksRareAggregator.sol";
 import {BasicOrder, FeeData, TokenTransfer} from "./libraries/OrderStructs.sol";
 import {LooksRareProxy} from "./proxies/LooksRareProxy.sol";
@@ -16,9 +21,14 @@ import {TokenRescuer} from "./TokenRescuer.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract LooksRareAggregator is ILooksRareAggregator, TokenRescuer, TokenReceiver, ReentrancyGuard {
-    using SafeERC20 for IERC20;
-
+contract LooksRareAggregator is
+    ILooksRareAggregator,
+    TokenRescuer,
+    TokenReceiver,
+    ReentrancyGuard,
+    LowLevelERC721,
+    LowLevelERC1155
+{
     /**
      * @notice Transactions that only involve ETH orders should be submitted to this contract
      *         directly. Transactions that involve ERC-20 orders should be submitted to the contract
@@ -148,7 +158,7 @@ contract LooksRareAggregator is ILooksRareAggregator, TokenRescuer, TokenReceive
      * @param currency The address of the ERC-20 token to approve
      */
     function approve(address marketplace, address currency) external onlyOwner {
-        IERC20(currency).safeApprove(marketplace, type(uint256).max);
+        IERC20(currency).approve(marketplace, type(uint256).max);
     }
 
     /**
@@ -157,7 +167,7 @@ contract LooksRareAggregator is ILooksRareAggregator, TokenRescuer, TokenReceive
      * @param currency The address of the ERC-20 token to revoke
      */
     function revoke(address marketplace, address currency) external onlyOwner {
-        IERC20(currency).safeApprove(marketplace, 0);
+        IERC20(currency).approve(marketplace, 0);
     }
 
     /**
@@ -167,6 +177,38 @@ contract LooksRareAggregator is ILooksRareAggregator, TokenRescuer, TokenReceive
      */
     function supportsProxyFunction(address proxy, bytes4 selector) external view returns (bool) {
         return _proxyFunctionSelectors[proxy][selector];
+    }
+
+    /**
+     * @notice Rescue any of the contract's trapped ERC-721 tokens
+     * @dev Must be called by the current owner
+     * @param collection The address of the ERC-721 token to rescue from the contract
+     * @param tokenId The token ID of the ERC-721 token to rescue from the contract
+     * @param to Send the contract's specified ERC-721 token ID to this address
+     */
+    function rescueERC721(
+        address collection,
+        address to,
+        uint256 tokenId
+    ) external onlyOwner {
+        _executeERC721TransferFrom(collection, address(this), to, tokenId);
+    }
+
+    /**
+     * @notice Rescue any of the contract's trapped ERC-1155 tokens
+     * @dev Must be called by the current owner
+     * @param collection The address of the ERC-1155 token to rescue from the contract
+     * @param tokenIds The token IDs of the ERC-1155 token to rescue from the contract
+     * @param amounts The amount of each token ID to rescue
+     * @param to Send the contract's specified ERC-1155 token ID to this address
+     */
+    function rescueERC1155(
+        address collection,
+        address to,
+        uint256[] calldata tokenIds,
+        uint256[] calldata amounts
+    ) external onlyOwner {
+        _executeERC1155SafeBatchTransferFrom(collection, address(this), to, tokenIds, amounts);
     }
 
     function _encodeCalldata(

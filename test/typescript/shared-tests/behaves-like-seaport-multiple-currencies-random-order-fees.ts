@@ -99,7 +99,10 @@ export default function behavesLikeSeaportMultipleCurrenciesRandomOrderFees(isAt
 
     await airdropUSDC(buyer.address, usdcAirdropAmount);
 
-    const usdc = await ethers.getContractAt("@openzeppelin/contracts/token/ERC20/IERC20.sol:IERC20", USDC);
+    const usdc = await ethers.getContractAt(
+      "@looksrare/contracts-libs/contracts/interfaces/generic/IERC20.sol:IERC20",
+      USDC
+    );
     await usdc.connect(buyer).approve(erc20EnabledLooksRareAggregator.address, usdcAirdropAmount);
   };
 
@@ -179,7 +182,10 @@ export default function behavesLikeSeaportMultipleCurrenciesRandomOrderFees(isAt
         },
       ];
 
-      const usdc = await ethers.getContractAt("@openzeppelin/contracts/token/ERC20/IERC20.sol:IERC20", USDC);
+      const usdc = await ethers.getContractAt(
+        "@looksrare/contracts-libs/contracts/interfaces/generic/IERC20.sol:IERC20",
+        USDC
+      );
 
       const feeRecipientUSDCBalanceBefore = await usdc.balanceOf(protocolFeeRecipient.address);
       const feeRecipientEthBalanceBefore = await getBalance(protocolFeeRecipient.address);

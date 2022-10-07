@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.17;
 
-import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import {IERC721} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC721.sol";
 import {SeaportProxy} from "../../contracts/proxies/SeaportProxy.sol";
 import {LooksRareProxy} from "../../contracts/proxies/LooksRareProxy.sol";
 import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
@@ -20,12 +20,14 @@ abstract contract TestParameters {
     address internal constant SEAPORT = 0x00000000006c3852cbEf3e08E8dF289169EdE581;
     // I just picked an address with high ETH balance
     address internal constant _buyer = 0xbF3aEB96e164ae67E763D9e050FF124e7c3Fdd28;
+    string internal constant MAINNET_RPC_URL = "https://rpc.ankr.com/eth";
 }
 
 contract GemSwapBenchmarkTest is TestParameters, TestHelpers, SeaportProxyTestHelpers, LooksRareProxyTestHelpers {
     IERC721 private bayc;
 
     function setUp() public {
+        vm.createSelectFork(MAINNET_RPC_URL, 15_503_771);
         bayc = IERC721(BAYC);
     }
 

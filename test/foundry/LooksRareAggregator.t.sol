@@ -10,6 +10,8 @@ import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggrega
 import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
 import {IOwnableTwoSteps} from "@looksrare/contracts-libs/contracts/interfaces/IOwnableTwoSteps.sol";
 import {MockERC20} from "./utils/MockERC20.sol";
+import {MockERC721} from "./utils/MockERC721.sol";
+import {MockERC1155} from "./utils/MockERC1155.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TokenRescuerTest} from "./TokenRescuer.t.sol";
 
@@ -143,6 +145,52 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTes
 
     function testRescueERC20NotOwner() public {
         _testRescueERC20NotOwner(tokenRescuer);
+    }
+
+    function testRescueERC721() public {
+        MockERC721 mockERC721 = new MockERC721();
+        mockERC721.mint(address(aggregator), 0);
+        aggregator.rescueERC721(address(mockERC721), luckyUser, 0);
+        assertEq(mockERC721.balanceOf(address(luckyUser)), 1);
+        assertEq(mockERC721.balanceOf(address(aggregator)), 0);
+        assertEq(mockERC721.ownerOf(0), luckyUser);
+    }
+
+    function testRescueERC721NotOwner() public {
+        MockERC721 mockERC721 = new MockERC721();
+        mockERC721.mint(address(aggregator), 0);
+        vm.prank(luckyUser);
+        vm.expectRevert(IOwnableTwoSteps.NotOwner.selector);
+        aggregator.rescueERC721(address(mockERC721), luckyUser, 0);
+        assertEq(mockERC721.balanceOf(address(luckyUser)), 0);
+        assertEq(mockERC721.balanceOf(address(aggregator)), 1);
+        assertEq(mockERC721.ownerOf(0), address(aggregator));
+    }
+
+    function testRescueERC1155() public {
+        MockERC1155 mockERC1155 = new MockERC1155();
+        mockERC1155.mint(address(aggregator), 0, 2, "");
+        uint256[] memory tokenIds = new uint256[](1);
+        tokenIds[0] = 0;
+        uint256[] memory amounts = new uint256[](1);
+        amounts[0] = 2;
+        aggregator.rescueERC1155(address(mockERC1155), luckyUser, tokenIds, amounts);
+        assertEq(mockERC1155.balanceOf(address(luckyUser), 0), 2);
+        assertEq(mockERC1155.balanceOf(address(aggregator), 0), 0);
+    }
+
+    function testRescueERC1155NotOwner() public {
+        MockERC1155 mockERC1155 = new MockERC1155();
+        mockERC1155.mint(address(aggregator), 0, 2, "");
+        uint256[] memory tokenIds = new uint256[](1);
+        tokenIds[0] = 0;
+        uint256[] memory amounts = new uint256[](1);
+        amounts[0] = 2;
+        vm.prank(luckyUser);
+        vm.expectRevert(IOwnableTwoSteps.NotOwner.selector);
+        aggregator.rescueERC1155(address(mockERC1155), luckyUser, tokenIds, amounts);
+        assertEq(mockERC1155.balanceOf(address(luckyUser), 0), 0);
+        assertEq(mockERC1155.balanceOf(address(aggregator), 0), 2);
     }
 
     function testBuyWithETHZeroOrders() public {

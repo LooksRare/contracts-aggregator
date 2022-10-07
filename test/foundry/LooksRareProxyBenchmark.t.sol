@@ -4,7 +4,7 @@ pragma solidity 0.8.17;
 
 import {ILooksRareExchange} from "@looksrare/contracts-exchange-v1/contracts/interfaces/ILooksRareExchange.sol";
 import {OrderTypes} from "@looksrare/contracts-exchange-v1/contracts/libraries/OrderTypes.sol";
-import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import {IERC721} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC721.sol";
 import {LooksRareProxy} from "../../contracts/proxies/LooksRareProxy.sol";
 import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
 import {V0Aggregator} from "../../contracts/V0Aggregator.sol";
@@ -18,6 +18,7 @@ abstract contract TestParameters {
     address internal constant LOOKSRARE_V1 = 0x59728544B08AB483533076417FbBB2fD0B17CE3a;
     address internal constant LOOKSRARE_STRATEGY_FIXED_PRICE = 0x56244Bb70CbD3EA9Dc8007399F61dFC065190031;
     address internal constant _buyer = address(1);
+    string internal constant MAINNET_RPC_URL = "https://rpc.ankr.com/eth";
 }
 
 contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRareProxyTestHelpers {
@@ -26,6 +27,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
     LooksRareProxy looksRareProxy;
 
     function setUp() public {
+        vm.createSelectFork(MAINNET_RPC_URL, 15_282_897);
         vm.deal(_buyer, 100 ether);
     }
 

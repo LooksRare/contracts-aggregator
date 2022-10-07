@@ -2,8 +2,8 @@
 pragma solidity 0.8.17;
 
 import {SignatureChecker} from "@looksrare/contracts-libs/contracts/SignatureChecker.sol";
-import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import {IERC721} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC721.sol";
+import {IERC1155} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC1155.sol";
 import {IProxy} from "./IProxy.sol";
 import {TokenRescuer} from "../TokenRescuer.sol";
 import {TokenTransferrer} from "../TokenTransferrer.sol";

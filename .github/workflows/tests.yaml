@@ -108,11 +108,5 @@ jobs:
         run: npx hardhat test test/typescript/aggregator-multiple-markets.ts
         env:
           FORKED_BLOCK_NUMBER: 15326566
-      - name: Run Solidity/Forge tests (basic, no trades)
-        run: forge test --no-match-contract \(Benchmark\|Trades\)
-      - name: Run Solidity/Forge tests (trades)
-        run: forge test --match-contract LooksRareAggregatorTradesTest --fork-url $ETH_RPC_URL --chain-id $HARDHAT_CHAIN_ID --fork-block-number 15282897
-      - name: Run Solidity/Forge tests (LooksRare benchmark)
-        run: forge test --match-contract LooksRareProxyBenchmarkTest --fork-url $ETH_RPC_URL --chain-id $HARDHAT_CHAIN_ID --fork-block-number 15282897
-      - name: Run Solidity/Forge tests (Seaport benchmark)
-        run: forge test --match-contract SeaportProxyBenchmarkTest --fork-url $ETH_RPC_URL --chain-id $HARDHAT_CHAIN_ID --fork-block-number 15300884
+      - name: Run Solidity/Forge tests
+        run: forge test
