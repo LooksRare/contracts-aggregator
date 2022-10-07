@@ -19,6 +19,7 @@ abstract contract TestParameters {
     address internal constant BAYC = 0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D;
     address internal constant SEAPORT = 0x00000000006c3852cbEf3e08E8dF289169EdE581;
     address internal constant _buyer = address(1);
+    string internal constant MAINNET_RPC_URL = "https://rpc.ankr.com/eth";
 }
 
 contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyTestHelpers {
@@ -27,6 +28,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
     SeaportProxy seaportProxy;
 
     function setUp() public {
+        vm.createSelectFork(MAINNET_RPC_URL, 15_300_884);
         vm.deal(_buyer, 100 ether);
     }
 

@@ -18,6 +18,7 @@ abstract contract TestParameters {
     address internal constant LOOKSRARE_V1 = 0x59728544B08AB483533076417FbBB2fD0B17CE3a;
     address internal constant LOOKSRARE_STRATEGY_FIXED_PRICE = 0x56244Bb70CbD3EA9Dc8007399F61dFC065190031;
     address internal constant _buyer = address(1);
+    string internal constant MAINNET_RPC_URL = "https://rpc.ankr.com/eth";
 }
 
 contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRareProxyTestHelpers {
@@ -26,6 +27,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
     LooksRareProxy looksRareProxy;
 
     function setUp() public {
+        vm.createSelectFork(MAINNET_RPC_URL, 15_282_897);
         vm.deal(_buyer, 100 ether);
     }
 

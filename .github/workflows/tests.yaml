@@ -109,4 +109,4 @@ jobs:
         env:
           FORKED_BLOCK_NUMBER: 15326566
       - name: Run Solidity/Forge tests
-        run: forge test --no-match-contract Benchmark
+        run: forge test
