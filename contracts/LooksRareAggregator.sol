@@ -73,6 +73,9 @@ contract LooksRareAggregator is
                 if (isAtomic) {
                     revert FeeTooHigh();
                 } else {
+                    unchecked {
+                        ++i;
+                    }
                     continue;
                 }
             }
