@@ -3,7 +3,7 @@ pragma solidity 0.8.17;
 
 import {IERC20} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC20.sol";
 import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
-import {LowLevelERC20} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelERC20.sol";
+import {LowLevelERC20Transfer} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelERC20Transfer.sol";
 import {LowLevelETH} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelETH.sol";
 
 /**
@@ -11,7 +11,7 @@ import {LowLevelETH} from "@looksrare/contracts-libs/contracts/lowLevelCallers/L
  * @notice This contract contains functions to move tokens
  * @author LooksRare protocol team (👀,💎)
  */
-contract TokenRescuer is OwnableTwoSteps, LowLevelETH, LowLevelERC20 {
+contract TokenRescuer is OwnableTwoSteps, LowLevelETH, LowLevelERC20Transfer {
     error InsufficientAmount();
 
     /**

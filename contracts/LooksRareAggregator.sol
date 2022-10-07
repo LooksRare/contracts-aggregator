@@ -2,8 +2,8 @@
 pragma solidity 0.8.17;
 
 import {ReentrancyGuard} from "@looksrare/contracts-libs/contracts/ReentrancyGuard.sol";
-import {LowLevelERC721} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelERC721.sol";
-import {LowLevelERC1155} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelERC1155.sol";
+import {LowLevelERC721Transfer} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelERC721Transfer.sol";
+import {LowLevelERC1155Transfer} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelERC1155Transfer.sol";
 import {IERC20} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC20.sol";
 import {LooksRareProxy} from "./proxies/LooksRareProxy.sol";
 import {BasicOrder, TokenTransfer} from "./libraries/OrderStructs.sol";
@@ -26,8 +26,8 @@ contract LooksRareAggregator is
     TokenRescuer,
     TokenReceiver,
     ReentrancyGuard,
-    LowLevelERC721,
-    LowLevelERC1155
+    LowLevelERC721Transfer,
+    LowLevelERC1155Transfer
 {
     /**
      * @notice Transactions that only involve ETH orders should be submitted to this contract
@@ -90,13 +90,7 @@ contract LooksRareAggregator is
         }
 
         if (tokenTransfersLength > 0) _returnERC20TokensIfAny(tokenTransfers, originator);
-        // TODO: add this function to contracts-libs
-        // _returnETHIfAny();
-        assembly {
-            if gt(selfbalance(), 0) {
-                let status := call(gas(), originator, selfbalance(), 0, 0, 0, 0)
-            }
-        }
+        _returnETHIfAny(originator);
 
         emit Sweep(originator);
     }
