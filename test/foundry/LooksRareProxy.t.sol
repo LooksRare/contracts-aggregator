@@ -29,7 +29,7 @@ contract LooksRareProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Lo
         vm.deal(_buyer, 200 ether);
     }
 
-    function testBuyWithETHZeroOrders() public asPrankedUser(_buyer) {
+    function testExecuteZeroOrders() public asPrankedUser(_buyer) {
         BasicOrder[] memory orders = new BasicOrder[](0);
         bytes[] memory ordersExtraData = new bytes[](0);
 
@@ -38,7 +38,7 @@ contract LooksRareProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Lo
         IProxy(_fakeAggregator).execute(orders, ordersExtraData, "", _buyer, false, 0, address(0));
     }
 
-    function testBuyWithETHOrdersLengthMismatch() public asPrankedUser(_buyer) {
+    function testExecuteOrdersLengthMismatch() public asPrankedUser(_buyer) {
         BasicOrder[] memory orders = validBAYCOrders();
 
         bytes[] memory ordersExtraData = new bytes[](1);

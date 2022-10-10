@@ -38,7 +38,7 @@ contract LooksRareAggregatorTradesTest is TestParameters, TestHelpers, ILooksRar
         looksRareProxy = new LooksRareProxy(LOOKSRARE_V1, address(aggregator));
     }
 
-    function testBuyWithETHZeroOriginator() public {
+    function testExecuteZeroOriginator() public {
         // Since we are forking mainnet, we have to make sure it has 0 ETH.
         vm.deal(address(looksRareProxy), 0);
 

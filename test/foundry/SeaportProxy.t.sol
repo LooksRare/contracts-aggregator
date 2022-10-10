@@ -30,7 +30,7 @@ contract SeaportProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Seap
         vm.deal(_buyer, 100 ether);
     }
 
-    function testBuyWithETHZeroOrders() public asPrankedUser(_buyer) {
+    function testExecuteZeroOrders() public asPrankedUser(_buyer) {
         BasicOrder[] memory orders = new BasicOrder[](0);
         bytes[] memory ordersExtraData = new bytes[](0);
 
@@ -47,7 +47,7 @@ contract SeaportProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Seap
         );
     }
 
-    function testBuyWithETHOrdersLengthMismatch() public asPrankedUser(_buyer) {
+    function testExecuteOrdersLengthMismatch() public asPrankedUser(_buyer) {
         BasicOrder memory order = validBAYCId2518Order();
         BasicOrder[] memory orders = new BasicOrder[](1);
         orders[0] = order;

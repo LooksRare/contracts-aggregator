@@ -26,7 +26,7 @@ contract CryptoPunksProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
         vm.deal(_buyer, 100 ether);
     }
 
-    function testBuyWithETHZeroOrders() public asPrankedUser(_buyer) {
+    function testExecuteZeroOrders() public asPrankedUser(_buyer) {
         BasicOrder[] memory orders = new BasicOrder[](0);
         bytes[] memory ordersExtraData = new bytes[](0);
 

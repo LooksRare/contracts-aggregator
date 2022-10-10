@@ -32,7 +32,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         vm.deal(_buyer, 100 ether);
     }
 
-    function testBuyWithETHDirectlySingleOrder() public asPrankedUser(_buyer) {
+    function testExecuteDirectlySingleOrder() public asPrankedUser(_buyer) {
         SeaportInterface seaport = SeaportInterface(SEAPORT);
 
         BasicOrderParameters memory parameters;
@@ -69,7 +69,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         assertEq(IERC721(BAYC).ownerOf(2518), _buyer);
     }
 
-    function testBuyWithETHThroughAggregatorSingleOrder() public {
+    function testExecuteThroughAggregatorSingleOrder() public {
         _aggregatorSetUp();
 
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
@@ -102,7 +102,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         assertEq(IERC721(BAYC).ownerOf(2518), _buyer);
     }
 
-    function testBuyWithETHThroughV0AggregatorSingleOrder() public {
+    function testExecuteThroughV0AggregatorSingleOrder() public {
         _v0AggregatorSetUp();
 
         BasicOrder memory order = validBAYCId2518Order();
@@ -138,7 +138,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         assertEq(IERC721(BAYC).ownerOf(2518), _buyer);
     }
 
-    function testBuyWithETHDirectlyTwoOrders() public {
+    function testExecuteDirectlyTwoOrders() public {
         SeaportInterface seaport = SeaportInterface(SEAPORT);
 
         AdvancedOrder[] memory advancedOrders = new AdvancedOrder[](2);
@@ -234,7 +234,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         assertEq(IERC721(BAYC).ownerOf(8498), _buyer);
     }
 
-    function testBuyWithETHThroughAggregatorTwoOrders() public {
+    function testExecuteThroughAggregatorTwoOrders() public {
         _aggregatorSetUp();
 
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
@@ -273,7 +273,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         assertEq(IERC721(BAYC).ownerOf(8498), _buyer);
     }
 
-    function testBuyWithETHThroughV0AggregatorTwoOrders() public {
+    function testExecuteThroughV0AggregatorTwoOrders() public {
         _v0AggregatorSetUp();
 
         BasicOrder[] memory orders = new BasicOrder[](2);

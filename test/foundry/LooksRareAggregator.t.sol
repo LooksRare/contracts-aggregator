@@ -177,14 +177,14 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTes
         assertEq(mockERC1155.balanceOf(address(aggregator), 0), 2);
     }
 
-    function testBuyWithETHZeroOrders() public {
+    function testExecuteZeroOrders() public {
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](0);
         vm.expectRevert(ILooksRareAggregator.InvalidOrderLength.selector);
         aggregator.execute(tokenTransfers, tradeData, _buyer, _buyer, false);
     }
 
-    function testBuyWithETHZeroRecipient() public {
+    function testExecuteZeroRecipient() public {
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
         vm.expectRevert(ILooksRareAggregator.ZeroAddress.selector);
