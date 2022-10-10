@@ -81,7 +81,7 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
     expect(await usdc.allowance(buyer.address, erc20EnabledLooksRareAggregator.address)).to.equal(0);
   });
 
-  it("Should be able to refund extra ERC-20 tokens paid", async function () {
+  it("Should be able to refund extra ERC20 tokens paid", async function () {
     const { aggregator, erc20EnabledLooksRareAggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(
       deploySeaportFixture
     );

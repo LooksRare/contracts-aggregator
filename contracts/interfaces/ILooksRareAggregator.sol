@@ -15,7 +15,7 @@ interface ILooksRareAggregator {
 
     /**
      * @notice Execute NFT sweeps in different marketplaces in a single transaction
-     * @param tokenTransfers Aggregated ERC-20 token transfers for all markets
+     * @param tokenTransfers Aggregated ERC20 token transfers for all markets
      * @param tradeData Data object to be passed downstream to each marketplace's proxy for execution
      * @param originator The address that originated the transaction, hardcoded as msg.sender if it is called directly
      * @param recipient The address to receive the purchased NFTs

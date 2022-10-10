@@ -26,10 +26,10 @@ contract TokenRescuer is OwnableTwoSteps, LowLevelETH, LowLevelERC20Transfer {
     }
 
     /**
-     * @notice Rescue any of the contract's trapped ERC-20 tokens
+     * @notice Rescue any of the contract's trapped ERC20 tokens
      * @dev Must be called by the current owner
-     * @param currency The address of the ERC-20 token to rescue from the contract
-     * @param to Send the contract's specified ERC-20 token balance to this address
+     * @param currency The address of the ERC20 token to rescue from the contract
+     * @param to Send the contract's specified ERC20 token balance to this address
      */
     function rescueERC20(address currency, address to) external onlyOwner {
         uint256 withdrawAmount = IERC20(currency).balanceOf(address(this)) - 1;

@@ -33,9 +33,9 @@ contract LooksRareAggregator is
 {
     /**
      * @notice Transactions that only involve ETH orders should be submitted to this contract
-     *         directly. Transactions that involve ERC-20 orders should be submitted to the contract
+     *         directly. Transactions that involve ERC20 orders should be submitted to the contract
      *         ERC20EnabledLooksRareAggregator and it will call this contract's execution function.
-     *         The purpose is to prevent a malicious proxy from stealing users' ERC-20 tokens if
+     *         The purpose is to prevent a malicious proxy from stealing users' ERC20 tokens if
      *         this contract's ownership is compromised. By not providing any allowances to this
      *         aggregator, even if a malicious proxy is added, it cannot call
      *         token.transferFrom(victim, attacker, amount) inside the proxy within the context of the
@@ -98,10 +98,10 @@ contract LooksRareAggregator is
     }
 
     /**
-     * @notice Enable making ERC-20 trades by setting the ERC-20 enabled LooksRare aggregator
+     * @notice Enable making ERC20 trades by setting the ERC20 enabled LooksRare aggregator
      * @dev Must be called by the current owner. It can only be set once to prevent
      *      a malicious aggregator from being set in case of an ownership compromise.
-     * @param _erc20EnabledLooksRareAggregator The ERC-20 enabled LooksRare aggregator's address
+     * @param _erc20EnabledLooksRareAggregator The ERC20 enabled LooksRare aggregator's address
      */
     function setERC20EnabledLooksRareAggregator(address _erc20EnabledLooksRareAggregator) external onlyOwner {
         if (erc20EnabledLooksRareAggregator != address(0)) revert AlreadySet();
@@ -149,10 +149,10 @@ contract LooksRareAggregator is
     }
 
     /**
-     * @notice Approve marketplaces to transfer ERC-20 tokens from the aggregator
+     * @notice Approve marketplaces to transfer ERC20 tokens from the aggregator
      * @param marketplace The marketplace address to approve
-     * @param currency The ERC-20 token address to approve
-     * @param amount The amount of
+     * @param currency The ERC20 token address to approve
+     * @param amount The amount of ERC20 token to approve
      */
     function approve(
         address marketplace,
@@ -172,11 +172,11 @@ contract LooksRareAggregator is
     }
 
     /**
-     * @notice Rescue any of the contract's trapped ERC-721 tokens
+     * @notice Rescue any of the contract's trapped ERC721 tokens
      * @dev Must be called by the current owner
-     * @param collection The address of the ERC-721 token to rescue from the contract
-     * @param tokenId The token ID of the ERC-721 token to rescue from the contract
-     * @param to Send the contract's specified ERC-721 token ID to this address
+     * @param collection The address of the ERC721 token to rescue from the contract
+     * @param tokenId The token ID of the ERC721 token to rescue from the contract
+     * @param to Send the contract's specified ERC721 token ID to this address
      */
     function rescueERC721(
         address collection,
@@ -187,12 +187,12 @@ contract LooksRareAggregator is
     }
 
     /**
-     * @notice Rescue any of the contract's trapped ERC-1155 tokens
+     * @notice Rescue any of the contract's trapped ERC1155 tokens
      * @dev Must be called by the current owner
-     * @param collection The address of the ERC-1155 token to rescue from the contract
-     * @param tokenIds The token IDs of the ERC-1155 token to rescue from the contract
+     * @param collection The address of the ERC1155 token to rescue from the contract
+     * @param tokenIds The token IDs of the ERC1155 token to rescue from the contract
      * @param amounts The amount of each token ID to rescue
-     * @param to Send the contract's specified ERC-1155 token ID to this address
+     * @param to Send the contract's specified ERC1155 token ID to this address
      */
     function rescueERC1155(
         address collection,

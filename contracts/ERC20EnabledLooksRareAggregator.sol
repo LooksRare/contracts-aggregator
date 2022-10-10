@@ -8,7 +8,7 @@ import {TokenTransfer} from "./libraries/OrderStructs.sol";
 
 /**
  * @title ERC20EnabledLooksRareAggregator
- * @notice This contract allows NFT sweepers to buy NFTs from different marketplaces using ERC-20 tokens
+ * @notice This contract allows NFT sweepers to buy NFTs from different marketplaces using ERC20 tokens
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */

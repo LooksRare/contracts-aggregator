@@ -56,27 +56,27 @@ jobs:
         run: npx hardhat test test/typescript/aggregator-looksrare.ts
         env:
           FORKED_BLOCK_NUMBER: 15282897
-      - name: Run atomic Seaport ERC-721 tests
+      - name: Run atomic Seaport ERC721 tests
         run: npx hardhat test test/typescript/aggregator-seaport-erc-721-atomic.ts
         env:
           FORKED_BLOCK_NUMBER: 15300884
-      - name: Run non-atomic Seaport ERC-721 tests
+      - name: Run non-atomic Seaport ERC721 tests
         run: npx hardhat test test/typescript/aggregator-seaport-erc-721-non-atomic.ts
         env:
           FORKED_BLOCK_NUMBER: 15300884
-      - name: Run atomic Seaport ERC-721 USDC orders tests
+      - name: Run atomic Seaport ERC721 USDC orders tests
         run: npx hardhat test test/typescript/aggregator-seaport-erc-721-only-usdc-orders-atomic.ts
         env:
           FORKED_BLOCK_NUMBER: 15491323
-      - name: Run non-atomic Seaport ERC-721 USDC orders tests
+      - name: Run non-atomic Seaport ERC721 USDC orders tests
         run: npx hardhat test test/typescript/aggregator-seaport-erc-721-only-usdc-orders-non-atomic.ts
         env:
           FORKED_BLOCK_NUMBER: 15491323
-      - name: Run atomic Seaport ERC-1155 tests
+      - name: Run atomic Seaport ERC1155 tests
         run: npx hardhat test test/typescript/aggregator-seaport-erc-1155-atomic.ts
         env:
           FORKED_BLOCK_NUMBER: 15320038
-      - name: Run non-atomic Seaport ERC-1155 tests
+      - name: Run non-atomic Seaport ERC1155 tests
         run: npx hardhat test test/typescript/aggregator-seaport-erc-1155-non-atomic.ts
         env:
           FORKED_BLOCK_NUMBER: 15320038
@@ -92,11 +92,11 @@ jobs:
         run: npx hardhat test test/typescript/aggregator-seaport-multiple-currencies-non-atomic.ts
         env:
           FORKED_BLOCK_NUMBER: 15447813
-      - name: Run atomic Seaport ERC-721 multiple currencies random order fees tests
+      - name: Run atomic Seaport ERC721 multiple currencies random order fees tests
         run: npx hardhat test test/typescript/aggregator-seaport-erc-721-multiple-currencies-random-order-fees-atomic.ts
         env:
           FORKED_BLOCK_NUMBER: 15491323
-      - name: Run non-atomic Seaport ERC-721 multiple currencies random order fees tests
+      - name: Run non-atomic Seaport ERC721 multiple currencies random order fees tests
         run: npx hardhat test test/typescript/aggregator-seaport-erc-721-multiple-currencies-random-order-fees-non-atomic.ts
         env:
           FORKED_BLOCK_NUMBER: 15491323
