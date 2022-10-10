@@ -86,10 +86,10 @@ const stringifyOrder = (runInput: RunInput): string => {
 };
 
 async function main() {
-  // BAYC ERC-721
+  // BAYC ERC721
   const tokenIdOne = "2674";
   const tokenIdTwo = "2491";
-  // Parallel ERC-1155
+  // Parallel ERC1155
   const tokenIdThree = "10511";
   const tokenIdFour = "10327";
 

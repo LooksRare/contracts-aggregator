@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import {CollectionType} from "./libraries/OrderEnums.sol";
 import {IERC721} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC721.sol";
 import {IERC1155} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC1155.sol";
+import {CollectionType} from "./libraries/OrderEnums.sol";
 
 abstract contract TokenTransferrer {
     function _transferTokenToRecipient(

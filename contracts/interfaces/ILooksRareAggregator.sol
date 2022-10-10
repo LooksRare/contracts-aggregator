@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import {BasicOrder} from "../libraries/OrderStructs.sol";
+import {BasicOrder, TokenTransfer} from "../libraries/OrderStructs.sol";
 
 interface ILooksRareAggregator {
     struct TradeData {
@@ -12,6 +12,27 @@ interface ILooksRareAggregator {
         bytes[] ordersExtraData; // Extra data for each order, specific for each marketplace
         bytes extraData; // Extra data specific for each marketplace
     }
+
+    /**
+     * @notice Execute NFT sweeps in different marketplaces in a single transaction
+     * @param tokenTransfers Aggregated ERC20 token transfers for all markets
+     * @param tradeData Data object to be passed downstream to each marketplace's proxy for execution
+     * @param originator The address that originated the transaction, hardcoded as msg.sender if it is called directly
+     * @param recipient The address to receive the purchased NFTs
+     * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
+     */
+    function execute(
+        TokenTransfer[] calldata tokenTransfers,
+        TradeData[] calldata tradeData,
+        address originator,
+        address recipient,
+        bool isAtomic
+    ) external payable;
+
+    /**
+     * @dev Emitted when erc20EnabledLooksRareAggregator is set
+     */
+    event ERC20EnabledLooksRareAggregatorSet();
 
     /**
      * @dev Emitted when fee is updated
@@ -41,9 +62,11 @@ interface ILooksRareAggregator {
      */
     event Sweep(address indexed sweeper);
 
+    error AlreadySet();
     error FeeTooHigh();
     error InvalidFunction();
     error InvalidOrderLength();
     error TradeExecutionFailed();
+    error UseERC20EnabledLooksRareAggregator();
     error ZeroAddress();
 }

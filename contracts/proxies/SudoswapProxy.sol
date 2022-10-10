@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
+import {IProxy} from "./IProxy.sol";
+import {TokenRescuer} from "../TokenRescuer.sol";
 import {ISudoswapRouter} from "../interfaces/ISudoswapRouter.sol";
 import {BasicOrder, FeeData} from "../libraries/OrderStructs.sol";
-import {TokenRescuer} from "../TokenRescuer.sol";
-import {IProxy} from "./IProxy.sol";
 
 /**
  * @title SudoswapProxy

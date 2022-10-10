@@ -31,7 +31,9 @@ const encodedExtraData = () => {
 
 export default function behavesLikeSeaportERC721OnlyUSDCOrders(isAtomic: boolean): void {
   it("Should be able to charge a fee", async function () {
-    const { aggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(deploySeaportFixture);
+    const { aggregator, erc20EnabledLooksRareAggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(
+      deploySeaportFixture
+    );
 
     const [, protocolFeeRecipient] = await ethers.getSigners();
 
@@ -44,7 +46,7 @@ export default function behavesLikeSeaportERC721OnlyUSDCOrders(isAtomic: boolean
     const priceTwo = priceTwoBeforeFee.mul(10250).div(10000); // Fee
     const price = priceOne.add(priceTwo);
 
-    await aggregator.approve(SEAPORT, USDC);
+    await aggregator.approve(SEAPORT, USDC, ethers.constants.MaxUint256);
     await aggregator.setFee(proxy.address, 250, protocolFeeRecipient.address);
 
     await airdropUSDC(buyer.address, price);
@@ -53,7 +55,7 @@ export default function behavesLikeSeaportERC721OnlyUSDCOrders(isAtomic: boolean
       "@looksrare/contracts-libs/contracts/interfaces/generic/IERC20.sol:IERC20",
       USDC
     );
-    await usdc.connect(buyer).approve(aggregator.address, price);
+    await usdc.connect(buyer).approve(erc20EnabledLooksRareAggregator.address, price);
 
     const tokenTransfers = [{ amount: price, currency: USDC }];
 
@@ -71,7 +73,7 @@ export default function behavesLikeSeaportERC721OnlyUSDCOrders(isAtomic: boolean
 
     const feeRecipientUSDCBalanceBefore = await usdc.balanceOf(protocolFeeRecipient.address);
 
-    const tx = await aggregator
+    const tx = await erc20EnabledLooksRareAggregator
       .connect(buyer)
       .execute(tokenTransfers, tradeData, buyer.address, isAtomic, { value: price });
     const receipt = await tx.wait();

@@ -149,7 +149,7 @@ contract GemSwapBenchmarkTest is TestParameters, TestHelpers, SeaportProxyTestHe
 
         vm.prank(_buyer);
         uint256 gasRemaining = gasleft();
-        aggregator.execute{value: 146.57 ether}(tokenTransfers, tradeData, _buyer, isAtomic);
+        aggregator.execute{value: 146.57 ether}(tokenTransfers, tradeData, _buyer, _buyer, isAtomic);
         uint256 gasConsumed = gasRemaining - gasleft();
 
         emit log_named_uint("LooksRareAggregator consumed: ", gasConsumed);
@@ -213,7 +213,7 @@ contract GemSwapBenchmarkTest is TestParameters, TestHelpers, SeaportProxyTestHe
 
         vm.prank(_buyer);
         uint256 gasRemaining = gasleft();
-        aggregator.execute{value: 293.57 ether}(tokenTransfers, tradeData, _buyer, isAtomic);
+        aggregator.execute{value: 293.57 ether}(tokenTransfers, tradeData, _buyer, _buyer, isAtomic);
         uint256 gasConsumed = gasRemaining - gasleft();
 
         emit log_named_uint("LooksRareAggregator consumed: ", gasConsumed);

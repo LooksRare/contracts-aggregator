@@ -94,7 +94,9 @@ describe("Aggregator", () => {
     await ethers.provider.send("hardhat_impersonateAccount", ["0xbF3aEB96e164ae67E763D9e050FF124e7c3Fdd28"]);
     const buyer = await ethers.getSigner("0xbF3aEB96e164ae67E763D9e050FF124e7c3Fdd28");
 
-    const tx = await aggregator.connect(buyer).execute([], tradeData, buyer.address, false, { value: price });
+    const tx = await aggregator
+      .connect(buyer)
+      .execute([], tradeData, buyer.address, buyer.address, false, { value: price });
     const receipt = await tx.wait();
     validateSweepEvent(receipt, buyer.address);
 

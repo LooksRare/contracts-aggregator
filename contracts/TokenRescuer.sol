@@ -3,7 +3,7 @@ pragma solidity 0.8.17;
 
 import {IERC20} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC20.sol";
 import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
-import {LowLevelERC20} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelERC20.sol";
+import {LowLevelERC20Transfer} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelERC20Transfer.sol";
 import {LowLevelETH} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelETH.sol";
 
 /**
@@ -11,7 +11,7 @@ import {LowLevelETH} from "@looksrare/contracts-libs/contracts/lowLevelCallers/L
  * @notice This contract contains functions to move tokens
  * @author LooksRare protocol team (👀,💎)
  */
-contract TokenRescuer is OwnableTwoSteps, LowLevelETH, LowLevelERC20 {
+contract TokenRescuer is OwnableTwoSteps, LowLevelETH, LowLevelERC20Transfer {
     error InsufficientAmount();
 
     /**
@@ -26,10 +26,10 @@ contract TokenRescuer is OwnableTwoSteps, LowLevelETH, LowLevelERC20 {
     }
 
     /**
-     * @notice Rescue any of the contract's trapped ERC-20 tokens
+     * @notice Rescue any of the contract's trapped ERC20 tokens
      * @dev Must be called by the current owner
-     * @param currency The address of the ERC-20 token to rescue from the contract
-     * @param to Send the contract's specified ERC-20 token balance to this address
+     * @param currency The address of the ERC20 token to rescue from the contract
+     * @param to Send the contract's specified ERC20 token balance to this address
      */
     function rescueERC20(address currency, address to) external onlyOwner {
         uint256 withdrawAmount = IERC20(currency).balanceOf(address(this)) - 1;

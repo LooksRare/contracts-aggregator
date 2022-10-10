@@ -1,15 +1,20 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import {LowLevelERC721} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelERC721.sol";
-import {LowLevelERC1155} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelERC1155.sol";
+import {ReentrancyGuard} from "@looksrare/contracts-libs/contracts/ReentrancyGuard.sol";
+import {LowLevelERC20Approve} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelERC20Approve.sol";
+import {LowLevelERC721Transfer} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelERC721Transfer.sol";
+import {LowLevelERC1155Transfer} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelERC1155Transfer.sol";
 import {IERC20} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC20.sol";
 import {LooksRareProxy} from "./proxies/LooksRareProxy.sol";
 import {BasicOrder, TokenTransfer} from "./libraries/OrderStructs.sol";
 import {TokenRescuer} from "./TokenRescuer.sol";
 import {TokenReceiver} from "./TokenReceiver.sol";
 import {ILooksRareAggregator} from "./interfaces/ILooksRareAggregator.sol";
-import {FeeData} from "./libraries/OrderStructs.sol";
+import {BasicOrder, FeeData, TokenTransfer} from "./libraries/OrderStructs.sol";
+import {LooksRareProxy} from "./proxies/LooksRareProxy.sol";
+import {TokenReceiver} from "./TokenReceiver.sol";
+import {TokenRescuer} from "./TokenRescuer.sol";
 
 /**
  * @title LooksRareAggregator
@@ -17,29 +22,49 @@ import {FeeData} from "./libraries/OrderStructs.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract LooksRareAggregator is ILooksRareAggregator, TokenRescuer, TokenReceiver, LowLevelERC721, LowLevelERC1155 {
+contract LooksRareAggregator is
+    ILooksRareAggregator,
+    TokenRescuer,
+    TokenReceiver,
+    ReentrancyGuard,
+    LowLevelERC20Approve,
+    LowLevelERC721Transfer,
+    LowLevelERC1155Transfer
+{
+    /**
+     * @notice Transactions that only involve ETH orders should be submitted to this contract
+     *         directly. Transactions that involve ERC20 orders should be submitted to the contract
+     *         ERC20EnabledLooksRareAggregator and it will call this contract's execution function.
+     *         The purpose is to prevent a malicious proxy from stealing users' ERC20 tokens if
+     *         this contract's ownership is compromised. By not providing any allowances to this
+     *         aggregator, even if a malicious proxy is added, it cannot call
+     *         token.transferFrom(victim, attacker, amount) inside the proxy within the context of the
+     *         aggregator.
+     */
+    address public erc20EnabledLooksRareAggregator;
     mapping(address => mapping(bytes4 => bool)) private _proxyFunctionSelectors;
     mapping(address => FeeData) private _proxyFeeData;
 
     /**
-     * @notice Execute NFT sweeps in different marketplaces in a single transaction
-     * @param tokenTransfers Aggregated ERC-20 token transfers for all markets
-     * @param tradeData Data object to be passed downstream to each marketplace's proxy for execution
-     * @param recipient The address to receive the purchased NFTs
-     * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
+     * @inheritdoc ILooksRareAggregator
      */
     function execute(
         TokenTransfer[] calldata tokenTransfers,
         TradeData[] calldata tradeData,
+        address originator,
         address recipient,
         bool isAtomic
-    ) external payable {
+    ) external payable nonReentrant {
         if (recipient == address(0)) revert ZeroAddress();
         uint256 tradeDataLength = tradeData.length;
         if (tradeDataLength == 0) revert InvalidOrderLength();
 
         uint256 tokenTransfersLength = tokenTransfers.length;
-        if (tokenTransfersLength > 0) _pullERC20Tokens(tokenTransfers, msg.sender);
+        if (tokenTransfersLength == 0) {
+            originator = msg.sender;
+        } else if (msg.sender != erc20EnabledLooksRareAggregator) {
+            revert UseERC20EnabledLooksRareAggregator();
+        }
 
         for (uint256 i; i < tradeDataLength; ) {
             if (!_proxyFunctionSelectors[tradeData[i].proxy][tradeData[i].selector]) revert InvalidFunction();
@@ -66,10 +91,22 @@ contract LooksRareAggregator is ILooksRareAggregator, TokenRescuer, TokenReceive
             }
         }
 
-        if (tokenTransfersLength > 0) _returnERC20TokensIfAny(tokenTransfers, msg.sender);
-        _returnETHIfAny();
+        if (tokenTransfersLength > 0) _returnERC20TokensIfAny(tokenTransfers, originator);
+        _returnETHIfAny(originator);
 
-        emit Sweep(msg.sender);
+        emit Sweep(originator);
+    }
+
+    /**
+     * @notice Enable making ERC20 trades by setting the ERC20 enabled LooksRare aggregator
+     * @dev Must be called by the current owner. It can only be set once to prevent
+     *      a malicious aggregator from being set in case of an ownership compromise.
+     * @param _erc20EnabledLooksRareAggregator The ERC20 enabled LooksRare aggregator's address
+     */
+    function setERC20EnabledLooksRareAggregator(address _erc20EnabledLooksRareAggregator) external onlyOwner {
+        if (erc20EnabledLooksRareAggregator != address(0)) revert AlreadySet();
+        erc20EnabledLooksRareAggregator = _erc20EnabledLooksRareAggregator;
+        emit ERC20EnabledLooksRareAggregatorSet();
     }
 
     /**
@@ -112,21 +149,17 @@ contract LooksRareAggregator is ILooksRareAggregator, TokenRescuer, TokenReceive
     }
 
     /**
-     * @notice Approve marketplaces to transfer ERC-20 tokens from the aggregator
-     * @param marketplace The address of the marketplace to approve
-     * @param currency The address of the ERC-20 token to approve
+     * @notice Approve marketplaces to transfer ERC20 tokens from the aggregator
+     * @param marketplace The marketplace address to approve
+     * @param currency The ERC20 token address to approve
+     * @param amount The amount of ERC20 token to approve
      */
-    function approve(address marketplace, address currency) external onlyOwner {
-        IERC20(currency).approve(marketplace, type(uint256).max);
-    }
-
-    /**
-     * @notice Revoke a marketplace's approval to transfer ERC-20 tokens from the aggregator
-     * @param marketplace The address of the marketplace to revoke
-     * @param currency The address of the ERC-20 token to revoke
-     */
-    function revoke(address marketplace, address currency) external onlyOwner {
-        IERC20(currency).approve(marketplace, 0);
+    function approve(
+        address marketplace,
+        address currency,
+        uint256 amount
+    ) external onlyOwner {
+        _executeERC20Approve(currency, marketplace, amount);
     }
 
     /**
@@ -139,11 +172,11 @@ contract LooksRareAggregator is ILooksRareAggregator, TokenRescuer, TokenReceive
     }
 
     /**
-     * @notice Rescue any of the contract's trapped ERC-721 tokens
+     * @notice Rescue any of the contract's trapped ERC721 tokens
      * @dev Must be called by the current owner
-     * @param collection The address of the ERC-721 token to rescue from the contract
-     * @param tokenId The token ID of the ERC-721 token to rescue from the contract
-     * @param to Send the contract's specified ERC-721 token ID to this address
+     * @param collection The address of the ERC721 token to rescue from the contract
+     * @param tokenId The token ID of the ERC721 token to rescue from the contract
+     * @param to Send the contract's specified ERC721 token ID to this address
      */
     function rescueERC721(
         address collection,
@@ -154,12 +187,12 @@ contract LooksRareAggregator is ILooksRareAggregator, TokenRescuer, TokenReceive
     }
 
     /**
-     * @notice Rescue any of the contract's trapped ERC-1155 tokens
+     * @notice Rescue any of the contract's trapped ERC1155 tokens
      * @dev Must be called by the current owner
-     * @param collection The address of the ERC-1155 token to rescue from the contract
-     * @param tokenIds The token IDs of the ERC-1155 token to rescue from the contract
+     * @param collection The address of the ERC1155 token to rescue from the contract
+     * @param tokenIds The token IDs of the ERC1155 token to rescue from the contract
      * @param amounts The amount of each token ID to rescue
-     * @param to Send the contract's specified ERC-1155 token ID to this address
+     * @param to Send the contract's specified ERC1155 token ID to this address
      */
     function rescueERC1155(
         address collection,

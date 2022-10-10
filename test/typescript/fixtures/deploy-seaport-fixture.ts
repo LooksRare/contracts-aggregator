@@ -1,12 +1,13 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
-import { LooksRareAggregator, SeaportProxy } from "../../../typechain";
+import { ERC20EnabledLooksRareAggregator, LooksRareAggregator, SeaportProxy } from "../../../typechain";
 import getSignature from "../utils/get-signature";
 import { BAYC, CITY_DAO, SEAPORT, USDC } from "../../constants";
 import { Contract } from "ethers";
 
 interface SeaportFixture {
   aggregator: LooksRareAggregator;
+  erc20EnabledLooksRareAggregator: ERC20EnabledLooksRareAggregator;
   proxy: SeaportProxy;
   buyer: SignerWithAddress;
   functionSelector: string;
@@ -19,6 +20,12 @@ export default async function deploySeaportFixture(): Promise<SeaportFixture> {
   const aggregator = await Aggregator.deploy();
   await aggregator.deployed();
 
+  const ERC20EnabledLooksRareAggregator = await ethers.getContractFactory("ERC20EnabledLooksRareAggregator");
+  const erc20EnabledLooksRareAggregator = await ERC20EnabledLooksRareAggregator.deploy(aggregator.address);
+  await erc20EnabledLooksRareAggregator.deployed();
+
+  aggregator.setERC20EnabledLooksRareAggregator(erc20EnabledLooksRareAggregator.address);
+
   const SeaportProxy = await ethers.getContractFactory("SeaportProxy");
   const proxy = await SeaportProxy.deploy(SEAPORT, aggregator.address);
   await proxy.deployed();
@@ -30,7 +37,7 @@ export default async function deploySeaportFixture(): Promise<SeaportFixture> {
 
   const functionSelector = await getSignature("SeaportProxy.json", "execute");
   await aggregator.addFunction(proxy.address, functionSelector);
-  await aggregator.approve(proxy.address, USDC);
+  await aggregator.approve(proxy.address, USDC, ethers.constants.MaxUint256);
 
   const [, , buyer] = await ethers.getSigners();
 
@@ -48,5 +55,5 @@ export default async function deploySeaportFixture(): Promise<SeaportFixture> {
     CITY_DAO
   );
 
-  return { aggregator, proxy, functionSelector, buyer, bayc, cityDao };
+  return { aggregator, erc20EnabledLooksRareAggregator, proxy, functionSelector, buyer, bayc, cityDao };
 }
