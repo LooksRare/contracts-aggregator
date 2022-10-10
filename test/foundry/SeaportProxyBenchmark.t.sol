@@ -88,6 +88,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
             proxy: address(seaportProxy),
             selector: SeaportProxy.execute.selector,
             value: order.price,
+            maxFeeBp: 0,
             orders: orders,
             ordersExtraData: ordersExtraData,
             extraData: extraData
@@ -104,7 +105,6 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
     function testBuyWithETHThroughV0AggregatorSingleOrder() public {
         _v0AggregatorSetUp();
 
-        FeeData memory feeData;
         BasicOrder memory order = validBAYCId2518Order();
         BasicOrder[] memory orders = new BasicOrder[](1);
         orders[0] = order;
@@ -114,6 +114,8 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         ordersExtraData[0] = orderExtraData;
 
         bytes memory extraData = validSingleBAYCExtraData();
+
+        FeeData memory feeData;
 
         bytes memory data = abi.encodeWithSelector(
             SeaportProxy.execute.selector,
@@ -256,6 +258,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
             proxy: address(seaportProxy),
             selector: SeaportProxy.execute.selector,
             value: totalPrice,
+            maxFeeBp: 0,
             orders: orders,
             ordersExtraData: ordersExtraData,
             extraData: extraData
@@ -273,7 +276,6 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
     function testBuyWithETHThroughV0AggregatorTwoOrders() public {
         _v0AggregatorSetUp();
 
-        FeeData memory feeData;
         BasicOrder[] memory orders = new BasicOrder[](2);
         orders[0] = validBAYCId2518Order();
         orders[1] = validBAYCId8498Order();
@@ -288,6 +290,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
 
         V0Aggregator.TradeData[] memory tradeData = new V0Aggregator.TradeData[](1);
         uint256 totalPrice = orders[0].price + orders[1].price;
+        FeeData memory feeData;
         bytes memory data = abi.encodeWithSelector(
             SeaportProxy.execute.selector,
             orders,

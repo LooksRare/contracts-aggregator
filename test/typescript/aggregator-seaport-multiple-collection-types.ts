@@ -31,6 +31,7 @@ describe("Aggregator", () => {
         proxy: proxy.address,
         selector: functionSelector,
         value: price,
+        maxFeeBp: 0,
         orders: [getSeaportOrderJson(orderOne), getSeaportOrderJson(orderTwo)],
         ordersExtraData: [getSeaportOrderExtraData(orderOne), getSeaportOrderExtraData(orderTwo)],
         extraData: abiCoder.encode(

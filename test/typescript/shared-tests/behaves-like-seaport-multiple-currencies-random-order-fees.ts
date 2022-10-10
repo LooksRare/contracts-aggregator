@@ -175,6 +175,7 @@ export default function behavesLikeSeaportMultipleCurrenciesRandomOrderFees(isAt
           proxy: proxy.address,
           selector: functionSelector,
           value: priceInETH(),
+          maxFeeBp: 250,
           orders,
           ordersExtraData,
           extraData: isAtomic ? encodedExtraData(givenOrders) : ethers.constants.HashZero,

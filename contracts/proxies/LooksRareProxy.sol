@@ -40,7 +40,7 @@ contract LooksRareProxy is IProxy, TokenRescuer, TokenTransferrer, SignatureChec
 
     /**
      * @notice Execute LooksRare NFT sweeps in a single transaction
-     * @dev extraData and feeData are not used
+     * @dev extraData, feeBp and feeRecipient are not used
      * @param orders Orders to be executed by LooksRare
      * @param ordersExtraData Extra data for each order
      * @param recipient The address to receive the purchased NFTs
@@ -52,7 +52,8 @@ contract LooksRareProxy is IProxy, TokenRescuer, TokenTransferrer, SignatureChec
         bytes memory,
         address recipient,
         bool isAtomic,
-        FeeData memory
+        uint256,
+        address
     ) external payable override {
         if (address(this) != aggregator) revert InvalidCaller();
 

@@ -24,6 +24,7 @@ describe("LooksRareAggregator", () => {
         proxy: proxy.address,
         selector: functionSelector,
         value: totalValue,
+        maxFeeBp: 0,
         orders: [
           {
             signer: "0x2137213d50207Edfd92bCf4CF7eF9E491A155357",
@@ -88,6 +89,7 @@ describe("LooksRareAggregator", () => {
         proxy: proxy.address,
         selector: functionSelector,
         value: totalValue,
+        maxFeeBp: 0,
         orders: [
           {
             signer: "0x2137213d50207Edfd92bCf4CF7eF9E491A155357",
@@ -173,6 +175,7 @@ describe("LooksRareAggregator", () => {
         proxy: proxy.address,
         selector: functionSelector,
         value: totalValue,
+        maxFeeBp: 0,
         orders: [orderOneJson, orderOneJson],
         ordersExtraData: [
           abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [priceOne, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE]),
@@ -230,6 +233,7 @@ describe("LooksRareAggregator", () => {
         proxy: proxy.address,
         selector: functionSelector,
         value: totalValue,
+        maxFeeBp: 0,
         orders: [orderOneJson, orderOneJson],
         ordersExtraData: [
           abiCoder.encode(LOOKSRARE_EXTRA_DATA_SCHEMA, [priceOne, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE]),

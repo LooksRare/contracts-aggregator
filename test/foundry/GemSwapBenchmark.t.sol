@@ -122,6 +122,7 @@ contract GemSwapBenchmarkTest is TestParameters, TestHelpers, SeaportProxyTestHe
                 proxy: address(seaportProxy),
                 selector: SeaportProxy.execute.selector,
                 value: seaportOrders[0].price,
+                maxFeeBp: 0,
                 orders: seaportOrders,
                 ordersExtraData: seaportOrdersExtraData,
                 extraData: isAtomic ? validSingleBAYCExtraData() : new bytes(0)
@@ -141,6 +142,7 @@ contract GemSwapBenchmarkTest is TestParameters, TestHelpers, SeaportProxyTestHe
                 proxy: address(looksRareProxy),
                 selector: LooksRareProxy.execute.selector,
                 value: looksRareOrders[0].price,
+                maxFeeBp: 0,
                 orders: looksRareOrders,
                 ordersExtraData: looksRareOrdersExtraData,
                 extraData: new bytes(0)
@@ -184,6 +186,7 @@ contract GemSwapBenchmarkTest is TestParameters, TestHelpers, SeaportProxyTestHe
                 proxy: address(seaportProxy),
                 selector: SeaportProxy.execute.selector,
                 value: seaportOrders[0].price + seaportOrders[1].price,
+                maxFeeBp: 0,
                 orders: seaportOrders,
                 ordersExtraData: seaportOrdersExtraData,
                 extraData: isAtomic ? validMultipleBAYCExtraData() : new bytes(0)
@@ -205,6 +208,7 @@ contract GemSwapBenchmarkTest is TestParameters, TestHelpers, SeaportProxyTestHe
                 proxy: address(looksRareProxy),
                 selector: LooksRareProxy.execute.selector,
                 value: looksRareOrders[0].price + looksRareOrders[1].price,
+                maxFeeBp: 0,
                 orders: looksRareOrders,
                 ordersExtraData: looksRareOrdersExtraData,
                 extraData: new bytes(0)

@@ -202,4 +202,19 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTes
         vm.expectRevert(ILooksRareAggregator.UseERC20EnabledLooksRareAggregator.selector);
         aggregator.execute(tokenTransfers, tradeData, _buyer, _buyer, false);
     }
+
+    function testSetFee() public {
+        aggregator.setFee(address(looksRareProxy), 10000, _notOwner);
+    }
+
+    function testSetFeeNotOwner() public {
+        vm.prank(_notOwner);
+        vm.expectRevert(IOwnableTwoSteps.NotOwner.selector);
+        aggregator.setFee(address(looksRareProxy), 10000, _notOwner);
+    }
+
+    function testSetFeeTooHigh() public {
+        vm.expectRevert(ILooksRareAggregator.FeeTooHigh.selector);
+        aggregator.setFee(address(looksRareProxy), 10001, _notOwner);
+    }
 }

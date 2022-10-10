@@ -36,6 +36,7 @@ describe("Aggregator", () => {
         proxy: proxy.address,
         selector: functionSelector,
         value: price,
+        maxFeeBp: 0,
         orders: [
           {
             collection: sudoswapPairOne,
@@ -89,6 +90,7 @@ describe("Aggregator", () => {
         proxy: proxy.address,
         selector: functionSelector,
         value: price,
+        maxFeeBp: 0,
         orders: [
           {
             collection: sudoswapPairOne,
@@ -135,6 +137,7 @@ describe("Aggregator", () => {
         proxy: proxy.address,
         selector: functionSelector,
         value: price,
+        maxFeeBp: 0,
         orders: [
           {
             collection: sudoswapPairOne,
@@ -188,6 +191,7 @@ describe("Aggregator", () => {
         proxy: proxy.address,
         selector: functionSelector,
         value: price,
+        maxFeeBp: 0,
         orders: [
           {
             collection: sudoswapPairOne,

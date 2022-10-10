@@ -72,6 +72,7 @@ describe("LooksRareAggregator", () => {
           proxy: proxy.address,
           selector: functionSelector,
           value: totalValue,
+          maxFeeBp: 0,
           orders: [
             {
               price: priceOne,
@@ -183,6 +184,7 @@ describe("LooksRareAggregator", () => {
           proxy: proxy.address,
           selector: functionSelector,
           value: totalValue,
+          maxFeeBp: 0,
           orders: [orderOneJson, orderOneJson],
           ordersExtraData: [getX2Y2ExtraData(orderOne), getX2Y2ExtraData(orderOne)],
           extraData: HashZero,
@@ -241,6 +243,7 @@ describe("LooksRareAggregator", () => {
             proxy: proxy.address,
             selector: functionSelector,
             value: totalValue,
+            maxFeeBp: 0,
             orders: [orderOneJson, orderOneJson],
             ordersExtraData: [getX2Y2ExtraData(orderOne), getX2Y2ExtraData(orderOne)],
             extraData: HashZero,
