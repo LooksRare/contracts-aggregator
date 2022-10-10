@@ -34,7 +34,7 @@ contract ERC20EnabledLooksRareAggregatorTest is TestParameters, TestHelpers {
     }
 
     function testBuyZeroTokenTransfers() public {
-        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
+        tokenTransfers = new TokenTransfer[](0);
         ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
         vm.expectRevert(IERC20EnabledLooksRareAggregator.UseLooksRareAggregatorDirectly.selector);
         erc20EnabledLooksRareAggregator.execute(tokenTransfers, tradeData, _buyer, false);
