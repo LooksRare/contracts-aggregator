@@ -15,9 +15,6 @@ import {IGemSwap} from "../../contracts/interfaces/IGemSwap.sol";
 
 abstract contract TestParameters {
     address internal constant GEMSWAP = 0x83C8F28c26bF6aaca652Df1DbBE0e1b56F8baBa2;
-    address internal constant LOOKSRARE_V1 = 0x59728544B08AB483533076417FbBB2fD0B17CE3a;
-    address internal constant LOOKSRARE_STRATEGY_FIXED_PRICE = 0x56244Bb70CbD3EA9Dc8007399F61dFC065190031;
-    address internal constant SEAPORT = 0x00000000006c3852cbEf3e08E8dF289169EdE581;
     // I just picked an address with high ETH balance
     address internal constant _buyer = 0xbF3aEB96e164ae67E763D9e050FF124e7c3Fdd28;
     string internal constant MAINNET_RPC_URL = "https://rpc.ankr.com/eth";

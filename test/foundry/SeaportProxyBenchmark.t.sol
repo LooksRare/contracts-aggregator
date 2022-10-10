@@ -17,7 +17,6 @@ import {BasicOrderType, OrderType, ItemType} from "../../contracts/libraries/sea
 
 abstract contract TestParameters {
     address internal constant BAYC = 0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D;
-    address internal constant SEAPORT = 0x00000000006c3852cbEf3e08E8dF289169EdE581;
     address internal constant _buyer = address(1);
     string internal constant MAINNET_RPC_URL = "https://rpc.ankr.com/eth";
 }

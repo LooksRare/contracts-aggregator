@@ -7,7 +7,7 @@ import {BasicOrder, TokenTransfer} from "../../../contracts/libraries/OrderStruc
 import {SeaportProxyTestHelpers} from "../SeaportProxyTestHelpers.sol";
 
 contract ScamRecipient is SeaportProxyTestHelpers {
-    address public constant SCAM_BENEFICIARY = address(69420);
+    address private constant SCAM_BENEFICIARY = address(69420);
 
     ILooksRareAggregator private immutable aggregator;
     address private immutable seaportProxy;

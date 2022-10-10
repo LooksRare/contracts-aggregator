@@ -10,6 +10,7 @@ import {OrderType} from "../../contracts/libraries/seaport/ConsiderationEnums.so
 abstract contract SeaportProxyTestHelpers {
     address private constant BAYC = 0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D;
     address internal constant CITY_DAO = 0x7EeF591A6CC0403b9652E98E88476fe1bF31dDeb;
+    address internal constant SEAPORT = 0x00000000006c3852cbEf3e08E8dF289169EdE581;
 
     function validCityDaoOrders() internal pure returns (BasicOrder[] memory orders) {
         orders = new BasicOrder[](2);

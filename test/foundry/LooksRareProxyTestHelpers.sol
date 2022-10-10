@@ -7,6 +7,8 @@ import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 abstract contract LooksRareProxyTestHelpers {
     address internal constant BAYC = 0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D;
     address private constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
+    address internal constant LOOKSRARE_STRATEGY_FIXED_PRICE = 0x56244Bb70CbD3EA9Dc8007399F61dFC065190031;
+    address internal constant LOOKSRARE_V1 = 0x59728544B08AB483533076417FbBB2fD0B17CE3a;
 
     function validBAYCOrders() internal pure returns (BasicOrder[] memory orders) {
         orders = new BasicOrder[](2);
