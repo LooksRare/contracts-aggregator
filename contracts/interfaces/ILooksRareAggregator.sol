@@ -41,7 +41,7 @@ interface ILooksRareAggregator {
      * @param bp Fee basis point
      * @param recipient Fee recipient
      */
-    event FeeUpdated(address proxy, uint16 bp, address recipient);
+    event FeeUpdated(address proxy, uint256 bp, address recipient);
 
     /**
      * @notice Emitted when a marketplace proxy's function is enabled.
