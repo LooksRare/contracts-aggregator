@@ -15,8 +15,6 @@ import {TestHelpers} from "./TestHelpers.sol";
 import {LooksRareProxyTestHelpers} from "./LooksRareProxyTestHelpers.sol";
 
 abstract contract TestParameters {
-    address internal constant LOOKSRARE_V1 = 0x59728544B08AB483533076417FbBB2fD0B17CE3a;
-    address internal constant LOOKSRARE_STRATEGY_FIXED_PRICE = 0x56244Bb70CbD3EA9Dc8007399F61dFC065190031;
     address internal constant _buyer = address(1);
     string internal constant MAINNET_RPC_URL = "https://rpc.ankr.com/eth";
 }
@@ -31,7 +29,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         vm.deal(_buyer, 100 ether);
     }
 
-    function testBuyWithETHDirectlySingleOrder() public asPrankedUser(_buyer) {
+    function testExecuteDirectlySingleOrder() public asPrankedUser(_buyer) {
         ILooksRareExchange looksRare = ILooksRareExchange(LOOKSRARE_V1);
 
         OrderTypes.MakerOrder memory makerAsk;
@@ -71,7 +69,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         assertEq(IERC721(BAYC).ownerOf(7139), _buyer);
     }
 
-    function testBuyWithETHThroughAggregatorSingleOrder() public {
+    function testExecuteThroughAggregatorSingleOrder() public {
         _aggregatorSetUp();
 
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
@@ -101,7 +99,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         assertEq(IERC721(BAYC).ownerOf(7139), _buyer);
     }
 
-    function testBuyWithETHThroughV0AggregatorSingleOrder() public {
+    function testExecuteThroughV0AggregatorSingleOrder() public {
         _v0AggregatorSetUp();
 
         BasicOrder[] memory validOrders = validBAYCOrders();
@@ -131,7 +129,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         assertEq(IERC721(BAYC).ownerOf(7139), _buyer);
     }
 
-    function testBuyWithETHThroughAggregatorTwoOrders() public {
+    function testExecuteThroughAggregatorTwoOrders() public {
         _aggregatorSetUp();
 
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
@@ -161,7 +159,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         assertEq(IERC721(BAYC).ownerOf(3939), _buyer);
     }
 
-    function testBuyWithETHThroughV0AggregatorTwoOrders() public {
+    function testExecuteThroughV0AggregatorTwoOrders() public {
         _v0AggregatorSetUp();
 
         BasicOrder[] memory orders = validBAYCOrders();

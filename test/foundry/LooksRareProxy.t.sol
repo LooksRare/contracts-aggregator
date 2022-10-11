@@ -13,8 +13,6 @@ import {TokenRescuerTest} from "./TokenRescuer.t.sol";
 import {LooksRareProxyTestHelpers} from "./LooksRareProxyTestHelpers.sol";
 
 abstract contract TestParameters {
-    address internal constant LOOKSRARE_V1 = 0x59728544B08AB483533076417FbBB2fD0B17CE3a;
-    address internal constant LOOKSRARE_STRATEGY_FIXED_PRICE = 0x56244Bb70CbD3EA9Dc8007399F61dFC065190031;
     address internal constant _buyer = address(1);
     address internal constant _fakeAggregator = address(69420);
 }
@@ -29,7 +27,7 @@ contract LooksRareProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Lo
         vm.deal(_buyer, 200 ether);
     }
 
-    function testBuyWithETHZeroOrders() public asPrankedUser(_buyer) {
+    function testExecuteZeroOrders() public asPrankedUser(_buyer) {
         BasicOrder[] memory orders = new BasicOrder[](0);
         bytes[] memory ordersExtraData = new bytes[](0);
 
@@ -38,7 +36,7 @@ contract LooksRareProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Lo
         IProxy(_fakeAggregator).execute(orders, ordersExtraData, "", _buyer, false, 0, address(0));
     }
 
-    function testBuyWithETHOrdersLengthMismatch() public asPrankedUser(_buyer) {
+    function testExecuteOrdersLengthMismatch() public asPrankedUser(_buyer) {
         BasicOrder[] memory orders = validBAYCOrders();
 
         bytes[] memory ordersExtraData = new bytes[](1);

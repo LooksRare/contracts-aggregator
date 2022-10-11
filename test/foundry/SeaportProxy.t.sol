@@ -14,7 +14,6 @@ import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
 import {MockERC20} from "./utils/MockERC20.sol";
 
 abstract contract TestParameters {
-    address internal constant SEAPORT = 0x00000000006c3852cbEf3e08E8dF289169EdE581;
     address internal constant BAYC = 0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D;
     address internal constant _buyer = address(1);
     address internal constant _fakeAggregator = address(69420);
@@ -30,7 +29,7 @@ contract SeaportProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Seap
         vm.deal(_buyer, 100 ether);
     }
 
-    function testBuyWithETHZeroOrders() public asPrankedUser(_buyer) {
+    function testExecuteZeroOrders() public asPrankedUser(_buyer) {
         BasicOrder[] memory orders = new BasicOrder[](0);
         bytes[] memory ordersExtraData = new bytes[](0);
 
@@ -47,7 +46,7 @@ contract SeaportProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Seap
         );
     }
 
-    function testBuyWithETHOrdersLengthMismatch() public asPrankedUser(_buyer) {
+    function testExecuteOrdersLengthMismatch() public asPrankedUser(_buyer) {
         BasicOrder memory order = validBAYCId2518Order();
         BasicOrder[] memory orders = new BasicOrder[](1);
         orders[0] = order;

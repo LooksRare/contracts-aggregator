@@ -17,7 +17,6 @@ import {BasicOrderType, OrderType, ItemType} from "../../contracts/libraries/sea
 
 abstract contract TestParameters {
     address internal constant BAYC = 0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D;
-    address internal constant SEAPORT = 0x00000000006c3852cbEf3e08E8dF289169EdE581;
     address internal constant _buyer = address(1);
     string internal constant MAINNET_RPC_URL = "https://rpc.ankr.com/eth";
 }
@@ -32,7 +31,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         vm.deal(_buyer, 100 ether);
     }
 
-    function testBuyWithETHDirectlySingleOrder() public asPrankedUser(_buyer) {
+    function testExecuteDirectlySingleOrder() public asPrankedUser(_buyer) {
         SeaportInterface seaport = SeaportInterface(SEAPORT);
 
         BasicOrderParameters memory parameters;
@@ -69,7 +68,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         assertEq(IERC721(BAYC).ownerOf(2518), _buyer);
     }
 
-    function testBuyWithETHThroughAggregatorSingleOrder() public {
+    function testExecuteThroughAggregatorSingleOrder() public {
         _aggregatorSetUp();
 
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
@@ -102,7 +101,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         assertEq(IERC721(BAYC).ownerOf(2518), _buyer);
     }
 
-    function testBuyWithETHThroughV0AggregatorSingleOrder() public {
+    function testExecuteThroughV0AggregatorSingleOrder() public {
         _v0AggregatorSetUp();
 
         BasicOrder memory order = validBAYCId2518Order();
@@ -138,7 +137,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         assertEq(IERC721(BAYC).ownerOf(2518), _buyer);
     }
 
-    function testBuyWithETHDirectlyTwoOrders() public {
+    function testExecuteDirectlyTwoOrders() public {
         SeaportInterface seaport = SeaportInterface(SEAPORT);
 
         AdvancedOrder[] memory advancedOrders = new AdvancedOrder[](2);
@@ -234,7 +233,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         assertEq(IERC721(BAYC).ownerOf(8498), _buyer);
     }
 
-    function testBuyWithETHThroughAggregatorTwoOrders() public {
+    function testExecuteThroughAggregatorTwoOrders() public {
         _aggregatorSetUp();
 
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
@@ -273,7 +272,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         assertEq(IERC721(BAYC).ownerOf(8498), _buyer);
     }
 
-    function testBuyWithETHThroughV0AggregatorTwoOrders() public {
+    function testExecuteThroughV0AggregatorTwoOrders() public {
         _v0AggregatorSetUp();
 
         BasicOrder[] memory orders = new BasicOrder[](2);
