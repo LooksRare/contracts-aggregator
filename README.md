@@ -14,7 +14,9 @@ It is a hybrid [Hardhat](https://hardhat.org/) repo that also requires [Foundry]
 
 ### Architecture
 
-- `LooksRareAggregator` is the entrypoint for a batch transaction. Clients should submit a list of trade data for different marketplaces to the aggregator.
+- `LooksRareAggregator` is the entrypoint for a batch transaction with orders paid only in ETH. Clients should submit a list of trade data for different marketplaces to the aggregator.
+
+- `ERC20EnabledLooksRareAggregator` is the entrypoint for a batch transaction with orders paid in ERC-20 tokens. Clients should submit a list of trade data for different marketplaces to the aggregator. The purpose of this aggregator is to prevent malicious proxies from stealing client funds since ERC-20 approvals are not given to `LooksRareAggregator`.
 
 - The `proxies` folder contains the proxy contracts for each marketplace. All proxies should be named in the format of `${Marketplace}Proxy` and inherit from the interface `IProxy`.
 
