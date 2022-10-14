@@ -2,10 +2,10 @@ import { expect } from "chai";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { Contract } from "ethers";
 import { ethers } from "hardhat";
-import { BAYC, LOOKSRARE_STRATEGY_FIXED_PRICE, WETH } from "../constants";
+import { BAYC, LOOKSRARE_STRATEGY_FIXED_PRICE, WETH } from "../../constants";
 import * as fs from "fs";
 import * as path from "path";
-import getSignature from "./utils/get-signature";
+import getSignature from "../utils/get-signature";
 
 describe("V0Aggregator", () => {
   let aggregator: Contract;

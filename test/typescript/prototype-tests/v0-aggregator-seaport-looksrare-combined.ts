@@ -10,10 +10,10 @@ import {
   SEAPORT_CONSIDERATION_FULFILLMENTS_TWO_ORDERS_SAME_COLLECTION,
   SEAPORT_OFFER_FULFILLMENT_TWO_ITEMS,
   WETH,
-} from "../constants";
-import getAbi from "./utils/get-abi";
-import getFixture from "./utils/get-fixture";
-import getSignature from "./utils/get-signature";
+} from "../../constants";
+import getAbi from "../utils/get-abi";
+import getFixture from "../utils/get-fixture";
+import getSignature from "../utils/get-signature";
 
 describe("Aggregator", () => {
   let aggregator: Contract;
