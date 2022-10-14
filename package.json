@@ -8,7 +8,11 @@
   "files": [
     "/abis/*.json",
     "/contracts/*.sol",
-    "/contracts/interfaces/*.sol",
+    "/contracts/libraries/*.sol",
+    "/contracts/libraries/seaport*.sol",
+    "/contracts/interfaces/ILooksRareAggregator.sol",
+    "/contracts/interfaces/IERC20EnabledLooksRareAggregator.sol",
+    "/contracts/interfaces/SeaportInterface.sol",
     "/contracts/proxies/LooksRareProxy.sol",
     "/contracts/proxies/SeaportProxy.sol"
   ],
