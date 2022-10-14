@@ -7,7 +7,7 @@ import getSeaportOrderJson from "./utils/get-seaport-order-json";
 import combineConsiderationAmount from "./utils/combine-consideration-amount";
 import validateSweepEvent from "./utils/validate-sweep-event";
 import deploySeaportFixture from "./fixtures/deploy-seaport-fixture";
-import behavesLikeSeaportERC1155 from "./shared-tests/behaves-like-seaport-erc-1155";
+import behavesLikeSeaportERC1155 from "./shared-tests/behaves-like-seaport-erc1155";
 
 describe("Aggregator", () => {
   behavesLikeSeaportERC1155(false);

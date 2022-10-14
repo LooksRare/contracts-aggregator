@@ -13,9 +13,10 @@ import {IERC1155} from "@looksrare/contracts-libs/contracts/interfaces/generic/I
  * @author LooksRare protocol team (👀,💎)
  */
 contract V0LooksRareProxy {
-    ILooksRareExchange constant MARKETPLACE = ILooksRareExchange(0x59728544B08AB483533076417FbBB2fD0B17CE3a);
-    bytes4 constant INTERFACE_ID_ERC721 = 0x80ac58cd;
-    bytes4 constant INTERFACE_ID_ERC1155 = 0xd9b67a26;
+    bytes4 internal constant _INTERFACE_ID_ERC721 = 0x80ac58cd;
+    bytes4 internal constant _INTERFACE_ID_ERC1155 = 0xd9b67a26;
+
+    ILooksRareExchange public constant marketplace = ILooksRareExchange(0x59728544B08AB483533076417FbBB2fD0B17CE3a);
 
     error InvalidOrderLength();
     error UnrecognizedTokenInterface();
@@ -42,11 +43,11 @@ contract V0LooksRareProxy {
         OrderTypes.MakerOrder calldata makerAsk,
         address recipient
     ) private {
-        try MARKETPLACE.matchAskWithTakerBidUsingETHAndWETH{value: makerAsk.price}(takerBid, makerAsk) {
+        try marketplace.matchAskWithTakerBidUsingETHAndWETH{value: makerAsk.price}(takerBid, makerAsk) {
             // TODO: handle CryptoPunks/Mooncats
-            if (IERC165(makerAsk.collection).supportsInterface(INTERFACE_ID_ERC721)) {
+            if (IERC165(makerAsk.collection).supportsInterface(_INTERFACE_ID_ERC721)) {
                 IERC721(makerAsk.collection).transferFrom(address(this), recipient, makerAsk.tokenId);
-            } else if (IERC165(makerAsk.collection).supportsInterface(INTERFACE_ID_ERC1155)) {
+            } else if (IERC165(makerAsk.collection).supportsInterface(_INTERFACE_ID_ERC1155)) {
                 IERC1155(makerAsk.collection).safeTransferFrom(
                     address(this),
                     recipient,

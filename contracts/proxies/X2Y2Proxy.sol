@@ -4,13 +4,14 @@ pragma solidity 0.8.17;
 import {SignatureChecker} from "@looksrare/contracts-libs/contracts/SignatureChecker.sol";
 import {IERC721} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC721.sol";
 import {IERC1155} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC1155.sol";
-import {IProxy} from "./IProxy.sol";
-import {TokenRescuer} from "../TokenRescuer.sol";
-import {TokenTransferrer} from "../TokenTransferrer.sol";
-import {IX2Y2} from "../interfaces/IX2Y2.sol";
+
 import {CollectionType} from "../libraries/OrderEnums.sol";
 import {BasicOrder} from "../libraries/OrderStructs.sol";
 import {Market} from "../libraries/x2y2/MarketConsts.sol";
+import {IProxy} from "../interfaces/IProxy.sol";
+import {IX2Y2} from "../interfaces/IX2Y2.sol";
+import {TokenRescuer} from "../TokenRescuer.sol";
+import {TokenTransferrer} from "../TokenTransferrer.sol";
 
 /**
  * @title X2Y2Proxy

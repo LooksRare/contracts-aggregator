@@ -22,7 +22,7 @@ const config: HardhatUserConfig = {
       chainId: process.env.HARDHAT_CHAIN_ID ? Number(process.env.HARDHAT_CHAIN_ID) : 31337,
       forking: {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        url: process.env.ETH_RPC_URL!,
+        url: String(process.env.ETH_RPC_URL)!,
         blockNumber: process.env.FORKED_BLOCK_NUMBER ? Number(process.env.FORKED_BLOCK_NUMBER) : undefined,
       },
       hardfork: "berlin", // Berlin is used (temporarily) to avoid issues with coverage
