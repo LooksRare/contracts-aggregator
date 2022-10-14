@@ -11,7 +11,7 @@ import combineConsiderationAmount from "./utils/combine-consideration-amount";
 import getFixture from "./utils/get-fixture";
 import getSeaportOrderExtraData from "./utils/get-seaport-order-extra-data";
 import getSeaportOrderJson from "./utils/get-seaport-order-json";
-import behavesLikeSeaportERC721 from "./shared-tests/behaves-like-seaport-erc-721";
+import behavesLikeSeaportERC721 from "./shared-tests/behaves-like-seaport-erc721";
 
 const encodedExtraData = () => {
   const abiCoder = ethers.utils.defaultAbiCoder;

@@ -2,7 +2,7 @@
 
 [![Tests](https://github.com/LooksRare/contracts-aggregator/actions/workflows/tests.yaml/badge.svg)](https://github.com/LooksRare/contracts-aggregator/actions/workflows/tests.yaml)
 
-This is an aggregator that allows NFT sweepers to buy NFTs from multiple sources in a single transaction (LooksRare, Seaport, X2Y2, Sudoswap, etc).
+This repo contains an aggregator smart contract system that allows NFT sweepers to buy NFTs from multiple sources in a single transaction (LooksRare, Seaport, X2Y2, Sudoswap, etc).
 
 ## About this repo
 
@@ -16,7 +16,7 @@ It is a hybrid [Hardhat](https://hardhat.org/) repo that also requires [Foundry]
 
 - `LooksRareAggregator` is the entrypoint for a batch transaction with orders paid only in ETH. Clients should submit a list of trade data for different marketplaces to the aggregator.
 
-- `ERC20EnabledLooksRareAggregator` is the entrypoint for a batch transaction with orders paid in ERC-20 tokens. Clients should submit a list of trade data for different marketplaces to the aggregator. The purpose of this aggregator is to prevent malicious proxies from stealing client funds since ERC-20 approvals are not given to `LooksRareAggregator`.
+- `ERC20EnabledLooksRareAggregator` is the entrypoint for a batch transaction with orders paid in ERC20 tokens. Clients should submit a list of trade data for different marketplaces to the aggregator. The purpose of this aggregator is to prevent malicious proxies from stealing client funds since ERC20 approvals are not given to `LooksRareAggregator`.
 
 - The `proxies` folder contains the proxy contracts for each marketplace. All proxies should be named in the format of `${Marketplace}Proxy` and inherit from the interface `IProxy`.
 
@@ -45,14 +45,14 @@ FORKED_BLOCK_NUMBER=15326566 npx hardhat test test/typescript/aggregator-multipl
 FORKED_BLOCK_NUMBER=15323472 npx hardhat test test/typescript/aggregator-seaport-multiple-collection-types.ts
 FORKED_BLOCK_NUMBER=15447813 npx hardhat test test/typescript/aggregator-seaport-multiple-currencies-atomic.ts
 FORKED_BLOCK_NUMBER=15447813 npx hardhat test test/typescript/aggregator-seaport-multiple-currencies-non-atomic.ts
-FORKED_BLOCK_NUMBER=15300884 npx hardhat test test/typescript/aggregator-seaport-erc-721-atomic.ts
-FORKED_BLOCK_NUMBER=15300884 npx hardhat test test/typescript/aggregator-seaport-erc-721-non-atomic.ts
-FORKED_BLOCK_NUMBER=15320038 npx hardhat test test/typescript/aggregator-seaport-erc-1155-atomic.ts
-FORKED_BLOCK_NUMBER=15320038 npx hardhat test test/typescript/aggregator-seaport-erc-1155-non-atomic.ts
-FORKED_BLOCK_NUMBER=15491323 npx hardhat test test/typescript/aggregator-seaport-erc-721-only-usdc-orders-atomic.ts
-FORKED_BLOCK_NUMBER=15491323 npx hardhat test test/typescript/aggregator-seaport-erc-721-only-usdc-orders-non-atomic.ts
-FORKED_BLOCK_NUMBER=15491323 npx hardhat test test/typescript/aggregator-seaport-erc-721-multiple-currencies-random-order-fees-atomic.ts
-FORKED_BLOCK_NUMBER=15491323 npx hardhat test test/typescript/aggregator-seaport-erc-721-multiple-currencies-random-order-fees-non-atomic.ts
+FORKED_BLOCK_NUMBER=15300884 npx hardhat test test/typescript/aggregator-seaport-erc721-atomic.ts
+FORKED_BLOCK_NUMBER=15300884 npx hardhat test test/typescript/aggregator-seaport-erc721-non-atomic.ts
+FORKED_BLOCK_NUMBER=15320038 npx hardhat test test/typescript/aggregator-seaport-erc1155-atomic.ts
+FORKED_BLOCK_NUMBER=15320038 npx hardhat test test/typescript/aggregator-seaport-erc1155-non-atomic.ts
+FORKED_BLOCK_NUMBER=15491323 npx hardhat test test/typescript/aggregator-seaport-erc721-only-usdc-orders-atomic.ts
+FORKED_BLOCK_NUMBER=15491323 npx hardhat test test/typescript/aggregator-seaport-erc721-only-usdc-orders-non-atomic.ts
+FORKED_BLOCK_NUMBER=15491323 npx hardhat test test/typescript/aggregator-seaport-erc721-multiple-currencies-random-order-fees-atomic.ts
+FORKED_BLOCK_NUMBER=15491323 npx hardhat test test/typescript/aggregator-seaport-erc721-multiple-currencies-random-order-fees-non-atomic.ts
 FORKED_BLOCK_NUMBER=15300884 npx hardhat test test/typescript/direct-seaport-single.ts
 FORKED_BLOCK_NUMBER=15302889 npx hardhat test test/typescript/v0-aggregator-seaport-looksrare-combined.ts
 FORKED_BLOCK_NUMBER=15300884 npx hardhat test test/typescript/v0-aggregator-seaport-single.ts
