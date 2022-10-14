@@ -36,10 +36,8 @@
     "lint": "eslint '**/*.{js,jsx,ts,tsx}'",
     "prepare": "husky install",
     "release": "release-it",
-    "test": "hardhat test",
-    "test:gas": "REPORT_GAS=true hardhat test",
-    "test:forge": "forge test",
-    "test:coverage": "hardhat coverage && hardhat compile --force"
+    "test:hardhat": "ts-node test/typescript/run-hardhat-tests.ts",
+    "test:forge": "forge test"
   },
   "devDependencies": {
     "@commitlint/cli": "^16.2.3",
