@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import {ICryptoPunks} from "../interfaces/ICryptoPunks.sol";
 import {BasicOrder} from "../libraries/OrderStructs.sol";
-import {IProxy} from "./IProxy.sol";
+import {IProxy} from "../interfaces/IProxy.sol";
+import {ICryptoPunks} from "../interfaces/ICryptoPunks.sol";
 import {TokenRescuer} from "../TokenRescuer.sol";
 
 /**

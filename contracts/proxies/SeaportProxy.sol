@@ -2,13 +2,14 @@
 pragma solidity 0.8.17;
 
 import {IERC20} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC20.sol";
-import {TokenRescuer} from "../TokenRescuer.sol";
-import {SeaportInterface} from "../interfaces/SeaportInterface.sol";
+
 import {CollectionType} from "../libraries/OrderEnums.sol";
 import {BasicOrder, FeeData} from "../libraries/OrderStructs.sol";
 import {ItemType, OrderType} from "../libraries/seaport/ConsiderationEnums.sol";
 import {AdvancedOrder, CriteriaResolver, OrderParameters, OfferItem, ConsiderationItem, FulfillmentComponent, AdditionalRecipient} from "../libraries/seaport/ConsiderationStructs.sol";
-import {IProxy} from "../proxies/IProxy.sol";
+import {IProxy} from "../interfaces/IProxy.sol";
+import {SeaportInterface} from "../interfaces/SeaportInterface.sol";
+import {TokenRescuer} from "../TokenRescuer.sol";
 
 /**
  * @title SeaportProxy

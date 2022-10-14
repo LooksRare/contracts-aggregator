@@ -8,7 +8,7 @@ import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
 import {V0Aggregator} from "../../contracts/prototype/V0Aggregator.sol";
 import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggregator.sol";
 import {SeaportInterface} from "../../contracts/interfaces/SeaportInterface.sol";
-import {IProxy} from "../../contracts/proxies/IProxy.sol";
+import {IProxy} from "../../contracts/interfaces/IProxy.sol";
 import {BasicOrder, TokenTransfer, FeeData} from "../../contracts/libraries/OrderStructs.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";

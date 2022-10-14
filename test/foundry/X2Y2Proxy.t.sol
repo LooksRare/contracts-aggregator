@@ -4,7 +4,7 @@ pragma solidity 0.8.17;
 
 import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
 import {X2Y2Proxy} from "../../contracts/proxies/X2Y2Proxy.sol";
-import {IProxy} from "../../contracts/proxies/IProxy.sol";
+import {IProxy} from "../../contracts/interfaces/IProxy.sol";
 import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
 import {BasicOrder, FeeData} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";

@@ -5,7 +5,7 @@ import {SeaportProxy} from "../../contracts/proxies/SeaportProxy.sol";
 import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
 import {OrderType} from "../../contracts/libraries/seaport/ConsiderationEnums.sol";
 import {AdditionalRecipient, Fulfillment, FulfillmentComponent} from "../../contracts/libraries/seaport/ConsiderationStructs.sol";
-import {IProxy} from "../../contracts/proxies/IProxy.sol";
+import {IProxy} from "../../contracts/interfaces/IProxy.sol";
 import {BasicOrder, FeeData} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {TestHelpers} from "./TestHelpers.sol";
