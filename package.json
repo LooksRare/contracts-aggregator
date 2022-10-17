@@ -13,6 +13,7 @@
     "/contracts/interfaces/ILooksRareAggregator.sol",
     "/contracts/interfaces/IERC20EnabledLooksRareAggregator.sol",
     "/contracts/interfaces/SeaportInterface.sol",
+    "/contracts/interfaces/IProxy.sol",
     "/contracts/proxies/LooksRareProxy.sol",
     "/contracts/proxies/SeaportProxy.sol"
   ],
