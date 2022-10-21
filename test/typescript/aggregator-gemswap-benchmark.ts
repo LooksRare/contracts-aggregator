@@ -19,6 +19,17 @@ import deployMultipleMarketFixtures from "./fixtures/deploy-multiple-markets-fix
 import validateSweepEvent from "./utils/validate-sweep-event";
 
 describe("Aggregator", () => {
+  before(async () => {
+    await ethers.provider.send("hardhat_reset", [
+      {
+        forking: {
+          jsonRpcUrl: process.env.ETH_RPC_URL,
+          blockNumber: 15503771,
+        },
+      },
+    ]);
+  });
+
   it("Using LooksRareAggregator", async function () {
     const { aggregator, looksRareProxy, looksRareFunctionSelector, seaportProxy, seaportFunctionSelector, bayc } =
       await loadFixture(deployMultipleMarketFixtures);
