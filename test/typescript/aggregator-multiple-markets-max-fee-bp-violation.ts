@@ -15,7 +15,6 @@ import getSeaportOrderExtraData from "./utils/get-seaport-order-extra-data";
 import getSeaportOrderJson from "./utils/get-seaport-order-json";
 import combineConsiderationAmount from "./utils/combine-consideration-amount";
 
-import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import deployMultipleMarketFixtures from "./fixtures/deploy-multiple-markets-fixture";
 import calculateTxFee from "./utils/calculate-tx-fee";
 import validateSweepEvent from "./utils/validate-sweep-event";
@@ -30,7 +29,7 @@ describe("Aggregator", () => {
       looksRareFunctionSelector,
       seaportProxy,
       seaportFunctionSelector,
-    } = await loadFixture(deployMultipleMarketFixtures);
+    } = await deployMultipleMarketFixtures();
 
     await aggregator.setFee(seaportProxy.address, 250, LOOKSRARE_PROTOCOL_FEE_RECIPIENT);
 

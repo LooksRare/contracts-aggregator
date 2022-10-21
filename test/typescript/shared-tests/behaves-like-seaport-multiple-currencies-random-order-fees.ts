@@ -7,7 +7,6 @@ import getSeaportOrderExtraData from "../utils/get-seaport-order-extra-data";
 import { SEAPORT, SEAPORT_EXTRA_DATA_SCHEMA, USDC } from "../../constants";
 import validateSweepEvent from "../utils/validate-sweep-event";
 import { expect } from "chai";
-import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import airdropUSDC from "../utils/airdrop-usdc";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { BigNumber, Contract } from "ethers";
@@ -136,9 +135,8 @@ export default function behavesLikeSeaportMultipleCurrenciesRandomOrderFees(isAt
 
   const runTestInSpecificOrder = (givenOrders: Array<string>) => {
     it("Should be able to charge a fee", async function () {
-      const { aggregator, erc20EnabledLooksRareAggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(
-        deploySeaportFixture
-      );
+      const { aggregator, erc20EnabledLooksRareAggregator, buyer, proxy, functionSelector, bayc } =
+        await deploySeaportFixture();
       const { getBalance } = ethers.provider;
 
       const [, protocolFeeRecipient] = await ethers.getSigners();
@@ -211,6 +209,16 @@ export default function behavesLikeSeaportMultipleCurrenciesRandomOrderFees(isAt
       expect(await bayc.ownerOf(9477)).to.equal(buyer.address);
     });
   };
+
+  let snapshot: number;
+
+  beforeEach(async () => {
+    snapshot = await ethers.provider.send("evm_snapshot", []);
+  });
+
+  afterEach(async () => {
+    ethers.provider.send("evm_revert", [snapshot]);
+  });
 
   describe("Execution order: USDC - USDC - ETH - ETH", async function () {
     runTestInSpecificOrder(["usdcOrderOne", "usdcOrderTwo", "ethOrderOne", "ethOrderTwo"]);

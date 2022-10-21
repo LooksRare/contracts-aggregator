@@ -1,5 +1,4 @@
 import { expect } from "chai";
-import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { ethers } from "hardhat";
 import {
   SEAPORT_CONSIDERATION_FULFILLMENTS_TWO_ORDERS_SAME_COLLECTION,
@@ -28,8 +27,18 @@ const encodedExtraData = () => {
 };
 
 export default function behavesLikeSeaportERC1155(isAtomic: boolean): void {
+  let snapshot: number;
+
+  beforeEach(async () => {
+    snapshot = await ethers.provider.send("evm_snapshot", []);
+  });
+
+  afterEach(async () => {
+    ethers.provider.send("evm_revert", [snapshot]);
+  });
+
   it("Should be able to handle OpenSea trades", async function () {
-    const { aggregator, buyer, proxy, functionSelector, cityDao } = await loadFixture(deploySeaportFixture);
+    const { aggregator, buyer, proxy, functionSelector, cityDao } = await deploySeaportFixture();
 
     const orders = getFixture("seaport", "city-dao-orders.json");
     const orderOne = orders[0];
@@ -62,7 +71,7 @@ export default function behavesLikeSeaportERC1155(isAtomic: boolean): void {
   });
 
   it("is able to refund extra ETH paid (not trickled down to SeaportProxy)", async function () {
-    const { aggregator, buyer, proxy, functionSelector, cityDao } = await loadFixture(deploySeaportFixture);
+    const { aggregator, buyer, proxy, functionSelector, cityDao } = await deploySeaportFixture();
     const { getBalance } = ethers.provider;
 
     const orders = getFixture("seaport", "city-dao-orders.json");
@@ -102,7 +111,7 @@ export default function behavesLikeSeaportERC1155(isAtomic: boolean): void {
   });
 
   it("is able to refund extra ETH paid (trickled down to SeaportProxy)", async function () {
-    const { aggregator, buyer, proxy, functionSelector, cityDao } = await loadFixture(deploySeaportFixture);
+    const { aggregator, buyer, proxy, functionSelector, cityDao } = await deploySeaportFixture();
     const { getBalance } = ethers.provider;
 
     const orders = getFixture("seaport", "city-dao-orders.json");

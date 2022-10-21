@@ -14,7 +14,6 @@ import {
 } from "../../constants";
 import validateSweepEvent from "../utils/validate-sweep-event";
 import { expect } from "chai";
-import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import airdropUSDC from "../utils/airdrop-usdc";
 
 const encodedExtraData = () => {
@@ -31,10 +30,19 @@ const encodedExtraData = () => {
 };
 
 export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean): void {
+  let snapshot: number;
+
+  beforeEach(async () => {
+    snapshot = await ethers.provider.send("evm_snapshot", []);
+  });
+
+  afterEach(async () => {
+    ethers.provider.send("evm_revert", [snapshot]);
+  });
+
   it("Should be able to handle OpenSea trades", async function () {
-    const { aggregator, erc20EnabledLooksRareAggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(
-      deploySeaportFixture
-    );
+    const { aggregator, erc20EnabledLooksRareAggregator, buyer, proxy, functionSelector, bayc } =
+      await deploySeaportFixture();
 
     const orderOne = getFixture("seaport", "bayc-9996-order.json");
     const orderTwo = getFixture("seaport", "bayc-5509-order.json");
@@ -83,9 +91,8 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
   });
 
   it("Should be able to refund extra ERC20 tokens paid", async function () {
-    const { aggregator, erc20EnabledLooksRareAggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(
-      deploySeaportFixture
-    );
+    const { aggregator, erc20EnabledLooksRareAggregator, buyer, proxy, functionSelector, bayc } =
+      await deploySeaportFixture();
 
     const orderOne = getFixture("seaport", "bayc-9996-order.json");
     const orderTwo = getFixture("seaport", "bayc-5509-order.json");
@@ -139,9 +146,8 @@ export default function behavesLikeSeaportMultipleCurrencies(isAtomic: boolean):
   });
 
   it("Should be able to charge a fee", async function () {
-    const { aggregator, erc20EnabledLooksRareAggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(
-      deploySeaportFixture
-    );
+    const { aggregator, erc20EnabledLooksRareAggregator, buyer, proxy, functionSelector, bayc } =
+      await deploySeaportFixture();
     const { getBalance } = ethers.provider;
 
     const [, protocolFeeRecipient] = await ethers.getSigners();

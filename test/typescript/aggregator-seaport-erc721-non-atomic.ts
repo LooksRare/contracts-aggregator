@@ -1,6 +1,5 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import deploySeaportFixture from "./fixtures/deploy-seaport-fixture";
 import getFixture from "./utils/get-fixture";
 import getSeaportOrderExtraData from "./utils/get-seaport-order-extra-data";
@@ -21,10 +20,20 @@ describe("Aggregator", () => {
     ]);
   });
 
+  let snapshot: number;
+
+  beforeEach(async () => {
+    snapshot = await ethers.provider.send("evm_snapshot", []);
+  });
+
+  afterEach(async () => {
+    ethers.provider.send("evm_revert", [snapshot]);
+  });
+
   behavesLikeSeaportERC721(false);
 
   it("Should be able to handle OpenSea trades non-atomically", async function () {
-    const { aggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(deploySeaportFixture);
+    const { aggregator, buyer, proxy, functionSelector, bayc } = await deploySeaportFixture();
     const { HashZero, Zero } = ethers.constants;
 
     const orderOne = getFixture("seaport", "bayc-2518-order.json");
