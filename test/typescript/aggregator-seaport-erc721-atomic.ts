@@ -27,6 +27,17 @@ const encodedExtraData = () => {
 };
 
 describe("Aggregator", () => {
+  before(async () => {
+    await ethers.provider.send("hardhat_reset", [
+      {
+        forking: {
+          jsonRpcUrl: process.env.ETH_RPC_URL,
+          blockNumber: 15300884,
+        },
+      },
+    ]);
+  });
+
   behavesLikeSeaportERC721(true);
 
   it("Should revert if one of the trades is cancelled", async function () {

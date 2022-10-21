@@ -13,6 +13,17 @@ describe("V0Aggregator", () => {
   let bayc: Contract;
   let buyer: SignerWithAddress;
 
+  before(async () => {
+    await ethers.provider.send("hardhat_reset", [
+      {
+        forking: {
+          jsonRpcUrl: process.env.ETH_RPC_URL,
+          blockNumber: 15282897,
+        },
+      },
+    ]);
+  });
+
   beforeEach(async () => {
     const Aggregator = await ethers.getContractFactory("V0Aggregator");
     aggregator = await Aggregator.deploy();

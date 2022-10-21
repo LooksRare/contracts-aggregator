@@ -114,6 +114,17 @@ describe("Aggregator", () => {
     return { aggregator, bayc, buyer, looksRareProxy, price, seaportProxy, sudoswapProxy, tradeData };
   };
 
+  before(async () => {
+    await ethers.provider.send("hardhat_reset", [
+      {
+        forking: {
+          jsonRpcUrl: process.env.ETH_RPC_URL,
+          blockNumber: 15326566,
+        },
+      },
+    ]);
+  });
+
   it("Should be able to handle trades from multiple markets", async function () {
     const { aggregator, bayc, buyer, price, tradeData } = await setUp();
     const tx = await aggregator

@@ -31,35 +31,6 @@ It is a hybrid [Hardhat](https://hardhat.org/) repo that also requires [Foundry]
 - TypeScript tests are included in the `typescript` folder in the `test` folder at the root of the repo.
 - Solidity tests are included in the `foundry` folder in the `test` folder at the root of the repo.
 
-### Running tests for each marketplace
-
-Each test file requires a different block number as the listings were retrieved in different days and they have an expiration timestamp.
-
-```shell
-FORKED_BLOCK_NUMBER=15315621 npx hardhat test test/typescript/aggregator-sudoswap.ts
-FORKED_BLOCK_NUMBER=15358065 npx hardhat test test/typescript/aggregator-cryptopunks.ts
-FORKED_BLOCK_NUMBER=15346990 npx hardhat test test/typescript/aggregator-x2y2.ts
-FORKED_BLOCK_NUMBER=15282897 npx hardhat test test/typescript/aggregator-looksrare.ts
-FORKED_BLOCK_NUMBER=15327113 npx hardhat test test/typescript/aggregator-conflicted-orders.ts
-FORKED_BLOCK_NUMBER=15326566 npx hardhat test test/typescript/aggregator-multiple-markets.ts
-FORKED_BLOCK_NUMBER=15323472 npx hardhat test test/typescript/aggregator-seaport-multiple-collection-types.ts
-FORKED_BLOCK_NUMBER=15447813 npx hardhat test test/typescript/aggregator-seaport-multiple-currencies-atomic.ts
-FORKED_BLOCK_NUMBER=15447813 npx hardhat test test/typescript/aggregator-seaport-multiple-currencies-non-atomic.ts
-FORKED_BLOCK_NUMBER=15300884 npx hardhat test test/typescript/aggregator-seaport-erc721-atomic.ts
-FORKED_BLOCK_NUMBER=15300884 npx hardhat test test/typescript/aggregator-seaport-erc721-non-atomic.ts
-FORKED_BLOCK_NUMBER=15320038 npx hardhat test test/typescript/aggregator-seaport-erc1155-atomic.ts
-FORKED_BLOCK_NUMBER=15320038 npx hardhat test test/typescript/aggregator-seaport-erc1155-non-atomic.ts
-FORKED_BLOCK_NUMBER=15491323 npx hardhat test test/typescript/aggregator-seaport-erc721-only-usdc-orders-atomic.ts
-FORKED_BLOCK_NUMBER=15491323 npx hardhat test test/typescript/aggregator-seaport-erc721-only-usdc-orders-non-atomic.ts
-FORKED_BLOCK_NUMBER=15491323 npx hardhat test test/typescript/aggregator-seaport-erc721-multiple-currencies-random-order-fees-atomic.ts
-FORKED_BLOCK_NUMBER=15491323 npx hardhat test test/typescript/aggregator-seaport-erc721-multiple-currencies-random-order-fees-non-atomic.ts
-FORKED_BLOCK_NUMBER=15300884 npx hardhat test test/typescript/direct-seaport-single.ts
-FORKED_BLOCK_NUMBER=15302889 npx hardhat test test/typescript/v0-aggregator-seaport-looksrare-combined.ts
-FORKED_BLOCK_NUMBER=15300884 npx hardhat test test/typescript/v0-aggregator-seaport-single.ts
-FORKED_BLOCK_NUMBER=15300884 npx hardhat test test/typescript/v0-aggregator-seaport-multiple.ts
-FORKED_BLOCK_NUMBER=15282897 npx hardhat test test/typescript/v0-aggregator-looksrare-single.ts
-```
-
 ### Gas benchmark
 
 ```

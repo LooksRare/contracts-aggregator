@@ -10,6 +10,17 @@ import validateSweepEvent from "./utils/validate-sweep-event";
 import behavesLikeSeaportERC721 from "./shared-tests/behaves-like-seaport-erc721";
 
 describe("Aggregator", () => {
+  before(async () => {
+    await ethers.provider.send("hardhat_reset", [
+      {
+        forking: {
+          jsonRpcUrl: process.env.ETH_RPC_URL,
+          blockNumber: 15300884,
+        },
+      },
+    ]);
+  });
+
   behavesLikeSeaportERC721(false);
 
   it("Should be able to handle OpenSea trades non-atomically", async function () {

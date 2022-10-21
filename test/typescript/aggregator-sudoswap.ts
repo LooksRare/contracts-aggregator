@@ -12,6 +12,18 @@ describe("Aggregator", () => {
   const tokenIdOne = 5536;
   const tokenIdTwo = 1915;
   const maxCostOne = BigNumber.from("221649999999999993");
+
+  before(async () => {
+    await ethers.provider.send("hardhat_reset", [
+      {
+        forking: {
+          jsonRpcUrl: process.env.ETH_RPC_URL,
+          blockNumber: 15315621,
+        },
+      },
+    ]);
+  });
+
   // This is the function to call to get the price to pay on mainnet.
   // (error, , , pairCost, ) = swapList[i].swapInfo.pair.getBuyNFTQuote(
   //   swapList[i].swapInfo.numItems

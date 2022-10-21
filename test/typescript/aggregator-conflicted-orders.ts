@@ -20,6 +20,17 @@ import calculateTxFee from "./utils/calculate-tx-fee";
 import validateSweepEvent from "./utils/validate-sweep-event";
 
 describe("Aggregator", () => {
+  before(async () => {
+    await ethers.provider.send("hardhat_reset", [
+      {
+        forking: {
+          jsonRpcUrl: process.env.ETH_RPC_URL,
+          blockNumber: 15327113,
+        },
+      },
+    ]);
+  });
+
   it("Should be able to handle conflicted orders", async function () {
     const { getBalance } = ethers.provider;
     const tokenId = 9314;
