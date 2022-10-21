@@ -89,6 +89,17 @@ describe("Aggregator", () => {
     return { aggregator, bayc, buyer, looksRarePrice, looksRareProxy, price, seaportProxy, tradeData };
   };
 
+  before(async () => {
+    await ethers.provider.send("hardhat_reset", [
+      {
+        forking: {
+          jsonRpcUrl: process.env.ETH_RPC_URL,
+          blockNumber: 15326566,
+        },
+      },
+    ]);
+  });
+
   it("Should revert if the trade is atomic and max fee bp is violated", async function () {
     const { aggregator, buyer, price, tradeData } = await setUp();
     await expect(
