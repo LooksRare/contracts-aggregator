@@ -42,7 +42,7 @@ contract V0Aggregator is TokenRescuer, TokenReceiver {
             address proxy = tradeData[i].proxy;
             if (!_proxyFunctionSelectors[proxy][selector]) revert InvalidFunction();
 
-            (bool success, bytes memory returnData) = proxy.delegatecall(data);
+            (bool success, bytes memory returnData) = proxy.call{value: tradeData[i].value}(data);
 
             if (!success) {
                 if (returnData.length > 0) {
