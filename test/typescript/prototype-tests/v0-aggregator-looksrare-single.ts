@@ -3,9 +3,8 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { Contract } from "ethers";
 import { ethers } from "hardhat";
 import { BAYC, LOOKSRARE_STRATEGY_FIXED_PRICE, WETH } from "../../constants";
-import * as fs from "fs";
-import * as path from "path";
 import getSignature from "../utils/get-signature";
+import getAbi from "../utils/get-abi";
 
 describe("V0Aggregator", () => {
   let aggregator: Contract;
@@ -123,9 +122,7 @@ describe("V0Aggregator", () => {
       s: expandedSignatureTwo.s,
     };
 
-    const abi = JSON.parse(
-      await fs.readFileSync(path.join(__dirname, "../../abis/V0LooksRareProxy.json"), { encoding: "utf8", flag: "r" })
-    );
+    const abi = getAbi("V0LooksRareProxy.json");
     const iface = new ethers.utils.Interface(abi);
 
     const calldata = iface.encodeFunctionData("execute", [
