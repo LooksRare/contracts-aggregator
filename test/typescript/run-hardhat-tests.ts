@@ -26,10 +26,7 @@ const config = [
     fileName: "aggregator-seaport-erc721-only-usdc-orders-non-atomic.ts",
   },
   {
-    fileName: "aggregator-seaport-erc1155-atomic.ts",
-  },
-  {
-    fileName: "aggregator-seaport-erc1155-non-atomic.ts",
+    fileName: "aggregator-seaport-erc1155.ts",
   },
   {
     fileName: "aggregator-seaport-multiple-collection-types.ts",
