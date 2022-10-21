@@ -37,7 +37,7 @@
     "lint": "eslint '**/*.{js,jsx,ts,tsx}'",
     "prepare": "husky install",
     "release": "release-it",
-    "test:hardhat": "ts-node test/typescript/run-hardhat-tests.ts",
+    "test:hardhat": "npx hardhat test",
     "test:forge": "forge test"
   },
   "devDependencies": {
