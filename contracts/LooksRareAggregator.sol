@@ -70,7 +70,7 @@ contract LooksRareAggregator is
             TradeData calldata singleTradeData = tradeData[i];
             if (!_proxyFunctionSelectors[singleTradeData.proxy][singleTradeData.selector]) revert InvalidFunction();
 
-            (bytes memory proxyCalldata, bool maxFeeBpViolated) = _encodeCalldataAndValidateMaxFeeBp(
+            (bytes memory proxyCalldata, bool maxFeeBpViolated) = _encodeCalldataAndValidateFeeBp(
                 singleTradeData,
                 recipient,
                 isAtomic
@@ -217,7 +217,7 @@ contract LooksRareAggregator is
         _executeERC1155SafeBatchTransferFrom(collection, address(this), to, tokenIds, amounts);
     }
 
-    function _encodeCalldataAndValidateMaxFeeBp(
+    function _encodeCalldataAndValidateFeeBp(
         TradeData calldata singleTradeData,
         address recipient,
         bool isAtomic
