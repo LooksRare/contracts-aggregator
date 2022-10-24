@@ -6,7 +6,7 @@ import { expect } from "chai";
 import calculateTxFee from "./utils/calculate-tx-fee";
 import validateSweepEvent from "./utils/validate-sweep-event";
 
-describe("LooksRareAggregator", () => {
+describe("CryptoPunks Orders", () => {
   const tokenIdOne = "3149";
   const tokenIdTwo = "2675";
 

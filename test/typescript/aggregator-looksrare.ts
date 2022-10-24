@@ -6,7 +6,7 @@ import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import deployLooksRareFixture from "./fixtures/deploy-looksrare-fixture";
 import validateSweepEvent from "./utils/validate-sweep-event";
 
-describe("LooksRareAggregator", () => {
+describe("LooksRare V1 Orders", () => {
   const tokenIdOne = 7139;
   const tokenIdTwo = 3939;
 

@@ -25,7 +25,7 @@ const encodedExtraData = () => {
   );
 };
 
-describe("Aggregator", () => {
+describe("Seaport Order - ERC721 Atomic", () => {
   before(async () => {
     await ethers.provider.send("hardhat_reset", [
       {

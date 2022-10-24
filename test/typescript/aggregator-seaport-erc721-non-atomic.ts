@@ -8,7 +8,7 @@ import combineConsiderationAmount from "./utils/combine-consideration-amount";
 import validateSweepEvent from "./utils/validate-sweep-event";
 import behavesLikeSeaportERC721 from "./shared-tests/behaves-like-seaport-erc721";
 
-describe("Aggregator", () => {
+describe("Seaport Order - ERC721 Non-atomic", () => {
   before(async () => {
     await ethers.provider.send("hardhat_reset", [
       {

@@ -12,7 +12,7 @@ import getSeaportOrderJson from "./utils/get-seaport-order-json";
 import combineConsiderationAmount from "./utils/combine-consideration-amount";
 import validateSweepEvent from "./utils/validate-sweep-event";
 
-describe("Aggregator", () => {
+describe("Seaport Order - Multiple Collection Types", () => {
   before(async () => {
     await ethers.provider.send("hardhat_reset", [
       {

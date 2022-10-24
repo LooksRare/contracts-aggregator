@@ -9,7 +9,7 @@ import validateSweepEvent from "./utils/validate-sweep-event";
 import deploySeaportFixture from "./fixtures/deploy-seaport-fixture";
 import behavesLikeSeaportERC1155 from "./shared-tests/behaves-like-seaport-erc1155";
 
-describe("Aggregator", () => {
+describe("Seaport Order - ERC1155 Non-atomic", () => {
   before(async () => {
     await ethers.provider.send("hardhat_reset", [
       {
