@@ -10,6 +10,17 @@ describe("LooksRareAggregator", () => {
   const tokenIdOne = "3149";
   const tokenIdTwo = "2675";
 
+  before(async () => {
+    await ethers.provider.send("hardhat_reset", [
+      {
+        forking: {
+          jsonRpcUrl: process.env.ETH_RPC_URL,
+          blockNumber: 15358065,
+        },
+      },
+    ]);
+  });
+
   it("Should be able to handle CryptoPunks trades", async function () {
     const { aggregator, proxy, functionSelector, buyer, cryptopunks } = await loadFixture(deployCryptoPunksFixture);
 

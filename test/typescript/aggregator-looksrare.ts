@@ -10,6 +10,17 @@ describe("LooksRareAggregator", () => {
   const tokenIdOne = 7139;
   const tokenIdTwo = 3939;
 
+  before(async () => {
+    await ethers.provider.send("hardhat_reset", [
+      {
+        forking: {
+          jsonRpcUrl: process.env.ETH_RPC_URL,
+          blockNumber: 15282897,
+        },
+      },
+    ]);
+  });
+
   it("Should be able to handle LooksRare V2 trades (matchAskWithTakerBidUsingETHAndWETH)", async function () {
     const { aggregator, proxy, functionSelector, buyer, bayc } = await loadFixture(deployLooksRareFixture);
 

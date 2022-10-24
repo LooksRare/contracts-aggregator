@@ -6,7 +6,6 @@ import {
   SEAPORT_OFFER_FULFILLMENT_TWO_ITEMS,
 } from "../constants";
 import getFixture from "./utils/get-fixture";
-import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import deploySeaportFixture from "./fixtures/deploy-seaport-fixture";
 import getSeaportOrderExtraData from "./utils/get-seaport-order-extra-data";
 import getSeaportOrderJson from "./utils/get-seaport-order-json";
@@ -14,8 +13,19 @@ import combineConsiderationAmount from "./utils/combine-consideration-amount";
 import validateSweepEvent from "./utils/validate-sweep-event";
 
 describe("Aggregator", () => {
+  before(async () => {
+    await ethers.provider.send("hardhat_reset", [
+      {
+        forking: {
+          jsonRpcUrl: process.env.ETH_RPC_URL,
+          blockNumber: 15323472,
+        },
+      },
+    ]);
+  });
+
   it("Should be able to handle multiple collections and multiple collection types", async function () {
-    const { aggregator, buyer, proxy, functionSelector, bayc, cityDao } = await loadFixture(deploySeaportFixture);
+    const { aggregator, buyer, proxy, functionSelector, bayc, cityDao } = await deploySeaportFixture();
 
     const cityDaoOrders = getFixture("seaport", "city-dao-orders.json");
     const orderOne = getFixture("seaport", "bayc-6092-order.json");

@@ -46,6 +46,17 @@ describe("LooksRareAggregator", () => {
     );
   };
 
+  before(async () => {
+    await ethers.provider.send("hardhat_reset", [
+      {
+        forking: {
+          jsonRpcUrl: process.env.ETH_RPC_URL,
+          blockNumber: 15346990,
+        },
+      },
+    ]);
+  });
+
   it("Should be able to handle X2Y2 trades", async function () {
     const { aggregator, proxy, functionSelector, buyer, bayc, parallel } = await loadFixture(deployX2Y2Fixture);
 

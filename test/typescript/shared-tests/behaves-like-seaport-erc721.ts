@@ -11,7 +11,6 @@ import {
 } from "../../constants";
 import validateSweepEvent from "../utils/validate-sweep-event";
 import { expect } from "chai";
-import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import calculateTxFee from "../utils/calculate-tx-fee";
 
 const encodedExtraData = () => {
@@ -29,7 +28,7 @@ const encodedExtraData = () => {
 
 export default function behavesLikeSeaportERC721(isAtomic: boolean): void {
   it("Should be able to handle OpenSea trades", async function () {
-    const { aggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(deploySeaportFixture);
+    const { aggregator, buyer, proxy, functionSelector, bayc } = await deploySeaportFixture();
 
     const orderOne = getFixture("seaport", "bayc-2518-order.json");
     const orderTwo = getFixture("seaport", "bayc-8498-order.json");
@@ -63,7 +62,7 @@ export default function behavesLikeSeaportERC721(isAtomic: boolean): void {
   });
 
   it("is able to refund extra ETH paid (not trickled down to SeaportProxy)", async function () {
-    const { aggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(deploySeaportFixture);
+    const { aggregator, buyer, proxy, functionSelector, bayc } = await deploySeaportFixture();
     const { getBalance } = ethers.provider;
 
     const orderOne = getFixture("seaport", "bayc-2518-order.json");
@@ -104,7 +103,7 @@ export default function behavesLikeSeaportERC721(isAtomic: boolean): void {
   });
 
   it("is able to refund extra ETH paid (trickled down to SeaportProxy)", async function () {
-    const { aggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(deploySeaportFixture);
+    const { aggregator, buyer, proxy, functionSelector, bayc } = await deploySeaportFixture();
     const { getBalance } = ethers.provider;
 
     const orderOne = getFixture("seaport", "bayc-2518-order.json");
@@ -148,7 +147,7 @@ export default function behavesLikeSeaportERC721(isAtomic: boolean): void {
   });
 
   it("Should be able to charge a fee", async function () {
-    const { aggregator, buyer, proxy, functionSelector, bayc } = await loadFixture(deploySeaportFixture);
+    const { aggregator, buyer, proxy, functionSelector, bayc } = await deploySeaportFixture();
     const { getBalance } = ethers.provider;
 
     const [, protocolFeeRecipient] = await ethers.getSigners();

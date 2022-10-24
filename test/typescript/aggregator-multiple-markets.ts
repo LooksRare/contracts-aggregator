@@ -14,7 +14,6 @@ import getSeaportOrderExtraData from "./utils/get-seaport-order-extra-data";
 import getSeaportOrderJson from "./utils/get-seaport-order-json";
 import combineConsiderationAmount from "./utils/combine-consideration-amount";
 
-import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import deployMultipleMarketFixtures from "./fixtures/deploy-multiple-markets-fixture";
 import calculateTxFee from "./utils/calculate-tx-fee";
 import validateSweepEvent from "./utils/validate-sweep-event";
@@ -32,7 +31,7 @@ describe("Aggregator", () => {
       sudoswapProxy,
       sudoswapFunctionSelector,
       bayc,
-    } = await loadFixture(deployMultipleMarketFixtures);
+    } = await deployMultipleMarketFixtures();
     const sudoswapPair = await ethers.getContractAt("ISudoswapPair", "0xc44b755cb278b682de1Cb07c7B3D15C44be62c34");
     const sudoswapQuote = await sudoswapPair.getBuyNFTQuote(1);
 
@@ -113,6 +112,27 @@ describe("Aggregator", () => {
 
     return { aggregator, bayc, buyer, looksRareProxy, price, seaportProxy, sudoswapProxy, tradeData };
   };
+
+  before(async () => {
+    await ethers.provider.send("hardhat_reset", [
+      {
+        forking: {
+          jsonRpcUrl: process.env.ETH_RPC_URL,
+          blockNumber: 15326566,
+        },
+      },
+    ]);
+  });
+
+  let snapshot: number;
+
+  beforeEach(async () => {
+    snapshot = await ethers.provider.send("evm_snapshot", []);
+  });
+
+  afterEach(async () => {
+    ethers.provider.send("evm_revert", [snapshot]);
+  });
 
   it("Should be able to handle trades from multiple markets", async function () {
     const { aggregator, bayc, buyer, price, tradeData } = await setUp();

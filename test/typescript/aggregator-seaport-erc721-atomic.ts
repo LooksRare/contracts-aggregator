@@ -1,4 +1,3 @@
-import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import {
@@ -27,10 +26,31 @@ const encodedExtraData = () => {
 };
 
 describe("Aggregator", () => {
+  before(async () => {
+    await ethers.provider.send("hardhat_reset", [
+      {
+        forking: {
+          jsonRpcUrl: process.env.ETH_RPC_URL,
+          blockNumber: 15300884,
+        },
+      },
+    ]);
+  });
+
+  let snapshot: number;
+
+  beforeEach(async () => {
+    snapshot = await ethers.provider.send("evm_snapshot", []);
+  });
+
+  afterEach(async () => {
+    ethers.provider.send("evm_revert", [snapshot]);
+  });
+
   behavesLikeSeaportERC721(true);
 
   it("Should revert if one of the trades is cancelled", async function () {
-    const { aggregator, buyer, proxy, functionSelector } = await loadFixture(deploySeaportFixture);
+    const { aggregator, buyer, proxy, functionSelector } = await deploySeaportFixture();
 
     const orderOne = getFixture("seaport", "bayc-2518-order.json");
     const orderTwo = getFixture("seaport", "bayc-8498-order.json");
