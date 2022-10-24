@@ -1,7 +1,7 @@
 import { ethers } from "hardhat";
 import behavesLikeSeaportMultipleCurrencies from "./shared-tests/behaves-like-seaport-multiple-currencies";
 
-describe("Aggregator", () => {
+describe("Seaport Order - Multiple Currencies Non-atomic", () => {
   before(async () => {
     await ethers.provider.send("hardhat_reset", [
       {

@@ -9,7 +9,7 @@ import { Fee, RunInput, X2Y2Order } from "@x2y2-io/sdk/src/types";
 import calculateTxFee from "./utils/calculate-tx-fee";
 import validateSweepEvent from "./utils/validate-sweep-event";
 
-describe("LooksRareAggregator", () => {
+describe("X2Y2 Orders", () => {
   const tokenIdOne = "2674";
   const tokenIdTwo = "2491";
   const tokenIdThree = "10327";

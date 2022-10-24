@@ -18,7 +18,7 @@ import deployMultipleMarketFixtures from "./fixtures/deploy-multiple-markets-fix
 import calculateTxFee from "./utils/calculate-tx-fee";
 import validateSweepEvent from "./utils/validate-sweep-event";
 
-describe("Aggregator", () => {
+describe("Multiple Markets", () => {
   const setUp = async () => {
     const { AddressZero, HashZero } = ethers.constants;
     const {

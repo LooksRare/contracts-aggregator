@@ -19,7 +19,7 @@ import deployMultipleMarketFixtures from "./fixtures/deploy-multiple-markets-fix
 import calculateTxFee from "./utils/calculate-tx-fee";
 import validateSweepEvent from "./utils/validate-sweep-event";
 
-describe("Aggregator", () => {
+describe("Multiple Markets Order Max Fee Basis Point Violation", () => {
   const setUp = async () => {
     const {
       aggregator,

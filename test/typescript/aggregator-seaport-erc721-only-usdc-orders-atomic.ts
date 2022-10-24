@@ -1,7 +1,7 @@
 import { ethers } from "hardhat";
 import behavesLikeSeaportERC721OnlyUSDCOrders from "./shared-tests/behaves-like-seaport-erc721-only-usdc-orders";
 
-describe("Aggregator", () => {
+describe("Seaport Order - ERC721 USDC Orders Atomic", () => {
   before(async () => {
     await ethers.provider.send("hardhat_reset", [
       {

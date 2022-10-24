@@ -6,7 +6,7 @@ import deploySudoswapFixture from "./fixtures/deploy-sudoswap-fixture";
 import calculateTxFee from "./utils/calculate-tx-fee";
 import validateSweepEvent from "./utils/validate-sweep-event";
 
-describe("Aggregator", () => {
+describe("Sudoswap Orders", () => {
   const sudoswapPairOne = "0x0f23939ee95350f26d9c1b818ee0cc1c8fd2b99d";
   const sudoswapPairTwo = "0x4d1ffe3eb76f15d1f7651adf322e1f5a6e5c7552";
   const tokenIdOne = 5536;

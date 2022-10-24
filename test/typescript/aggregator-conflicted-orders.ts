@@ -19,7 +19,7 @@ import deployMultipleMarketFixtures from "./fixtures/deploy-multiple-markets-fix
 import calculateTxFee from "./utils/calculate-tx-fee";
 import validateSweepEvent from "./utils/validate-sweep-event";
 
-describe("Aggregator", () => {
+describe("Conflicted Orders", () => {
   before(async () => {
     await ethers.provider.send("hardhat_reset", [
       {
