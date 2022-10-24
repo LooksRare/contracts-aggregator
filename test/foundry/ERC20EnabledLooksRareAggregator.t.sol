@@ -16,7 +16,6 @@ abstract contract TestParameters {
 contract ERC20EnabledLooksRareAggregatorTest is TestParameters, TestHelpers {
     ERC20EnabledLooksRareAggregator private erc20EnabledLooksRareAggregator;
     MockERC20 private erc20;
-    TokenTransfer[] private tokenTransfers;
     uint256 private constant amount = 1 ether;
 
     function setUp() public {
@@ -24,7 +23,7 @@ contract ERC20EnabledLooksRareAggregatorTest is TestParameters, TestHelpers {
         erc20 = new MockERC20();
 
         erc20.mint(_buyer, amount);
-        tokenTransfers = new TokenTransfer[](1);
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](1);
         tokenTransfers[0].amount = amount;
         tokenTransfers[0].currency = address(erc20);
 
@@ -33,7 +32,7 @@ contract ERC20EnabledLooksRareAggregatorTest is TestParameters, TestHelpers {
     }
 
     function testBuyZeroTokenTransfers() public {
-        tokenTransfers = new TokenTransfer[](0);
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
         vm.expectRevert(IERC20EnabledLooksRareAggregator.UseLooksRareAggregatorDirectly.selector);
         erc20EnabledLooksRareAggregator.execute(tokenTransfers, tradeData, _buyer, false);

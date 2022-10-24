@@ -97,7 +97,6 @@ contract SeaportProxy is IProxy, TokenRescuer {
         uint256 ordersLength = orders.length;
         AdvancedOrder[] memory advancedOrders = new AdvancedOrder[](ordersLength);
         ExtraData memory extraDataStruct = abi.decode(extraData, (ExtraData));
-        CriteriaResolver[] memory criteriaResolver = new CriteriaResolver[](0);
 
         uint256 ethValue;
 
@@ -117,7 +116,7 @@ contract SeaportProxy is IProxy, TokenRescuer {
 
         (bool[] memory availableOrders, ) = marketplace.fulfillAvailableAdvancedOrders{value: ethValue}(
             advancedOrders,
-            criteriaResolver,
+            new CriteriaResolver[](0),
             extraDataStruct.offerFulfillments,
             extraDataStruct.considerationFulfillments,
             bytes32(0),
@@ -184,11 +183,9 @@ contract SeaportProxy is IProxy, TokenRescuer {
         uint256 feeBp,
         address feeRecipient
     ) private {
-        CriteriaResolver[] memory criteriaResolver = new CriteriaResolver[](0);
         uint256 fee;
         address lastOrderCurrency;
-        uint256 ordersLength = orders.length;
-        for (uint256 i; i < ordersLength; ) {
+        for (uint256 i; i < orders.length; ) {
             OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
             AdvancedOrder memory advancedOrder;
             advancedOrder.parameters = _populateParameters(orders[i], orderExtraData);
@@ -198,12 +195,11 @@ contract SeaportProxy is IProxy, TokenRescuer {
 
             address currency = orders[i].currency;
             uint256 price = orders[i].price;
-            uint256 ethValue = currency == address(0) ? price : 0;
 
             try
-                marketplace.fulfillAdvancedOrder{value: ethValue}(
+                marketplace.fulfillAdvancedOrder{value: currency == address(0) ? price : 0}(
                     advancedOrder,
-                    criteriaResolver,
+                    new CriteriaResolver[](0),
                     bytes32(0),
                     recipient
                 )
