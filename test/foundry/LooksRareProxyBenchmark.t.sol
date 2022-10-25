@@ -25,7 +25,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
 
     function setUp() public {
         vm.createSelectFork(MAINNET_RPC_URL, 15_282_897);
-        vm.deal(_buyer, 100 ether);
+        vm.deal(_buyer, 200 ether);
     }
 
     function testExecuteDirectlySingleOrder() public asPrankedUser(_buyer) {
@@ -68,7 +68,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         assertEq(IERC721(BAYC).ownerOf(7139), _buyer);
     }
 
-    function testExecuteThroughAggregatorSingleOrder() public {
+    function testExecuteThroughAggregatorSingleOrder() public asPrankedUser(_buyer) {
         _aggregatorSetUp();
 
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
@@ -98,7 +98,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         assertEq(IERC721(BAYC).ownerOf(7139), _buyer);
     }
 
-    function testExecuteThroughV0AggregatorSingleOrder() public {
+    function testExecuteThroughV0AggregatorSingleOrder() public asPrankedUser(_buyer) {
         _v0AggregatorSetUp();
 
         BasicOrder[] memory validOrders = validBAYCOrders();
@@ -128,37 +128,15 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         assertEq(IERC721(BAYC).ownerOf(7139), _buyer);
     }
 
-    function testExecuteThroughAggregatorTwoOrders() public {
-        _aggregatorSetUp();
-
-        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
-        BasicOrder[] memory orders = validBAYCOrders();
-
-        bytes[] memory ordersExtraData = new bytes[](2);
-        ordersExtraData[0] = abi.encode(orders[0].price, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE);
-        ordersExtraData[1] = abi.encode(orders[1].price, 8500, 50, LOOKSRARE_STRATEGY_FIXED_PRICE);
-
-        ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
-        tradeData[0] = ILooksRareAggregator.TradeData({
-            proxy: address(looksRareProxy),
-            selector: LooksRareProxy.execute.selector,
-            value: orders[0].price + orders[1].price,
-            maxFeeBp: 0,
-            orders: orders,
-            ordersExtraData: ordersExtraData,
-            extraData: ""
-        });
-
-        uint256 gasRemaining = gasleft();
-        aggregator.execute{value: orders[0].price + orders[1].price}(tokenTransfers, tradeData, _buyer, _buyer, false);
-        uint256 gasConsumed = gasRemaining - gasleft();
-        emit log_named_uint("LooksRare multiple NFT purchase through the aggregator consumed: ", gasConsumed);
-
-        assertEq(IERC721(BAYC).ownerOf(7139), _buyer);
-        assertEq(IERC721(BAYC).ownerOf(3939), _buyer);
+    function testExecuteThroughAggregatorTwoOrdersAtomic() public asPrankedUser(_buyer) {
+        _testExecuteThroughAggregatorTwoOrders(true);
     }
 
-    function testExecuteThroughV0AggregatorTwoOrders() public {
+    function testExecuteThroughAggregatorTwoOrdersNonAtomic() public asPrankedUser(_buyer) {
+        _testExecuteThroughAggregatorTwoOrders(false);
+    }
+
+    function testExecuteThroughV0AggregatorTwoOrders() public asPrankedUser(_buyer) {
         _v0AggregatorSetUp();
 
         BasicOrder[] memory orders = validBAYCOrders();
@@ -208,5 +186,47 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         vm.deal(address(looksRareProxy), 0);
 
         v0Aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
+    }
+
+    function _testExecuteThroughAggregatorTwoOrders(bool isAtomic) private {
+        _aggregatorSetUp();
+
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
+        BasicOrder[] memory orders = validBAYCOrders();
+
+        bytes[] memory ordersExtraData = new bytes[](2);
+        ordersExtraData[0] = abi.encode(orders[0].price, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE);
+        ordersExtraData[1] = abi.encode(orders[1].price, 8500, 50, LOOKSRARE_STRATEGY_FIXED_PRICE);
+
+        ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
+        uint256 value = orders[0].price + orders[1].price;
+        tradeData[0] = ILooksRareAggregator.TradeData({
+            proxy: address(looksRareProxy),
+            selector: LooksRareProxy.execute.selector,
+            value: value,
+            maxFeeBp: 0,
+            orders: orders,
+            ordersExtraData: ordersExtraData,
+            extraData: ""
+        });
+
+        uint256 gasRemaining = gasleft();
+        aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, isAtomic);
+        uint256 gasConsumed = gasRemaining - gasleft();
+        if (isAtomic) {
+            emit log_named_uint(
+                "(Atomic) LooksRare multiple NFT purchase through the aggregator consumed: ",
+                gasConsumed
+            );
+        } else {
+            emit log_named_uint(
+                "(Non-atomic) LooksRare multiple NFT purchase through the aggregator consumed: ",
+                gasConsumed
+            );
+        }
+
+        assertEq(IERC721(BAYC).ownerOf(7139), _buyer);
+        assertEq(IERC721(BAYC).ownerOf(3939), _buyer);
+        assertEq(address(_buyer).balance, 200 ether - value);
     }
 }
