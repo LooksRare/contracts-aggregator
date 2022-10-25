@@ -67,11 +67,15 @@ contract LooksRareAggregator is
         }
 
         for (uint256 i; i < tradeDataLength; ) {
-            if (!_proxyFunctionSelectors[tradeData[i].proxy][tradeData[i].selector]) revert InvalidFunction();
+            TradeData calldata singleTradeData = tradeData[i];
+            if (!_proxyFunctionSelectors[singleTradeData.proxy][singleTradeData.selector]) revert InvalidFunction();
 
-            uint256 feeBp = _proxyFeeData[tradeData[i].proxy].bp;
-
-            if (tradeData[i].maxFeeBp < feeBp) {
+            (bytes memory proxyCalldata, bool maxFeeBpViolated) = _encodeCalldataAndValidateFeeBp(
+                singleTradeData,
+                recipient,
+                isAtomic
+            );
+            if (maxFeeBpViolated) {
                 if (isAtomic) {
                     revert FeeTooHigh();
                 } else {
@@ -81,10 +85,7 @@ contract LooksRareAggregator is
                     continue;
                 }
             }
-
-            (bool success, bytes memory returnData) = tradeData[i].proxy.delegatecall(
-                _encodeCalldata(tradeData[i], recipient, isAtomic, feeBp)
-            );
+            (bool success, bytes memory returnData) = singleTradeData.proxy.delegatecall(proxyCalldata);
 
             if (!success) {
                 if (isAtomic) {
@@ -216,23 +217,23 @@ contract LooksRareAggregator is
         _executeERC1155SafeBatchTransferFrom(collection, address(this), to, tokenIds, amounts);
     }
 
-    function _encodeCalldata(
+    function _encodeCalldataAndValidateFeeBp(
         TradeData calldata singleTradeData,
         address recipient,
-        bool isAtomic,
-        uint256 feeBp
-    ) private view returns (bytes memory) {
-        return
-            abi.encodeWithSelector(
-                singleTradeData.selector,
-                singleTradeData.orders,
-                singleTradeData.ordersExtraData,
-                singleTradeData.extraData,
-                recipient,
-                isAtomic,
-                feeBp,
-                _proxyFeeData[singleTradeData.proxy].recipient
-            );
+        bool isAtomic
+    ) private view returns (bytes memory proxyCalldata, bool maxFeeBpViolated) {
+        FeeData memory feeData = _proxyFeeData[singleTradeData.proxy];
+        maxFeeBpViolated = singleTradeData.maxFeeBp < feeData.bp;
+        proxyCalldata = abi.encodeWithSelector(
+            singleTradeData.selector,
+            singleTradeData.orders,
+            singleTradeData.ordersExtraData,
+            singleTradeData.extraData,
+            recipient,
+            isAtomic,
+            feeData.bp,
+            feeData.recipient
+        );
     }
 
     receive() external payable {}
