@@ -83,7 +83,7 @@ contract SeaportProxyERC721USDCTest is TestParameters, TestHelpers, SeaportProxy
             ordersExtraData[1] = orderTwoExtraData;
         }
 
-        bytes memory extraData = validMultipleBAYCExtraData();
+        bytes memory extraData = validMultipleItemsSameCollectionExtraData();
         ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(seaportProxy),

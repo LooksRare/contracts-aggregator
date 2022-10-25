@@ -253,7 +253,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         ordersExtraData[0] = orderOneExtraData;
         ordersExtraData[1] = orderTwoExtraData;
 
-        bytes memory extraData = validMultipleBAYCExtraData();
+        bytes memory extraData = validMultipleItemsSameCollectionExtraData();
 
         V0Aggregator.TradeData[] memory tradeData = new V0Aggregator.TradeData[](1);
         uint256 totalPrice = orders[0].price + orders[1].price;
@@ -315,7 +315,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
             ordersExtraData[1] = orderTwoExtraData;
         }
 
-        bytes memory extraData = validMultipleBAYCExtraData();
+        bytes memory extraData = validMultipleItemsSameCollectionExtraData();
 
         ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
         uint256 totalPrice = orders[0].price + orders[1].price;

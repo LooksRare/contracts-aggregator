@@ -388,7 +388,7 @@ abstract contract SeaportProxyTestHelpers {
         considerationFulfillments[3][1].itemIndex = 2;
     }
 
-    function validMultipleBAYCExtraData() internal pure returns (bytes memory) {
+    function validMultipleItemsSameCollectionExtraData() internal pure returns (bytes memory) {
         SeaportProxy.ExtraData memory extraData;
 
         extraData.offerFulfillments = validMultipleOfferFulfillments();

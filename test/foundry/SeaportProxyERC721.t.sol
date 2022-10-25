@@ -71,7 +71,7 @@ contract SeaportProxyERC721Test is TestParameters, TestHelpers, SeaportProxyTest
 
         vm.warp(block.timestamp + tradeData[0].orders[1].endTime + 1);
 
-        vm.expectRevert(0xd5da9a1b);
+        vm.expectRevert(0xd5da9a1b); // NoSpecifiedOrdersAvailable
         aggregator.execute{value: tradeData[0].orders[0].price + tradeData[0].orders[1].price}(
             new TokenTransfer[](0),
             tradeData,
@@ -168,7 +168,7 @@ contract SeaportProxyERC721Test is TestParameters, TestHelpers, SeaportProxyTest
             ordersExtraData[1] = orderTwoExtraData;
         }
 
-        bytes memory extraData = validMultipleBAYCExtraData();
+        bytes memory extraData = validMultipleItemsSameCollectionExtraData();
         ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
         uint256 totalPrice = orders[0].price + orders[1].price;
         tradeData[0] = ILooksRareAggregator.TradeData({

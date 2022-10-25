@@ -185,7 +185,7 @@ contract GemSwapBenchmarkTest is TestParameters, TestHelpers, SeaportProxyTestHe
                 maxFeeBp: 0,
                 orders: seaportOrders,
                 ordersExtraData: seaportOrdersExtraData,
-                extraData: isAtomic ? validMultipleBAYCExtraData() : new bytes(0)
+                extraData: isAtomic ? validMultipleItemsSameCollectionExtraData() : new bytes(0)
             });
 
             BasicOrder[] memory looksRareOrders = new BasicOrder[](2);
