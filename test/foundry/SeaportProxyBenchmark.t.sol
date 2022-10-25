@@ -232,43 +232,12 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         assertEq(IERC721(BAYC).ownerOf(8498), _buyer);
     }
 
-    function testExecuteThroughAggregatorTwoOrders() public {
-        _aggregatorSetUp();
+    function testExecuteThroughAggregatorTwoOrdersAtomic() public {
+        _testExecuteThroughAggregatorTwoOrders(true);
+    }
 
-        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
-        BasicOrder memory orderOne = validBAYCId2518Order();
-        BasicOrder memory orderTwo = validBAYCId8498Order();
-        BasicOrder[] memory orders = new BasicOrder[](2);
-        orders[0] = orderOne;
-        orders[1] = orderTwo;
-
-        bytes memory orderOneExtraData = validBAYCId2518OrderExtraData();
-        bytes memory orderTwoExtraData = validBAYCId8498OrderExtraData();
-        bytes[] memory ordersExtraData = new bytes[](2);
-        ordersExtraData[0] = orderOneExtraData;
-        ordersExtraData[1] = orderTwoExtraData;
-
-        bytes memory extraData = validMultipleBAYCExtraData();
-
-        ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
-        uint256 totalPrice = orders[0].price + orders[1].price;
-        tradeData[0] = ILooksRareAggregator.TradeData({
-            proxy: address(seaportProxy),
-            selector: SeaportProxy.execute.selector,
-            value: totalPrice,
-            maxFeeBp: 0,
-            orders: orders,
-            ordersExtraData: ordersExtraData,
-            extraData: extraData
-        });
-
-        uint256 gasRemaining = gasleft();
-        aggregator.execute{value: totalPrice}(tokenTransfers, tradeData, _buyer, _buyer, true);
-        uint256 gasConsumed = gasRemaining - gasleft();
-        emit log_named_uint("Seaport multiple NFT purchase through the aggregator consumed: ", gasConsumed);
-
-        assertEq(IERC721(BAYC).ownerOf(2518), _buyer);
-        assertEq(IERC721(BAYC).ownerOf(8498), _buyer);
+    function testExecuteThroughAggregatorTwoOrdersNonAtomic() public {
+        _testExecuteThroughAggregatorTwoOrders(false);
     }
 
     function testExecuteThroughV0AggregatorTwoOrders() public {
@@ -327,5 +296,56 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
 
         // Since we are forking mainnet, we have to make sure it has 0 ETH.
         vm.deal(address(seaportProxy), 0);
+    }
+
+    function _testExecuteThroughAggregatorTwoOrders(bool isAtomic) public {
+        _aggregatorSetUp();
+
+        BasicOrder memory orderOne = validBAYCId2518Order();
+        BasicOrder memory orderTwo = validBAYCId8498Order();
+        BasicOrder[] memory orders = new BasicOrder[](2);
+        orders[0] = orderOne;
+        orders[1] = orderTwo;
+
+        bytes[] memory ordersExtraData = new bytes[](2);
+        {
+            bytes memory orderOneExtraData = validBAYCId2518OrderExtraData();
+            bytes memory orderTwoExtraData = validBAYCId8498OrderExtraData();
+            ordersExtraData[0] = orderOneExtraData;
+            ordersExtraData[1] = orderTwoExtraData;
+        }
+
+        bytes memory extraData = validMultipleBAYCExtraData();
+
+        ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
+        uint256 totalPrice = orders[0].price + orders[1].price;
+        tradeData[0] = ILooksRareAggregator.TradeData({
+            proxy: address(seaportProxy),
+            selector: SeaportProxy.execute.selector,
+            value: totalPrice,
+            maxFeeBp: 0,
+            orders: orders,
+            ordersExtraData: ordersExtraData,
+            extraData: extraData
+        });
+
+        uint256 gasRemaining = gasleft();
+        aggregator.execute{value: totalPrice}(new TokenTransfer[](0), tradeData, _buyer, _buyer, isAtomic);
+        uint256 gasConsumed = gasRemaining - gasleft();
+
+        if (isAtomic) {
+            emit log_named_uint(
+                "(Atomic) Seaport multiple NFT purchase through the aggregator consumed: ",
+                gasConsumed
+            );
+        } else {
+            emit log_named_uint(
+                "(Non-atomic) Seaport multiple NFT purchase through the aggregator consumed: ",
+                gasConsumed
+            );
+        }
+
+        assertEq(IERC721(BAYC).ownerOf(2518), _buyer);
+        assertEq(IERC721(BAYC).ownerOf(8498), _buyer);
     }
 }
