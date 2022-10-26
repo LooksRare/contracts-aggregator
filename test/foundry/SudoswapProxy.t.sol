@@ -17,8 +17,8 @@ abstract contract TestParameters {
 }
 
 contract SudoswapProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
-    SudoswapProxy sudoswapProxy;
-    TokenRescuer tokenRescuer;
+    SudoswapProxy private sudoswapProxy;
+    TokenRescuer private tokenRescuer;
 
     function setUp() public {
         sudoswapProxy = new SudoswapProxy(SUDOSWAP, _fakeAggregator);

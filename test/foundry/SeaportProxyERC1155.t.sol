@@ -13,11 +13,13 @@ abstract contract TestParameters {
     address internal constant _buyer = address(1);
     address internal constant _protocolFeeRecipient = address(2);
     string internal constant MAINNET_RPC_URL = "https://rpc.ankr.com/eth";
+    uint256 internal constant INITIAL_ETH_BALANCE = 1 ether;
+    event Sweep(address indexed sweeper);
 }
 
 contract SeaportProxyERC1155Test is TestParameters, TestHelpers, SeaportProxyTestHelpers {
-    LooksRareAggregator aggregator;
-    SeaportProxy seaportProxy;
+    LooksRareAggregator private aggregator;
+    SeaportProxy private seaportProxy;
 
     function setUp() public {
         vm.createSelectFork(MAINNET_RPC_URL, 15_320_038);
@@ -25,7 +27,7 @@ contract SeaportProxyERC1155Test is TestParameters, TestHelpers, SeaportProxyTes
         aggregator = new LooksRareAggregator();
         seaportProxy = new SeaportProxy(SEAPORT, address(aggregator));
         aggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);
-        vm.deal(_buyer, 1 ether);
+        vm.deal(_buyer, INITIAL_ETH_BALANCE);
         // Forking from mainnet and the deployed addresses might have balance
         vm.deal(address(aggregator), 0);
         vm.deal(address(seaportProxy), 0);
@@ -83,8 +85,6 @@ contract SeaportProxyERC1155Test is TestParameters, TestHelpers, SeaportProxyTes
         assertEq(_buyer.balance, 0.702 ether);
     }
 
-    event Sweep(address indexed originator);
-
     function _testExecute(bool isAtomic) private {
         ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData(isAtomic);
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
@@ -94,7 +94,7 @@ contract SeaportProxyERC1155Test is TestParameters, TestHelpers, SeaportProxyTes
 
         aggregator.execute{value: tradeData[0].value}(tokenTransfers, tradeData, _buyer, _buyer, isAtomic);
         assertEq(IERC1155(CITY_DAO).balanceOf(_buyer, 42), 2);
-        assertEq(_buyer.balance, 1 ether - tradeData[0].value);
+        assertEq(_buyer.balance, INITIAL_ETH_BALANCE - tradeData[0].value);
     }
 
     function _testExecuteRefundFromLooksRareAggregator(bool isAtomic) private {
@@ -106,7 +106,7 @@ contract SeaportProxyERC1155Test is TestParameters, TestHelpers, SeaportProxyTes
 
         aggregator.execute{value: tradeData[0].value + 0.1 ether}(tokenTransfers, tradeData, _buyer, _buyer, isAtomic);
         assertEq(IERC1155(CITY_DAO).balanceOf(_buyer, 42), 2);
-        assertEq(_buyer.balance, 1 ether - tradeData[0].value);
+        assertEq(_buyer.balance, INITIAL_ETH_BALANCE - tradeData[0].value);
     }
 
     function _testExecuteRefundFromSeaportProxy(bool isAtomic) private {

@@ -21,9 +21,9 @@ abstract contract TestParameters {
 }
 
 contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyTestHelpers {
-    V0Aggregator v0Aggregator;
-    LooksRareAggregator aggregator;
-    SeaportProxy seaportProxy;
+    V0Aggregator private v0Aggregator;
+    LooksRareAggregator private aggregator;
+    SeaportProxy private seaportProxy;
 
     function setUp() public {
         vm.createSelectFork(MAINNET_RPC_URL, 15_300_884);
@@ -54,7 +54,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         parameters.fulfillerConduitKey = bytes32(0);
         AdditionalRecipient[] memory additionalRecipients = new AdditionalRecipient[](2);
         additionalRecipients[0].amount = 2.1 ether;
-        additionalRecipients[0].recipient = payable(0x8De9C5A032463C561423387a9648c5C7BCC5BC90);
+        additionalRecipients[0].recipient = payable(OPENSEA_FEES);
         additionalRecipients[1].amount = 2.1 ether;
         additionalRecipients[1].recipient = payable(0xA858DDc0445d8131daC4d1DE01f834ffcbA52Ef1);
         parameters.additionalRecipients = additionalRecipients;
@@ -164,7 +164,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         considerationOne[0].recipient = payable(0x7a277Cf6E2F3704425195caAe4148848c29Ff815);
         considerationOne[0].startAmount = 79.8 ether;
         considerationOne[0].endAmount = 79.8 ether;
-        considerationOne[1].recipient = payable(0x8De9C5A032463C561423387a9648c5C7BCC5BC90);
+        considerationOne[1].recipient = payable(OPENSEA_FEES);
         considerationOne[1].startAmount = 2.1 ether;
         considerationOne[1].endAmount = 2.1 ether;
         considerationOne[2].recipient = payable(0xA858DDc0445d8131daC4d1DE01f834ffcbA52Ef1);
@@ -201,10 +201,10 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         considerationTwo[0].recipient = payable(0x72F1C8601C30C6f42CA8b0E85D1b2F87626A0deb);
         considerationTwo[0].startAmount = 80.541 ether;
         considerationTwo[0].endAmount = 80.541 ether;
-        considerationTwo[1].recipient = payable(0x8De9C5A032463C561423387a9648c5C7BCC5BC90);
+        considerationTwo[1].recipient = payable(OPENSEA_FEES);
         considerationTwo[1].startAmount = 2.1195 ether;
         considerationTwo[1].endAmount = 2.1195 ether;
-        considerationTwo[2].recipient = payable(0xA858DDc0445d8131daC4d1DE01f834ffcbA52Ef1);
+        considerationTwo[2].recipient = payable(YUGA_LABS);
         considerationTwo[2].startAmount = 2.1195 ether;
         considerationTwo[2].endAmount = 2.1195 ether;
         parametersTwo.consideration = considerationTwo;
@@ -219,7 +219,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         seaport.fulfillAvailableAdvancedOrders{value: 168.78 ether}(
             advancedOrders,
             new CriteriaResolver[](0),
-            validMultipleOfferFulfillments(),
+            validMultipleOfferFulfillments(2),
             validMultipleConsiderationFulfillments(),
             bytes32(0),
             _buyer,

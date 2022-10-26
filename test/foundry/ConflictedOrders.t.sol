@@ -1,0 +1,127 @@
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.17;
+
+import {IERC721} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC721.sol";
+import {LooksRareProxy} from "../../contracts/proxies/LooksRareProxy.sol";
+import {SeaportProxy} from "../../contracts/proxies/SeaportProxy.sol";
+import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
+import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggregator.sol";
+import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
+import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
+import {TestHelpers} from "./TestHelpers.sol";
+import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
+
+abstract contract TestParameters {
+    address internal constant BAYC = 0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D;
+    address internal constant _buyer = address(1);
+    address internal constant _protocolFeeRecipient = address(2);
+    string internal constant MAINNET_RPC_URL = "https://rpc.ankr.com/eth";
+    uint256 internal constant INITIAL_ETH_BALANCE = 200 ether;
+
+    event Sweep(address indexed sweeper);
+}
+
+contract ConflictedOrdersTest is TestParameters, TestHelpers, SeaportProxyTestHelpers {
+    LooksRareAggregator private aggregator;
+    SeaportProxy private seaportProxy;
+    LooksRareProxy private looksRareProxy;
+
+    function setUp() public {
+        vm.createSelectFork(MAINNET_RPC_URL, 15_327_113);
+
+        aggregator = new LooksRareAggregator();
+        seaportProxy = new SeaportProxy(SEAPORT, address(aggregator));
+        aggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);
+        looksRareProxy = new LooksRareProxy(0x59728544B08AB483533076417FbBB2fD0B17CE3a, address(aggregator));
+        aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
+        vm.deal(_buyer, INITIAL_ETH_BALANCE);
+        // Forking from mainnet and the deployed addresses might have balance
+        vm.deal(address(aggregator), 0);
+        vm.deal(address(seaportProxy), 0);
+        vm.deal(address(looksRareProxy), 0);
+    }
+
+    function testExecuteAtomicFail() public asPrankedUser(_buyer) {
+        ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData(true);
+
+        // Not sure why none of 0x1f003d0a / "BadSignatureV(0)" worked, but I've verified the error in the logs.
+        vm.expectRevert();
+        aggregator.execute{value: tradeData[0].orders[0].price + tradeData[1].orders[0].price}(
+            new TokenTransfer[](0),
+            tradeData,
+            _buyer,
+            _buyer,
+            true
+        );
+    }
+
+    function testExecutePartialSuccess() public asPrankedUser(_buyer) {
+        ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData(false);
+
+        vm.expectEmit(true, true, false, false);
+        emit Sweep(_buyer);
+        aggregator.execute{value: tradeData[0].orders[0].price + tradeData[1].orders[0].price}(
+            new TokenTransfer[](0),
+            tradeData,
+            _buyer,
+            _buyer,
+            false
+        );
+
+        assertEq(IERC721(BAYC).balanceOf(_buyer), 1);
+        assertEq(IERC721(BAYC).ownerOf(9314), _buyer);
+        assertEq(address(_buyer).balance, INITIAL_ETH_BALANCE - tradeData[0].orders[0].price);
+    }
+
+    function _generateTradeData(bool isAtomic) private returns (ILooksRareAggregator.TradeData[] memory) {
+        BasicOrder[] memory seaportOrders = new BasicOrder[](1);
+        seaportOrders[0] = validBAYCId9314Order();
+
+        bytes[] memory seaportOrdersExtraData = new bytes[](1);
+        {
+            seaportOrdersExtraData[0] = validBAYCId9314OrderExtraData();
+        }
+
+        ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](2);
+
+        tradeData[0] = ILooksRareAggregator.TradeData({
+            proxy: address(seaportProxy),
+            selector: SeaportProxy.execute.selector,
+            value: seaportOrders[0].price,
+            maxFeeBp: 0,
+            orders: seaportOrders,
+            ordersExtraData: seaportOrdersExtraData,
+            extraData: isAtomic ? validSingleBAYCExtraData() : new bytes(0)
+        });
+
+        BasicOrder[] memory looksRareOrders = new BasicOrder[](1);
+        looksRareOrders[0].signer = 0x3445A938F98EaAeb6AF3ce90e71FC5994a23F897;
+        looksRareOrders[0].collection = BAYC;
+        looksRareOrders[0].collectionType = CollectionType.ERC721;
+        looksRareOrders[0].tokenIds = seaportOrders[0].tokenIds;
+        looksRareOrders[0].amounts = seaportOrders[0].amounts;
+        looksRareOrders[0].price = 87.95 ether;
+        looksRareOrders[0].currency = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
+        looksRareOrders[0].startTime = 1659415937;
+        looksRareOrders[0].endTime = 1661764279;
+        looksRareOrders[0]
+            .signature = hex"0ad409048cbf4b75ab2dec2cdb7f57b6e0b1a3490a9230d8146f1eec9185ae1078735b237ff2088320f00204968b1eb396d374dfba9fbc79dedde4a53670f8b000";
+
+        bytes[] memory looksRareOrdersExtraData = new bytes[](1);
+        {
+            looksRareOrdersExtraData[0] = abi.encode(87.95 ether, 9550, 2, 0x56244Bb70CbD3EA9Dc8007399F61dFC065190031);
+        }
+
+        tradeData[1] = ILooksRareAggregator.TradeData({
+            proxy: address(looksRareProxy),
+            selector: LooksRareProxy.execute.selector,
+            value: looksRareOrders[0].price,
+            maxFeeBp: 0,
+            orders: looksRareOrders,
+            ordersExtraData: looksRareOrdersExtraData,
+            extraData: ""
+        });
+
+        return tradeData;
+    }
+}

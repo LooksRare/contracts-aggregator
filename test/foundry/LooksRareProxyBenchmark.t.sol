@@ -19,9 +19,9 @@ abstract contract TestParameters {
 }
 
 contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRareProxyTestHelpers {
-    V0Aggregator v0Aggregator;
-    LooksRareAggregator aggregator;
-    LooksRareProxy looksRareProxy;
+    V0Aggregator private v0Aggregator;
+    LooksRareAggregator private aggregator;
+    LooksRareProxy private looksRareProxy;
 
     function setUp() public {
         vm.createSelectFork(MAINNET_RPC_URL, 15_282_897);

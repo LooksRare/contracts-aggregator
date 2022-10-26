@@ -18,12 +18,13 @@ abstract contract TestParameters {
     address internal constant _buyer = address(1);
     address internal constant _protocolFeeRecipient = address(2);
     string internal constant MAINNET_RPC_URL = "https://rpc.ankr.com/eth";
+    uint256 internal constant INITIAL_USDC_BALANCE = 500000e6;
 }
 
 contract SeaportProxyERC721USDCTest is TestParameters, TestHelpers, SeaportProxyTestHelpers {
-    LooksRareAggregator aggregator;
-    ERC20EnabledLooksRareAggregator erc20EnabledAggregator;
-    SeaportProxy seaportProxy;
+    LooksRareAggregator private aggregator;
+    ERC20EnabledLooksRareAggregator private erc20EnabledAggregator;
+    SeaportProxy private seaportProxy;
 
     function setUp() public {
         vm.createSelectFork(MAINNET_RPC_URL, 15_491_323);
@@ -33,7 +34,7 @@ contract SeaportProxyERC721USDCTest is TestParameters, TestHelpers, SeaportProxy
         seaportProxy = new SeaportProxy(SEAPORT, address(aggregator));
         aggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);
 
-        deal(USDC, _buyer, 500000e6);
+        deal(USDC, _buyer, INITIAL_USDC_BALANCE);
 
         aggregator.approve(SEAPORT, USDC, type(uint256).max);
         aggregator.setFee(address(seaportProxy), 250, _protocolFeeRecipient);
@@ -65,10 +66,10 @@ contract SeaportProxyERC721USDCTest is TestParameters, TestHelpers, SeaportProxy
         assertEq(IERC721(BAYC).balanceOf(_buyer), 2);
         assertEq(IERC721(BAYC).ownerOf(9948), _buyer);
         assertEq(IERC721(BAYC).ownerOf(8350), _buyer);
-        assertEq(IERC20(USDC).balanceOf(_buyer), 500000e6 - totalPrice);
+        assertEq(IERC20(USDC).balanceOf(_buyer), INITIAL_USDC_BALANCE - totalPrice);
     }
 
-    function _generateTradeData() private view returns (ILooksRareAggregator.TradeData[] memory) {
+    function _generateTradeData() private returns (ILooksRareAggregator.TradeData[] memory) {
         BasicOrder memory orderOne = validBAYCId9948Order();
         BasicOrder memory orderTwo = validBAYCId8350Order();
         BasicOrder[] memory orders = new BasicOrder[](2);

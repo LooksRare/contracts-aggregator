@@ -2,12 +2,10 @@
 pragma solidity 0.8.17;
 
 import {IERC721} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC721.sol";
-import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
 import {SeaportProxy} from "../../contracts/proxies/SeaportProxy.sol";
 import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
-import {IProxy} from "../../contracts/interfaces/IProxy.sol";
 import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggregator.sol";
-import {BasicOrder, FeeData, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
+import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
 
@@ -16,11 +14,13 @@ abstract contract TestParameters {
     address internal constant _buyer = address(1);
     address internal constant _protocolFeeRecipient = address(2);
     string internal constant MAINNET_RPC_URL = "https://rpc.ankr.com/eth";
+    uint256 internal constant INITIAL_ETH_BALANCE = 200 ether;
+    event Sweep(address indexed sweeper);
 }
 
 contract SeaportProxyERC721Test is TestParameters, TestHelpers, SeaportProxyTestHelpers {
-    LooksRareAggregator aggregator;
-    SeaportProxy seaportProxy;
+    LooksRareAggregator private aggregator;
+    SeaportProxy private seaportProxy;
 
     function setUp() public {
         vm.createSelectFork(MAINNET_RPC_URL, 15_300_884);
@@ -28,7 +28,7 @@ contract SeaportProxyERC721Test is TestParameters, TestHelpers, SeaportProxyTest
         aggregator = new LooksRareAggregator();
         seaportProxy = new SeaportProxy(SEAPORT, address(aggregator));
         aggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);
-        vm.deal(_buyer, 200 ether);
+        vm.deal(_buyer, INITIAL_ETH_BALANCE);
         // Forking from mainnet and the deployed addresses might have balance
         vm.deal(address(aggregator), 0);
         vm.deal(address(seaportProxy), 0);
@@ -99,10 +99,8 @@ contract SeaportProxyERC721Test is TestParameters, TestHelpers, SeaportProxyTest
 
         assertEq(IERC721(BAYC).balanceOf(_buyer), 1);
         assertEq(IERC721(BAYC).ownerOf(2518), _buyer);
-        assertEq(address(_buyer).balance, 200 ether - tradeData[0].orders[0].price);
+        assertEq(address(_buyer).balance, INITIAL_ETH_BALANCE - tradeData[0].orders[0].price);
     }
-
-    event Sweep(address indexed originator);
 
     function _testExecuteRefundFromLooksRareAggregator(bool isAtomic) private {
         ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData();
@@ -114,7 +112,7 @@ contract SeaportProxyERC721Test is TestParameters, TestHelpers, SeaportProxyTest
 
         assertEq(IERC721(BAYC).ownerOf(2518), _buyer);
         assertEq(IERC721(BAYC).ownerOf(8498), _buyer);
-        assertEq(address(_buyer).balance, 200 ether - totalPrice);
+        assertEq(address(_buyer).balance, INITIAL_ETH_BALANCE - totalPrice);
     }
 
     function _testExecuteRefundFromSeaportProxy(bool isAtomic) private {
@@ -126,7 +124,7 @@ contract SeaportProxyERC721Test is TestParameters, TestHelpers, SeaportProxyTest
 
         vm.expectEmit(true, true, false, false);
         emit Sweep(_buyer);
-        aggregator.execute{value: 200 ether}(new TokenTransfer[](0), tradeData, _buyer, _buyer, isAtomic);
+        aggregator.execute{value: INITIAL_ETH_BALANCE}(new TokenTransfer[](0), tradeData, _buyer, _buyer, isAtomic);
 
         assertEq(IERC721(BAYC).ownerOf(2518), _buyer);
         assertEq(IERC721(BAYC).ownerOf(8498), _buyer);
@@ -149,11 +147,11 @@ contract SeaportProxyERC721Test is TestParameters, TestHelpers, SeaportProxyTest
 
         assertEq(IERC721(BAYC).ownerOf(2518), _buyer);
         assertEq(IERC721(BAYC).ownerOf(8498), _buyer);
-        assertEq(address(_buyer).balance, 200 ether - totalPriceWithFees);
+        assertEq(address(_buyer).balance, INITIAL_ETH_BALANCE - totalPriceWithFees);
         assertEq(address(_protocolFeeRecipient).balance, totalPriceWithFees - totalPriceBeforeFee);
     }
 
-    function _generateTradeData() private view returns (ILooksRareAggregator.TradeData[] memory) {
+    function _generateTradeData() private returns (ILooksRareAggregator.TradeData[] memory) {
         BasicOrder memory orderOne = validBAYCId2518Order();
         BasicOrder memory orderTwo = validBAYCId8498Order();
         BasicOrder[] memory orders = new BasicOrder[](2);

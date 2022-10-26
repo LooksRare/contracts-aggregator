@@ -19,8 +19,8 @@ abstract contract TestParameters {
 }
 
 contract X2Y2ProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
-    X2Y2Proxy x2y2Proxy;
-    TokenRescuer tokenRescuer;
+    X2Y2Proxy private x2y2Proxy;
+    TokenRescuer private tokenRescuer;
 
     function setUp() public {
         x2y2Proxy = new X2Y2Proxy(X2Y2, _fakeAggregator);
