@@ -73,7 +73,7 @@ contract ConflictedOrdersTest is TestParameters, TestHelpers, SeaportProxyTestHe
         assertEq(address(_buyer).balance, INITIAL_ETH_BALANCE - tradeData[0].orders[0].price);
     }
 
-    function _generateTradeData(bool isAtomic) private returns (ILooksRareAggregator.TradeData[] memory) {
+    function _generateTradeData(bool isAtomic) private view returns (ILooksRareAggregator.TradeData[] memory) {
         BasicOrder[] memory seaportOrders = new BasicOrder[](1);
         seaportOrders[0] = validBAYCId9314Order();
 

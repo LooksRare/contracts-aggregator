@@ -165,7 +165,7 @@ contract SeaportProxyMultipleCurrenciesTest is TestParameters, TestHelpers, Seap
         assertEq(IERC20(USDC).balanceOf(address(seaportProxy)), 0);
     }
 
-    function _generateTradeData(bool isAtomic) private returns (ILooksRareAggregator.TradeData[] memory) {
+    function _generateTradeData(bool isAtomic) private view returns (ILooksRareAggregator.TradeData[] memory) {
         BasicOrder memory orderOne = validBAYCId9996Order();
         BasicOrder memory orderTwo = validBAYCId5509Order();
         BasicOrder[] memory orders = new BasicOrder[](2);

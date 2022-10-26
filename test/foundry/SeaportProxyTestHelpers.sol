@@ -292,7 +292,7 @@ abstract contract SeaportProxyTestHelpers {
         ] = hex"0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000003000000000000000000000000004c00500000ad104d7dbd00e3ae0a5c00560c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000054065f515c65880000007b02230091a7ed01230072f7006a004d60a8d4e71d599b8104250f00000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000000000000000000000004d85756773550000000000000000000000000000061331952bdba147dcae69976fd1cdef26d397100000000000000000000000000000000000000000000000000237035aba270000000000000000000000000008de9c5a032463c561423387a9648c5c7bcc5bc90000000000000000000000000000000000000000000000000008dc0d6ae89c00000000000000000000000000060e7343205c9c88788a22c40030d35f9370d302d";
     }
 
-    function validBAYCId9314OrderExtraData() internal returns (bytes memory) {
+    function validBAYCId9314OrderExtraData() internal pure returns (bytes memory) {
         AdditionalRecipient[] memory recipients = new AdditionalRecipient[](3);
         recipients[0].recipient = payable(0x3445A938F98EaAeb6AF3ce90e71FC5994a23F897);
         recipients[0].amount = 79.553 ether;
@@ -308,7 +308,7 @@ abstract contract SeaportProxyTestHelpers {
         return abi.encode(orderExtraData);
     }
 
-    function validBAYCId9996OrderExtraData() internal returns (bytes memory) {
+    function validBAYCId9996OrderExtraData() internal pure returns (bytes memory) {
         AdditionalRecipient[] memory recipients = new AdditionalRecipient[](3);
         recipients[0].recipient = payable(0x4347fA8364f2E4db102679BcE37571Ee9166550A);
         recipients[0].amount = 1499993e5;
@@ -324,7 +324,7 @@ abstract contract SeaportProxyTestHelpers {
         return abi.encode(orderExtraData);
     }
 
-    function validBAYCId5509OrderExtraData() internal returns (bytes memory) {
+    function validBAYCId5509OrderExtraData() internal pure returns (bytes memory) {
         AdditionalRecipient[] memory recipients = new AdditionalRecipient[](3);
         recipients[0].recipient = payable(0xA4C6FcEAeC927B4F03a769B08cF05A3c8f9b23c2);
         recipients[0].amount = 76 ether;
@@ -340,7 +340,7 @@ abstract contract SeaportProxyTestHelpers {
         return abi.encode(orderExtraData);
     }
 
-    function validBAYCId6092OrderExtraData() internal returns (bytes memory) {
+    function validBAYCId6092OrderExtraData() internal pure returns (bytes memory) {
         AdditionalRecipient[] memory recipients = new AdditionalRecipient[](3);
         recipients[0].recipient = payable(0xA9aFCEF744fC60bAF5a1325D4071dD5e9Ba4A5c9);
         recipients[0].amount = 79.8 ether;
@@ -356,7 +356,7 @@ abstract contract SeaportProxyTestHelpers {
         return abi.encode(orderExtraData);
     }
 
-    function validBAYCId9948OrderExtraData() internal returns (bytes memory) {
+    function validBAYCId9948OrderExtraData() internal pure returns (bytes memory) {
         AdditionalRecipient[] memory recipients = new AdditionalRecipient[](3);
         recipients[0].recipient = payable(0xeCBA5f51925E6CCeC26dA38Dcd7D5305f6BdFbcb);
         recipients[0].amount = 166250e6;
@@ -372,7 +372,7 @@ abstract contract SeaportProxyTestHelpers {
         return abi.encode(orderExtraData);
     }
 
-    function validBAYCId8350OrderExtraData() internal returns (bytes memory) {
+    function validBAYCId8350OrderExtraData() internal pure returns (bytes memory) {
         AdditionalRecipient[] memory recipients = new AdditionalRecipient[](3);
         recipients[0].recipient = payable(0x1c66f8A8fa9D34D26b6767cca81E4f0fb8F0692f);
         recipients[0].amount = 285000e6;
@@ -388,7 +388,7 @@ abstract contract SeaportProxyTestHelpers {
         return abi.encode(orderExtraData);
     }
 
-    function validBAYCId9357OrderExtraData() internal returns (bytes memory) {
+    function validBAYCId9357OrderExtraData() internal pure returns (bytes memory) {
         AdditionalRecipient[] memory recipients = new AdditionalRecipient[](3);
         recipients[0].recipient = payable(0x50e00Ae08678EBd16b79B84439defa046F18eb76);
         recipients[0].amount = 71.06 ether;
@@ -404,7 +404,7 @@ abstract contract SeaportProxyTestHelpers {
         return abi.encode(orderExtraData);
     }
 
-    function validBAYCId9477OrderExtraData() internal returns (bytes memory) {
+    function validBAYCId9477OrderExtraData() internal pure returns (bytes memory) {
         AdditionalRecipient[] memory recipients = new AdditionalRecipient[](3);
         recipients[0].recipient = payable(0x2ce485fe158593B9f3D4b840f1e44E3b77c96741);
         recipients[0].amount = 70.585 ether;
@@ -420,7 +420,7 @@ abstract contract SeaportProxyTestHelpers {
         return abi.encode(orderExtraData);
     }
 
-    function validBAYCId4560OrderExtraData() internal returns (bytes memory) {
+    function validBAYCId4560OrderExtraData() internal pure returns (bytes memory) {
         AdditionalRecipient[] memory recipients = new AdditionalRecipient[](3);
         recipients[0].recipient = payable(0xA27503E089EF0e37D6eaF28aA444c46eB9FD9E40);
         recipients[0].amount = 69.35 ether;
@@ -436,7 +436,7 @@ abstract contract SeaportProxyTestHelpers {
         return abi.encode(orderExtraData);
     }
 
-    function validBAYCId2518OrderExtraData() internal returns (bytes memory) {
+    function validBAYCId2518OrderExtraData() internal pure returns (bytes memory) {
         AdditionalRecipient[] memory recipients = new AdditionalRecipient[](3);
         recipients[0].recipient = payable(0x7a277Cf6E2F3704425195caAe4148848c29Ff815);
         recipients[0].amount = 79.8 ether;
@@ -452,7 +452,7 @@ abstract contract SeaportProxyTestHelpers {
         return abi.encode(orderExtraData);
     }
 
-    function validBAYCId8498OrderExtraData() internal returns (bytes memory) {
+    function validBAYCId8498OrderExtraData() internal pure returns (bytes memory) {
         AdditionalRecipient[] memory recipients = new AdditionalRecipient[](3);
         recipients[0].recipient = payable(0x72F1C8601C30C6f42CA8b0E85D1b2F87626A0deb);
         recipients[0].amount = 80.541 ether;
