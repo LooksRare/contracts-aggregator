@@ -31,6 +31,11 @@ It is a hybrid [Hardhat](https://hardhat.org/) repo that also requires [Foundry]
 - TypeScript tests are included in the `typescript` folder in the `test` folder at the root of the repo.
 - Solidity tests are included in the `foundry` folder in the `test` folder at the root of the repo.
 
+In order to speed up build time without running into the notorious "stack too deep" issue,
+use the local Foundry profile to run the tests.
+
+`FOUNDRY_PROFILE=local forge test`
+
 ### Gas benchmark
 
 ```
