@@ -35,7 +35,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
             makerAsk.tokenId = 7139;
             makerAsk.price = 81.8 ether;
             makerAsk.amount = 1;
-            makerAsk.strategy = 0x56244Bb70CbD3EA9Dc8007399F61dFC065190031;
+            makerAsk.strategy = LOOKSRARE_STRATEGY_FIXED_PRICE;
             makerAsk.nonce = 0;
             makerAsk.minPercentageToAsk = 9550;
             makerAsk.currency = WETH;
