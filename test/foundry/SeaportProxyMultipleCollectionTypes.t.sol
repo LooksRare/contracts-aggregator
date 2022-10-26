@@ -57,7 +57,7 @@ contract SeaportProxyMultipleCollectionTypesTest is TestParameters, TestHelpers,
         assertEq(address(_buyer).balance, INITIAL_ETH_BALANCE - totalPrice);
     }
 
-    function _generateTradeData(bool isAtomic) private returns (ILooksRareAggregator.TradeData[] memory) {
+    function _generateTradeData(bool isAtomic) private view returns (ILooksRareAggregator.TradeData[] memory) {
         BasicOrder memory orderOne = validBAYCId6092Order();
         BasicOrder memory orderTwo = validCityDaoOrders()[1];
         BasicOrder[] memory orders = new BasicOrder[](2);

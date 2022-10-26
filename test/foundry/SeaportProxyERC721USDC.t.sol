@@ -69,7 +69,7 @@ contract SeaportProxyERC721USDCTest is TestParameters, TestHelpers, SeaportProxy
         assertEq(IERC20(USDC).balanceOf(_buyer), INITIAL_USDC_BALANCE - totalPrice);
     }
 
-    function _generateTradeData() private returns (ILooksRareAggregator.TradeData[] memory) {
+    function _generateTradeData() private view returns (ILooksRareAggregator.TradeData[] memory) {
         BasicOrder memory orderOne = validBAYCId9948Order();
         BasicOrder memory orderTwo = validBAYCId8350Order();
         BasicOrder[] memory orders = new BasicOrder[](2);

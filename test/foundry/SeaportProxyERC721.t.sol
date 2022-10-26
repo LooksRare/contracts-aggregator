@@ -151,7 +151,7 @@ contract SeaportProxyERC721Test is TestParameters, TestHelpers, SeaportProxyTest
         assertEq(address(_protocolFeeRecipient).balance, totalPriceWithFees - totalPriceBeforeFee);
     }
 
-    function _generateTradeData() private returns (ILooksRareAggregator.TradeData[] memory) {
+    function _generateTradeData() private view returns (ILooksRareAggregator.TradeData[] memory) {
         BasicOrder memory orderOne = validBAYCId2518Order();
         BasicOrder memory orderTwo = validBAYCId8498Order();
         BasicOrder[] memory orders = new BasicOrder[](2);
