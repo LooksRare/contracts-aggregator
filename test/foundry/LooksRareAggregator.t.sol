@@ -21,9 +21,9 @@ abstract contract TestParameters {
 }
 
 contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTest, ILooksRareAggregator {
-    LooksRareAggregator aggregator;
-    LooksRareProxy looksRareProxy;
-    TokenRescuer tokenRescuer;
+    LooksRareAggregator private aggregator;
+    LooksRareProxy private looksRareProxy;
+    TokenRescuer private tokenRescuer;
 
     function execute(
         TokenTransfer[] calldata,

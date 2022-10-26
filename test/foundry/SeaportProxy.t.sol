@@ -21,8 +21,8 @@ abstract contract TestParameters {
 }
 
 contract SeaportProxyTest is TestParameters, TestHelpers, TokenRescuerTest, SeaportProxyTestHelpers {
-    SeaportProxy seaportProxy;
-    TokenRescuer tokenRescuer;
+    SeaportProxy private seaportProxy;
+    TokenRescuer private tokenRescuer;
 
     function setUp() public {
         seaportProxy = new SeaportProxy(SEAPORT, _fakeAggregator);

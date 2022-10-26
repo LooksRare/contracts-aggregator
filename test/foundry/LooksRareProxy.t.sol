@@ -18,12 +18,13 @@ abstract contract TestParameters {
     address internal constant _buyer = address(1);
     address internal constant _fakeAggregator = address(69420);
     string internal constant MAINNET_RPC_URL = "https://rpc.ankr.com/eth";
+    event Sweep(address indexed sweeper);
 }
 
 contract LooksRareProxyTest is TestParameters, TestHelpers, TokenRescuerTest, LooksRareProxyTestHelpers {
-    LooksRareAggregator aggregator;
-    LooksRareProxy looksRareProxy;
-    TokenRescuer tokenRescuer;
+    LooksRareAggregator private aggregator;
+    LooksRareProxy private looksRareProxy;
+    TokenRescuer private tokenRescuer;
 
     function setUp() public {
         vm.createSelectFork(MAINNET_RPC_URL, 15_282_897);
@@ -51,8 +52,6 @@ contract LooksRareProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Lo
         vm.expectRevert("Strategy: Execution invalid");
         aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, true);
     }
-
-    event Sweep(address indexed originator);
 
     function testExecutePartialSuccess() public asPrankedUser(_buyer) {
         ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData();

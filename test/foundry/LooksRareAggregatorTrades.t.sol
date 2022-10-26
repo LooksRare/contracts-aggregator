@@ -26,7 +26,7 @@ contract LooksRareAggregatorTradesTest is
     LooksRareProxyTestHelpers,
     SeaportProxyTestHelpers
 {
-    LooksRareAggregator aggregator;
+    LooksRareAggregator private aggregator;
 
     function execute(
         TokenTransfer[] calldata,

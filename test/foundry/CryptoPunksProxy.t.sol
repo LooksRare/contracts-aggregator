@@ -16,12 +16,13 @@ abstract contract TestParameters {
     address internal constant CRYPTOPUNKS = 0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB;
     address internal constant _buyer = address(420);
     string internal constant MAINNET_RPC_URL = "https://rpc.ankr.com/eth";
+    event Sweep(address indexed sweeper);
 }
 
 contract CryptoPunksProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
-    LooksRareAggregator aggregator;
-    CryptoPunksProxy cryptoPunksProxy;
-    TokenRescuer tokenRescuer;
+    LooksRareAggregator private aggregator;
+    CryptoPunksProxy private cryptoPunksProxy;
+    TokenRescuer private tokenRescuer;
 
     function setUp() public {
         vm.createSelectFork(MAINNET_RPC_URL, 15_358_065);
@@ -172,8 +173,6 @@ contract CryptoPunksProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
         orders[1].endTime = 0;
         orders[1].signature = "";
     }
-
-    event Sweep(address indexed originator);
 
     function _testExecute(bool isAtomic) private {
         ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData();
