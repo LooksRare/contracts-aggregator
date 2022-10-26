@@ -10,15 +10,10 @@ import {SeaportInterface} from "../../contracts/interfaces/SeaportInterface.sol"
 import {IProxy} from "../../contracts/interfaces/IProxy.sol";
 import {BasicOrder, TokenTransfer, FeeData} from "../../contracts/libraries/OrderStructs.sol";
 import {TestHelpers} from "./TestHelpers.sol";
+import {TestParameters} from "./TestParameters.sol";
 import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
 import {BasicOrderParameters, AdditionalRecipient, AdvancedOrder, OrderParameters, OfferItem, ConsiderationItem, CriteriaResolver} from "../../contracts/libraries/seaport/ConsiderationStructs.sol";
 import {BasicOrderType, OrderType, ItemType} from "../../contracts/libraries/seaport/ConsiderationEnums.sol";
-
-abstract contract TestParameters {
-    address internal constant BAYC = 0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D;
-    address internal constant _buyer = address(1);
-    string internal constant MAINNET_RPC_URL = "https://rpc.ankr.com/eth";
-}
 
 contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyTestHelpers {
     V0Aggregator private v0Aggregator;

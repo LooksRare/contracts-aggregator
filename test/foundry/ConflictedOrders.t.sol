@@ -9,17 +9,8 @@ import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggrega
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
 import {TestHelpers} from "./TestHelpers.sol";
+import {TestParameters} from "./TestParameters.sol";
 import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
-
-abstract contract TestParameters {
-    address internal constant BAYC = 0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D;
-    address internal constant _buyer = address(1);
-    address internal constant _protocolFeeRecipient = address(2);
-    string internal constant MAINNET_RPC_URL = "https://rpc.ankr.com/eth";
-    uint256 internal constant INITIAL_ETH_BALANCE = 200 ether;
-
-    event Sweep(address indexed sweeper);
-}
 
 contract ConflictedOrdersTest is TestParameters, TestHelpers, SeaportProxyTestHelpers {
     LooksRareAggregator private aggregator;
@@ -101,7 +92,7 @@ contract ConflictedOrdersTest is TestParameters, TestHelpers, SeaportProxyTestHe
         looksRareOrders[0].tokenIds = seaportOrders[0].tokenIds;
         looksRareOrders[0].amounts = seaportOrders[0].amounts;
         looksRareOrders[0].price = 87.95 ether;
-        looksRareOrders[0].currency = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
+        looksRareOrders[0].currency = WETH;
         looksRareOrders[0].startTime = 1659415937;
         looksRareOrders[0].endTime = 1661764279;
         looksRareOrders[0]
