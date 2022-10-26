@@ -10,33 +10,18 @@ import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggrega
 import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
 import {MockERC20} from "./utils/MockERC20.sol";
 import {TestHelpers} from "./TestHelpers.sol";
+import {TestParameters} from "./TestParameters.sol";
 import {LooksRareProxyTestHelpers} from "./LooksRareProxyTestHelpers.sol";
 import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
 import {ScamRecipient} from "./utils/ScamRecipient.sol";
 
-abstract contract TestParameters {
-    address internal constant _buyer = address(2);
-    string internal constant MAINNET_RPC_URL = "https://rpc.ankr.com/eth";
-}
-
 contract LooksRareAggregatorTradesTest is
     TestParameters,
     TestHelpers,
-    ILooksRareAggregator,
     LooksRareProxyTestHelpers,
     SeaportProxyTestHelpers
 {
     LooksRareAggregator private aggregator;
-
-    function execute(
-        TokenTransfer[] calldata,
-        TradeData[] calldata,
-        address,
-        address,
-        bool
-    ) external payable {
-        revert("This contract inherits from ILooksRareAggregator so execute has to be defined");
-    }
 
     function testExecuteZeroOriginator() public {
         vm.createSelectFork(MAINNET_RPC_URL, 15_282_897);

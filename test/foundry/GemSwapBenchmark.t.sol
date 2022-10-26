@@ -8,22 +8,17 @@ import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
 import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggregator.sol";
 import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
 import {TestHelpers} from "./TestHelpers.sol";
+import {TestParameters} from "./TestParameters.sol";
 import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
 import {LooksRareProxyTestHelpers} from "./LooksRareProxyTestHelpers.sol";
 import {IGemSwap} from "../../contracts/interfaces/IGemSwap.sol";
-
-abstract contract TestParameters {
-    address internal constant GEMSWAP = 0x83C8F28c26bF6aaca652Df1DbBE0e1b56F8baBa2;
-    // I just picked an address with high ETH balance
-    address internal constant _buyer = 0xbF3aEB96e164ae67E763D9e050FF124e7c3Fdd28;
-    string internal constant MAINNET_RPC_URL = "https://rpc.ankr.com/eth";
-}
 
 contract GemSwapBenchmarkTest is TestParameters, TestHelpers, SeaportProxyTestHelpers, LooksRareProxyTestHelpers {
     IERC721 private bayc;
 
     function setUp() public {
         vm.createSelectFork(MAINNET_RPC_URL, 15_503_771);
+        vm.deal(_buyer, INITIAL_ETH_BALANCE);
         bayc = IERC721(BAYC);
     }
 

@@ -11,15 +11,8 @@ import {IProxy} from "../../contracts/interfaces/IProxy.sol";
 import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggregator.sol";
 import {BasicOrder, FeeData, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
 import {TestHelpers} from "./TestHelpers.sol";
+import {TestParameters} from "./TestParameters.sol";
 import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
-
-abstract contract TestParameters {
-    address internal constant BAYC = 0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D;
-    address internal constant _buyer = address(1);
-    address internal constant _protocolFeeRecipient = address(2);
-    string internal constant MAINNET_RPC_URL = "https://rpc.ankr.com/eth";
-    uint256 internal constant INITIAL_USDC_BALANCE = 500000e6;
-}
 
 contract SeaportProxyERC721USDCTest is TestParameters, TestHelpers, SeaportProxyTestHelpers {
     LooksRareAggregator private aggregator;

@@ -11,15 +11,9 @@ import {IProxy} from "../../contracts/interfaces/IProxy.sol";
 import {BasicOrder, FeeData, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {TestHelpers} from "./TestHelpers.sol";
+import {TestParameters} from "./TestParameters.sol";
 import {TokenRescuerTest} from "./TokenRescuer.t.sol";
 import {LooksRareProxyTestHelpers} from "./LooksRareProxyTestHelpers.sol";
-
-abstract contract TestParameters {
-    address internal constant _buyer = address(1);
-    address internal constant _fakeAggregator = address(69420);
-    string internal constant MAINNET_RPC_URL = "https://rpc.ankr.com/eth";
-    event Sweep(address indexed sweeper);
-}
 
 contract LooksRareProxyTest is TestParameters, TestHelpers, TokenRescuerTest, LooksRareProxyTestHelpers {
     LooksRareAggregator private aggregator;

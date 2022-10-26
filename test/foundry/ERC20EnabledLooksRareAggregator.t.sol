@@ -7,11 +7,7 @@ import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggrega
 import {TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
 import {MockERC20} from "./utils/MockERC20.sol";
 import {TestHelpers} from "./TestHelpers.sol";
-
-abstract contract TestParameters {
-    address internal constant _fakeAggregator = address(1);
-    address internal constant _buyer = address(2);
-}
+import {TestParameters} from "./TestParameters.sol";
 
 contract ERC20EnabledLooksRareAggregatorTest is TestParameters, TestHelpers {
     ERC20EnabledLooksRareAggregator private erc20EnabledLooksRareAggregator;

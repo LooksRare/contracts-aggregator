@@ -10,14 +10,8 @@ import {IProxy} from "../../contracts/interfaces/IProxy.sol";
 import {BasicOrder, FeeData, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {TestHelpers} from "./TestHelpers.sol";
+import {TestParameters} from "./TestParameters.sol";
 import {TokenRescuerTest} from "./TokenRescuer.t.sol";
-
-abstract contract TestParameters {
-    address internal constant CRYPTOPUNKS = 0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB;
-    address internal constant _buyer = address(420);
-    string internal constant MAINNET_RPC_URL = "https://rpc.ankr.com/eth";
-    event Sweep(address indexed sweeper);
-}
 
 contract CryptoPunksProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
     LooksRareAggregator private aggregator;

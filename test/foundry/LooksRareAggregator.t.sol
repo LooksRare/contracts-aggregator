@@ -12,28 +12,13 @@ import {MockERC20} from "./utils/MockERC20.sol";
 import {MockERC721} from "./utils/MockERC721.sol";
 import {MockERC1155} from "./utils/MockERC1155.sol";
 import {TestHelpers} from "./TestHelpers.sol";
+import {TestParameters} from "./TestParameters.sol";
 import {TokenRescuerTest} from "./TokenRescuer.t.sol";
 
-abstract contract TestParameters {
-    address internal constant LOOKSRARE_V1 = 0x59728544B08AB483533076417FbBB2fD0B17CE3a;
-    address internal constant _notOwner = address(1);
-    address internal constant _buyer = address(2);
-}
-
-contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTest, ILooksRareAggregator {
+contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTest {
     LooksRareAggregator private aggregator;
     LooksRareProxy private looksRareProxy;
     TokenRescuer private tokenRescuer;
-
-    function execute(
-        TokenTransfer[] calldata,
-        TradeData[] calldata,
-        address,
-        address,
-        bool
-    ) external payable {
-        revert("This contract inherits from ILooksRareAggregator so execute has to be defined");
-    }
 
     function setUp() public {
         aggregator = new LooksRareAggregator();
@@ -133,19 +118,19 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTes
     function testRescueERC721() public {
         MockERC721 mockERC721 = new MockERC721();
         mockERC721.mint(address(aggregator), 0);
-        aggregator.rescueERC721(address(mockERC721), luckyUser, 0);
-        assertEq(mockERC721.balanceOf(address(luckyUser)), 1);
+        aggregator.rescueERC721(address(mockERC721), _luckyUser, 0);
+        assertEq(mockERC721.balanceOf(address(_luckyUser)), 1);
         assertEq(mockERC721.balanceOf(address(aggregator)), 0);
-        assertEq(mockERC721.ownerOf(0), luckyUser);
+        assertEq(mockERC721.ownerOf(0), _luckyUser);
     }
 
     function testRescueERC721NotOwner() public {
         MockERC721 mockERC721 = new MockERC721();
         mockERC721.mint(address(aggregator), 0);
-        vm.prank(luckyUser);
+        vm.prank(_luckyUser);
         vm.expectRevert(IOwnableTwoSteps.NotOwner.selector);
-        aggregator.rescueERC721(address(mockERC721), luckyUser, 0);
-        assertEq(mockERC721.balanceOf(address(luckyUser)), 0);
+        aggregator.rescueERC721(address(mockERC721), _luckyUser, 0);
+        assertEq(mockERC721.balanceOf(address(_luckyUser)), 0);
         assertEq(mockERC721.balanceOf(address(aggregator)), 1);
         assertEq(mockERC721.ownerOf(0), address(aggregator));
     }
@@ -157,8 +142,8 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTes
         tokenIds[0] = 0;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 2;
-        aggregator.rescueERC1155(address(mockERC1155), luckyUser, tokenIds, amounts);
-        assertEq(mockERC1155.balanceOf(address(luckyUser), 0), 2);
+        aggregator.rescueERC1155(address(mockERC1155), _luckyUser, tokenIds, amounts);
+        assertEq(mockERC1155.balanceOf(address(_luckyUser), 0), 2);
         assertEq(mockERC1155.balanceOf(address(aggregator), 0), 0);
     }
 
@@ -169,10 +154,10 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTes
         tokenIds[0] = 0;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 2;
-        vm.prank(luckyUser);
+        vm.prank(_luckyUser);
         vm.expectRevert(IOwnableTwoSteps.NotOwner.selector);
-        aggregator.rescueERC1155(address(mockERC1155), luckyUser, tokenIds, amounts);
-        assertEq(mockERC1155.balanceOf(address(luckyUser), 0), 0);
+        aggregator.rescueERC1155(address(mockERC1155), _luckyUser, tokenIds, amounts);
+        assertEq(mockERC1155.balanceOf(address(_luckyUser), 0), 0);
         assertEq(mockERC1155.balanceOf(address(aggregator), 0), 2);
     }
 

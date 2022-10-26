@@ -11,12 +11,8 @@ import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggrega
 import {IProxy} from "../../contracts/interfaces/IProxy.sol";
 import {BasicOrder, TokenTransfer, FeeData} from "../../contracts/libraries/OrderStructs.sol";
 import {TestHelpers} from "./TestHelpers.sol";
+import {TestParameters} from "./TestParameters.sol";
 import {LooksRareProxyTestHelpers} from "./LooksRareProxyTestHelpers.sol";
-
-abstract contract TestParameters {
-    address internal constant _buyer = address(1);
-    string internal constant MAINNET_RPC_URL = "https://rpc.ankr.com/eth";
-}
 
 contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRareProxyTestHelpers {
     V0Aggregator private v0Aggregator;
@@ -42,7 +38,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
             makerAsk.strategy = 0x56244Bb70CbD3EA9Dc8007399F61dFC065190031;
             makerAsk.nonce = 0;
             makerAsk.minPercentageToAsk = 9550;
-            makerAsk.currency = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
+            makerAsk.currency = WETH;
             makerAsk.startTime = 1659632508;
             makerAsk.endTime = 1662186976;
 
