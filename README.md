@@ -1,6 +1,8 @@
 # @looksrare/contracts-aggregator
 
 [![Tests](https://github.com/LooksRare/contracts-aggregator/actions/workflows/tests.yaml/badge.svg)](https://github.com/LooksRare/contracts-aggregator/actions/workflows/tests.yaml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![SDK](https://img.shields.io/badge/SDK-library-red)](https://github.com/LooksRare/sdk-aggregator)
 
 This repo contains an aggregator smart contract system that allows NFT sweepers to buy NFTs from multiple sources in a single transaction (LooksRare, Seaport, X2Y2, Sudoswap, etc).
 
