@@ -36,28 +36,28 @@ contract Deployment is Script {
     }
 
     function _deployLooksRareProxy(address marketplace) private {
-        looksRareProxy = new LooksRareProxy(marketplace);
+        looksRareProxy = new LooksRareProxy(marketplace, address(looksRareAggregator));
         looksRareAggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
     }
 
     function _deploySeaportProxy(address marketplace) private {
-        seaportProxy = new SeaportProxy(marketplace);
+        seaportProxy = new SeaportProxy(marketplace, address(looksRareAggregator));
         looksRareAggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);
     }
 
     function _deployX2Y2Proxy(address marketplace) private {
-        x2y2Proxy = new X2Y2Proxy(marketplace);
+        x2y2Proxy = new X2Y2Proxy(marketplace, address(looksRareAggregator));
         looksRareAggregator.addFunction(address(x2y2Proxy), X2Y2Proxy.execute.selector);
     }
 
     function _deployCryptoPunksProxy(address marketplace) private {
-        cryptoPunksProxy = new CryptoPunksProxy(marketplace);
+        cryptoPunksProxy = new CryptoPunksProxy(marketplace, address(looksRareAggregator));
         looksRareAggregator.addFunction(address(cryptoPunksProxy), CryptoPunksProxy.execute.selector);
     }
 
     function _deploySudoswapProxy(address marketplace) private {
         require(false, "Wait until Sudoswap router V2 is available");
-        sudoswapProxy = new SudoswapProxy(marketplace);
+        sudoswapProxy = new SudoswapProxy(marketplace, address(looksRareAggregator));
         looksRareAggregator.addFunction(address(sudoswapProxy), SudoswapProxy.execute.selector);
     }
 }
