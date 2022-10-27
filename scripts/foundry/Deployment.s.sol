@@ -2,13 +2,13 @@
 pragma solidity 0.8.17;
 
 import {Script} from "forge-std/Script.sol";
-import {ERC20EnabledLooksRareAggregator} from "../contracts/ERC20EnabledLooksRareAggregator.sol";
-import {LooksRareAggregator} from "../contracts/LooksRareAggregator.sol";
-import {LooksRareProxy} from "../contracts/proxies/LooksRareProxy.sol";
-import {SeaportProxy} from "../contracts/proxies/SeaportProxy.sol";
-import {X2Y2Proxy} from "../contracts/proxies/X2Y2Proxy.sol";
-import {CryptoPunksProxy} from "../contracts/proxies/CryptoPunksProxy.sol";
-import {SudoswapProxy} from "../contracts/proxies/SudoswapProxy.sol";
+import {ERC20EnabledLooksRareAggregator} from "../../contracts/ERC20EnabledLooksRareAggregator.sol";
+import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
+import {LooksRareProxy} from "../../contracts/proxies/LooksRareProxy.sol";
+import {SeaportProxy} from "../../contracts/proxies/SeaportProxy.sol";
+import {X2Y2Proxy} from "../../contracts/proxies/X2Y2Proxy.sol";
+import {CryptoPunksProxy} from "../../contracts/proxies/CryptoPunksProxy.sol";
+import {SudoswapProxy} from "../../contracts/proxies/SudoswapProxy.sol";
 
 contract Deployment is Script {
     ERC20EnabledLooksRareAggregator internal erc20EnabledLooksRareAggregator;
