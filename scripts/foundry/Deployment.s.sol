@@ -10,14 +10,6 @@ import {X2Y2Proxy} from "../contracts/proxies/X2Y2Proxy.sol";
 import {CryptoPunksProxy} from "../contracts/proxies/CryptoPunksProxy.sol";
 import {SudoswapProxy} from "../contracts/proxies/SudoswapProxy.sol";
 
-contract MainnetDeploymentParameters {
-    address internal constant LOOKSRARE_V1 = 0x59728544B08AB483533076417FbBB2fD0B17CE3a;
-}
-
-contract GoerliDeploymentParameters {
-    address internal constant LOOKSRARE_V1 = 0xD112466471b5438C1ca2D218694200e49d81D047;
-}
-
 contract Deployment is Script {
     ERC20EnabledLooksRareAggregator internal erc20EnabledLooksRareAggregator;
     LooksRareAggregator internal looksRareAggregator;
