@@ -17,11 +17,11 @@ struct BasicOrder {
 }
 
 struct TokenTransfer {
-    uint256 amount;
-    address currency;
+    uint256 amount; // ERC20 transfer amount
+    address currency; // ERC20 transfer currency
 }
 
 struct FeeData {
-    uint256 bp;
-    address recipient;
+    uint256 bp; // Aggregator fee basis point
+    address recipient; // Aggregator fee recipient
 }
