@@ -5,6 +5,11 @@ import {IERC721} from "@looksrare/contracts-libs/contracts/interfaces/generic/IE
 import {IERC1155} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC1155.sol";
 import {CollectionType} from "./libraries/OrderEnums.sol";
 
+/**
+ * @title TokenTransferrer
+ * @notice This contract contains a function to transfer NFTs from a proxy to the recipient
+ * @author LooksRare protocol team (👀,💎)
+ */
 abstract contract TokenTransferrer {
     function _transferTokenToRecipient(
         CollectionType collectionType,
