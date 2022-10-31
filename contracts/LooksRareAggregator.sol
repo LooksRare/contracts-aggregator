@@ -217,6 +217,8 @@ contract LooksRareAggregator is
         _executeERC1155SafeBatchTransferFrom(collection, address(this), to, tokenIds, amounts);
     }
 
+    receive() external payable {}
+
     function _encodeCalldataAndValidateFeeBp(
         TradeData calldata singleTradeData,
         address recipient,
@@ -235,8 +237,6 @@ contract LooksRareAggregator is
             feeData.recipient
         );
     }
-
-    receive() external payable {}
 
     function _pullERC20Tokens(TokenTransfer[] calldata tokenTransfers, address source) private {
         uint256 tokenTransfersLength = tokenTransfers.length;
