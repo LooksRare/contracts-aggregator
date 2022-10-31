@@ -8,6 +8,9 @@ import {MockERC20} from "./utils/MockERC20.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TestParameters} from "./TestParameters.sol";
 
+/**
+ * @notice Rescue tokens trapped inside a contract tests
+ */
 contract TokenRescuerTest is TestParameters, TestHelpers {
     function _testRescueETH(TokenRescuer tokenRescuer) internal {
         vm.deal(address(tokenRescuer), luckyNumber);

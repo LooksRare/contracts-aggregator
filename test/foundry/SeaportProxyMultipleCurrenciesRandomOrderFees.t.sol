@@ -14,6 +14,9 @@ import {TestHelpers} from "./TestHelpers.sol";
 import {TestParameters} from "./TestParameters.sol";
 import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
 
+/**
+ * @notice Seaport multiple currencies with fees (random execution order) execution in one transaction tests
+ */
 contract SeaportProxyMultipleCurrenciesRandomOrderFeesTest is TestParameters, TestHelpers, SeaportProxyTestHelpers {
     LooksRareAggregator private aggregator;
     ERC20EnabledLooksRareAggregator private erc20EnabledAggregator;

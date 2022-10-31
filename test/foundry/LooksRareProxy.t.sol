@@ -15,6 +15,9 @@ import {TestParameters} from "./TestParameters.sol";
 import {TokenRescuerTest} from "./TokenRescuer.t.sol";
 import {LooksRareProxyTestHelpers} from "./LooksRareProxyTestHelpers.sol";
 
+/**
+ * @notice LooksRareProxy tests, tests involving actual executions live in other tests
+ */
 contract LooksRareProxyTest is TestParameters, TestHelpers, TokenRescuerTest, LooksRareProxyTestHelpers {
     LooksRareAggregator private aggregator;
     LooksRareProxy private looksRareProxy;

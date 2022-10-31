@@ -12,6 +12,9 @@ import {TestHelpers} from "./TestHelpers.sol";
 import {TestParameters} from "./TestParameters.sol";
 import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
 
+/**
+ * @notice Conflicted orders. e.g. buy the same NFT from 2 marketplaces in one transaction
+ */
 contract ConflictedOrdersTest is TestParameters, TestHelpers, SeaportProxyTestHelpers {
     LooksRareAggregator private aggregator;
     SeaportProxy private seaportProxy;

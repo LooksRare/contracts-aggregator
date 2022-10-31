@@ -15,6 +15,9 @@ import {LooksRareProxyTestHelpers} from "./LooksRareProxyTestHelpers.sol";
 import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
 import {ScamRecipient} from "./utils/ScamRecipient.sol";
 
+/**
+ * @notice LooksRareAggregator execution fail scenarios
+ */
 contract LooksRareAggregatorTradesTest is
     TestParameters,
     TestHelpers,

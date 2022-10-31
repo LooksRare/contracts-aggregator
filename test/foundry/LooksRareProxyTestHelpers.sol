@@ -4,6 +4,9 @@ pragma solidity 0.8.17;
 import {BasicOrder} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 
+/**
+ * @notice LooksRare orders helper contract
+ */
 abstract contract LooksRareProxyTestHelpers {
     address private constant BAYC = 0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D;
     address private constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
