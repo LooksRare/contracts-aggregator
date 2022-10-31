@@ -13,6 +13,9 @@ import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
 import {LooksRareProxyTestHelpers} from "./LooksRareProxyTestHelpers.sol";
 import {IGemSwap} from "../../contracts/interfaces/IGemSwap.sol";
 
+/**
+ * @notice Gas benchmark against GemSwap
+ */
 contract GemSwapBenchmarkTest is TestParameters, TestHelpers, SeaportProxyTestHelpers, LooksRareProxyTestHelpers {
     IERC721 private bayc;
 

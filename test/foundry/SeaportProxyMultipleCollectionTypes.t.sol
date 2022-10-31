@@ -12,6 +12,9 @@ import {TestHelpers} from "./TestHelpers.sol";
 import {TestParameters} from "./TestParameters.sol";
 import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
 
+/**
+ * @notice SeaportProxy ERC721/ERC1155 in one transaction tests
+ */
 contract SeaportProxyMultipleCollectionTypesTest is TestParameters, TestHelpers, SeaportProxyTestHelpers {
     LooksRareAggregator private aggregator;
     SeaportProxy private seaportProxy;

@@ -15,6 +15,9 @@ import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
 import {BasicOrderParameters, AdditionalRecipient, AdvancedOrder, OrderParameters, OfferItem, ConsiderationItem, CriteriaResolver} from "../../contracts/libraries/seaport/ConsiderationStructs.sol";
 import {BasicOrderType, OrderType, ItemType} from "../../contracts/libraries/seaport/ConsiderationEnums.sol";
 
+/**
+ * @notice SeaportProxy benchmark (1. direct 2. through the prototype aggregator 3. through the actual aggregator)
+ */
 contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyTestHelpers {
     V0Aggregator private v0Aggregator;
     LooksRareAggregator private aggregator;

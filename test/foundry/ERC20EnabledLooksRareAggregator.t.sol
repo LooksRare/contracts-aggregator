@@ -9,6 +9,9 @@ import {MockERC20} from "./utils/MockERC20.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TestParameters} from "./TestParameters.sol";
 
+/**
+ * @notice ERC20EnabledLooksRareAggregator tests, tests involving actual executions live in other tests
+ */
 contract ERC20EnabledLooksRareAggregatorTest is TestParameters, TestHelpers {
     ERC20EnabledLooksRareAggregator private erc20EnabledLooksRareAggregator;
     MockERC20 private erc20;

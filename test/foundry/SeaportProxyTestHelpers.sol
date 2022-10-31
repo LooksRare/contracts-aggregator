@@ -7,6 +7,9 @@ import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {AdditionalRecipient, FulfillmentComponent} from "../../contracts/libraries/seaport/ConsiderationStructs.sol";
 import {OrderType} from "../../contracts/libraries/seaport/ConsiderationEnums.sol";
 
+/**
+ * @notice Seaport orders helper contract
+ */
 abstract contract SeaportProxyTestHelpers {
     address private constant BAYC = 0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D;
     address internal constant CITY_DAO = 0x7EeF591A6CC0403b9652E98E88476fe1bF31dDeb;

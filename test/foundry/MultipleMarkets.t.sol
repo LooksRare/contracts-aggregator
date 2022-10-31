@@ -12,6 +12,9 @@ import {TestHelpers} from "./TestHelpers.sol";
 import {TestParameters} from "./TestParameters.sol";
 import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
 
+/**
+ * @notice Multiple markets execution in one transaction tests
+ */
 contract MultipleMarketsTest is TestParameters, TestHelpers, SeaportProxyTestHelpers {
     LooksRareAggregator private aggregator;
     SeaportProxy private seaportProxy;

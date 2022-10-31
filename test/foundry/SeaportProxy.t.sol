@@ -15,6 +15,9 @@ import {TokenRescuerTest} from "./TokenRescuer.t.sol";
 import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
 import {MockERC20} from "./utils/MockERC20.sol";
 
+/**
+ * @notice SeaportProxy tests, tests involving actual executions live in other tests
+ */
 contract SeaportProxyTest is TestParameters, TestHelpers, TokenRescuerTest, SeaportProxyTestHelpers {
     SeaportProxy private seaportProxy;
     TokenRescuer private tokenRescuer;

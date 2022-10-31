@@ -17,6 +17,9 @@ abstract contract TestParameters {
     event Sweep(address indexed sweeper);
 }
 
+/**
+ * @notice SeaportProxy ERC1155 tests (fees, refund, atomic fail/partial success)
+ */
 contract SeaportProxyERC1155Test is TestParameters, TestHelpers, SeaportProxyTestHelpers {
     LooksRareAggregator private aggregator;
     SeaportProxy private seaportProxy;

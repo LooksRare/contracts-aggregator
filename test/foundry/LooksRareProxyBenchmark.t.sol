@@ -14,6 +14,9 @@ import {TestHelpers} from "./TestHelpers.sol";
 import {TestParameters} from "./TestParameters.sol";
 import {LooksRareProxyTestHelpers} from "./LooksRareProxyTestHelpers.sol";
 
+/**
+ * @notice LooksRareProxy benchmark (1. direct 2. through the prototype aggregator 3. through the actual aggregator)
+ */
 contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRareProxyTestHelpers {
     V0Aggregator private v0Aggregator;
     LooksRareAggregator private aggregator;
