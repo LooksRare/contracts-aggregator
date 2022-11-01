@@ -24,7 +24,7 @@ It is a hybrid [Hardhat](https://hardhat.org/) repo that also requires [Foundry]
 
 - The `libraries` folder contains various structs and enums required. Objects that are specific to a marketplace should be put inside the `${marketplace}` child folder.
 
-- In order to create more realistic tests, real listings from real collections are fetched from each marketplace. For listing objects that are full API responses, they are put inside the `test/typescript/fixtures/${marketplace}` folder. For marketplaces like CryptoPunks and Sudoswap, it is ok to just put the data in the tests.
+- In order to create more realistic tests, real listings from real collections are fetched from each marketplace.
 
 - Any contract that's prefixed with V0 will not go live. They come from our first iteration. We are only keeping them for now for reference.
 
