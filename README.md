@@ -55,3 +55,13 @@ solc-select install 0.8.17
 solc-select use 0.8.17
 slither --solc solc-0.8.17 .
 ```
+
+### Coverage
+
+```
+forge coverage --report lcov
+LCOV_EXCLUDE=("test/*" "contracts/prototype/*")
+echo $LCOV_EXCLUDE | xargs lcov --output-file lcov-filtered.info --remove lcov.info
+genhtml lcov-filtered.info --output-directory out
+open out/index.html
+```
