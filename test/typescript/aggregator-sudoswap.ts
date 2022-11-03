@@ -17,7 +17,7 @@ describe("Sudoswap Orders", () => {
     await ethers.provider.send("hardhat_reset", [
       {
         forking: {
-          jsonRpcUrl: process.env.ETH_RPC_URL,
+          jsonRpcUrl: process.env.MAINNET_RPC_URL,
           blockNumber: 15315621,
         },
       },

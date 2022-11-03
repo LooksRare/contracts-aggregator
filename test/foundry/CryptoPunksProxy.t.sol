@@ -19,7 +19,7 @@ contract CryptoPunksProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
     TokenRescuer private tokenRescuer;
 
     function setUp() public {
-        vm.createSelectFork(MAINNET_RPC_URL, 15_358_065);
+        vm.createSelectFork(vm.rpcUrl("mainnet"), 15_358_065);
 
         aggregator = new LooksRareAggregator();
         cryptoPunksProxy = new CryptoPunksProxy(CRYPTOPUNKS, address(aggregator));
