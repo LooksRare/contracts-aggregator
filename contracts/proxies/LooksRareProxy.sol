@@ -113,22 +113,20 @@ contract LooksRareProxy is IProxy, TokenRescuer, TokenTransferrer, SignatureChec
     ) private {
         if (isAtomic) {
             marketplace.matchAskWithTakerBidUsingETHAndWETH{value: takerBid.price}(takerBid, makerAsk);
-            _transferTokenToRecipient(
-                collectionType,
-                recipient,
-                makerAsk.collection,
-                makerAsk.tokenId,
-                makerAsk.amount
-            );
+            uint256[] memory tokenIds = new uint256[](1);
+            tokenIds[0] = makerAsk.tokenId;
+            uint256[] memory amounts = new uint256[](1);
+            amounts[0] = makerAsk.amount;
+
+            _transferTokenToRecipient(collectionType, recipient, makerAsk.collection, tokenIds, amounts);
         } else {
             try marketplace.matchAskWithTakerBidUsingETHAndWETH{value: takerBid.price}(takerBid, makerAsk) {
-                _transferTokenToRecipient(
-                    collectionType,
-                    recipient,
-                    makerAsk.collection,
-                    makerAsk.tokenId,
-                    makerAsk.amount
-                );
+                uint256[] memory tokenIds = new uint256[](1);
+                tokenIds[0] = makerAsk.tokenId;
+                uint256[] memory amounts = new uint256[](1);
+                amounts[0] = makerAsk.amount;
+
+                _transferTokenToRecipient(collectionType, recipient, makerAsk.collection, tokenIds, amounts);
             } catch {}
         }
     }

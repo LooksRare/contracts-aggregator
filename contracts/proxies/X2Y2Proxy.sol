@@ -159,12 +159,6 @@ contract X2Y2Proxy is IProxy, TokenRescuer, TokenTransferrer, SignatureChecker {
      * @dev Having this function helps solve stack too deep error
      */
     function _redirectTokenToRecipient(BasicOrder memory order, address recipient) private {
-        _transferTokenToRecipient(
-            order.collectionType,
-            recipient,
-            order.collection,
-            order.tokenIds[0],
-            order.amounts[0]
-        );
+        _transferTokenToRecipient(order.collectionType, recipient, order.collection, order.tokenIds, order.amounts);
     }
 }

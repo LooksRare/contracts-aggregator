@@ -15,13 +15,17 @@ abstract contract TokenTransferrer {
         CollectionType collectionType,
         address recipient,
         address collection,
-        uint256 tokenId,
-        uint256 amount
+        uint256[] memory tokenIds,
+        uint256[] memory amounts
     ) internal {
         if (collectionType == CollectionType.ERC721) {
-            IERC721(collection).transferFrom(address(this), recipient, tokenId);
+            IERC721(collection).transferFrom(address(this), recipient, tokenIds[0]);
         } else if (collectionType == CollectionType.ERC1155) {
-            IERC1155(collection).safeTransferFrom(address(this), recipient, tokenId, amount, "");
+            if (tokenIds.length > 1) {
+                IERC1155(collection).safeBatchTransferFrom(address(this), recipient, tokenIds, amounts, "");
+            } else {
+                IERC1155(collection).safeTransferFrom(address(this), recipient, tokenIds[0], amounts[0], "");
+            }
         }
     }
 }
