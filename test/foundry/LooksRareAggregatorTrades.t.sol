@@ -71,7 +71,7 @@ contract LooksRareAggregatorTradesTest is
         SeaportProxy seaportProxy = new SeaportProxy(SEAPORT, address(aggregator));
         aggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);
         // Since we are forking mainnet, we have to make sure it has 0 ETH.
-        vm.deal(address(aggregator), 0);
+        vm.deal(address(aggregator), 1 wei);
         vm.deal(address(seaportProxy), 0);
 
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
