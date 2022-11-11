@@ -102,4 +102,23 @@ abstract contract LooksRareProxyTestHelpers {
         order
             .signature = hex"f5e65638475e7387b9cc84a8dc52963e02ae2bd25a5f4b6f35a285fbf3e41e7c2c080d2e2b8293db1a824b1528691838996429a2d3d6062ea50d253cc33829661c";
     }
+
+    function validGoerliTestERC1155Order() internal pure returns (BasicOrder memory order) {
+        uint256[] memory amounts = new uint256[](1);
+        amounts[0] = 2;
+
+        order.signer = 0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc;
+        order.collection = 0x58c3c2547084CC1C94130D6fd750A3877c7Ca5D2;
+        order.collectionType = CollectionType.ERC1155;
+        uint256[] memory tokenIds = new uint256[](1);
+        tokenIds[0] = 1;
+        order.tokenIds = tokenIds;
+        order.amounts = amounts;
+        order.price = 1 ether;
+        order.currency = 0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6;
+        order.startTime = 1668190971;
+        order.endTime = 1668277371;
+        order
+            .signature = hex"b93d585da923afba40af2304fd46cd4f740187b0f6f9b06fbe7409627e9301f15ee3fd2ea3f132d141ea3dfc41539946b9665b17bd16b6d7b264af9a94de779c1b";
+    }
 }
