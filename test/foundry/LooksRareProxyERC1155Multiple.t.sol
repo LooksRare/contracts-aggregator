@@ -31,11 +31,11 @@ contract LooksRareProxyERC1155MultipleTest is TestParameters, TestHelpers, Looks
         vm.deal(address(looksRareProxy), 0);
     }
 
-    function testExecuteAtomic() public asPrankedUser(_buyer) {
+    function testExecuteAtomic() public {
         _testExecute(true);
     }
 
-    function testExecuteNonAtomic() public asPrankedUser(_buyer) {
+    function testExecuteNonAtomic() public {
         _testExecute(false);
     }
 
@@ -51,13 +51,14 @@ contract LooksRareProxyERC1155MultipleTest is TestParameters, TestHelpers, Looks
             true
         );
 
+        vm.prank(_buyer);
         aggregator.execute{value: order.price}(tokenTransfers, tradeData, _buyer, _buyer, isAtomic);
 
         assertEq(IERC1155(order.collection).balanceOf(_buyer, 1), 2);
         assertEq(_buyer.balance, 0);
     }
 
-    function _generateTradeData() private returns (ILooksRareAggregator.TradeData[] memory tradeData) {
+    function _generateTradeData() private view returns (ILooksRareAggregator.TradeData[] memory tradeData) {
         BasicOrder[] memory orders = new BasicOrder[](1);
         orders[0] = validGoerliTestERC1155Order();
 
