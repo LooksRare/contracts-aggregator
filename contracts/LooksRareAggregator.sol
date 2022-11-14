@@ -106,11 +106,7 @@ contract LooksRareAggregator is
         }
 
         if (tokenTransfersLength > 0) _returnERC20TokensIfAny(tokenTransfers, originator);
-        assembly {
-            if gt(selfbalance(), 1) {
-                let status := call(gas(), originator, sub(selfbalance(), 1), 0, 0, 0, 0)
-            }
-        }
+        _returnETHIfAnyWithOneWeiLeft(originator);
 
         emit Sweep(originator);
     }
