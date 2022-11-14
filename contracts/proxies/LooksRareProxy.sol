@@ -62,7 +62,7 @@ contract LooksRareProxy is IProxy, TokenRescuer, TokenTransferrer, SignatureChec
         if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();
 
         for (uint256 i; i < ordersLength; ) {
-            BasicOrder memory order = orders[i];
+            BasicOrder calldata order = orders[i];
 
             OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
 
