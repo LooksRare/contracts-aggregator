@@ -44,3 +44,4 @@ optimizerSteps = ''
 
 [rpc_endpoints]
 mainnet = "${MAINNET_RPC_URL}"
+goerli = "${GOERLI_RPC_URL}"
