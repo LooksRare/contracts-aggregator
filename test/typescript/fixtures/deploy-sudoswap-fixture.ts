@@ -32,6 +32,8 @@ export default async function deploySudoswapFixture(): Promise<SudoswapFixture> 
     ethers.utils.parseEther("200").toHexString().replace("0x0", "0x"),
   ]);
 
+  await ethers.provider.send("hardhat_setBalance", [aggregator.address, "0x1"]);
+
   const moodie = await ethers.getContractAt(
     "@looksrare/contracts-libs/contracts/interfaces/generic/IERC721.sol:IERC721",
     MOODIE

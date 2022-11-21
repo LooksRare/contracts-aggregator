@@ -238,7 +238,7 @@ describe("Sudoswap Orders", () => {
     expect(await moodie.balanceOf(buyer.address)).to.equal(2);
     expect(await moodie.ownerOf(tokenIdOne)).to.equal(buyer.address);
     expect(await moodie.ownerOf(tokenIdTwo)).to.equal(buyer.address);
-    expect(await getBalance(aggregator.address)).to.equal(0);
+    expect(await getBalance(aggregator.address)).to.equal(1);
     expect(await getBalance(proxy.address)).to.equal(0);
     const buyerBalanceAfter = await getBalance(buyer.address);
     expect(buyerBalanceBefore.sub(buyerBalanceAfter).sub(txFee)).to.equal(maxCostOne.add(maxCostTwo));

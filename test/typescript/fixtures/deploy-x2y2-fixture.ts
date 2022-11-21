@@ -41,7 +41,7 @@ export default async function deployX2Y2Fixture(): Promise<X2Y2Fixture> {
   // Because we are forking from the mainnet, the aggregator/proxy address might have a nonzero
   // balance, causing our test (balance comparison) to fail.
   await ethers.provider.send("hardhat_setBalance", [proxy.address, "0x0"]);
-  await ethers.provider.send("hardhat_setBalance", [aggregator.address, "0x0"]);
+  await ethers.provider.send("hardhat_setBalance", [aggregator.address, "0x1"]);
 
   const buyerBalance = ethers.utils.parseEther("200").toHexString().replace("0x0", "0x");
   await send("hardhat_setBalance", [buyer.address, buyerBalance]);
