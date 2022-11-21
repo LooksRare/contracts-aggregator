@@ -15,7 +15,7 @@ contract TokenRescuerTest is TestParameters, TestHelpers {
     function _testRescueETH(TokenRescuer tokenRescuer) internal {
         vm.deal(address(tokenRescuer), luckyNumber);
         tokenRescuer.rescueETH(_luckyUser);
-        assertEq(address(_luckyUser).balance, luckyNumber - 1);
+        assertEq(_luckyUser.balance, luckyNumber - 1);
         assertEq(address(tokenRescuer).balance, 1);
     }
 
@@ -23,7 +23,7 @@ contract TokenRescuerTest is TestParameters, TestHelpers {
         vm.deal(address(tokenRescuer), 1);
         vm.expectRevert(TokenRescuer.InsufficientAmount.selector);
         tokenRescuer.rescueETH(_luckyUser);
-        assertEq(address(_luckyUser).balance, 0);
+        assertEq(_luckyUser.balance, 0);
         assertEq(address(tokenRescuer).balance, 1);
     }
 
@@ -32,7 +32,7 @@ contract TokenRescuerTest is TestParameters, TestHelpers {
         vm.prank(_luckyUser);
         vm.expectRevert(IOwnableTwoSteps.NotOwner.selector);
         tokenRescuer.rescueETH(_luckyUser);
-        assertEq(address(_luckyUser).balance, 0);
+        assertEq(_luckyUser.balance, 0);
         assertEq(address(tokenRescuer).balance, luckyNumber);
     }
 

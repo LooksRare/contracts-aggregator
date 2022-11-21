@@ -226,6 +226,6 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
 
         assertEq(IERC721(BAYC).ownerOf(7139), _buyer);
         assertEq(IERC721(BAYC).ownerOf(3939), _buyer);
-        assertEq(address(_buyer).balance, 200 ether - value);
+        assertEq(_buyer.balance, 200 ether - value);
     }
 }

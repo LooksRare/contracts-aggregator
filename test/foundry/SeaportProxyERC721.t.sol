@@ -94,7 +94,7 @@ contract SeaportProxyERC721Test is TestParameters, TestHelpers, SeaportProxyTest
 
         assertEq(IERC721(BAYC).balanceOf(_buyer), 1);
         assertEq(IERC721(BAYC).ownerOf(2518), _buyer);
-        assertEq(address(_buyer).balance, INITIAL_ETH_BALANCE - tradeData[0].orders[0].price);
+        assertEq(_buyer.balance, INITIAL_ETH_BALANCE - tradeData[0].orders[0].price);
     }
 
     function _testExecuteRefundFromLooksRareAggregator(bool isAtomic) private {
@@ -107,7 +107,7 @@ contract SeaportProxyERC721Test is TestParameters, TestHelpers, SeaportProxyTest
 
         assertEq(IERC721(BAYC).ownerOf(2518), _buyer);
         assertEq(IERC721(BAYC).ownerOf(8498), _buyer);
-        assertEq(address(_buyer).balance, INITIAL_ETH_BALANCE - totalPrice);
+        assertEq(_buyer.balance, INITIAL_ETH_BALANCE - totalPrice);
     }
 
     function _testExecuteRefundFromSeaportProxy(bool isAtomic) private {
@@ -123,7 +123,7 @@ contract SeaportProxyERC721Test is TestParameters, TestHelpers, SeaportProxyTest
 
         assertEq(IERC721(BAYC).ownerOf(2518), _buyer);
         assertEq(IERC721(BAYC).ownerOf(8498), _buyer);
-        assertEq(address(_buyer).balance, 231.22 ether);
+        assertEq(_buyer.balance, 231.22 ether);
     }
 
     function _testExecuteWithFees(bool isAtomic) private {
@@ -142,8 +142,8 @@ contract SeaportProxyERC721Test is TestParameters, TestHelpers, SeaportProxyTest
 
         assertEq(IERC721(BAYC).ownerOf(2518), _buyer);
         assertEq(IERC721(BAYC).ownerOf(8498), _buyer);
-        assertEq(address(_buyer).balance, INITIAL_ETH_BALANCE - totalPriceWithFees);
-        assertEq(address(_protocolFeeRecipient).balance, totalPriceWithFees - totalPriceBeforeFee);
+        assertEq(_buyer.balance, INITIAL_ETH_BALANCE - totalPriceWithFees);
+        assertEq(_protocolFeeRecipient.balance, totalPriceWithFees - totalPriceBeforeFee);
     }
 
     function _generateTradeData() private view returns (ILooksRareAggregator.TradeData[] memory) {

@@ -78,7 +78,7 @@ contract CryptoPunksProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
 
         assertEq(ICryptoPunks(CRYPTOPUNKS).balanceOf(_buyer), 1);
         assertEq(ICryptoPunks(CRYPTOPUNKS).punkIndexToAddress(3149), _buyer);
-        assertEq(address(_buyer).balance, 69.5 ether);
+        assertEq(_buyer.balance, 69.5 ether);
     }
 
     function testExecuteZeroOrders() public asPrankedUser(_buyer) {
@@ -186,7 +186,7 @@ contract CryptoPunksProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
         assertEq(ICryptoPunks(CRYPTOPUNKS).balanceOf(_buyer), 2);
         assertEq(ICryptoPunks(CRYPTOPUNKS).punkIndexToAddress(3149), _buyer);
         assertEq(ICryptoPunks(CRYPTOPUNKS).punkIndexToAddress(2675), _buyer);
-        assertEq(address(_buyer).balance, 0);
+        assertEq(_buyer.balance, 0);
     }
 
     function _generateTradeData() private view returns (ILooksRareAggregator.TradeData[] memory tradeData) {

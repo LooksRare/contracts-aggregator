@@ -64,7 +64,7 @@ contract ConflictedOrdersTest is TestParameters, TestHelpers, SeaportProxyTestHe
 
         assertEq(IERC721(BAYC).balanceOf(_buyer), 1);
         assertEq(IERC721(BAYC).ownerOf(9314), _buyer);
-        assertEq(address(_buyer).balance, INITIAL_ETH_BALANCE - tradeData[0].orders[0].price);
+        assertEq(_buyer.balance, INITIAL_ETH_BALANCE - tradeData[0].orders[0].price);
     }
 
     function _generateTradeData(bool isAtomic) private view returns (ILooksRareAggregator.TradeData[] memory) {
