@@ -37,7 +37,7 @@ contract SeaportProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Seap
         IProxy(_fakeAggregator).execute(
             orders,
             ordersExtraData,
-            validSingleBAYCExtraData(),
+            validSingleOfferExtraData(3),
             _buyer,
             false,
             0,
@@ -59,7 +59,7 @@ contract SeaportProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Seap
         IProxy(_fakeAggregator).execute{value: orders[0].price}(
             orders,
             ordersExtraData,
-            validSingleBAYCExtraData(),
+            validSingleOfferExtraData(3),
             _buyer,
             false,
             0,

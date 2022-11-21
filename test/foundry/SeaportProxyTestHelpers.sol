@@ -19,6 +19,28 @@ abstract contract SeaportProxyTestHelpers {
     address internal constant OPENSEA_FEES_3 = 0x0000a26b00c1F0DF003000390027140000fAa719;
     address internal constant YUGA_LABS = 0xA858DDc0445d8131daC4d1DE01f834ffcbA52Ef1;
 
+    function validOpenseaSharedStorefrontOrders() internal pure returns (BasicOrder[] memory orders) {
+        orders = new BasicOrder[](1);
+
+        uint256[] memory tokenIds = new uint256[](1);
+        tokenIds[0] = 72624909669499243860199844670036364844508076498687734249444373249861227642881;
+
+        uint256[] memory amounts = new uint256[](1);
+        amounts[0] = 1;
+
+        orders[0].price = 100 ether;
+        orders[0].signer = 0xa0903E00646A7b6ae77E57e5Dd0f870f166Cf2C0;
+        orders[0].collection = 0x804159144AEFB1Dc17B171afCefA5B33746c722F;
+        orders[0].collectionType = CollectionType.ERC1155;
+        orders[0].tokenIds = tokenIds;
+        orders[0].amounts = amounts;
+        orders[0].currency = address(0);
+        orders[0].startTime = 1669037944;
+        orders[0].endTime = 1671629944;
+        orders[0]
+            .signature = hex"0409a1c5bcdc2a66801b93218d24bfbc2c2726462703e8caf7a84fa27d6a5c1078dd8cd6442583a0b0cbed3a0b82931553dd08ffdd8af1c42206c800d35247e01c";
+    }
+
     function validCityDaoOrders() internal pure returns (BasicOrder[] memory orders) {
         orders = new BasicOrder[](2);
 
@@ -284,6 +306,22 @@ abstract contract SeaportProxyTestHelpers {
             .signature = hex"fcdc82cba99c19522af3692070e4649ff573d20f2550eb29f7a24b3c39da74bd6a6c5b8444a2139c529301a8da011af414342d304609f896580e12fbd94d387a1b";
     }
 
+    function validOpenseaSharedStorefrontOrderExtraData() internal pure returns (bytes memory) {
+        AdditionalRecipient[] memory recipients = new AdditionalRecipient[](2);
+        recipients[0].recipient = payable(0xa0903E00646A7b6ae77E57e5Dd0f870f166Cf2C0);
+        recipients[0].amount = 97.5 ether;
+        recipients[1].recipient = payable(OPENSEA_FEES_3);
+        recipients[1].amount = 2.5 ether;
+
+        SeaportProxy.OrderExtraData memory orderExtraData = _baseOrderExtraData();
+        orderExtraData.zone = address(0);
+        orderExtraData.orderType = OrderType.PARTIAL_OPEN;
+        orderExtraData.salt = 0x360c6ebe0000000000000000000000000000000000000000efb7d9cfb20e7bc8;
+        orderExtraData.recipients = recipients;
+
+        return abi.encode(orderExtraData);
+    }
+
     function validCityDaoOrdersExtraData() internal pure returns (bytes[] memory ordersExtraData) {
         ordersExtraData = new bytes[](2);
         // Bytes copied from TypeScript test
@@ -480,14 +518,14 @@ abstract contract SeaportProxyTestHelpers {
         orderExtraData.conduitKey = 0x0000007b02230091a7ed01230072f7006a004d60a8d4e71d599b8104250f0000;
     }
 
-    function validSingleBAYCExtraData() internal pure returns (bytes memory) {
+    function validSingleOfferExtraData(uint256 numberOfConsiderations) internal pure returns (bytes memory) {
         SeaportProxy.ExtraData memory extraData;
 
         extraData.offerFulfillments = validMultipleOfferFulfillments(1);
 
-        extraData.considerationFulfillments = new FulfillmentComponent[][](3);
+        extraData.considerationFulfillments = new FulfillmentComponent[][](numberOfConsiderations);
 
-        for (uint256 i; i < 3; ) {
+        for (uint256 i; i < numberOfConsiderations; ) {
             extraData.considerationFulfillments[i] = new FulfillmentComponent[](1);
             extraData.considerationFulfillments[i][0].orderIndex = 0;
             extraData.considerationFulfillments[i][0].itemIndex = i;
