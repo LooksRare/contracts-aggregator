@@ -31,6 +31,8 @@ contract LooksRareAggregator is
     LowLevelERC721Transfer,
     LowLevelERC1155Transfer
 {
+    uint256 private constant MAX_BP = 10_000;
+
     /**
      * @notice Transactions that only involve ETH orders should be submitted to this contract
      *         directly. Transactions that involve ERC20 orders should be submitted to the contract
@@ -159,7 +161,7 @@ contract LooksRareAggregator is
         uint256 bp,
         address recipient
     ) external onlyOwner {
-        if (bp > 10000) revert FeeTooHigh();
+        if (bp > MAX_BP) revert FeeTooHigh();
         _proxyFeeData[proxy].bp = bp;
         _proxyFeeData[proxy].recipient = recipient;
 

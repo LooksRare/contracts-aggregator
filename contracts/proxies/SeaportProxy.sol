@@ -18,6 +18,7 @@ import {TokenRescuer} from "../TokenRescuer.sol";
  * @author LooksRare protocol team (👀,💎)
  */
 contract SeaportProxy is IProxy, TokenRescuer {
+    uint256 private constant MAX_BP = 10_000;
     SeaportInterface public immutable marketplace;
     address public immutable aggregator;
 
@@ -145,7 +146,7 @@ contract SeaportProxy is IProxy, TokenRescuer {
 
         for (uint256 i; i < ordersLength; ) {
             address currency = orders[i].currency;
-            uint256 orderFee = (orders[i].price * feeBp) / 10000;
+            uint256 orderFee = (orders[i].price * feeBp) / MAX_BP;
 
             if (currency == lastOrderCurrency) {
                 fee += orderFee;
@@ -205,7 +206,7 @@ contract SeaportProxy is IProxy, TokenRescuer {
                 )
             {
                 if (feeRecipient != address(0)) {
-                    uint256 orderFee = (price * feeBp) / 10000;
+                    uint256 orderFee = (price * feeBp) / MAX_BP;
                     if (currency == lastOrderCurrency) {
                         fee += orderFee;
                     } else {
