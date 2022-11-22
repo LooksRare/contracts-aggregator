@@ -32,7 +32,7 @@ contract SeaportProxyMultipleCurrenciesTest is TestParameters, TestHelpers, Seap
         vm.deal(_buyer, INITIAL_ETH_BALANCE);
         deal(USDC, _buyer, INITIAL_USDC_BALANCE);
         // Forking from mainnet and the deployed addresses might have balance
-        vm.deal(address(aggregator), 0);
+        vm.deal(address(aggregator), 1 wei);
         vm.deal(address(seaportProxy), 0);
 
         aggregator.approve(SEAPORT, USDC, type(uint256).max);

@@ -25,7 +25,7 @@ contract SeaportProxyERC1155Test is TestParameters, TestHelpers, SeaportProxyTes
         aggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);
         vm.deal(_buyer, INITIAL_ETH_BALANCE);
         // Forking from mainnet and the deployed addresses might have balance
-        vm.deal(address(aggregator), 0);
+        vm.deal(address(aggregator), 1 wei);
         vm.deal(address(seaportProxy), 0);
     }
 

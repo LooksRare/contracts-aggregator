@@ -213,7 +213,7 @@ describe("X2Y2 Orders", () => {
 
     expect(await bayc.balanceOf(buyer.address)).to.equal(1);
     expect(await bayc.ownerOf(tokenIdOne)).to.equal(buyer.address);
-    expect(await getBalance(aggregator.address)).to.equal(0);
+    expect(await getBalance(aggregator.address)).to.equal(1);
     expect(await getBalance(proxy.address)).to.equal(0);
     const buyerBalanceAfter = await getBalance(buyer.address);
     expect(buyerBalanceBefore.sub(buyerBalanceAfter).sub(txFee)).to.equal(priceOne);
@@ -268,7 +268,7 @@ describe("X2Y2 Orders", () => {
     ).to.be.revertedWith("order already exists");
 
     expect(await bayc.balanceOf(buyer.address)).to.equal(0);
-    expect(await getBalance(aggregator.address)).to.equal(0);
+    expect(await getBalance(aggregator.address)).to.equal(1);
     expect(await getBalance(proxy.address)).to.equal(0);
     const buyerBalanceAfter = await getBalance(buyer.address);
     expect(buyerBalanceBefore.sub(buyerBalanceAfter)).to.be.lt(ethers.utils.parseEther("0.005"));

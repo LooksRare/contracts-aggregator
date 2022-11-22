@@ -34,7 +34,7 @@ contract LooksRareProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Lo
         vm.deal(_buyer, 200 ether);
 
         // Forking from mainnet and the deployed addresses might have balance
-        vm.deal(address(aggregator), 0);
+        vm.deal(address(aggregator), 1 wei);
         vm.deal(address(looksRareProxy), 0);
     }
 
