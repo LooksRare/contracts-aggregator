@@ -42,7 +42,7 @@ contract LooksRareAggregator is
      *         aggregator.
      */
     address public erc20EnabledLooksRareAggregator;
-    mapping(address => mapping(bytes4 => bool)) private _proxyFunctionSelectors;
+    mapping(address => mapping(bytes4 => uint256)) private _proxyFunctionSelectors;
     mapping(address => FeeData) private _proxyFeeData;
 
     /**
@@ -68,7 +68,7 @@ contract LooksRareAggregator is
 
         for (uint256 i; i < tradeDataLength; ) {
             TradeData calldata singleTradeData = tradeData[i];
-            if (!_proxyFunctionSelectors[singleTradeData.proxy][singleTradeData.selector]) revert InvalidFunction();
+            if (_proxyFunctionSelectors[singleTradeData.proxy][singleTradeData.selector] != 1) revert InvalidFunction();
 
             (bytes memory proxyCalldata, bool maxFeeBpViolated) = _encodeCalldataAndValidateFeeBp(
                 singleTradeData,
@@ -130,7 +130,7 @@ contract LooksRareAggregator is
      * @param selector The marketplace proxy's function selector
      */
     function addFunction(address proxy, bytes4 selector) external onlyOwner {
-        _proxyFunctionSelectors[proxy][selector] = true;
+        _proxyFunctionSelectors[proxy][selector] = 1;
         emit FunctionAdded(proxy, selector);
     }
 
@@ -182,7 +182,7 @@ contract LooksRareAggregator is
      * @return Whether the marketplace proxy's function can be called from the aggregator
      */
     function supportsProxyFunction(address proxy, bytes4 selector) external view returns (bool) {
-        return _proxyFunctionSelectors[proxy][selector];
+        return _proxyFunctionSelectors[proxy][selector] == 1;
     }
 
     /**
