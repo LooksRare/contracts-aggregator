@@ -49,7 +49,7 @@ contract SeaportProxyMultipleCollectionTypesTest is TestParameters, TestHelpers,
 
         assertEq(IERC721(BAYC).ownerOf(6092), _buyer);
         assertEq(IERC1155(CITY_DAO).balanceOf(_buyer, 42), 1);
-        assertEq(address(_buyer).balance, INITIAL_ETH_BALANCE - totalPrice);
+        assertEq(_buyer.balance, INITIAL_ETH_BALANCE - totalPrice);
     }
 
     function _generateTradeData(bool isAtomic) private view returns (ILooksRareAggregator.TradeData[] memory) {

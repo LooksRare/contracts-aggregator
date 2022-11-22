@@ -93,7 +93,7 @@ contract SeaportProxyMultipleCurrenciesTest is TestParameters, TestHelpers, Seap
         assertEq(IERC721(BAYC).ownerOf(9996), _buyer);
         assertEq(IERC721(BAYC).ownerOf(5509), _buyer);
 
-        assertEq(address(_buyer).balance, INITIAL_ETH_BALANCE - ethAmount);
+        assertEq(_buyer.balance, INITIAL_ETH_BALANCE - ethAmount);
         assertEq(IERC20(USDC).balanceOf(_buyer), INITIAL_USDC_BALANCE - usdcAmount);
         assertEq(IERC20(USDC).allowance(_buyer, address(erc20EnabledAggregator)), 0);
     }
@@ -120,8 +120,8 @@ contract SeaportProxyMultipleCurrenciesTest is TestParameters, TestHelpers, Seap
         assertEq(IERC721(BAYC).ownerOf(9996), _buyer);
         assertEq(IERC721(BAYC).ownerOf(5509), _buyer);
 
-        assertEq(address(_buyer).balance, INITIAL_ETH_BALANCE - ethAmount);
-        assertEq(address(_protocolFeeRecipient).balance, ethAmount - tradeData[0].orders[1].price);
+        assertEq(_buyer.balance, INITIAL_ETH_BALANCE - ethAmount);
+        assertEq(_protocolFeeRecipient.balance, ethAmount - tradeData[0].orders[1].price);
 
         assertEq(IERC20(USDC).balanceOf(_buyer), INITIAL_USDC_BALANCE - usdcAmount);
         assertEq(IERC20(USDC).allowance(_buyer, address(erc20EnabledAggregator)), 0);
@@ -150,7 +150,7 @@ contract SeaportProxyMultipleCurrenciesTest is TestParameters, TestHelpers, Seap
         assertEq(IERC721(BAYC).ownerOf(9996), _buyer);
         assertEq(IERC721(BAYC).ownerOf(5509), _buyer);
 
-        assertEq(address(_buyer).balance, INITIAL_ETH_BALANCE - ethAmount);
+        assertEq(_buyer.balance, INITIAL_ETH_BALANCE - ethAmount);
         assertEq(IERC20(USDC).balanceOf(_buyer), INITIAL_USDC_BALANCE - tradeData[0].orders[0].price);
         assertEq(IERC20(USDC).allowance(_buyer, address(erc20EnabledAggregator)), 0);
 

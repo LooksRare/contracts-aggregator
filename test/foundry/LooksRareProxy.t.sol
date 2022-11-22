@@ -64,7 +64,7 @@ contract LooksRareProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Lo
 
         assertEq(IERC721(BAYC).balanceOf(_buyer), 1);
         assertEq(IERC721(BAYC).ownerOf(3939), _buyer);
-        assertEq(address(_buyer).balance, 200 ether - tradeData[0].orders[1].price);
+        assertEq(_buyer.balance, 200 ether - tradeData[0].orders[1].price);
     }
 
     function testExecuteRefundExtraPaid() public asPrankedUser(_buyer) {
@@ -80,7 +80,7 @@ contract LooksRareProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Lo
         assertEq(IERC721(BAYC).balanceOf(_buyer), 2);
         assertEq(IERC721(BAYC).ownerOf(7139), _buyer);
         assertEq(IERC721(BAYC).ownerOf(3939), _buyer);
-        assertEq(address(_buyer).balance, 200 ether - tradeData[0].orders[0].price - tradeData[0].orders[1].price);
+        assertEq(_buyer.balance, 200 ether - tradeData[0].orders[0].price - tradeData[0].orders[1].price);
     }
 
     function testExecuteZeroOrders() public asPrankedUser(_buyer) {
