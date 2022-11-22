@@ -77,7 +77,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         bytes[] memory ordersExtraData = new bytes[](1);
         ordersExtraData[0] = orderExtraData;
 
-        bytes memory extraData = validSingleBAYCExtraData();
+        bytes memory extraData = validSingleOfferExtraData(3);
 
         ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
         tradeData[0] = ILooksRareAggregator.TradeData({
@@ -109,7 +109,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         bytes[] memory ordersExtraData = new bytes[](1);
         ordersExtraData[0] = orderExtraData;
 
-        bytes memory extraData = validSingleBAYCExtraData();
+        bytes memory extraData = validSingleOfferExtraData(3);
 
         FeeData memory feeData;
 

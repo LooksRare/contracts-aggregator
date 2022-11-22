@@ -135,7 +135,7 @@ contract MultipleMarketsTest is TestParameters, TestHelpers, SeaportProxyTestHel
             maxFeeBp: 0,
             orders: seaportOrders,
             ordersExtraData: seaportOrdersExtraData,
-            extraData: isAtomic ? validSingleBAYCExtraData() : new bytes(0)
+            extraData: isAtomic ? validSingleOfferExtraData(3) : new bytes(0)
         });
 
         BasicOrder[] memory looksRareOrders = new BasicOrder[](1);
