@@ -59,7 +59,7 @@ contract SudoswapProxy is IProxy, TokenRescuer {
 
                 swapList[i] = pairSwapSpecific;
 
-                ethValue += orders[i].price;
+                ethValue = ethValue + orders[i].price;
 
                 unchecked {
                     ++i;
@@ -81,7 +81,7 @@ contract SudoswapProxy is IProxy, TokenRescuer {
                 ISudoswapRouter.RobustPairSwapSpecific memory robustPairSwapSpecific;
                 ISudoswapRouter.PairSwapSpecific memory pairSwapSpecific;
                 robustPairSwapSpecific.maxCost = orders[i].price;
-                ethValue += orders[i].price;
+                ethValue = ethValue + orders[i].price;
                 // here the collection is the AMM pool address
                 pairSwapSpecific.pair = orders[i].collection;
                 pairSwapSpecific.nftIds = orders[i].tokenIds;

@@ -107,7 +107,9 @@ contract SeaportProxy is IProxy, TokenRescuer {
             advancedOrders[i].denominator = orderExtraData.denominator;
             advancedOrders[i].signature = orders[i].signature;
 
-            if (orders[i].currency == address(0)) ethValue += orders[i].price;
+            if (orders[i].currency == address(0)) {
+                ethValue = ethValue + orders[i].price;
+            }
 
             unchecked {
                 ++i;
@@ -148,7 +150,7 @@ contract SeaportProxy is IProxy, TokenRescuer {
             uint256 orderFee = (orders[i].price * feeBp) / 10000;
 
             if (currency == lastOrderCurrency) {
-                fee += orderFee;
+                fee = fee + orderFee;
             } else {
                 if (fee > 0) _transferFee(fee, lastOrderCurrency, feeRecipient);
 
@@ -207,7 +209,7 @@ contract SeaportProxy is IProxy, TokenRescuer {
                 if (feeRecipient != address(0)) {
                     uint256 orderFee = (price * feeBp) / 10000;
                     if (currency == lastOrderCurrency) {
-                        fee += orderFee;
+                        fee = fee + orderFee;
                     } else {
                         if (fee > 0) _transferFee(fee, lastOrderCurrency, feeRecipient);
 
