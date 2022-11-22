@@ -59,7 +59,7 @@ contract V0LooksRareProxy {
                 revert UnrecognizedTokenInterface();
             }
         } catch (bytes memory returnData) {
-            if (returnData.length > 0) {
+            if (returnData.length != 0) {
                 assembly {
                     let returnDataSize := mload(returnData)
                     revert(add(32, returnData), returnDataSize)
