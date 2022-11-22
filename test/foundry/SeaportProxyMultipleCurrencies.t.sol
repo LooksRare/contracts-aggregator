@@ -55,6 +55,18 @@ contract SeaportProxyMultipleCurrenciesTest is TestParameters, TestHelpers, Seap
         _testExecuteWithExcessUSDC(false);
     }
 
+    function testExecuteDoNotRefundMoreThanUserSentAmountAtomic() public asPrankedUser(_buyer) {
+        deal(USDC, address(aggregator), INITIAL_USDC_BALANCE);
+        _testExecute(true);
+        assertEq(IERC20(USDC).balanceOf(address(aggregator)), INITIAL_USDC_BALANCE);
+    }
+
+    function testExecuteDoNotRefundMoreThanUserSentAmountNonAtomic() public asPrankedUser(_buyer) {
+        deal(USDC, address(aggregator), INITIAL_USDC_BALANCE);
+        _testExecute(false);
+        assertEq(IERC20(USDC).balanceOf(address(aggregator)), INITIAL_USDC_BALANCE);
+    }
+
     function testExecuteWithFeesAtomic() public {
         vm.deal(_protocolFeeRecipient, 0);
         deal(USDC, _protocolFeeRecipient, 0);

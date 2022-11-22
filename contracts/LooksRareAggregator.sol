@@ -66,6 +66,15 @@ contract LooksRareAggregator is
             revert UseERC20EnabledLooksRareAggregator();
         }
 
+        uint256[] memory tokenBalances = new uint256[](tokenTransfersLength);
+        unchecked {
+            for (uint256 i; i < tokenTransfersLength; ++i) {
+                tokenBalances[i] =
+                    IERC20(tokenTransfers[i].currency).balanceOf(address(this)) -
+                    tokenTransfers[i].amount;
+            }
+        }
+
         for (uint256 i; i < tradeDataLength; ) {
             TradeData calldata singleTradeData = tradeData[i];
             if (_proxyFunctionSelectors[singleTradeData.proxy][singleTradeData.selector] != 1) revert InvalidFunction();
@@ -105,7 +114,7 @@ contract LooksRareAggregator is
             }
         }
 
-        if (tokenTransfersLength > 0) _returnERC20TokensIfAny(tokenTransfers, originator);
+        if (tokenTransfersLength != 0) _returnERC20TokensIfAny(tokenBalances, tokenTransfers, originator);
         assembly {
             if gt(selfbalance(), 1) {
                 let status := call(gas(), originator, sub(selfbalance(), 1), 0, 0, 0, 0)
@@ -242,14 +251,17 @@ contract LooksRareAggregator is
         );
     }
 
-    function _returnERC20TokensIfAny(TokenTransfer[] calldata tokenTransfers, address recipient) private {
-        uint256 tokenTransfersLength = tokenTransfers.length;
-        for (uint256 i; i < tokenTransfersLength; ) {
-            uint256 balance = IERC20(tokenTransfers[i].currency).balanceOf(address(this));
-            if (balance > 0) _executeERC20DirectTransfer(tokenTransfers[i].currency, recipient, balance);
-
-            unchecked {
-                ++i;
+    function _returnERC20TokensIfAny(
+        uint256[] memory tokenBalances,
+        TokenTransfer[] calldata tokenTransfers,
+        address recipient
+    ) private {
+        unchecked {
+            uint256 tokenTransfersLength = tokenTransfers.length;
+            for (uint256 i; i < tokenTransfersLength; ++i) {
+                address currency = tokenTransfers[i].currency;
+                uint256 transferAmount = IERC20(currency).balanceOf(address(this)) - tokenBalances[i];
+                if (transferAmount != 0) _executeERC20DirectTransfer(currency, recipient, transferAmount);
             }
         }
     }
