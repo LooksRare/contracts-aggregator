@@ -37,7 +37,7 @@ contract SeaportProxyMultipleCurrenciesRandomOrderFeesTest is TestParameters, Te
         vm.deal(_protocolFeeRecipient, 0);
         deal(USDC, _protocolFeeRecipient, 0);
 
-        aggregator.approve(SEAPORT, USDC, type(uint256).max);
+        aggregator.approve(USDC, SEAPORT, type(uint256).max);
         aggregator.setERC20EnabledLooksRareAggregator(address(erc20EnabledAggregator));
         aggregator.setFee(address(seaportProxy), 250, _protocolFeeRecipient);
     }

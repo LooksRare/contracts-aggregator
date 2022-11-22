@@ -91,7 +91,7 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTes
         MockERC20 erc20 = new MockERC20();
         uint256 amount = type(uint256).max;
         assertEq(erc20.allowance(address(aggregator), address(looksRareProxy)), 0);
-        aggregator.approve(address(looksRareProxy), address(erc20), amount);
+        aggregator.approve(address(erc20), address(looksRareProxy), amount);
         assertEq(erc20.allowance(address(aggregator), address(looksRareProxy)), amount);
     }
 

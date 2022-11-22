@@ -32,7 +32,7 @@ contract SeaportProxyERC721USDCTest is TestParameters, TestHelpers, SeaportProxy
 
         deal(USDC, _buyer, INITIAL_USDC_BALANCE);
 
-        aggregator.approve(SEAPORT, USDC, type(uint256).max);
+        aggregator.approve(USDC, SEAPORT, type(uint256).max);
         aggregator.setFee(address(seaportProxy), 250, _protocolFeeRecipient);
         aggregator.setERC20EnabledLooksRareAggregator(address(erc20EnabledAggregator));
     }

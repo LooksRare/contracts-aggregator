@@ -168,13 +168,13 @@ contract LooksRareAggregator is
 
     /**
      * @notice Approve marketplaces to transfer ERC20 tokens from the aggregator
-     * @param marketplace The marketplace address to approve
      * @param currency The ERC20 token address to approve
+     * @param marketplace The marketplace address to approve
      * @param amount The amount of ERC20 token to approve
      */
     function approve(
-        address marketplace,
         address currency,
+        address marketplace,
         uint256 amount
     ) external onlyOwner {
         _executeERC20Approve(currency, marketplace, amount);
