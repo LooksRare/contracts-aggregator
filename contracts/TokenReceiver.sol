@@ -16,7 +16,7 @@ abstract contract TokenReceiver {
         address,
         uint256,
         uint256,
-        bytes memory
+        bytes calldata
     ) external virtual returns (bytes4) {
         return this.onERC1155Received.selector;
     }
@@ -24,9 +24,9 @@ abstract contract TokenReceiver {
     function onERC1155BatchReceived(
         address,
         address,
-        uint256[] memory,
-        uint256[] memory,
-        bytes memory
+        uint256[] calldata,
+        uint256[] calldata,
+        bytes calldata
     ) external virtual returns (bytes4) {
         return this.onERC1155BatchReceived.selector;
     }
