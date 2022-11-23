@@ -11,7 +11,7 @@ import {LowLevelETH} from "@looksrare/contracts-libs/contracts/lowLevelCallers/L
  * @notice This contract contains functions to move tokens
  * @author LooksRare protocol team (👀,💎)
  */
-contract TokenRescuer is OwnableTwoSteps, LowLevelETH, LowLevelERC20Transfer {
+abstract contract TokenRescuer is OwnableTwoSteps, LowLevelETH, LowLevelERC20Transfer {
     error InsufficientAmount();
 
     /**
