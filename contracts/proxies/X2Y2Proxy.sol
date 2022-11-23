@@ -161,8 +161,8 @@ contract X2Y2Proxy is IProxy, TokenRescuer, TokenTransferrer, SignatureChecker {
     function _redirectTokenToRecipient(BasicOrder memory order, address recipient) private {
         _transferTokenToRecipient(
             order.collectionType,
-            recipient,
             order.collection,
+            recipient,
             order.tokenIds[0],
             order.amounts[0]
         );

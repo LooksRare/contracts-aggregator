@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import {IERC20} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC20.sol";
-
 import {CollectionType} from "../libraries/OrderEnums.sol";
-import {BasicOrder, FeeData} from "../libraries/OrderStructs.sol";
+import {BasicOrder} from "../libraries/OrderStructs.sol";
 import {ItemType, OrderType} from "../libraries/seaport/ConsiderationEnums.sol";
 import {AdvancedOrder, CriteriaResolver, OrderParameters, OfferItem, ConsiderationItem, FulfillmentComponent, AdditionalRecipient} from "../libraries/seaport/ConsiderationStructs.sol";
 import {IProxy} from "../interfaces/IProxy.sol";
@@ -150,7 +148,9 @@ contract SeaportProxy is IProxy, TokenRescuer {
             if (currency == lastOrderCurrency) {
                 fee += orderFee;
             } else {
-                if (fee != 0) _transferFee(fee, lastOrderCurrency, feeRecipient);
+                if (fee != 0) {
+                    _transferFee(lastOrderCurrency, feeRecipient, fee);
+                }
 
                 lastOrderCurrency = currency;
                 fee = orderFee;
@@ -161,13 +161,15 @@ contract SeaportProxy is IProxy, TokenRescuer {
             }
         }
 
-        if (fee != 0) _transferFee(fee, lastOrderCurrency, feeRecipient);
+        if (fee != 0) {
+            _transferFee(lastOrderCurrency, feeRecipient, fee);
+        }
     }
 
     function _transferFee(
-        uint256 fee,
         address lastOrderCurrency,
-        address recipient
+        address recipient,
+        uint256 fee
     ) private {
         if (lastOrderCurrency == address(0)) {
             _transferETH(recipient, fee);
@@ -209,7 +211,9 @@ contract SeaportProxy is IProxy, TokenRescuer {
                     if (currency == lastOrderCurrency) {
                         fee += orderFee;
                     } else {
-                        if (fee != 0) _transferFee(fee, lastOrderCurrency, feeRecipient);
+                        if (fee != 0) {
+                            _transferFee(lastOrderCurrency, feeRecipient, fee);
+                        }
 
                         lastOrderCurrency = currency;
                         fee = orderFee;
@@ -222,7 +226,9 @@ contract SeaportProxy is IProxy, TokenRescuer {
             }
         }
 
-        if (fee != 0) _transferFee(fee, lastOrderCurrency, feeRecipient);
+        if (fee != 0) {
+            _transferFee(lastOrderCurrency, feeRecipient, fee);
+        }
     }
 
     function _populateParameters(BasicOrder calldata order, OrderExtraData memory orderExtraData)

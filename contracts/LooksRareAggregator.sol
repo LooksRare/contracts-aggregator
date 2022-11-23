@@ -6,11 +6,10 @@ import {LowLevelERC20Approve} from "@looksrare/contracts-libs/contracts/lowLevel
 import {LowLevelERC721Transfer} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelERC721Transfer.sol";
 import {LowLevelERC1155Transfer} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelERC1155Transfer.sol";
 import {IERC20} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC20.sol";
-import {LooksRareProxy} from "./proxies/LooksRareProxy.sol";
 import {TokenRescuer} from "./TokenRescuer.sol";
 import {TokenReceiver} from "./TokenReceiver.sol";
 import {ILooksRareAggregator} from "./interfaces/ILooksRareAggregator.sol";
-import {BasicOrder, FeeData, TokenTransfer} from "./libraries/OrderStructs.sol";
+import {FeeData, TokenTransfer} from "./libraries/OrderStructs.sol";
 
 /**
  * @title LooksRareAggregator
