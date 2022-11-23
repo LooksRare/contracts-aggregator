@@ -250,7 +250,9 @@ contract SeaportProxy is IProxy, TokenRescuer {
 
         OfferItem[] memory offer = new OfferItem[](1);
         // Seaport enums start with NATIVE and ERC20 so plus 2
-        offer[0].itemType = ItemType(uint8(order.collectionType) + 2);
+        unchecked {
+            offer[0].itemType = ItemType(uint8(order.collectionType) + 2);
+        }
         offer[0].token = order.collection;
         offer[0].identifierOrCriteria = order.tokenIds[0];
         uint256 amount = order.amounts[0];
