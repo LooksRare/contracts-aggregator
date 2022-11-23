@@ -87,7 +87,7 @@ contract LooksRareProxy is IProxy, TokenRescuer, TokenTransferrer, SignatureChec
 
             OrderTypes.TakerOrder memory takerBid;
             {
-                takerBid.isOrderAsk = false;
+                // No need to set isOrderAsk as its default value is false
                 takerBid.taker = address(this);
                 takerBid.price = order.price;
                 takerBid.tokenId = makerAsk.tokenId;
