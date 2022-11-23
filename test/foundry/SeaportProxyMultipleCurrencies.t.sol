@@ -103,8 +103,8 @@ contract SeaportProxyMultipleCurrenciesTest is TestParameters, TestHelpers, Seap
 
         tradeData[0].maxFeeBp = 250;
 
-        uint256 usdcAmount = (tradeData[0].orders[0].price * 10250) / 10000;
-        uint256 ethAmount = (tradeData[0].orders[1].price * 10250) / 10000;
+        uint256 usdcAmount = (tradeData[0].orders[0].price * 10_250) / 10_000;
+        uint256 ethAmount = (tradeData[0].orders[1].price * 10_250) / 10_000;
 
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](1);
         tokenTransfers[0].amount = usdcAmount;

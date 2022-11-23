@@ -129,10 +129,10 @@ contract SeaportProxyERC721Test is TestParameters, TestHelpers, SeaportProxyTest
     function _testExecuteWithFees(bool isAtomic) private {
         ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData();
         uint256 totalPriceBeforeFee = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
-        uint256 totalPriceWithFees = (tradeData[0].orders[0].price * 10250) /
-            10000 +
-            (tradeData[0].orders[1].price * 10250) /
-            10000;
+        uint256 totalPriceWithFees = (tradeData[0].orders[0].price * 10_250) /
+            10_000 +
+            (tradeData[0].orders[1].price * 10_250) /
+            10_000;
 
         tradeData[0].maxFeeBp = 250;
 

@@ -154,7 +154,7 @@ contract LooksRareAggregator is
         uint256 bp,
         address recipient
     ) external onlyOwner {
-        if (bp > 10000) revert FeeTooHigh();
+        if (bp > 10_000) revert FeeTooHigh();
         _proxyFeeData[proxy].bp = bp;
         _proxyFeeData[proxy].recipient = recipient;
 
