@@ -42,20 +42,20 @@ interface ILooksRareAggregator {
      * @param proxy The marketplace proxy's address
      * @param selector The marketplace proxy's function selector
      */
-    event FunctionAdded(address indexed proxy, bytes4 selector);
+    event FunctionAdded(address proxy, bytes4 selector);
 
     /**
      * @notice Emitted when a marketplace proxy's function is disabled.
      * @param proxy The marketplace proxy's address
      * @param selector The marketplace proxy's function selector
      */
-    event FunctionRemoved(address indexed proxy, bytes4 selector);
+    event FunctionRemoved(address proxy, bytes4 selector);
 
     /**
      * @notice Emitted when execute is complete
      * @param sweeper The address that submitted the transaction
      */
-    event Sweep(address indexed sweeper);
+    event Sweep(address sweeper);
 
     error AlreadySet();
     error InvalidFunction();

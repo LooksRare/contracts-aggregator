@@ -58,7 +58,7 @@ contract SeaportProxyERC1155Test is TestParameters, TestHelpers, SeaportProxyTes
         ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData(false);
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
 
-        vm.expectEmit(true, true, false, false);
+        vm.expectEmit(false, false, false, true);
         emit Sweep(_buyer);
 
         // Not paying for the second order
@@ -71,7 +71,7 @@ contract SeaportProxyERC1155Test is TestParameters, TestHelpers, SeaportProxyTes
         ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData(isAtomic);
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
 
-        vm.expectEmit(true, true, false, false);
+        vm.expectEmit(false, false, false, true);
         emit Sweep(_buyer);
 
         uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
@@ -90,7 +90,7 @@ contract SeaportProxyERC1155Test is TestParameters, TestHelpers, SeaportProxyTes
         ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData(isAtomic);
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
 
-        vm.expectEmit(true, true, false, false);
+        vm.expectEmit(false, false, false, true);
         emit Sweep(_buyer);
 
         uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price;

@@ -54,7 +54,7 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTes
 
     function testAddFunction() public {
         assertTrue(!aggregator.supportsProxyFunction(address(looksRareProxy), LooksRareProxy.execute.selector));
-        vm.expectEmit(true, true, false, true);
+        vm.expectEmit(false, false, false, true);
         emit FunctionAdded(address(looksRareProxy), LooksRareProxy.execute.selector);
         aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
         assertTrue(aggregator.supportsProxyFunction(address(looksRareProxy), LooksRareProxy.execute.selector));
@@ -71,7 +71,7 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTes
         aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
         assertTrue(aggregator.supportsProxyFunction(address(looksRareProxy), LooksRareProxy.execute.selector));
 
-        vm.expectEmit(true, true, false, true);
+        vm.expectEmit(false, false, false, true);
         emit FunctionRemoved(address(looksRareProxy), LooksRareProxy.execute.selector);
         aggregator.removeFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
         assertTrue(!aggregator.supportsProxyFunction(address(looksRareProxy), LooksRareProxy.execute.selector));
