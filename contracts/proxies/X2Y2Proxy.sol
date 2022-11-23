@@ -24,15 +24,33 @@ contract X2Y2Proxy is IProxy, TokenRescuer, TokenTransferrer, SignatureChecker {
     address public immutable aggregator;
 
     struct OrderExtraData {
-        uint256 salt; // An arbitrary source of entropy for the order (per trade)
-        bytes itemData; // The data of the token to be traded (id, address, etc)
-        uint256 inputSalt; // An arbitrary source of entropy for the order (for the whole order)
-        uint256 inputDeadline; // order deadline
-        address executionDelegate; // The contract to execute the trade
-        uint8 inputV; // v parameter of the order signature signed by an authorized signer (not the seller)
-        bytes32 inputR; // r parameter of the order signature signed by an authorized signer (not the seller)
-        bytes32 inputS; // s parameter of the order signature signed by an authorized signer (not the seller)
-        Market.Fee[] fees; // An array of sales proceeds recipient and the % for each of them
+        /* An arbitrary source of entropy for the order (per trade) */
+        uint256 salt;
+        /* The data of the token to be traded (id, address, etc) */
+        bytes itemData;
+        /* An arbitrary source of entropy for the order (for the whole order) */
+        uint256 inputSalt;
+        /* order deadline */
+        uint256 inputDeadline;
+        /* The contract to execute the trade */
+        address executionDelegate;
+        /**
+         * v parameter of the order signature signed by an authorized signer
+         * (not the seller)
+         */
+        uint8 inputV;
+        /**
+         * r parameter of the order signature signed by an authorized signer
+         * (not the seller)
+         */
+        bytes32 inputR;
+        /**
+         * s parameter of the order signature signed by an authorized signer
+         * (not the seller)
+         */
+        bytes32 inputS;
+        /* An array of sales proceeds recipient and the % for each of them */
+        Market.Fee[] fees;
     }
 
     /**

@@ -13,7 +13,8 @@ interface IProxy {
      * @param ordersExtraData Extra data for each order
      * @param extraData Extra data for the whole transaction
      * @param recipient The address to receive the purchased NFTs
-     * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
+     * @param isAtomic Flag to enable atomic trades (all or nothing)
+     *                 or partial trades
      * @param feeBp Fee basis point to pay for the trade, set by the aggregator
      * @param feeRecipient Fee recipient for the trade, set by the aggregator
      */
