@@ -11,14 +11,13 @@ import {BasicOrder, FeeData} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TestParameters} from "./TestParameters.sol";
-import {TokenRescuerTest} from "./TokenRescuer.t.sol";
 import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
 import {MockERC20} from "./utils/MockERC20.sol";
 
 /**
  * @notice SeaportProxy tests, tests involving actual executions live in other tests
  */
-contract SeaportProxyTest is TestParameters, TestHelpers, TokenRescuerTest, SeaportProxyTestHelpers {
+contract SeaportProxyTest is TestParameters, TestHelpers, SeaportProxyTestHelpers {
     SeaportProxy private seaportProxy;
     TokenRescuer private tokenRescuer;
 
@@ -65,29 +64,5 @@ contract SeaportProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Seap
             0,
             address(0)
         );
-    }
-
-    function testRescueETH() public {
-        _testRescueETH(tokenRescuer);
-    }
-
-    function testRescueETHNotOwner() public {
-        _testRescueETHNotOwner(tokenRescuer);
-    }
-
-    function testRescueETHInsufficientAmount() public {
-        _testRescueETHInsufficientAmount(tokenRescuer);
-    }
-
-    function testRescueERC20() public {
-        _testRescueERC20(tokenRescuer);
-    }
-
-    function testRescueERC20NotOwner() public {
-        _testRescueERC20NotOwner(tokenRescuer);
-    }
-
-    function testRescueERC20InsufficientAmount() public {
-        _testRescueERC20InsufficientAmount(tokenRescuer);
     }
 }

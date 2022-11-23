@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
+import {LowLevelERC20Transfer} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelERC20Transfer.sol";
+import {LowLevelETH} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelETH.sol";
 import {CollectionType} from "../libraries/OrderEnums.sol";
 import {BasicOrder} from "../libraries/OrderStructs.sol";
 import {ItemType, OrderType} from "../libraries/seaport/ConsiderationEnums.sol";
 import {AdvancedOrder, CriteriaResolver, OrderParameters, OfferItem, ConsiderationItem, FulfillmentComponent, AdditionalRecipient} from "../libraries/seaport/ConsiderationStructs.sol";
 import {IProxy} from "../interfaces/IProxy.sol";
 import {SeaportInterface} from "../interfaces/SeaportInterface.sol";
-import {TokenRescuer} from "../TokenRescuer.sol";
 
 /**
  * @title SeaportProxy
@@ -15,7 +16,7 @@ import {TokenRescuer} from "../TokenRescuer.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract SeaportProxy is IProxy, TokenRescuer {
+contract SeaportProxy is IProxy, LowLevelERC20Transfer, LowLevelETH {
     SeaportInterface public immutable marketplace;
     address public immutable aggregator;
 
