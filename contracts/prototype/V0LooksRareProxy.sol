@@ -46,7 +46,7 @@ contract V0LooksRareProxy {
         try marketplace.matchAskWithTakerBidUsingETHAndWETH{value: makerAsk.price}(takerBid, makerAsk) {
             // TODO: handle CryptoPunks/Mooncats
             if (IERC165(makerAsk.collection).supportsInterface(_INTERFACE_ID_ERC721)) {
-                IERC721(makerAsk.collection).transferFrom(address(this), recipient, makerAsk.tokenId);
+                IERC721(makerAsk.collection).safeTransferFrom(address(this), recipient, makerAsk.tokenId);
             } else if (IERC165(makerAsk.collection).supportsInterface(_INTERFACE_ID_ERC1155)) {
                 IERC1155(makerAsk.collection).safeTransferFrom(
                     address(this),
