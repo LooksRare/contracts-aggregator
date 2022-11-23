@@ -35,7 +35,7 @@ contract SeaportProxyMultipleCurrenciesTest is TestParameters, TestHelpers, Seap
         vm.deal(address(aggregator), 1 wei);
         vm.deal(address(seaportProxy), 0);
 
-        aggregator.approve(SEAPORT, USDC, type(uint256).max);
+        aggregator.approve(USDC, SEAPORT, type(uint256).max);
         aggregator.setERC20EnabledLooksRareAggregator(address(erc20EnabledAggregator));
     }
 
