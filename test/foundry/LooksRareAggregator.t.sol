@@ -31,8 +31,6 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTes
 
     function testSetERC20EnabledLooksRareAggregator() public {
         assertEq(address(aggregator.erc20EnabledLooksRareAggregator()), address(0));
-        vm.expectEmit(true, false, false, false);
-        emit ERC20EnabledLooksRareAggregatorSet();
         address erc20EnabledLooksRareAggregator = address(new ERC20EnabledLooksRareAggregator(address(aggregator)));
         aggregator.setERC20EnabledLooksRareAggregator(erc20EnabledLooksRareAggregator);
         assertEq(address(aggregator.erc20EnabledLooksRareAggregator()), erc20EnabledLooksRareAggregator);

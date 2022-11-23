@@ -34,7 +34,6 @@ abstract contract TestParameters {
     uint256 internal constant INITIAL_ETH_BALANCE = 400 ether;
     uint256 internal constant INITIAL_USDC_BALANCE = 500000e6;
 
-    event ERC20EnabledLooksRareAggregatorSet();
     event FeeUpdated(address proxy, uint256 bp, address recipient);
     event FunctionAdded(address indexed proxy, bytes4 selector);
     event FunctionRemoved(address indexed proxy, bytes4 selector);

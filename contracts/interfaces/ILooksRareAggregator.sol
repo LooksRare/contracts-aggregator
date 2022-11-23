@@ -31,11 +31,6 @@ interface ILooksRareAggregator {
     ) external payable;
 
     /**
-     * @dev Emitted when erc20EnabledLooksRareAggregator is set
-     */
-    event ERC20EnabledLooksRareAggregatorSet();
-
-    /**
      * @dev Emitted when fee is updated
      * @param proxy Proxy to apply the fee to
      * @param bp Fee basis point
