@@ -13,8 +13,8 @@ import {CollectionType} from "./libraries/OrderEnums.sol";
 abstract contract TokenTransferrer {
     function _transferTokenToRecipient(
         CollectionType collectionType,
-        address recipient,
         address collection,
+        address recipient,
         uint256 tokenId,
         uint256 amount
     ) internal {
