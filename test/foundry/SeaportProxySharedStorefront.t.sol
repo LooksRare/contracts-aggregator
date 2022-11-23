@@ -20,7 +20,7 @@ contract SeaportProxySharedStorefrontTest is TestParameters, TestHelpers, Seapor
     function setUp() public {
         vm.createSelectFork(vm.rpcUrl("goerli"), 7_993_401);
 
-        aggregator = new LooksRareAggregator(86400);
+        aggregator = new LooksRareAggregator(86_400);
         seaportProxy = new SeaportProxy(SEAPORT, address(aggregator));
         aggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);
 

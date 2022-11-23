@@ -94,7 +94,7 @@ contract GemSwapBenchmarkTest is TestParameters, TestHelpers, SeaportProxyTestHe
     }
 
     function _testBuyFromLooksRareAggregator(bool isAtomic) private {
-        LooksRareAggregator aggregator = new LooksRareAggregator(86400);
+        LooksRareAggregator aggregator = new LooksRareAggregator(86_400);
 
         SeaportProxy seaportProxy = new SeaportProxy(SEAPORT, address(aggregator));
         aggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);
@@ -154,7 +154,7 @@ contract GemSwapBenchmarkTest is TestParameters, TestHelpers, SeaportProxyTestHe
     }
 
     function _testBuyFromLooksRareAggregatorTwoNFTsEachMarketplace(bool isAtomic) private {
-        LooksRareAggregator aggregator = new LooksRareAggregator(86400);
+        LooksRareAggregator aggregator = new LooksRareAggregator(86_400);
 
         SeaportProxy seaportProxy = new SeaportProxy(SEAPORT, address(aggregator));
         aggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);

@@ -24,7 +24,7 @@ contract Deployment is Script {
     function _run(address looksrare, address seaport) internal {
         vm.startBroadcast();
 
-        looksRareAggregator = new LooksRareAggregator(86400);
+        looksRareAggregator = new LooksRareAggregator(86_400);
 
         erc20EnabledLooksRareAggregator = new ERC20EnabledLooksRareAggregator(address(looksRareAggregator));
         looksRareAggregator.setERC20EnabledLooksRareAggregator(address(erc20EnabledLooksRareAggregator));

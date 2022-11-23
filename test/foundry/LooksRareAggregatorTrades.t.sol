@@ -29,7 +29,7 @@ contract LooksRareAggregatorTradesTest is
     function testExecuteZeroOriginator() public {
         vm.createSelectFork(vm.rpcUrl("mainnet"), 15_282_897);
 
-        aggregator = new LooksRareAggregator(86400);
+        aggregator = new LooksRareAggregator(86_400);
         LooksRareProxy looksRareProxy = new LooksRareProxy(LOOKSRARE_V1, address(aggregator));
         // Since we are forking mainnet, we have to make sure it has 0 ETH.
         vm.deal(address(looksRareProxy), 0);
@@ -66,7 +66,7 @@ contract LooksRareAggregatorTradesTest is
     function testExecuteReentrancy() public {
         vm.createSelectFork(vm.rpcUrl("mainnet"), 15_320_038);
 
-        aggregator = new LooksRareAggregator(86400);
+        aggregator = new LooksRareAggregator(86_400);
         SeaportProxy seaportProxy = new SeaportProxy(SEAPORT, address(aggregator));
         aggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);
         // Since we are forking mainnet, we have to make sure it has 0 ETH.
