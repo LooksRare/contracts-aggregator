@@ -18,7 +18,7 @@ export default async function deployX2Y2Fixture(): Promise<X2Y2Fixture> {
   const { send, getCode } = ethers.provider;
 
   const Aggregator = await ethers.getContractFactory("LooksRareAggregator");
-  const aggregatorPlaceholder = await Aggregator.deploy();
+  const aggregatorPlaceholder = await Aggregator.deploy(86_400);
   await aggregatorPlaceholder.deployed();
 
   const [owner, predefinedAggregator, buyer] = await ethers.getSigners();
@@ -31,6 +31,7 @@ export default async function deployX2Y2Fixture(): Promise<X2Y2Fixture> {
 
   const aggregator = Aggregator.attach(predefinedAggregator.address);
   await send("hardhat_setStorageAt", [aggregator.address, "0x0", ethers.utils.hexZeroPad(owner.address, 32)]);
+  await send("hardhat_setStorageAt", [aggregator.address, "0x2", ethers.utils.hexZeroPad("0x15180", 32)]);
 
   const X2Y2Proxy = await ethers.getContractFactory("X2Y2Proxy");
   const proxy = await X2Y2Proxy.deploy(X2Y2, aggregator.address);
