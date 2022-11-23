@@ -42,6 +42,10 @@ contract LooksRareAggregator is
     mapping(address => mapping(bytes4 => uint256)) private _proxyFunctionSelectors;
     mapping(address => FeeData) private _proxyFeeData;
 
+    constructor(uint256 _delay) {
+        _setupDelayForRenouncingOwnership(_delay);
+    }
+
     /**
      * @inheritdoc ILooksRareAggregator
      */
