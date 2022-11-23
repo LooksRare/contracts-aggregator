@@ -48,11 +48,11 @@ contract LooksRareProxy is IProxy, TokenRescuer, TokenTransferrer, SignatureChec
     function execute(
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,
-        bytes memory,
+        bytes memory, /* extraData */
         address recipient,
         bool isAtomic,
-        uint256,
-        address
+        uint256, /* feeBp */
+        address /* feeRecipient */
     ) external payable override {
         if (address(this) != aggregator) revert InvalidCaller();
 
