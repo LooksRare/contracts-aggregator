@@ -45,7 +45,7 @@ contract V0Aggregator is TokenRescuer, TokenReceiver {
             (bool success, bytes memory returnData) = proxy.delegatecall(data);
 
             if (!success) {
-                if (returnData.length > 0) {
+                if (returnData.length != 0) {
                     assembly {
                         let returnDataSize := mload(returnData)
                         revert(add(32, returnData), returnDataSize)

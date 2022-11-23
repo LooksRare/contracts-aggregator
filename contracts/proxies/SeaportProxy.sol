@@ -150,7 +150,7 @@ contract SeaportProxy is IProxy, TokenRescuer {
             if (currency == lastOrderCurrency) {
                 fee += orderFee;
             } else {
-                if (fee > 0) _transferFee(fee, lastOrderCurrency, feeRecipient);
+                if (fee != 0) _transferFee(fee, lastOrderCurrency, feeRecipient);
 
                 lastOrderCurrency = currency;
                 fee = orderFee;
@@ -161,7 +161,7 @@ contract SeaportProxy is IProxy, TokenRescuer {
             }
         }
 
-        if (fee > 0) _transferFee(fee, lastOrderCurrency, feeRecipient);
+        if (fee != 0) _transferFee(fee, lastOrderCurrency, feeRecipient);
     }
 
     function _transferFee(
@@ -209,7 +209,7 @@ contract SeaportProxy is IProxy, TokenRescuer {
                     if (currency == lastOrderCurrency) {
                         fee += orderFee;
                     } else {
-                        if (fee > 0) _transferFee(fee, lastOrderCurrency, feeRecipient);
+                        if (fee != 0) _transferFee(fee, lastOrderCurrency, feeRecipient);
 
                         lastOrderCurrency = currency;
                         fee = orderFee;
@@ -222,7 +222,7 @@ contract SeaportProxy is IProxy, TokenRescuer {
             }
         }
 
-        if (fee > 0) _transferFee(fee, lastOrderCurrency, feeRecipient);
+        if (fee != 0) _transferFee(fee, lastOrderCurrency, feeRecipient);
     }
 
     function _populateParameters(BasicOrder calldata order, OrderExtraData memory orderExtraData)
