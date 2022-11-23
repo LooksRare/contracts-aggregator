@@ -10,7 +10,6 @@ import {BasicOrder} from "../libraries/OrderStructs.sol";
 import {Market} from "../libraries/x2y2/MarketConsts.sol";
 import {IProxy} from "../interfaces/IProxy.sol";
 import {IX2Y2} from "../interfaces/IX2Y2.sol";
-import {TokenRescuer} from "../TokenRescuer.sol";
 import {TokenTransferrer} from "../TokenTransferrer.sol";
 
 /**
@@ -19,7 +18,7 @@ import {TokenTransferrer} from "../TokenTransferrer.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract X2Y2Proxy is IProxy, TokenRescuer, TokenTransferrer, SignatureChecker {
+contract X2Y2Proxy is IProxy, TokenTransferrer, SignatureChecker {
     IX2Y2 public immutable marketplace;
     address public immutable aggregator;
 

@@ -4,21 +4,17 @@ pragma solidity 0.8.17;
 import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
 import {X2Y2Proxy} from "../../contracts/proxies/X2Y2Proxy.sol";
 import {IProxy} from "../../contracts/interfaces/IProxy.sol";
-import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
 import {BasicOrder, FeeData} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {Market} from "../../contracts/libraries/x2y2/MarketConsts.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TestParameters} from "./TestParameters.sol";
-import {TokenRescuerTest} from "./TokenRescuer.t.sol";
 
-contract X2Y2ProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
+contract X2Y2ProxyTest is TestParameters, TestHelpers {
     X2Y2Proxy private x2y2Proxy;
-    TokenRescuer private tokenRescuer;
 
     function setUp() public {
         x2y2Proxy = new X2Y2Proxy(X2Y2, _fakeAggregator);
-        tokenRescuer = TokenRescuer(address(x2y2Proxy));
         vm.deal(_buyer, 100 ether);
     }
 
@@ -49,30 +45,6 @@ contract X2Y2ProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
             0,
             address(0)
         );
-    }
-
-    function testRescueETH() public {
-        _testRescueETH(tokenRescuer);
-    }
-
-    function testRescueETHNotOwner() public {
-        _testRescueETHNotOwner(tokenRescuer);
-    }
-
-    function testRescueETHInsufficientAmount() public {
-        _testRescueETHInsufficientAmount(tokenRescuer);
-    }
-
-    function testRescueERC20() public {
-        _testRescueERC20(tokenRescuer);
-    }
-
-    function testRescueERC20NotOwner() public {
-        _testRescueERC20NotOwner(tokenRescuer);
-    }
-
-    function testRescueERC20InsufficientAmount() public {
-        _testRescueERC20InsufficientAmount(tokenRescuer);
     }
 
     function validBAYCOrder() private pure returns (BasicOrder[] memory orders) {

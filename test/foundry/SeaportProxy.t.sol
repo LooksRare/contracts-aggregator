@@ -3,7 +3,6 @@ pragma solidity 0.8.17;
 
 import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
 import {SeaportProxy} from "../../contracts/proxies/SeaportProxy.sol";
-import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
 import {OrderType} from "../../contracts/libraries/seaport/ConsiderationEnums.sol";
 import {AdditionalRecipient, Fulfillment, FulfillmentComponent} from "../../contracts/libraries/seaport/ConsiderationStructs.sol";
 import {IProxy} from "../../contracts/interfaces/IProxy.sol";
@@ -19,11 +18,9 @@ import {MockERC20} from "./utils/MockERC20.sol";
  */
 contract SeaportProxyTest is TestParameters, TestHelpers, SeaportProxyTestHelpers {
     SeaportProxy private seaportProxy;
-    TokenRescuer private tokenRescuer;
 
     function setUp() public {
         seaportProxy = new SeaportProxy(SEAPORT, _fakeAggregator);
-        tokenRescuer = TokenRescuer(address(seaportProxy));
         vm.deal(_buyer, 100 ether);
     }
 

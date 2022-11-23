@@ -5,7 +5,6 @@ import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSte
 import {IERC721} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC721.sol";
 import {LooksRareProxy} from "../../contracts/proxies/LooksRareProxy.sol";
 import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
-import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
 import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggregator.sol";
 import {IProxy} from "../../contracts/interfaces/IProxy.sol";
 import {BasicOrder, FeeData, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
@@ -20,7 +19,6 @@ import {LooksRareProxyTestHelpers} from "./LooksRareProxyTestHelpers.sol";
 contract LooksRareProxyTest is TestParameters, TestHelpers, LooksRareProxyTestHelpers {
     LooksRareAggregator private aggregator;
     LooksRareProxy private looksRareProxy;
-    TokenRescuer private tokenRescuer;
 
     function setUp() public {
         vm.createSelectFork(vm.rpcUrl("mainnet"), 15_282_897);
@@ -29,7 +27,6 @@ contract LooksRareProxyTest is TestParameters, TestHelpers, LooksRareProxyTestHe
         looksRareProxy = new LooksRareProxy(LOOKSRARE_V1, address(aggregator));
         aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
 
-        tokenRescuer = TokenRescuer(address(looksRareProxy));
         vm.deal(_buyer, 200 ether);
 
         // Forking from mainnet and the deployed addresses might have balance

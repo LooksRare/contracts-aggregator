@@ -2,21 +2,17 @@
 pragma solidity 0.8.17;
 
 import {SudoswapProxy} from "../../contracts/proxies/SudoswapProxy.sol";
-import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
 import {IProxy} from "../../contracts/interfaces/IProxy.sol";
 import {BasicOrder, FeeData} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TestParameters} from "./TestParameters.sol";
-import {TokenRescuerTest} from "./TokenRescuer.t.sol";
 
-contract SudoswapProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
+contract SudoswapProxyTest is TestParameters, TestHelpers {
     SudoswapProxy private sudoswapProxy;
-    TokenRescuer private tokenRescuer;
 
     function setUp() public {
         sudoswapProxy = new SudoswapProxy(SUDOSWAP, _fakeAggregator);
-        tokenRescuer = TokenRescuer(address(sudoswapProxy));
         vm.deal(_buyer, 100 ether);
     }
 
@@ -27,30 +23,6 @@ contract SudoswapProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
         vm.etch(_fakeAggregator, address(sudoswapProxy).code);
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
         IProxy(_fakeAggregator).execute(orders, ordersExtraData, "", _buyer, false, 0, address(0));
-    }
-
-    function testRescueETH() public {
-        _testRescueETH(tokenRescuer);
-    }
-
-    function testRescueETHNotOwner() public {
-        _testRescueETHNotOwner(tokenRescuer);
-    }
-
-    function testRescueETHInsufficientAmount() public {
-        _testRescueETHInsufficientAmount(tokenRescuer);
-    }
-
-    function testRescueERC20() public {
-        _testRescueERC20(tokenRescuer);
-    }
-
-    function testRescueERC20NotOwner() public {
-        _testRescueERC20NotOwner(tokenRescuer);
-    }
-
-    function testRescueERC20InsufficientAmount() public {
-        _testRescueERC20InsufficientAmount(tokenRescuer);
     }
 
     function validMoodieOrder() private pure returns (BasicOrder[] memory orders) {
