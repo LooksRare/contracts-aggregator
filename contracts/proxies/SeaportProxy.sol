@@ -22,19 +22,39 @@ contract SeaportProxy is IProxy, TokenRescuer {
     error TradeExecutionFailed();
 
     struct ExtraData {
-        FulfillmentComponent[][] offerFulfillments; // Contains the order and item index of each offer item
-        FulfillmentComponent[][] considerationFulfillments; // Contains the order and item index of each consideration item
+        // Contains the order and item index of each offer item
+        FulfillmentComponent[][] offerFulfillments;
+        // Contains the order and item index of each consideration item
+        FulfillmentComponent[][] considerationFulfillments;
     }
 
     struct OrderExtraData {
-        uint120 numerator; // A fraction to attempt to fill
-        uint120 denominator; // The total size of the order
-        OrderType orderType; // Seaport order type
-        address zone; // A zone can cancel the order or restrict who can fulfill the order depending on the type
-        bytes32 zoneHash; // An arbitrary 32-byte value that will be supplied to the zone when fulfilling restricted orders that the zone can utilize when making a determination on whether to authorize the order
-        uint256 salt; // An arbitrary source of entropy for the order
-        bytes32 conduitKey; // A bytes32 value that indicates what conduit, if any, should be utilized as a source for token approvals when performing transfers
-        AdditionalRecipient[] recipients; // Recipients of consideration items
+        /* A fraction to attempt to fill */
+        uint120 numerator;
+        /* The total size of the order */
+        uint120 denominator;
+        /* Seaport order type */
+        OrderType orderType;
+        /**
+         * A zone can cancel the order or restrict who can fulfill the order
+         * depending on the type
+         */
+        address zone;
+        /**
+         * An arbitrary 32-byte value that will be supplied to the zone when
+         * fulfilling restricted orders that the zone can utilize when making
+         * a determination on whether to authorize the order
+         */
+        bytes32 zoneHash;
+        /* An arbitrary source of entropy for the order */
+        uint256 salt;
+        /**
+         * A bytes32 value that indicates what conduit, if any, should be
+         * utilized as a source for token approvals when performing transfers
+         */
+        bytes32 conduitKey;
+        /* Recipients of consideration items */
+        AdditionalRecipient[] recipients;
     }
 
     /**

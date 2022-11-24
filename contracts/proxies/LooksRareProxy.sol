@@ -19,10 +19,17 @@ import {TokenTransferrer} from "../TokenTransferrer.sol";
  */
 contract LooksRareProxy is IProxy, TokenRescuer, TokenTransferrer, SignatureChecker {
     struct OrderExtraData {
-        uint256 makerAskPrice; // Maker ask price, which is not necessarily equal to the taker bid price
-        uint256 minPercentageToAsk; // The maker's minimum % to receive from the sale
-        uint256 nonce; // The maker's nonce
-        address strategy; // LooksRare execution strategy
+        /**
+         * Maker ask price, which is not necessarily equal to the
+         * taker bid price
+         */
+        uint256 makerAskPrice;
+        /* The maker's minimum % to receive from the sale */
+        uint256 minPercentageToAsk;
+        /* The maker's nonce */
+        uint256 nonce;
+        /* LooksRare execution strategy */
+        address strategy;
     }
 
     ILooksRareExchange public immutable marketplace;
