@@ -96,52 +96,6 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers {
         aggregator.approve(address(erc20), address(looksRareProxy), type(uint256).max);
     }
 
-    function testRescueERC721() public {
-        MockERC721 mockERC721 = new MockERC721();
-        mockERC721.mint(address(aggregator), 0);
-        aggregator.rescueERC721(address(mockERC721), _luckyUser, 0);
-        assertEq(mockERC721.balanceOf(address(_luckyUser)), 1);
-        assertEq(mockERC721.balanceOf(address(aggregator)), 0);
-        assertEq(mockERC721.ownerOf(0), _luckyUser);
-    }
-
-    function testRescueERC721NotOwner() public {
-        MockERC721 mockERC721 = new MockERC721();
-        mockERC721.mint(address(aggregator), 0);
-        vm.prank(_luckyUser);
-        vm.expectRevert(IOwnableTwoSteps.NotOwner.selector);
-        aggregator.rescueERC721(address(mockERC721), _luckyUser, 0);
-        assertEq(mockERC721.balanceOf(address(_luckyUser)), 0);
-        assertEq(mockERC721.balanceOf(address(aggregator)), 1);
-        assertEq(mockERC721.ownerOf(0), address(aggregator));
-    }
-
-    function testRescueERC1155() public {
-        MockERC1155 mockERC1155 = new MockERC1155();
-        mockERC1155.mint(address(aggregator), 0, 2, "");
-        uint256[] memory tokenIds = new uint256[](1);
-        tokenIds[0] = 0;
-        uint256[] memory amounts = new uint256[](1);
-        amounts[0] = 2;
-        aggregator.rescueERC1155(address(mockERC1155), _luckyUser, tokenIds, amounts);
-        assertEq(mockERC1155.balanceOf(address(_luckyUser), 0), 2);
-        assertEq(mockERC1155.balanceOf(address(aggregator), 0), 0);
-    }
-
-    function testRescueERC1155NotOwner() public {
-        MockERC1155 mockERC1155 = new MockERC1155();
-        mockERC1155.mint(address(aggregator), 0, 2, "");
-        uint256[] memory tokenIds = new uint256[](1);
-        tokenIds[0] = 0;
-        uint256[] memory amounts = new uint256[](1);
-        amounts[0] = 2;
-        vm.prank(_luckyUser);
-        vm.expectRevert(IOwnableTwoSteps.NotOwner.selector);
-        aggregator.rescueERC1155(address(mockERC1155), _luckyUser, tokenIds, amounts);
-        assertEq(mockERC1155.balanceOf(address(_luckyUser), 0), 0);
-        assertEq(mockERC1155.balanceOf(address(aggregator), 0), 2);
-    }
-
     function testExecuteZeroOrders() public {
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](0);

@@ -5,8 +5,6 @@ import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSte
 import {ReentrancyGuard} from "@looksrare/contracts-libs/contracts/ReentrancyGuard.sol";
 import {LowLevelERC20Approve} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelERC20Approve.sol";
 import {LowLevelERC20Transfer} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelERC20Transfer.sol";
-import {LowLevelERC721Transfer} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelERC721Transfer.sol";
-import {LowLevelERC1155Transfer} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelERC1155Transfer.sol";
 import {IERC20} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC20.sol";
 import {TokenReceiver} from "./TokenReceiver.sol";
 import {ILooksRareAggregator} from "./interfaces/ILooksRareAggregator.sol";
@@ -25,8 +23,6 @@ contract LooksRareAggregator is
     ReentrancyGuard,
     LowLevelERC20Approve,
     LowLevelERC20Transfer,
-    LowLevelERC721Transfer,
-    LowLevelERC1155Transfer,
     OwnableTwoSteps
 {
     /**
@@ -163,43 +159,6 @@ contract LooksRareAggregator is
         isSupported = _proxyFunctionSelectors[proxy][selector] == 1;
     }
 
-    /**
-     * @notice Rescue any of the contract's trapped ERC721 tokens
-     * @dev Must be called by the current owner
-     * @param collection The address of the ERC721 token to rescue from the contract
-     * @param tokenId The token ID of the ERC721 token to rescue from the contract
-     * @param to Send the contract's specified ERC721 token ID to this address
-     */
-    function rescueERC721(
-        address collection,
-        address to,
-        uint256 tokenId
-    ) external onlyOwner {
-        _executeERC721TransferFrom(collection, address(this), to, tokenId);
-    }
-
-    /**
-     * @notice Rescue any of the contract's trapped ERC1155 tokens
-     * @dev Must be called by the current owner
-     * @param collection The address of the ERC1155 token to rescue from the contract
-     * @param tokenIds The token IDs of the ERC1155 token to rescue from the contract
-     * @param amounts The amount of each token ID to rescue
-     * @param to Send the contract's specified ERC1155 token ID to this address
-     */
-    function rescueERC1155(
-        address collection,
-        address to,
-        uint256[] calldata tokenIds,
-        uint256[] calldata amounts
-    ) external onlyOwner {
-        _executeERC1155SafeBatchTransferFrom(collection, address(this), to, tokenIds, amounts);
-    }
-
-    /**
-     * @dev If any order fails, the ETH paid to the marketplace
-     *      is refunded to the aggregator contract. The aggregator then has to refund
-     *      the ETH back to the user through _returnETHIfAny.
-     */
     receive() external payable {}
 
     function _returnERC20TokensIfAny(TokenTransfer[] calldata tokenTransfers, address recipient) private {
