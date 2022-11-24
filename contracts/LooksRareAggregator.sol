@@ -119,7 +119,6 @@ contract LooksRareAggregator is
     function setERC20EnabledLooksRareAggregator(address _erc20EnabledLooksRareAggregator) external onlyOwner {
         if (erc20EnabledLooksRareAggregator != address(0)) revert AlreadySet();
         erc20EnabledLooksRareAggregator = _erc20EnabledLooksRareAggregator;
-        emit ERC20EnabledLooksRareAggregatorSet();
     }
 
     /**
