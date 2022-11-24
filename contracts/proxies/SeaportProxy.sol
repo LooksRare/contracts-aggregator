@@ -144,7 +144,6 @@ contract SeaportProxy is IProxy, TokenRescuer {
         bytes[] calldata ordersExtraData,
         address recipient
     ) private {
-        address lastOrderCurrency;
         for (uint256 i; i < orders.length; ) {
             OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
             AdvancedOrder memory advancedOrder;
