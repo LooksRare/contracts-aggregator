@@ -45,23 +45,14 @@ contract SeaportProxyERC1155Test is TestParameters, TestHelpers, SeaportProxyTes
         _testExecuteRefundFromLooksRareAggregator(false);
     }
 
-    function testExecuteRefundFromSeaportProxyAtomic() public asPrankedUser(_buyer) {
-        _testExecuteRefundFromSeaportProxy(true);
-    }
-
-    function testExecuteRefundFromSeaportProxyNonAtomic() public asPrankedUser(_buyer) {
-        _testExecuteRefundFromSeaportProxy(false);
-    }
-
     function testExecuteAtomicFail() public asPrankedUser(_buyer) {
         ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData(true);
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
 
         // Not paying for the second order
-        tradeData[0].orders[1].price = 0;
         tradeData[0].value = tradeData[0].orders[0].price;
 
-        vm.expectRevert(0x1a783b8d); // InsufficientEtherSupplied
+        vm.expectRevert(SeaportProxy.TradeExecutionFailed.selector); // InsufficientEtherSupplied
         aggregator.execute{value: tradeData[0].value}(tokenTransfers, tradeData, _buyer, _buyer, true);
     }
 
@@ -70,7 +61,6 @@ contract SeaportProxyERC1155Test is TestParameters, TestHelpers, SeaportProxyTes
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
 
         // Not paying for the second order
-        tradeData[0].orders[1].price = 0;
         tradeData[0].value = tradeData[0].orders[0].price;
 
         vm.expectEmit(true, true, false, false);
@@ -103,23 +93,6 @@ contract SeaportProxyERC1155Test is TestParameters, TestHelpers, SeaportProxyTes
         aggregator.execute{value: tradeData[0].value + 0.1 ether}(tokenTransfers, tradeData, _buyer, _buyer, isAtomic);
         assertEq(IERC1155(CITY_DAO).balanceOf(_buyer, 42), 2);
         assertEq(_buyer.balance, INITIAL_ETH_BALANCE - tradeData[0].value);
-    }
-
-    function _testExecuteRefundFromSeaportProxy(bool isAtomic) private {
-        ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData(isAtomic);
-        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
-
-        // Overpay
-        tradeData[0].orders[0].price = 0.5 ether;
-        tradeData[0].orders[1].price = 0.5 ether;
-        tradeData[0].value = 1 ether;
-
-        vm.expectEmit(true, true, false, false);
-        emit Sweep(_buyer);
-
-        aggregator.execute{value: tradeData[0].value}(tokenTransfers, tradeData, _buyer, _buyer, isAtomic);
-        assertEq(IERC1155(CITY_DAO).balanceOf(_buyer, 42), 2);
-        assertEq(_buyer.balance, 399.303 ether);
     }
 
     function _generateTradeData(bool isAtomic)

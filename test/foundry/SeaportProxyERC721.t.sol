@@ -37,14 +37,6 @@ contract SeaportProxyERC721Test is TestParameters, TestHelpers, SeaportProxyTest
         _testExecuteRefundFromLooksRareAggregator(false);
     }
 
-    function testExecuteRefundFromSeaportProxyAtomic() public asPrankedUser(_buyer) {
-        _testExecuteRefundFromSeaportProxy(true);
-    }
-
-    function testExecuteRefundFromSeaportProxyNonAtomic() public asPrankedUser(_buyer) {
-        _testExecuteRefundFromSeaportProxy(false);
-    }
-
     function testExecuteWithFeesAtomic() public {
         vm.deal(_protocolFeeRecipient, 0);
         aggregator.setFee(address(seaportProxy), 250, _protocolFeeRecipient);
@@ -79,8 +71,8 @@ contract SeaportProxyERC721Test is TestParameters, TestHelpers, SeaportProxyTest
     function testExecutePartialSuccess() public asPrankedUser(_buyer) {
         ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData();
 
-        // Do not pay for the 2nd order
-        tradeData[0].orders[1].price = 0;
+        // Not paying for the second order
+        tradeData[0].value = tradeData[0].orders[0].price;
 
         vm.expectEmit(true, true, false, false);
         emit Sweep(_buyer);
@@ -108,22 +100,6 @@ contract SeaportProxyERC721Test is TestParameters, TestHelpers, SeaportProxyTest
         assertEq(IERC721(BAYC).ownerOf(2518), _buyer);
         assertEq(IERC721(BAYC).ownerOf(8498), _buyer);
         assertEq(_buyer.balance, INITIAL_ETH_BALANCE - totalPrice);
-    }
-
-    function _testExecuteRefundFromSeaportProxy(bool isAtomic) private {
-        ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData();
-
-        // Overpay
-        tradeData[0].orders[0].price = 100 ether;
-        tradeData[0].orders[1].price = 100 ether;
-
-        vm.expectEmit(true, true, false, false);
-        emit Sweep(_buyer);
-        aggregator.execute{value: INITIAL_ETH_BALANCE}(new TokenTransfer[](0), tradeData, _buyer, _buyer, isAtomic);
-
-        assertEq(IERC721(BAYC).ownerOf(2518), _buyer);
-        assertEq(IERC721(BAYC).ownerOf(8498), _buyer);
-        assertEq(_buyer.balance, 231.22 ether);
     }
 
     function _testExecuteWithFees(bool isAtomic) private {
