@@ -201,12 +201,10 @@ contract SeaportProxy is IProxy, TokenRescuer {
         parameters.offer = offer;
 
         ConsiderationItem[] memory consideration = new ConsiderationItem[](recipientsLength);
-        uint256 calculatedPrice;
         for (uint256 j; j < recipientsLength; ) {
             AdditionalRecipient memory recipient = orderExtraData.recipients[j];
             // We don't need to assign value to identifierOrCriteria as it is always 0.
             uint256 recipientAmount = recipient.amount;
-            calculatedPrice = calculatedPrice + recipientAmount;
             consideration[j].startAmount = recipientAmount;
             consideration[j].endAmount = recipientAmount;
             consideration[j].recipient = payable(recipient.recipient);
@@ -217,7 +215,6 @@ contract SeaportProxy is IProxy, TokenRescuer {
                 ++j;
             }
         }
-        if (calculatedPrice != order.price) revert InvalidPrice();
         parameters.consideration = consideration;
     }
 }

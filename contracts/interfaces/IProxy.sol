@@ -6,7 +6,6 @@ import {BasicOrder} from "../libraries/OrderStructs.sol";
 interface IProxy {
     error InvalidCaller();
     error InvalidOrderLength();
-    error InvalidPrice();
 
     /**
      * @notice Execute NFT sweeps in a single transaction
