@@ -178,11 +178,9 @@ contract SeaportProxyMultipleCurrenciesTest is TestParameters, TestHelpers, Seap
             ? validMultipleItemsSameCollectionMultipleCurrenciesExtraData()
             : new bytes(0);
         ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
-        uint256 totalPrice = orders[0].price + orders[1].price;
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(seaportProxy),
             selector: SeaportProxy.execute.selector,
-            value: totalPrice,
             maxFeeBp: 0,
             orders: orders,
             ordersExtraData: ordersExtraData,

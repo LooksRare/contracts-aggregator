@@ -115,7 +115,6 @@ contract GemSwapBenchmarkTest is TestParameters, TestHelpers, SeaportProxyTestHe
             tradeData[0] = ILooksRareAggregator.TradeData({
                 proxy: address(seaportProxy),
                 selector: SeaportProxy.execute.selector,
-                value: seaportOrders[0].price,
                 maxFeeBp: 0,
                 orders: seaportOrders,
                 ordersExtraData: seaportOrdersExtraData,
@@ -135,7 +134,6 @@ contract GemSwapBenchmarkTest is TestParameters, TestHelpers, SeaportProxyTestHe
             tradeData[1] = ILooksRareAggregator.TradeData({
                 proxy: address(looksRareProxy),
                 selector: LooksRareProxy.execute.selector,
-                value: looksRareOrders[0].price,
                 maxFeeBp: 0,
                 orders: looksRareOrders,
                 ordersExtraData: looksRareOrdersExtraData,
@@ -179,7 +177,6 @@ contract GemSwapBenchmarkTest is TestParameters, TestHelpers, SeaportProxyTestHe
             tradeData[0] = ILooksRareAggregator.TradeData({
                 proxy: address(seaportProxy),
                 selector: SeaportProxy.execute.selector,
-                value: seaportOrders[0].price + seaportOrders[1].price,
                 maxFeeBp: 0,
                 orders: seaportOrders,
                 ordersExtraData: seaportOrdersExtraData,
@@ -201,7 +198,6 @@ contract GemSwapBenchmarkTest is TestParameters, TestHelpers, SeaportProxyTestHe
             tradeData[1] = ILooksRareAggregator.TradeData({
                 proxy: address(looksRareProxy),
                 selector: LooksRareProxy.execute.selector,
-                value: looksRareOrders[0].price + looksRareOrders[1].price,
                 maxFeeBp: 0,
                 orders: looksRareOrders,
                 ordersExtraData: looksRareOrdersExtraData,

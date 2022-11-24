@@ -47,7 +47,6 @@ describe("Sudoswap Orders", () => {
       {
         proxy: proxy.address,
         selector: functionSelector,
-        value: price,
         maxFeeBp: 0,
         orders: [
           {
@@ -101,7 +100,6 @@ describe("Sudoswap Orders", () => {
       {
         proxy: proxy.address,
         selector: functionSelector,
-        value: price,
         maxFeeBp: 0,
         orders: [
           {
@@ -148,7 +146,6 @@ describe("Sudoswap Orders", () => {
       {
         proxy: proxy.address,
         selector: functionSelector,
-        value: price,
         maxFeeBp: 0,
         orders: [
           {
@@ -202,7 +199,6 @@ describe("Sudoswap Orders", () => {
       {
         proxy: proxy.address,
         selector: functionSelector,
-        value: price,
         maxFeeBp: 0,
         orders: [
           {

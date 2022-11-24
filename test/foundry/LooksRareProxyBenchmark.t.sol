@@ -82,7 +82,6 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(looksRareProxy),
             selector: LooksRareProxy.execute.selector,
-            value: orders[0].price,
             maxFeeBp: 0,
             orders: orders,
             ordersExtraData: ordersExtraData,
@@ -202,7 +201,6 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(looksRareProxy),
             selector: LooksRareProxy.execute.selector,
-            value: value,
             maxFeeBp: 0,
             orders: orders,
             ordersExtraData: ordersExtraData,
