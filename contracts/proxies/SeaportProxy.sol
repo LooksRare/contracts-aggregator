@@ -73,17 +73,13 @@ contract SeaportProxy is IProxy, TokenRescuer {
      * @param extraData Extra data for the whole transaction
      * @param recipient The address to receive the purchased NFTs
      * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
-     * @param feeBp Fee basis point to pay for the trade, set by the aggregator
-     * @param feeRecipient Fee recipient for the trade, set by the aggregator
      */
     function execute(
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,
         bytes calldata extraData,
         address recipient,
-        bool isAtomic,
-        uint256 feeBp,
-        address feeRecipient
+        bool isAtomic
     ) external payable override {
         if (address(this) != aggregator) revert InvalidCaller();
 
@@ -91,9 +87,9 @@ contract SeaportProxy is IProxy, TokenRescuer {
         if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();
 
         if (isAtomic) {
-            _executeAtomicOrders(orders, ordersExtraData, extraData, recipient, feeBp, feeRecipient);
+            _executeAtomicOrders(orders, ordersExtraData, extraData, recipient);
         } else {
-            _executeNonAtomicOrders(orders, ordersExtraData, recipient, feeBp, feeRecipient);
+            _executeNonAtomicOrders(orders, ordersExtraData, recipient);
         }
     }
 
@@ -101,9 +97,7 @@ contract SeaportProxy is IProxy, TokenRescuer {
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,
         bytes calldata extraData,
-        address recipient,
-        uint256 feeBp,
-        address feeRecipient
+        address recipient
     ) private {
         uint256 ordersLength = orders.length;
         AdvancedOrder[] memory advancedOrders = new AdvancedOrder[](ordersLength);
@@ -143,64 +137,13 @@ contract SeaportProxy is IProxy, TokenRescuer {
                 ++i;
             }
         }
-
-        if (feeRecipient != address(0)) _handleFees(orders, feeBp, feeRecipient);
-    }
-
-    function _handleFees(
-        BasicOrder[] calldata orders,
-        uint256 feeBp,
-        address feeRecipient
-    ) private {
-        address lastOrderCurrency;
-        uint256 fee;
-        uint256 ordersLength = orders.length;
-
-        for (uint256 i; i < ordersLength; ) {
-            address currency = orders[i].currency;
-            uint256 orderFee = (orders[i].price * feeBp) / 10_000;
-
-            if (currency == lastOrderCurrency) {
-                fee = fee + orderFee;
-            } else {
-                if (fee != 0) {
-                    _transferFee(lastOrderCurrency, feeRecipient, fee);
-                }
-
-                lastOrderCurrency = currency;
-                fee = orderFee;
-            }
-
-            unchecked {
-                ++i;
-            }
-        }
-
-        if (fee != 0) {
-            _transferFee(lastOrderCurrency, feeRecipient, fee);
-        }
-    }
-
-    function _transferFee(
-        address lastOrderCurrency,
-        address recipient,
-        uint256 fee
-    ) private {
-        if (lastOrderCurrency == address(0)) {
-            _transferETH(recipient, fee);
-        } else {
-            _executeERC20DirectTransfer(lastOrderCurrency, recipient, fee);
-        }
     }
 
     function _executeNonAtomicOrders(
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,
-        address recipient,
-        uint256 feeBp,
-        address feeRecipient
+        address recipient
     ) private {
-        uint256 fee;
         address lastOrderCurrency;
         for (uint256 i; i < orders.length; ) {
             OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));
@@ -220,29 +163,11 @@ contract SeaportProxy is IProxy, TokenRescuer {
                     bytes32(0),
                     recipient
                 )
-            {
-                if (feeRecipient != address(0)) {
-                    uint256 orderFee = (price * feeBp) / 10_000;
-                    if (currency == lastOrderCurrency) {
-                        fee = fee + orderFee;
-                    } else {
-                        if (fee != 0) {
-                            _transferFee(lastOrderCurrency, feeRecipient, fee);
-                        }
-
-                        lastOrderCurrency = currency;
-                        fee = orderFee;
-                    }
-                }
-            } catch {}
+            {} catch {}
 
             unchecked {
                 ++i;
             }
-        }
-
-        if (fee != 0) {
-            _transferFee(lastOrderCurrency, feeRecipient, fee);
         }
     }
 

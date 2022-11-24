@@ -9,15 +9,15 @@ import {ERC20EnabledLooksRareAggregator} from "../../contracts/ERC20EnabledLooks
 import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
 import {IProxy} from "../../contracts/interfaces/IProxy.sol";
 import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggregator.sol";
-import {BasicOrder, FeeData, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
+import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TestParameters} from "./TestParameters.sol";
 import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
 
 /**
- * @notice Seaport multiple currencies with fees (random execution order) execution in one transaction tests
+ * @notice Seaport multiple currencies (random execution order) execution in one transaction tests
  */
-contract SeaportProxyMultipleCurrenciesRandomOrderFeesTest is TestParameters, TestHelpers, SeaportProxyTestHelpers {
+contract SeaportProxyMultipleCurrenciesRandomOrderTest is TestParameters, TestHelpers, SeaportProxyTestHelpers {
     LooksRareAggregator private aggregator;
     ERC20EnabledLooksRareAggregator private erc20EnabledAggregator;
     SeaportProxy private seaportProxy;
@@ -34,12 +34,9 @@ contract SeaportProxyMultipleCurrenciesRandomOrderFeesTest is TestParameters, Te
         // Forking from mainnet and the deployed addresses might have balance
         vm.deal(address(aggregator), 1 wei);
         vm.deal(address(seaportProxy), 0);
-        vm.deal(_protocolFeeRecipient, 0);
-        deal(USDC, _protocolFeeRecipient, 0);
 
         aggregator.approve(USDC, SEAPORT, type(uint256).max);
         aggregator.setERC20EnabledLooksRareAggregator(address(erc20EnabledAggregator));
-        aggregator.setFee(address(seaportProxy), 250, _protocolFeeRecipient);
     }
 
     // USDC - USDC - ETH - ETH
@@ -97,12 +94,11 @@ contract SeaportProxyMultipleCurrenciesRandomOrderFeesTest is TestParameters, Te
             ? validMultipleItemsSameCollectionMultipleCurrenciesOneAfterAnotherExtraData()
             : new bytes(0);
         ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
-        uint256 ethAmount = ((orders[2].price + orders[3].price) * 10_250) / 10_000;
-        uint256 usdcAmount = ((orders[0].price + orders[1].price) * 10_250) / 10_000;
+        uint256 ethAmount = orders[2].price + orders[3].price;
+        uint256 usdcAmount = orders[0].price + orders[1].price;
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(seaportProxy),
             selector: SeaportProxy.execute.selector,
-            maxFeeBp: 250,
             orders: orders,
             ordersExtraData: ordersExtraData,
             extraData: extraData
@@ -121,7 +117,6 @@ contract SeaportProxyMultipleCurrenciesRandomOrderFeesTest is TestParameters, Te
         _assertBuyerBAYCOwnership();
 
         assertEq(_buyer.balance, INITIAL_ETH_BALANCE - ethAmount);
-        assertEq(_protocolFeeRecipient.balance, ethAmount - orders[2].price - orders[3].price);
         assertEq(IERC20(USDC).balanceOf(_buyer), INITIAL_USDC_BALANCE - usdcAmount);
         assertEq(IERC20(USDC).allowance(_buyer, address(erc20EnabledAggregator)), 0);
     }
@@ -145,12 +140,11 @@ contract SeaportProxyMultipleCurrenciesRandomOrderFeesTest is TestParameters, Te
             ? validMultipleItemsSameCollectionMultipleCurrenciesOneAfterAnotherExtraData()
             : new bytes(0);
         ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
-        uint256 ethAmount = ((orders[0].price + orders[1].price) * 10_250) / 10_000;
-        uint256 usdcAmount = ((orders[2].price + orders[3].price) * 10_250) / 10_000;
+        uint256 ethAmount = orders[0].price + orders[1].price;
+        uint256 usdcAmount = orders[2].price + orders[3].price;
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(seaportProxy),
             selector: SeaportProxy.execute.selector,
-            maxFeeBp: 250,
             orders: orders,
             ordersExtraData: ordersExtraData,
             extraData: extraData
@@ -169,7 +163,6 @@ contract SeaportProxyMultipleCurrenciesRandomOrderFeesTest is TestParameters, Te
         _assertBuyerBAYCOwnership();
 
         assertEq(_buyer.balance, INITIAL_ETH_BALANCE - ethAmount);
-        assertEq(_protocolFeeRecipient.balance, ethAmount - orders[0].price - orders[1].price);
         assertEq(IERC20(USDC).balanceOf(_buyer), INITIAL_USDC_BALANCE - usdcAmount);
         assertEq(IERC20(USDC).allowance(_buyer, address(erc20EnabledAggregator)), 0);
     }
@@ -193,12 +186,11 @@ contract SeaportProxyMultipleCurrenciesRandomOrderFeesTest is TestParameters, Te
             ? validMultipleItemsSameCollectionMultipleCurrenciesAlternateExtraData()
             : new bytes(0);
         ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
-        uint256 ethAmount = ((orders[0].price + orders[2].price) * 10_250) / 10_000;
-        uint256 usdcAmount = ((orders[1].price + orders[3].price) * 10_250) / 10_000;
+        uint256 ethAmount = orders[0].price + orders[2].price;
+        uint256 usdcAmount = orders[1].price + orders[3].price;
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(seaportProxy),
             selector: SeaportProxy.execute.selector,
-            maxFeeBp: 250,
             orders: orders,
             ordersExtraData: ordersExtraData,
             extraData: extraData
@@ -217,7 +209,6 @@ contract SeaportProxyMultipleCurrenciesRandomOrderFeesTest is TestParameters, Te
         _assertBuyerBAYCOwnership();
 
         assertEq(_buyer.balance, INITIAL_ETH_BALANCE - ethAmount);
-        assertEq(_protocolFeeRecipient.balance, ethAmount - orders[0].price - orders[2].price);
         assertEq(IERC20(USDC).balanceOf(_buyer), INITIAL_USDC_BALANCE - usdcAmount);
         assertEq(IERC20(USDC).allowance(_buyer, address(erc20EnabledAggregator)), 0);
     }
@@ -241,12 +232,11 @@ contract SeaportProxyMultipleCurrenciesRandomOrderFeesTest is TestParameters, Te
             ? validMultipleItemsSameCollectionMultipleCurrenciesAlternateExtraData()
             : new bytes(0);
         ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
-        uint256 ethAmount = ((orders[1].price + orders[3].price) * 10_250) / 10_000;
-        uint256 usdcAmount = ((orders[0].price + orders[2].price) * 10_250) / 10_000;
+        uint256 ethAmount = orders[1].price + orders[3].price;
+        uint256 usdcAmount = orders[0].price + orders[2].price;
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(seaportProxy),
             selector: SeaportProxy.execute.selector,
-            maxFeeBp: 250,
             orders: orders,
             ordersExtraData: ordersExtraData,
             extraData: extraData
@@ -265,7 +255,6 @@ contract SeaportProxyMultipleCurrenciesRandomOrderFeesTest is TestParameters, Te
         _assertBuyerBAYCOwnership();
 
         assertEq(_buyer.balance, INITIAL_ETH_BALANCE - ethAmount);
-        assertEq(_protocolFeeRecipient.balance, ethAmount - orders[1].price - orders[3].price);
         assertEq(IERC20(USDC).balanceOf(_buyer), INITIAL_USDC_BALANCE - usdcAmount);
         assertEq(IERC20(USDC).allowance(_buyer, address(erc20EnabledAggregator)), 0);
     }

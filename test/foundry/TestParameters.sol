@@ -22,9 +22,6 @@ abstract contract TestParameters {
     // keccak256(_notOwner)
     address internal constant _notOwner =
         address(uint160(uint256(0x6186fde1900f65852320d9cd9c1d976dc5540ba7e6b88ae8e8ba11bc79d831ec)));
-    // keccak256(_protocolFeeRecipient)
-    address internal constant _protocolFeeRecipient =
-        address(uint160(uint256(0x409bb4e727bf9561f4b5c2eb2d086d56e40174b995e3e41cdde17b12aa14ff3f)));
     // keccak256(_luckyUser)
     address internal constant _luckyUser =
         address(uint160(uint256(0x1f0f3d7d9f70e9b50d1e198cedb3af2fbaa2c2617539c746de35fffce19946df)));
@@ -34,7 +31,6 @@ abstract contract TestParameters {
     uint256 internal constant INITIAL_ETH_BALANCE = 400 ether;
     uint256 internal constant INITIAL_USDC_BALANCE = 500000e6;
 
-    event FeeUpdated(address proxy, uint256 bp, address recipient);
     event FunctionAdded(address indexed proxy, bytes4 selector);
     event FunctionRemoved(address indexed proxy, bytes4 selector);
     event Sweep(address indexed sweeper);

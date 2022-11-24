@@ -8,7 +8,7 @@ import {V0Aggregator} from "../../contracts/prototype/V0Aggregator.sol";
 import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggregator.sol";
 import {SeaportInterface} from "../../contracts/interfaces/SeaportInterface.sol";
 import {IProxy} from "../../contracts/interfaces/IProxy.sol";
-import {BasicOrder, TokenTransfer, FeeData} from "../../contracts/libraries/OrderStructs.sol";
+import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TestParameters} from "./TestParameters.sol";
 import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
@@ -83,7 +83,6 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(seaportProxy),
             selector: SeaportProxy.execute.selector,
-            maxFeeBp: 0,
             orders: orders,
             ordersExtraData: ordersExtraData,
             extraData: extraData
@@ -110,16 +109,13 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
 
         bytes memory extraData = validSingleOfferExtraData(3);
 
-        FeeData memory feeData;
-
         bytes memory data = abi.encodeWithSelector(
             SeaportProxy.execute.selector,
             orders,
             ordersExtraData,
             extraData,
             _buyer,
-            true,
-            feeData
+            true
         );
 
         V0Aggregator.TradeData[] memory tradeData = new V0Aggregator.TradeData[](1);
@@ -254,15 +250,13 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
 
         V0Aggregator.TradeData[] memory tradeData = new V0Aggregator.TradeData[](1);
         uint256 totalPrice = orders[0].price + orders[1].price;
-        FeeData memory feeData;
         bytes memory data = abi.encodeWithSelector(
             SeaportProxy.execute.selector,
             orders,
             ordersExtraData,
             extraData,
             _buyer,
-            true,
-            feeData
+            true
         );
         tradeData[0] = V0Aggregator.TradeData({proxy: address(seaportProxy), value: totalPrice, data: data});
 
@@ -319,7 +313,6 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(seaportProxy),
             selector: SeaportProxy.execute.selector,
-            maxFeeBp: 0,
             orders: orders,
             ordersExtraData: ordersExtraData,
             extraData: extraData

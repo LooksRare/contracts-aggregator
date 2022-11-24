@@ -32,10 +32,3 @@ struct TokenTransfer {
     /* ERC20 transfer currency */
     address currency;
 }
-
-struct FeeData {
-    /* Aggregator fee basis point */
-    uint256 bp;
-    /* Aggregator fee recipient */
-    address recipient;
-}

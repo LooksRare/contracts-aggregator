@@ -11,7 +11,7 @@ import {TestParameters} from "./TestParameters.sol";
 import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
 
 /**
- * @notice SeaportProxy additional execution tests (fees, refund, atomic fail/partial success)
+ * @notice SeaportProxy additional execution tests (refund, atomic fail/partial success)
  */
 contract SeaportProxyERC721Test is TestParameters, TestHelpers, SeaportProxyTestHelpers {
     LooksRareAggregator private aggregator;
@@ -35,22 +35,6 @@ contract SeaportProxyERC721Test is TestParameters, TestHelpers, SeaportProxyTest
 
     function testExecuteRefundFromLooksRareAggregatorNonAtomic() public asPrankedUser(_buyer) {
         _testExecuteRefundFromLooksRareAggregator(false);
-    }
-
-    function testExecuteWithFeesAtomic() public {
-        vm.deal(_protocolFeeRecipient, 0);
-        aggregator.setFee(address(seaportProxy), 250, _protocolFeeRecipient);
-        vm.startPrank(_buyer);
-        _testExecuteWithFees(true);
-        vm.stopPrank();
-    }
-
-    function testExecuteWithFeesNonAtomic() public {
-        vm.deal(_protocolFeeRecipient, 0);
-        aggregator.setFee(address(seaportProxy), 250, _protocolFeeRecipient);
-        vm.startPrank(_buyer);
-        _testExecuteWithFees(false);
-        vm.stopPrank();
     }
 
     function testExecuteAtomicFail() public asPrankedUser(_buyer) {
@@ -100,26 +84,6 @@ contract SeaportProxyERC721Test is TestParameters, TestHelpers, SeaportProxyTest
         assertEq(_buyer.balance, INITIAL_ETH_BALANCE - totalPrice);
     }
 
-    function _testExecuteWithFees(bool isAtomic) private {
-        ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData();
-        uint256 totalPriceBeforeFee = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
-        uint256 totalPriceWithFees = (tradeData[0].orders[0].price * 10_250) /
-            10_000 +
-            (tradeData[0].orders[1].price * 10_250) /
-            10_000;
-
-        tradeData[0].maxFeeBp = 250;
-
-        vm.expectEmit(true, true, false, false);
-        emit Sweep(_buyer);
-        aggregator.execute{value: totalPriceWithFees}(new TokenTransfer[](0), tradeData, _buyer, _buyer, isAtomic);
-
-        assertEq(IERC721(BAYC).ownerOf(2518), _buyer);
-        assertEq(IERC721(BAYC).ownerOf(8498), _buyer);
-        assertEq(_buyer.balance, INITIAL_ETH_BALANCE - totalPriceWithFees);
-        assertEq(_protocolFeeRecipient.balance, totalPriceWithFees - totalPriceBeforeFee);
-    }
-
     function _generateTradeData() private view returns (ILooksRareAggregator.TradeData[] memory) {
         BasicOrder memory orderOne = validBAYCId2518Order();
         BasicOrder memory orderTwo = validBAYCId8498Order();
@@ -141,7 +105,6 @@ contract SeaportProxyERC721Test is TestParameters, TestHelpers, SeaportProxyTest
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(seaportProxy),
             selector: SeaportProxy.execute.selector,
-            maxFeeBp: 0,
             orders: orders,
             ordersExtraData: ordersExtraData,
             extraData: extraData

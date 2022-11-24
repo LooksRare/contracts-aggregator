@@ -43,43 +43,6 @@ contract MultipleMarketsTest is TestParameters, TestHelpers, SeaportProxyTestHel
         _testExecute(false);
     }
 
-    function testExecuteMaxFeeBpViolationAtomic() public {
-        aggregator.setFee(address(seaportProxy), 250, _protocolFeeRecipient);
-        aggregator.setFee(address(looksRareProxy), 250, _protocolFeeRecipient);
-
-        ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData(true);
-        tradeData[0].maxFeeBp = 250;
-        tradeData[1].maxFeeBp = 249;
-        uint256 totalPrice = (tradeData[0].orders[0].price * 10_250) /
-            10_000 +
-            (tradeData[1].orders[0].price * 10_249) /
-            10_000;
-
-        vm.expectRevert(ILooksRareAggregator.FeeTooHigh.selector);
-        vm.prank(_buyer);
-        aggregator.execute{value: totalPrice}(new TokenTransfer[](0), tradeData, _buyer, _buyer, true);
-    }
-
-    function testExecuteMaxFeeBpViolationNonAtomic() public {
-        aggregator.setFee(address(seaportProxy), 250, _protocolFeeRecipient);
-        aggregator.setFee(address(looksRareProxy), 250, _protocolFeeRecipient);
-
-        ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData(false);
-        tradeData[0].maxFeeBp = 250;
-        tradeData[1].maxFeeBp = 249;
-        uint256 totalPrice = (tradeData[0].orders[0].price * 10_250) /
-            10_000 +
-            (tradeData[1].orders[0].price * 10_249) /
-            10_000;
-
-        vm.prank(_buyer);
-        aggregator.execute{value: totalPrice}(new TokenTransfer[](0), tradeData, _buyer, _buyer, false);
-
-        assertEq(IERC721(BAYC).balanceOf(_buyer), 1);
-        assertEq(IERC721(BAYC).ownerOf(6092), _buyer);
-        assertEq(_buyer.balance, INITIAL_ETH_BALANCE - (tradeData[0].orders[0].price * 10_250) / 10_000);
-    }
-
     function testExecuteAtomicFail() public asPrankedUser(_buyer) {
         ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData(true);
         tradeData[1].orders[0].price -= 0.01 ether;
@@ -131,7 +94,6 @@ contract MultipleMarketsTest is TestParameters, TestHelpers, SeaportProxyTestHel
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(seaportProxy),
             selector: SeaportProxy.execute.selector,
-            maxFeeBp: 0,
             orders: seaportOrders,
             ordersExtraData: seaportOrdersExtraData,
             extraData: isAtomic ? validSingleOfferExtraData(3) : new bytes(0)
@@ -160,7 +122,6 @@ contract MultipleMarketsTest is TestParameters, TestHelpers, SeaportProxyTestHel
         tradeData[1] = ILooksRareAggregator.TradeData({
             proxy: address(looksRareProxy),
             selector: LooksRareProxy.execute.selector,
-            maxFeeBp: 0,
             orders: looksRareOrders,
             ordersExtraData: looksRareOrdersExtraData,
             extraData: ""

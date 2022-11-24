@@ -9,8 +9,6 @@ interface ILooksRareAggregator {
         address proxy;
         /* The marketplace proxy's function selector */
         bytes4 selector;
-        /* The maximum fee basis point the buyer is willing to pay */
-        uint256 maxFeeBp;
         /* Orders to be executed by the marketplace */
         BasicOrder[] orders;
         /* Extra data for each order, specific for each marketplace */
@@ -40,14 +38,6 @@ interface ILooksRareAggregator {
     ) external payable;
 
     /**
-     * @dev Emitted when fee is updated
-     * @param proxy Proxy to apply the fee to
-     * @param bp Fee basis point
-     * @param recipient Fee recipient
-     */
-    event FeeUpdated(address proxy, uint256 bp, address recipient);
-
-    /**
      * @notice Emitted when a marketplace proxy's function is enabled.
      * @param proxy The marketplace proxy's address
      * @param selector The marketplace proxy's function selector
@@ -68,7 +58,6 @@ interface ILooksRareAggregator {
     event Sweep(address indexed sweeper);
 
     error AlreadySet();
-    error FeeTooHigh();
     error InvalidFunction();
     error InvalidOrderLength();
     error TradeExecutionFailed();

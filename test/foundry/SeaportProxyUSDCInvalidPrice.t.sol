@@ -9,7 +9,7 @@ import {ERC20EnabledLooksRareAggregator} from "../../contracts/ERC20EnabledLooks
 import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
 import {IProxy} from "../../contracts/interfaces/IProxy.sol";
 import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggregator.sol";
-import {BasicOrder, FeeData, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
+import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TestParameters} from "./TestParameters.sol";
 import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
@@ -33,7 +33,6 @@ contract SeaportProxyUSDCInvalidPriceTest is TestParameters, TestHelpers, Seapor
         deal(USDC, _buyer, INITIAL_USDC_BALANCE);
 
         aggregator.approve(USDC, SEAPORT, type(uint256).max);
-        aggregator.setFee(address(seaportProxy), 250, _protocolFeeRecipient);
         aggregator.setERC20EnabledLooksRareAggregator(address(erc20EnabledAggregator));
     }
 
@@ -72,7 +71,6 @@ contract SeaportProxyUSDCInvalidPriceTest is TestParameters, TestHelpers, Seapor
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(seaportProxy),
             selector: SeaportProxy.execute.selector,
-            maxFeeBp: 250,
             orders: orders,
             ordersExtraData: ordersExtraData,
             extraData: extraData
