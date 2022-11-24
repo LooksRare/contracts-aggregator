@@ -97,13 +97,6 @@ contract SeaportProxy is IProxy, TokenRescuer {
         }
     }
 
-    /**
-     * @dev If fulfillAvailableAdvancedOrders fails, the ETH paid to Seaport
-     *      is refunded to the proxy contract. The proxy then has to refund
-     *      the ETH back to the user through _returnETHIfAny.
-     */
-    receive() external payable {}
-
     function _executeAtomicOrders(
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,
