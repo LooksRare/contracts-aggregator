@@ -97,8 +97,8 @@ contract SeaportProxyMultipleCurrenciesRandomOrderFeesTest is TestParameters, Te
             ? validMultipleItemsSameCollectionMultipleCurrenciesOneAfterAnotherExtraData()
             : new bytes(0);
         ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
-        uint256 ethAmount = ((orders[2].price + orders[3].price) * 10250) / 10000;
-        uint256 usdcAmount = ((orders[0].price + orders[1].price) * 10250) / 10000;
+        uint256 ethAmount = ((orders[2].price + orders[3].price) * 10_250) / 10_000;
+        uint256 usdcAmount = ((orders[0].price + orders[1].price) * 10_250) / 10_000;
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(seaportProxy),
             selector: SeaportProxy.execute.selector,
@@ -146,8 +146,8 @@ contract SeaportProxyMultipleCurrenciesRandomOrderFeesTest is TestParameters, Te
             ? validMultipleItemsSameCollectionMultipleCurrenciesOneAfterAnotherExtraData()
             : new bytes(0);
         ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
-        uint256 ethAmount = ((orders[0].price + orders[1].price) * 10250) / 10000;
-        uint256 usdcAmount = ((orders[2].price + orders[3].price) * 10250) / 10000;
+        uint256 ethAmount = ((orders[0].price + orders[1].price) * 10_250) / 10_000;
+        uint256 usdcAmount = ((orders[2].price + orders[3].price) * 10_250) / 10_000;
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(seaportProxy),
             selector: SeaportProxy.execute.selector,
@@ -195,8 +195,8 @@ contract SeaportProxyMultipleCurrenciesRandomOrderFeesTest is TestParameters, Te
             ? validMultipleItemsSameCollectionMultipleCurrenciesAlternateExtraData()
             : new bytes(0);
         ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
-        uint256 ethAmount = ((orders[0].price + orders[2].price) * 10250) / 10000;
-        uint256 usdcAmount = ((orders[1].price + orders[3].price) * 10250) / 10000;
+        uint256 ethAmount = ((orders[0].price + orders[2].price) * 10_250) / 10_000;
+        uint256 usdcAmount = ((orders[1].price + orders[3].price) * 10_250) / 10_000;
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(seaportProxy),
             selector: SeaportProxy.execute.selector,
@@ -244,8 +244,8 @@ contract SeaportProxyMultipleCurrenciesRandomOrderFeesTest is TestParameters, Te
             ? validMultipleItemsSameCollectionMultipleCurrenciesAlternateExtraData()
             : new bytes(0);
         ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
-        uint256 ethAmount = ((orders[1].price + orders[3].price) * 10250) / 10000;
-        uint256 usdcAmount = ((orders[0].price + orders[2].price) * 10250) / 10000;
+        uint256 ethAmount = ((orders[1].price + orders[3].price) * 10_250) / 10_000;
+        uint256 usdcAmount = ((orders[0].price + orders[2].price) * 10_250) / 10_000;
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(seaportProxy),
             selector: SeaportProxy.execute.selector,

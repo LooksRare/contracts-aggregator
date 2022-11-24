@@ -47,10 +47,10 @@ contract SeaportProxyERC721USDCTest is TestParameters, TestHelpers, SeaportProxy
 
     function _testExecuteWithFees(bool isAtomic) private {
         ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData();
-        uint256 totalPrice = (tradeData[0].orders[0].price * 10250) /
-            10000 +
-            (tradeData[0].orders[1].price * 10250) /
-            10000;
+        uint256 totalPrice = (tradeData[0].orders[0].price * 10_250) /
+            10_000 +
+            (tradeData[0].orders[1].price * 10_250) /
+            10_000;
         IERC20(USDC).approve(address(erc20EnabledAggregator), totalPrice);
 
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](1);

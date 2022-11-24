@@ -50,10 +50,10 @@ contract MultipleMarketsTest is TestParameters, TestHelpers, SeaportProxyTestHel
         ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData(true);
         tradeData[0].maxFeeBp = 250;
         tradeData[1].maxFeeBp = 249;
-        uint256 totalPrice = (tradeData[0].orders[0].price * 10250) /
-            10000 +
-            (tradeData[1].orders[0].price * 10249) /
-            10000;
+        uint256 totalPrice = (tradeData[0].orders[0].price * 10_250) /
+            10_000 +
+            (tradeData[1].orders[0].price * 10_249) /
+            10_000;
 
         vm.expectRevert(ILooksRareAggregator.FeeTooHigh.selector);
         vm.prank(_buyer);
@@ -67,17 +67,17 @@ contract MultipleMarketsTest is TestParameters, TestHelpers, SeaportProxyTestHel
         ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData(false);
         tradeData[0].maxFeeBp = 250;
         tradeData[1].maxFeeBp = 249;
-        uint256 totalPrice = (tradeData[0].orders[0].price * 10250) /
-            10000 +
-            (tradeData[1].orders[0].price * 10249) /
-            10000;
+        uint256 totalPrice = (tradeData[0].orders[0].price * 10_250) /
+            10_000 +
+            (tradeData[1].orders[0].price * 10_249) /
+            10_000;
 
         vm.prank(_buyer);
         aggregator.execute{value: totalPrice}(new TokenTransfer[](0), tradeData, _buyer, _buyer, false);
 
         assertEq(IERC721(BAYC).balanceOf(_buyer), 1);
         assertEq(IERC721(BAYC).ownerOf(6092), _buyer);
-        assertEq(_buyer.balance, INITIAL_ETH_BALANCE - (tradeData[0].orders[0].price * 10250) / 10000);
+        assertEq(_buyer.balance, INITIAL_ETH_BALANCE - (tradeData[0].orders[0].price * 10_250) / 10_000);
     }
 
     function testExecuteAtomicFail() public asPrankedUser(_buyer) {
