@@ -218,6 +218,11 @@ contract LooksRareAggregator is
         _executeERC1155SafeBatchTransferFrom(collection, address(this), to, tokenIds, amounts);
     }
 
+    /**
+     * @dev If any order fails, the ETH paid to the marketplace
+     *      is refunded to the aggregator contract. The aggregator then has to refund
+     *      the ETH back to the user through _returnETHIfAny.
+     */
     receive() external payable {}
 
     function _encodeCalldataAndValidateFeeBp(
