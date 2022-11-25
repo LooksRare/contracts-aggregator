@@ -9,8 +9,6 @@ interface ILooksRareAggregator {
         address proxy;
         /* The marketplace proxy's function selector */
         bytes4 selector;
-        /* The amount of ETH passed to the proxy during the function call */
-        uint256 value;
         /* The maximum fee basis point the buyer is willing to pay */
         uint256 maxFeeBp;
         /* Orders to be executed by the marketplace */

@@ -45,10 +45,9 @@ contract CryptoPunksProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
 
         // Pay nothing for the second order
         tradeData[0].orders[1].price = 0;
-        tradeData[0].value = 68.5 ether;
 
         vm.expectRevert(ILooksRareAggregator.TradeExecutionFailed.selector);
-        aggregator.execute{value: tradeData[0].value}({
+        aggregator.execute{value: 68.5 ether}({
             tokenTransfers: tokenTransfers,
             tradeData: tradeData,
             originator: _buyer,
@@ -63,12 +62,11 @@ contract CryptoPunksProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
 
         // Pay nothing for the second order
         tradeData[0].orders[1].price = 0;
-        tradeData[0].value = 68.5 ether;
 
         vm.expectEmit(true, true, false, false);
         emit Sweep(_buyer);
 
-        aggregator.execute{value: tradeData[0].value}({
+        aggregator.execute{value: 68.5 ether}({
             tokenTransfers: tokenTransfers,
             tradeData: tradeData,
             originator: _buyer,
@@ -90,7 +88,6 @@ contract CryptoPunksProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(cryptoPunksProxy),
             selector: CryptoPunksProxy.execute.selector,
-            value: 138 ether,
             maxFeeBp: 0,
             orders: orders,
             ordersExtraData: ordersExtraData,
@@ -98,7 +95,7 @@ contract CryptoPunksProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
         });
 
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        aggregator.execute{value: tradeData[0].value}({
+        aggregator.execute{value: 138 ether}({
             tokenTransfers: tokenTransfers,
             tradeData: tradeData,
             originator: _buyer,
@@ -175,7 +172,7 @@ contract CryptoPunksProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
         vm.expectEmit(true, true, false, false);
         emit Sweep(_buyer);
 
-        aggregator.execute{value: tradeData[0].value}({
+        aggregator.execute{value: 138 ether}({
             tokenTransfers: tokenTransfers,
             tradeData: tradeData,
             originator: _buyer,
@@ -195,7 +192,6 @@ contract CryptoPunksProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(cryptoPunksProxy),
             selector: CryptoPunksProxy.execute.selector,
-            value: 138 ether,
             maxFeeBp: 0,
             orders: validCryptoPunksOrder(),
             ordersExtraData: ordersExtraData,

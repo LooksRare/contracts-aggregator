@@ -71,16 +71,16 @@ contract LooksRareProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Lo
         ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData();
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
 
-        tradeData[0].value += 0.1 ether;
+        uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price + 0.1 ether;
 
         vm.expectEmit(true, true, false, false);
         emit Sweep(_buyer);
-        aggregator.execute{value: tradeData[0].value}(tokenTransfers, tradeData, _buyer, _buyer, false);
+        aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, false);
 
         assertEq(IERC721(BAYC).balanceOf(_buyer), 2);
         assertEq(IERC721(BAYC).ownerOf(7139), _buyer);
         assertEq(IERC721(BAYC).ownerOf(3939), _buyer);
-        assertEq(_buyer.balance, 200 ether - tradeData[0].orders[0].price - tradeData[0].orders[1].price);
+        assertEq(_buyer.balance, 200 ether - value + 0.1 ether);
     }
 
     function testExecuteZeroOrders() public asPrankedUser(_buyer) {
@@ -93,7 +93,6 @@ contract LooksRareProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Lo
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(looksRareProxy),
             selector: LooksRareProxy.execute.selector,
-            value: 0,
             maxFeeBp: 0,
             orders: orders,
             ordersExtraData: ordersExtraData,
@@ -118,7 +117,6 @@ contract LooksRareProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Lo
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(looksRareProxy),
             selector: LooksRareProxy.execute.selector,
-            value: value,
             maxFeeBp: 0,
             orders: orders,
             ordersExtraData: ordersExtraData,
@@ -165,7 +163,6 @@ contract LooksRareProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Lo
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(looksRareProxy),
             selector: LooksRareProxy.execute.selector,
-            value: value,
             maxFeeBp: 0,
             orders: orders,
             ordersExtraData: ordersExtraData,

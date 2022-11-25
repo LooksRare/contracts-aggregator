@@ -83,7 +83,6 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(seaportProxy),
             selector: SeaportProxy.execute.selector,
-            value: order.price,
             maxFeeBp: 0,
             orders: orders,
             ordersExtraData: ordersExtraData,
@@ -320,7 +319,6 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(seaportProxy),
             selector: SeaportProxy.execute.selector,
-            value: totalPrice,
             maxFeeBp: 0,
             orders: orders,
             ordersExtraData: ordersExtraData,

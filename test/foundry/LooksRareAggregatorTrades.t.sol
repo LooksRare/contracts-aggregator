@@ -48,7 +48,6 @@ contract LooksRareAggregatorTradesTest is
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(looksRareProxy),
             selector: LooksRareProxy.execute.selector,
-            value: orders[0].price,
             maxFeeBp: 0,
             orders: orders,
             ordersExtraData: ordersExtraData,
@@ -84,7 +83,6 @@ contract LooksRareAggregatorTradesTest is
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(seaportProxy),
             selector: SeaportProxy.execute.selector,
-            value: totalPrice,
             maxFeeBp: 0,
             orders: orders,
             ordersExtraData: ordersExtraData,

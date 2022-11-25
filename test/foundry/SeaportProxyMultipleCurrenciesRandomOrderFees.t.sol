@@ -102,7 +102,6 @@ contract SeaportProxyMultipleCurrenciesRandomOrderFeesTest is TestParameters, Te
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(seaportProxy),
             selector: SeaportProxy.execute.selector,
-            value: ethAmount,
             maxFeeBp: 250,
             orders: orders,
             ordersExtraData: ordersExtraData,
@@ -151,7 +150,6 @@ contract SeaportProxyMultipleCurrenciesRandomOrderFeesTest is TestParameters, Te
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(seaportProxy),
             selector: SeaportProxy.execute.selector,
-            value: ethAmount,
             maxFeeBp: 250,
             orders: orders,
             ordersExtraData: ordersExtraData,
@@ -200,7 +198,6 @@ contract SeaportProxyMultipleCurrenciesRandomOrderFeesTest is TestParameters, Te
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(seaportProxy),
             selector: SeaportProxy.execute.selector,
-            value: ethAmount,
             maxFeeBp: 250,
             orders: orders,
             ordersExtraData: ordersExtraData,
@@ -249,7 +246,6 @@ contract SeaportProxyMultipleCurrenciesRandomOrderFeesTest is TestParameters, Te
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(seaportProxy),
             selector: SeaportProxy.execute.selector,
-            value: ethAmount,
             maxFeeBp: 250,
             orders: orders,
             ordersExtraData: ordersExtraData,

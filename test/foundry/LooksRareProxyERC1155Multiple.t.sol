@@ -69,7 +69,6 @@ contract LooksRareProxyERC1155MultipleTest is TestParameters, TestHelpers, Looks
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(looksRareProxy),
             selector: LooksRareProxy.execute.selector,
-            value: orders[0].price,
             maxFeeBp: 0,
             orders: orders,
             ordersExtraData: ordersExtraData,

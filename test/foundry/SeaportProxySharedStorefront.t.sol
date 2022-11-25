@@ -66,7 +66,6 @@ contract SeaportProxySharedStorefrontTest is TestParameters, TestHelpers, Seapor
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(seaportProxy),
             selector: SeaportProxy.execute.selector,
-            value: orders[0].price,
             maxFeeBp: 0,
             orders: orders,
             ordersExtraData: ordersExtraData,

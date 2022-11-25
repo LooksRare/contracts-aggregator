@@ -82,7 +82,6 @@ describe("X2Y2 Orders", () => {
         {
           proxy: proxy.address,
           selector: functionSelector,
-          value: totalValue,
           maxFeeBp: 0,
           orders: [
             {
@@ -194,7 +193,6 @@ describe("X2Y2 Orders", () => {
         {
           proxy: proxy.address,
           selector: functionSelector,
-          value: totalValue,
           maxFeeBp: 0,
           orders: [orderOneJson, orderOneJson],
           ordersExtraData: [getX2Y2ExtraData(orderOne), getX2Y2ExtraData(orderOne)],
@@ -253,7 +251,6 @@ describe("X2Y2 Orders", () => {
           {
             proxy: proxy.address,
             selector: functionSelector,
-            value: totalValue,
             maxFeeBp: 0,
             orders: [orderOneJson, orderOneJson],
             ordersExtraData: [getX2Y2ExtraData(orderOne), getX2Y2ExtraData(orderOne)],
