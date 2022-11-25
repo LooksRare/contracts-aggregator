@@ -52,7 +52,7 @@ contract ConflictedOrdersTest is TestParameters, TestHelpers, SeaportProxyTestHe
     function testExecutePartialSuccess() public asPrankedUser(_buyer) {
         ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData(false);
 
-        vm.expectEmit(true, true, false, false);
+        vm.expectEmit(false, false, false, true);
         emit Sweep(_buyer);
         aggregator.execute{value: tradeData[0].orders[0].price + tradeData[1].orders[0].price}(
             new TokenTransfer[](0),

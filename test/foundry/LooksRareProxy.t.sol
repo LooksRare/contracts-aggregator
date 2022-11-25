@@ -58,7 +58,7 @@ contract LooksRareProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Lo
         tradeData[0].orders[0].price -= 0.1 ether;
         uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
 
-        vm.expectEmit(true, true, false, false);
+        vm.expectEmit(false, false, false, true);
         emit Sweep(_buyer);
         aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, false);
 
@@ -73,7 +73,7 @@ contract LooksRareProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Lo
 
         uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price + 0.1 ether;
 
-        vm.expectEmit(true, true, false, false);
+        vm.expectEmit(false, false, false, true);
         emit Sweep(_buyer);
         aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, false);
 
@@ -157,7 +157,6 @@ contract LooksRareProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Lo
         ordersExtraData[1] = abi.encode(orders[1].price, 8500, 50, LOOKSRARE_STRATEGY_FIXED_PRICE);
 
         tradeData = new ILooksRareAggregator.TradeData[](1);
-        uint256 value = orders[0].price + orders[1].price;
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(looksRareProxy),
             selector: LooksRareProxy.execute.selector,

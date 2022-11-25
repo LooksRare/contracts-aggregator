@@ -55,7 +55,7 @@ contract LooksRareAggregatorTradesTest is
 
         vm.deal(_buyer, orders[0].price);
         vm.prank(_buyer);
-        vm.expectEmit(true, false, false, false);
+        vm.expectEmit(false, false, false, true);
         emit Sweep(_buyer);
         aggregator.execute{value: orders[0].price}(tokenTransfers, tradeData, address(0), _buyer, false);
 

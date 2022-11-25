@@ -57,7 +57,7 @@ contract MultipleMarketsTest is TestParameters, TestHelpers, SeaportProxyTestHel
         tradeData[1].orders[0].price -= 0.01 ether;
         uint256 totalPrice = tradeData[0].orders[0].price + tradeData[1].orders[0].price;
 
-        vm.expectEmit(true, true, false, false);
+        vm.expectEmit(false, false, false, true);
         emit Sweep(_buyer);
         aggregator.execute{value: totalPrice}(new TokenTransfer[](0), tradeData, _buyer, _buyer, false);
 
@@ -70,7 +70,7 @@ contract MultipleMarketsTest is TestParameters, TestHelpers, SeaportProxyTestHel
         ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData(isAtomic);
         uint256 totalPrice = tradeData[0].orders[0].price + tradeData[1].orders[0].price;
 
-        vm.expectEmit(true, true, false, false);
+        vm.expectEmit(false, false, false, true);
         emit Sweep(_buyer);
         aggregator.execute{value: totalPrice}(new TokenTransfer[](0), tradeData, _buyer, _buyer, isAtomic);
 
