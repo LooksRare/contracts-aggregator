@@ -55,8 +55,7 @@ contract LooksRareAggregator is
         uint256 tradeDataLength = tradeData.length;
         if (tradeDataLength == 0) revert InvalidOrderLength();
 
-        uint256 tokenTransfersLength = tokenTransfers.length;
-        if (tokenTransfersLength == 0) {
+        if (tokenTransfers.length == 0) {
             originator = msg.sender;
         } else if (msg.sender != erc20EnabledLooksRareAggregator) {
             revert UseERC20EnabledLooksRareAggregator();
@@ -96,7 +95,7 @@ contract LooksRareAggregator is
             }
         }
 
-        if (tokenTransfersLength != 0) _returnERC20TokensIfAny(tokenTransfers, originator);
+        if (tokenTransfers.length != 0) _returnERC20TokensIfAny(tokenTransfers, originator);
         assembly {
             if gt(selfbalance(), 1) {
                 let status := call(gas(), originator, sub(selfbalance(), 1), 0, 0, 0, 0)
