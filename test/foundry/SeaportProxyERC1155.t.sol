@@ -109,7 +109,6 @@ contract SeaportProxyERC1155Test is TestParameters, TestHelpers, SeaportProxyTes
         bytes memory extraData = isAtomic ? validMultipleItemsSameCollectionExtraData() : new bytes(0);
 
         tradeData = new ILooksRareAggregator.TradeData[](1);
-        uint256 totalPrice = orders[0].price + orders[1].price;
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(seaportProxy),
             selector: SeaportProxy.execute.selector,
