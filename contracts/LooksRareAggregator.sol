@@ -179,10 +179,10 @@ contract LooksRareAggregator is
     /**
      * @param proxy The marketplace proxy's address
      * @param selector The marketplace proxy's function selector
-     * @return Whether the marketplace proxy's function can be called from the aggregator
+     * @return isSupported Whether the marketplace proxy's function can be called from the aggregator
      */
-    function supportsProxyFunction(address proxy, bytes4 selector) external view returns (bool) {
-        return _proxyFunctionSelectors[proxy][selector] == 1;
+    function supportsProxyFunction(address proxy, bytes4 selector) external view returns (bool isSupported) {
+        isSupported = _proxyFunctionSelectors[proxy][selector] == 1;
     }
 
     /**
