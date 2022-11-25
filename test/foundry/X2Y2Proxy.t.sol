@@ -5,7 +5,7 @@ import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSte
 import {X2Y2Proxy} from "../../contracts/proxies/X2Y2Proxy.sol";
 import {IProxy} from "../../contracts/interfaces/IProxy.sol";
 import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
-import {BasicOrder, FeeData} from "../../contracts/libraries/OrderStructs.sol";
+import {BasicOrder} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {Market} from "../../contracts/libraries/x2y2/MarketConsts.sol";
 import {TestHelpers} from "./TestHelpers.sol";
@@ -28,7 +28,7 @@ contract X2Y2ProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
 
         vm.etch(address(_fakeAggregator), address(x2y2Proxy).code);
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        IProxy(_fakeAggregator).execute(orders, ordersExtraData, "", _buyer, false, 0, address(0));
+        IProxy(_fakeAggregator).execute(orders, ordersExtraData, "", _buyer, false);
     }
 
     function testExecuteOrdersLengthMismatch() public asPrankedUser(_buyer) {
@@ -40,15 +40,7 @@ contract X2Y2ProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
 
         vm.etch(address(_fakeAggregator), address(x2y2Proxy).code);
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        IProxy(_fakeAggregator).execute{value: orders[0].price}(
-            orders,
-            ordersExtraData,
-            "",
-            _buyer,
-            false,
-            0,
-            address(0)
-        );
+        IProxy(_fakeAggregator).execute{value: orders[0].price}(orders, ordersExtraData, "", _buyer, false);
     }
 
     function testRescueETH() public {

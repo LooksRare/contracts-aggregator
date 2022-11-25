@@ -27,7 +27,7 @@ contract CryptoPunksProxy is IProxy, TokenRescuer {
 
     /**
      * @notice Execute CryptoPunks NFT sweeps in a single transaction
-     * @dev ordersExtraData, extraData, feeBp and feeRecipient are not used
+     * @dev ordersExtraData and extraData are not used
      * @param orders Orders to be executed by CryptoPunks
      * @param recipient The address to receive the purchased NFTs
      * @param isAtomic Flag to enable atomic trades (all or nothing) or partial trades
@@ -37,9 +37,7 @@ contract CryptoPunksProxy is IProxy, TokenRescuer {
         bytes[] calldata, /* ordersExtraData */
         bytes memory, /* extraData */
         address recipient,
-        bool isAtomic,
-        uint256, /* feeBp */
-        address /* feeRecipient */
+        bool isAtomic
     ) external payable override {
         if (address(this) != aggregator) revert InvalidCaller();
 

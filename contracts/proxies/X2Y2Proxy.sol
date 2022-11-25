@@ -64,7 +64,7 @@ contract X2Y2Proxy is IProxy, TokenRescuer, TokenTransferrer, SignatureChecker {
 
     /**
      * @notice Execute X2Y2 NFT sweeps in a single transaction
-     * @dev extraData, feeBp and feeRecipient are not used
+     * @dev extraData is not used
      * @param orders Orders to be executed by Seaport
      * @param ordersExtraData Extra data for each order
      * @param recipient The address to receive the purchased NFTs
@@ -75,9 +75,7 @@ contract X2Y2Proxy is IProxy, TokenRescuer, TokenTransferrer, SignatureChecker {
         bytes[] calldata ordersExtraData,
         bytes calldata, /* extraData */
         address recipient,
-        bool isAtomic,
-        uint256, /* feeBp */
-        address /* feeRecipient */
+        bool isAtomic
     ) external payable override {
         if (address(this) != aggregator) revert InvalidCaller();
 

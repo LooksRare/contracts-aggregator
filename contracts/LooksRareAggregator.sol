@@ -9,7 +9,7 @@ import {IERC20} from "@looksrare/contracts-libs/contracts/interfaces/generic/IER
 import {TokenRescuer} from "./TokenRescuer.sol";
 import {TokenReceiver} from "./TokenReceiver.sol";
 import {ILooksRareAggregator} from "./interfaces/ILooksRareAggregator.sol";
-import {FeeData, TokenTransfer} from "./libraries/OrderStructs.sol";
+import {TokenTransfer} from "./libraries/OrderStructs.sol";
 
 /**
  * @title LooksRareAggregator
@@ -40,7 +40,6 @@ contract LooksRareAggregator is
      */
     address public erc20EnabledLooksRareAggregator;
     mapping(address => mapping(bytes4 => uint256)) private _proxyFunctionSelectors;
-    mapping(address => FeeData) private _proxyFeeData;
 
     /**
      * @inheritdoc ILooksRareAggregator
@@ -56,8 +55,7 @@ contract LooksRareAggregator is
         uint256 tradeDataLength = tradeData.length;
         if (tradeDataLength == 0) revert InvalidOrderLength();
 
-        uint256 tokenTransfersLength = tokenTransfers.length;
-        if (tokenTransfersLength == 0) {
+        if (tokenTransfers.length == 0) {
             originator = msg.sender;
         } else if (msg.sender != erc20EnabledLooksRareAggregator) {
             revert UseERC20EnabledLooksRareAggregator();
@@ -68,22 +66,16 @@ contract LooksRareAggregator is
             address proxy = singleTradeData.proxy;
             if (_proxyFunctionSelectors[proxy][singleTradeData.selector] != 1) revert InvalidFunction();
 
-            (bytes memory proxyCalldata, bool maxFeeBpViolated) = _encodeCalldataAndValidateFeeBp(
-                singleTradeData,
-                recipient,
-                isAtomic
+            (bool success, bytes memory returnData) = proxy.delegatecall(
+                abi.encodeWithSelector(
+                    singleTradeData.selector,
+                    singleTradeData.orders,
+                    singleTradeData.ordersExtraData,
+                    singleTradeData.extraData,
+                    recipient,
+                    isAtomic
+                )
             );
-            if (maxFeeBpViolated) {
-                if (isAtomic) {
-                    revert FeeTooHigh();
-                } else {
-                    unchecked {
-                        ++i;
-                    }
-                    continue;
-                }
-            }
-            (bool success, bytes memory returnData) = proxy.delegatecall(proxyCalldata);
 
             if (!success) {
                 if (isAtomic) {
@@ -103,7 +95,7 @@ contract LooksRareAggregator is
             }
         }
 
-        if (tokenTransfersLength != 0) _returnERC20TokensIfAny(tokenTransfers, originator);
+        if (tokenTransfers.length != 0) _returnERC20TokensIfAny(tokenTransfers, originator);
         assembly {
             if gt(selfbalance(), 1) {
                 let status := call(gas(), originator, sub(selfbalance(), 1), 0, 0, 0, 0)
@@ -144,23 +136,6 @@ contract LooksRareAggregator is
     function removeFunction(address proxy, bytes4 selector) external onlyOwner {
         delete _proxyFunctionSelectors[proxy][selector];
         emit FunctionRemoved(proxy, selector);
-    }
-
-    /**
-     * @param proxy Proxy to apply the fee to
-     * @param bp Fee basis point
-     * @param recipient Fee recipient
-     */
-    function setFee(
-        address proxy,
-        uint256 bp,
-        address recipient
-    ) external onlyOwner {
-        if (bp > 10_000) revert FeeTooHigh();
-        _proxyFeeData[proxy].bp = bp;
-        _proxyFeeData[proxy].recipient = recipient;
-
-        emit FeeUpdated(proxy, bp, recipient);
     }
 
     /**
@@ -224,25 +199,6 @@ contract LooksRareAggregator is
      *      the ETH back to the user through _returnETHIfAny.
      */
     receive() external payable {}
-
-    function _encodeCalldataAndValidateFeeBp(
-        TradeData calldata singleTradeData,
-        address recipient,
-        bool isAtomic
-    ) private view returns (bytes memory proxyCalldata, bool maxFeeBpViolated) {
-        FeeData memory feeData = _proxyFeeData[singleTradeData.proxy];
-        maxFeeBpViolated = singleTradeData.maxFeeBp < feeData.bp;
-        proxyCalldata = abi.encodeWithSelector(
-            singleTradeData.selector,
-            singleTradeData.orders,
-            singleTradeData.ordersExtraData,
-            singleTradeData.extraData,
-            recipient,
-            isAtomic,
-            feeData.bp,
-            feeData.recipient
-        );
-    }
 
     function _returnERC20TokensIfAny(TokenTransfer[] calldata tokenTransfers, address recipient) private {
         uint256 tokenTransfersLength = tokenTransfers.length;

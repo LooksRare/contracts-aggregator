@@ -11,7 +11,7 @@ import {TestParameters} from "./TestParameters.sol";
 import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
 
 /**
- * @notice SeaportProxy ERC1155 tests (fees, refund, atomic fail/partial success)
+ * @notice SeaportProxy ERC1155 tests (refund, atomic fail/partial success)
  */
 contract SeaportProxyERC1155Test is TestParameters, TestHelpers, SeaportProxyTestHelpers {
     LooksRareAggregator private aggregator;
@@ -113,7 +113,6 @@ contract SeaportProxyERC1155Test is TestParameters, TestHelpers, SeaportProxyTes
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(seaportProxy),
             selector: SeaportProxy.execute.selector,
-            maxFeeBp: 0,
             orders: orders,
             ordersExtraData: ordersExtraData,
             extraData: extraData

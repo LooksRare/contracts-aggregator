@@ -81,7 +81,6 @@ contract ConflictedOrdersTest is TestParameters, TestHelpers, SeaportProxyTestHe
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(seaportProxy),
             selector: SeaportProxy.execute.selector,
-            maxFeeBp: 0,
             orders: seaportOrders,
             ordersExtraData: seaportOrdersExtraData,
             extraData: isAtomic ? validSingleOfferExtraData(3) : new bytes(0)
@@ -108,7 +107,6 @@ contract ConflictedOrdersTest is TestParameters, TestHelpers, SeaportProxyTestHe
         tradeData[1] = ILooksRareAggregator.TradeData({
             proxy: address(looksRareProxy),
             selector: LooksRareProxy.execute.selector,
-            maxFeeBp: 0,
             orders: looksRareOrders,
             ordersExtraData: looksRareOrdersExtraData,
             extraData: ""

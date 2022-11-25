@@ -9,7 +9,7 @@ import {ERC20EnabledLooksRareAggregator} from "../../contracts/ERC20EnabledLooks
 import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
 import {IProxy} from "../../contracts/interfaces/IProxy.sol";
 import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggregator.sol";
-import {BasicOrder, FeeData, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
+import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TestParameters} from "./TestParameters.sol";
 import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
@@ -55,24 +55,6 @@ contract SeaportProxyMultipleCurrenciesTest is TestParameters, TestHelpers, Seap
         _testExecuteWithExcessUSDC(false);
     }
 
-    function testExecuteWithFeesAtomic() public {
-        vm.deal(_protocolFeeRecipient, 0);
-        deal(USDC, _protocolFeeRecipient, 0);
-        aggregator.setFee(address(seaportProxy), 250, _protocolFeeRecipient);
-        vm.startPrank(_buyer);
-        _testExecuteWithFees(true);
-        vm.stopPrank();
-    }
-
-    function testExecuteWithFeesNonAtomic() public {
-        vm.deal(_protocolFeeRecipient, 0);
-        deal(USDC, _protocolFeeRecipient, 0);
-        aggregator.setFee(address(seaportProxy), 250, _protocolFeeRecipient);
-        vm.startPrank(_buyer);
-        _testExecuteWithFees(false);
-        vm.stopPrank();
-    }
-
     function _testExecute(bool isAtomic) private {
         ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData(isAtomic);
 
@@ -96,36 +78,6 @@ contract SeaportProxyMultipleCurrenciesTest is TestParameters, TestHelpers, Seap
         assertEq(_buyer.balance, INITIAL_ETH_BALANCE - ethAmount);
         assertEq(IERC20(USDC).balanceOf(_buyer), INITIAL_USDC_BALANCE - usdcAmount);
         assertEq(IERC20(USDC).allowance(_buyer, address(erc20EnabledAggregator)), 0);
-    }
-
-    function _testExecuteWithFees(bool isAtomic) private {
-        ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData(isAtomic);
-
-        tradeData[0].maxFeeBp = 250;
-
-        uint256 usdcAmount = (tradeData[0].orders[0].price * 10_250) / 10_000;
-        uint256 ethAmount = (tradeData[0].orders[1].price * 10_250) / 10_000;
-
-        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](1);
-        tokenTransfers[0].amount = usdcAmount;
-        tokenTransfers[0].currency = USDC;
-
-        IERC20(USDC).approve(address(erc20EnabledAggregator), usdcAmount);
-
-        vm.expectEmit(true, true, false, false);
-        emit Sweep(_buyer);
-        erc20EnabledAggregator.execute{value: ethAmount}(tokenTransfers, tradeData, _buyer, isAtomic);
-
-        assertEq(IERC721(BAYC).balanceOf(_buyer), 2);
-        assertEq(IERC721(BAYC).ownerOf(9996), _buyer);
-        assertEq(IERC721(BAYC).ownerOf(5509), _buyer);
-
-        assertEq(_buyer.balance, INITIAL_ETH_BALANCE - ethAmount);
-        assertEq(_protocolFeeRecipient.balance, ethAmount - tradeData[0].orders[1].price);
-
-        assertEq(IERC20(USDC).balanceOf(_buyer), INITIAL_USDC_BALANCE - usdcAmount);
-        assertEq(IERC20(USDC).allowance(_buyer, address(erc20EnabledAggregator)), 0);
-        assertEq(IERC20(USDC).balanceOf(_protocolFeeRecipient), usdcAmount - tradeData[0].orders[0].price);
     }
 
     function _testExecuteWithExcessUSDC(bool isAtomic) private {
@@ -181,7 +133,6 @@ contract SeaportProxyMultipleCurrenciesTest is TestParameters, TestHelpers, Seap
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(seaportProxy),
             selector: SeaportProxy.execute.selector,
-            maxFeeBp: 0,
             orders: orders,
             ordersExtraData: ordersExtraData,
             extraData: extraData

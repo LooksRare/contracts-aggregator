@@ -7,7 +7,7 @@ import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
 import {OrderType} from "../../contracts/libraries/seaport/ConsiderationEnums.sol";
 import {AdditionalRecipient, Fulfillment, FulfillmentComponent} from "../../contracts/libraries/seaport/ConsiderationStructs.sol";
 import {IProxy} from "../../contracts/interfaces/IProxy.sol";
-import {BasicOrder, FeeData} from "../../contracts/libraries/OrderStructs.sol";
+import {BasicOrder} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TestParameters} from "./TestParameters.sol";
@@ -34,15 +34,7 @@ contract SeaportProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Seap
 
         vm.etch(address(_fakeAggregator), address(seaportProxy).code);
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
-        IProxy(_fakeAggregator).execute(
-            orders,
-            ordersExtraData,
-            validSingleOfferExtraData(3),
-            _buyer,
-            false,
-            0,
-            address(0)
-        );
+        IProxy(_fakeAggregator).execute(orders, ordersExtraData, validSingleOfferExtraData(3), _buyer, false);
     }
 
     function testExecuteOrdersLengthMismatch() public asPrankedUser(_buyer) {
@@ -61,9 +53,7 @@ contract SeaportProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Seap
             ordersExtraData,
             validSingleOfferExtraData(3),
             _buyer,
-            false,
-            0,
-            address(0)
+            false
         );
     }
 

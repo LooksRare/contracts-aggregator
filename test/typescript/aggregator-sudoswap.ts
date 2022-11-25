@@ -47,7 +47,6 @@ describe("Sudoswap Orders", () => {
       {
         proxy: proxy.address,
         selector: functionSelector,
-        maxFeeBp: 0,
         orders: [
           {
             collection: sudoswapPairOne,
@@ -100,7 +99,6 @@ describe("Sudoswap Orders", () => {
       {
         proxy: proxy.address,
         selector: functionSelector,
-        maxFeeBp: 0,
         orders: [
           {
             collection: sudoswapPairOne,
@@ -146,7 +144,6 @@ describe("Sudoswap Orders", () => {
       {
         proxy: proxy.address,
         selector: functionSelector,
-        maxFeeBp: 0,
         orders: [
           {
             collection: sudoswapPairOne,
@@ -199,7 +196,6 @@ describe("Sudoswap Orders", () => {
       {
         proxy: proxy.address,
         selector: functionSelector,
-        maxFeeBp: 0,
         orders: [
           {
             collection: sudoswapPairOne,

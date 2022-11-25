@@ -9,13 +9,13 @@ import {ERC20EnabledLooksRareAggregator} from "../../contracts/ERC20EnabledLooks
 import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
 import {IProxy} from "../../contracts/interfaces/IProxy.sol";
 import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggregator.sol";
-import {BasicOrder, FeeData, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
+import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TestParameters} from "./TestParameters.sol";
 import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
 
 /**
- * @notice SeaportProxy ERC721 USDC orders with fees tests
+ * @notice SeaportProxy ERC721 USDC orders tests
  */
 contract SeaportProxyERC721USDCTest is TestParameters, TestHelpers, SeaportProxyTestHelpers {
     LooksRareAggregator private aggregator;
@@ -33,24 +33,20 @@ contract SeaportProxyERC721USDCTest is TestParameters, TestHelpers, SeaportProxy
         deal(USDC, _buyer, INITIAL_USDC_BALANCE);
 
         aggregator.approve(USDC, SEAPORT, type(uint256).max);
-        aggregator.setFee(address(seaportProxy), 250, _protocolFeeRecipient);
         aggregator.setERC20EnabledLooksRareAggregator(address(erc20EnabledAggregator));
     }
 
-    function testExecuteWithFeesAtomic() public asPrankedUser(_buyer) {
-        _testExecuteWithFees(true);
+    function testExecuteAtomic() public asPrankedUser(_buyer) {
+        _testExecute(true);
     }
 
-    function testExecuteWithFeesNonAtomic() public asPrankedUser(_buyer) {
-        _testExecuteWithFees(false);
+    function testExecuteNonAtomic() public asPrankedUser(_buyer) {
+        _testExecute(false);
     }
 
-    function _testExecuteWithFees(bool isAtomic) private {
+    function _testExecute(bool isAtomic) private {
         ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData();
-        uint256 totalPrice = (tradeData[0].orders[0].price * 10_250) /
-            10_000 +
-            (tradeData[0].orders[1].price * 10_250) /
-            10_000;
+        uint256 totalPrice = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
         IERC20(USDC).approve(address(erc20EnabledAggregator), totalPrice);
 
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](1);
@@ -85,7 +81,6 @@ contract SeaportProxyERC721USDCTest is TestParameters, TestHelpers, SeaportProxy
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(seaportProxy),
             selector: SeaportProxy.execute.selector,
-            maxFeeBp: 250,
             orders: orders,
             ordersExtraData: ordersExtraData,
             extraData: extraData
