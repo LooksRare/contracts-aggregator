@@ -65,7 +65,8 @@ contract LooksRareAggregator is
 
         for (uint256 i; i < tradeDataLength; ) {
             TradeData calldata singleTradeData = tradeData[i];
-            if (_proxyFunctionSelectors[singleTradeData.proxy][singleTradeData.selector] != 1) revert InvalidFunction();
+            address proxy = singleTradeData.proxy;
+            if (_proxyFunctionSelectors[proxy][singleTradeData.selector] != 1) revert InvalidFunction();
 
             (bytes memory proxyCalldata, bool maxFeeBpViolated) = _encodeCalldataAndValidateFeeBp(
                 singleTradeData,
@@ -82,7 +83,7 @@ contract LooksRareAggregator is
                     continue;
                 }
             }
-            (bool success, bytes memory returnData) = singleTradeData.proxy.delegatecall(proxyCalldata);
+            (bool success, bytes memory returnData) = proxy.delegatecall(proxyCalldata);
 
             if (!success) {
                 if (isAtomic) {
