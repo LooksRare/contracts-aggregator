@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import {CollectionType} from "../libraries/OrderEnums.sol";
 import {BasicOrder} from "../libraries/OrderStructs.sol";
 import {ItemType, OrderType} from "../libraries/seaport/ConsiderationEnums.sol";
 import {AdvancedOrder, CriteriaResolver, OrderParameters, OfferItem, ConsiderationItem, FulfillmentComponent, AdditionalRecipient} from "../libraries/seaport/ConsiderationStructs.sol";
