@@ -20,7 +20,7 @@ contract LooksRareProxyERC1155Test is TestParameters, TestHelpers, LooksRareProx
     function setUp() public {
         vm.createSelectFork(vm.rpcUrl("mainnet"), 15_877_290);
 
-        aggregator = new LooksRareAggregator(86_400);
+        aggregator = new LooksRareAggregator();
         looksRareProxy = new LooksRareProxy(LOOKSRARE_V1, address(aggregator));
         aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
 

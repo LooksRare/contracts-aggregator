@@ -23,7 +23,7 @@ contract ConflictedOrdersTest is TestParameters, TestHelpers, SeaportProxyTestHe
     function setUp() public {
         vm.createSelectFork(vm.rpcUrl("mainnet"), 15_327_113);
 
-        aggregator = new LooksRareAggregator(86_400);
+        aggregator = new LooksRareAggregator();
         seaportProxy = new SeaportProxy(SEAPORT, address(aggregator));
         aggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);
         looksRareProxy = new LooksRareProxy(LOOKSRARE_V1, address(aggregator));

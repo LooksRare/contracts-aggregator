@@ -24,13 +24,9 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTes
     TokenRescuer private tokenRescuer;
 
     function setUp() public {
-        aggregator = new LooksRareAggregator(86_400);
+        aggregator = new LooksRareAggregator();
         tokenRescuer = TokenRescuer(address(aggregator));
         looksRareProxy = new LooksRareProxy(LOOKSRARE_V1, address(aggregator));
-    }
-
-    function testDelaySetUp() public {
-        assertEq(aggregator.delay(), 86_400);
     }
 
     function testSetERC20EnabledLooksRareAggregator() public {
