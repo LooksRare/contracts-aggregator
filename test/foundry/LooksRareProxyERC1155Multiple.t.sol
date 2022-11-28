@@ -63,7 +63,7 @@ contract LooksRareProxyERC1155MultipleTest is TestParameters, TestHelpers, Looks
         orders[0] = validGoerliTestERC1155Order();
 
         bytes[] memory ordersExtraData = new bytes[](1);
-        ordersExtraData[0] = abi.encode(orders[0].price, 9800, 0, 0x6ACbeb7f6E225FbC0D1CEe27a40ADC49E7277E57);
+        ordersExtraData[0] = abi.encode(orders[0].price, 9_800, 0, 0x6ACbeb7f6E225FbC0D1CEe27a40ADC49E7277E57);
 
         tradeData = new ILooksRareAggregator.TradeData[](1);
         tradeData[0] = ILooksRareAggregator.TradeData({

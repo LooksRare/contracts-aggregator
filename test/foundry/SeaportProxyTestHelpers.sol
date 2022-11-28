@@ -109,7 +109,7 @@ abstract contract SeaportProxyTestHelpers {
         amounts[0] = 1;
         order.amounts = amounts;
 
-        order.price = 157894e6;
+        order.price = 157_894e6;
         order.currency = USDC;
         order.startTime = 1661185133;
         order.endTime = 1663215842;
@@ -172,7 +172,7 @@ abstract contract SeaportProxyTestHelpers {
         amounts[0] = 1;
         order.amounts = amounts;
 
-        order.price = 175000e6;
+        order.price = 175_000e6;
         order.currency = USDC;
         order.startTime = 1662523477;
         order.endTime = 1662854040;
@@ -193,7 +193,7 @@ abstract contract SeaportProxyTestHelpers {
         amounts[0] = 1;
         order.amounts = amounts;
 
-        order.price = 300000e6;
+        order.price = 300_000e6;
         order.currency = USDC;
         order.startTime = 1661708793;
         order.endTime = 1677264393;
@@ -400,11 +400,11 @@ abstract contract SeaportProxyTestHelpers {
     function validBAYCId9948OrderExtraData() internal pure returns (bytes memory) {
         AdditionalRecipient[] memory recipients = new AdditionalRecipient[](3);
         recipients[0].recipient = payable(0xeCBA5f51925E6CCeC26dA38Dcd7D5305f6BdFbcb);
-        recipients[0].amount = 166250e6;
+        recipients[0].amount = 166_250e6;
         recipients[1].recipient = payable(OPENSEA_FEES_3);
-        recipients[1].amount = 4375e6;
+        recipients[1].amount = 4_375e6;
         recipients[2].recipient = payable(YUGA_LABS);
-        recipients[2].amount = 4375e6;
+        recipients[2].amount = 4_375e6;
 
         SeaportProxy.OrderExtraData memory orderExtraData = _baseOrderExtraData();
         orderExtraData.salt = 38618698744363512;
@@ -416,11 +416,11 @@ abstract contract SeaportProxyTestHelpers {
     function validBAYCId8350OrderExtraData() internal pure returns (bytes memory) {
         AdditionalRecipient[] memory recipients = new AdditionalRecipient[](3);
         recipients[0].recipient = payable(0x1c66f8A8fa9D34D26b6767cca81E4f0fb8F0692f);
-        recipients[0].amount = 285000e6;
+        recipients[0].amount = 285_000e6;
         recipients[1].recipient = payable(OPENSEA_FEES_3);
-        recipients[1].amount = 7500e6;
+        recipients[1].amount = 7_500e6;
         recipients[2].recipient = payable(YUGA_LABS);
-        recipients[2].amount = 7500e6;
+        recipients[2].amount = 7_500e6;
 
         SeaportProxy.OrderExtraData memory orderExtraData = _baseOrderExtraData();
         orderExtraData.salt = 49088034629033451;

@@ -40,7 +40,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
             makerAsk.amount = 1;
             makerAsk.strategy = LOOKSRARE_STRATEGY_FIXED_PRICE;
             makerAsk.nonce = 0;
-            makerAsk.minPercentageToAsk = 9550;
+            makerAsk.minPercentageToAsk = 9_550;
             makerAsk.currency = WETH;
             makerAsk.startTime = 1659632508;
             makerAsk.endTime = 1662186976;
@@ -56,7 +56,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
             takerBid.taker = _buyer;
             takerBid.price = 81.8 ether;
             takerBid.tokenId = 7139;
-            takerBid.minPercentageToAsk = 9550;
+            takerBid.minPercentageToAsk = 9_550;
         }
 
         uint256 gasRemaining = gasleft();
@@ -76,7 +76,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         orders[0] = validOrders[0];
 
         bytes[] memory ordersExtraData = new bytes[](1);
-        ordersExtraData[0] = abi.encode(orders[0].price, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE);
+        ordersExtraData[0] = abi.encode(orders[0].price, 9_550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE);
 
         ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
         tradeData[0] = ILooksRareAggregator.TradeData({
@@ -103,7 +103,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         orders[0] = validOrders[0];
 
         bytes[] memory ordersExtraData = new bytes[](1);
-        ordersExtraData[0] = abi.encode(orders[0].price, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE);
+        ordersExtraData[0] = abi.encode(orders[0].price, 9_550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE);
 
         bytes memory data = abi.encodeWithSelector(
             LooksRareProxy.execute.selector,
@@ -139,8 +139,8 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         BasicOrder[] memory orders = validBAYCOrders();
 
         bytes[] memory ordersExtraData = new bytes[](2);
-        ordersExtraData[0] = abi.encode(orders[0].price, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE);
-        ordersExtraData[1] = abi.encode(orders[1].price, 8500, 50, LOOKSRARE_STRATEGY_FIXED_PRICE);
+        ordersExtraData[0] = abi.encode(orders[0].price, 9_550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE);
+        ordersExtraData[1] = abi.encode(orders[1].price, 8_500, 50, LOOKSRARE_STRATEGY_FIXED_PRICE);
 
         bytes memory data = abi.encodeWithSelector(
             LooksRareProxy.execute.selector,
@@ -192,8 +192,8 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         BasicOrder[] memory orders = validBAYCOrders();
 
         bytes[] memory ordersExtraData = new bytes[](2);
-        ordersExtraData[0] = abi.encode(orders[0].price, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE);
-        ordersExtraData[1] = abi.encode(orders[1].price, 8500, 50, LOOKSRARE_STRATEGY_FIXED_PRICE);
+        ordersExtraData[0] = abi.encode(orders[0].price, 9_550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE);
+        ordersExtraData[1] = abi.encode(orders[1].price, 8_500, 50, LOOKSRARE_STRATEGY_FIXED_PRICE);
 
         ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
         uint256 value = orders[0].price + orders[1].price;

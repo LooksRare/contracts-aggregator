@@ -101,7 +101,7 @@ contract ConflictedOrdersTest is TestParameters, TestHelpers, SeaportProxyTestHe
 
         bytes[] memory looksRareOrdersExtraData = new bytes[](1);
         {
-            looksRareOrdersExtraData[0] = abi.encode(87.95 ether, 9550, 2, LOOKSRARE_STRATEGY_FIXED_PRICE);
+            looksRareOrdersExtraData[0] = abi.encode(87.95 ether, 9_550, 2, LOOKSRARE_STRATEGY_FIXED_PRICE);
         }
 
         tradeData[1] = ILooksRareAggregator.TradeData({

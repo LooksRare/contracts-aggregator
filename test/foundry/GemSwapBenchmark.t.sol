@@ -125,7 +125,7 @@ contract GemSwapBenchmarkTest is TestParameters, TestHelpers, SeaportProxyTestHe
             bytes[] memory looksRareOrdersExtraData = new bytes[](1);
             looksRareOrdersExtraData[0] = abi.encode(
                 looksRareOrders[0].price,
-                9550,
+                9_550,
                 860,
                 LOOKSRARE_STRATEGY_FIXED_PRICE
             );
@@ -186,11 +186,16 @@ contract GemSwapBenchmarkTest is TestParameters, TestHelpers, SeaportProxyTestHe
             bytes[] memory looksRareOrdersExtraData = new bytes[](2);
             looksRareOrdersExtraData[0] = abi.encode(
                 looksRareOrders[0].price,
-                9550,
+                9_550,
                 860,
                 LOOKSRARE_STRATEGY_FIXED_PRICE
             );
-            looksRareOrdersExtraData[1] = abi.encode(looksRareOrders[1].price, 9550, 9, LOOKSRARE_STRATEGY_FIXED_PRICE);
+            looksRareOrdersExtraData[1] = abi.encode(
+                looksRareOrders[1].price,
+                9_550,
+                9,
+                LOOKSRARE_STRATEGY_FIXED_PRICE
+            );
 
             tradeData[1] = ILooksRareAggregator.TradeData({
                 proxy: address(looksRareProxy),

@@ -54,7 +54,7 @@ contract LooksRareProxyERC1155Test is TestParameters, TestHelpers, LooksRareProx
         orders[0] = validSlicesOrder();
 
         bytes[] memory ordersExtraData = new bytes[](1);
-        ordersExtraData[0] = abi.encode(orders[0].price, 9800, 13678, LOOKSRARE_STRATEGY_FIXED_PRICE_V1B);
+        ordersExtraData[0] = abi.encode(orders[0].price, 9_800, 13_678, LOOKSRARE_STRATEGY_FIXED_PRICE_V1B);
 
         tradeData = new ILooksRareAggregator.TradeData[](1);
         tradeData[0] = ILooksRareAggregator.TradeData({
