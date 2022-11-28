@@ -25,7 +25,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
 
     function setUp() public {
         vm.createSelectFork(vm.rpcUrl("mainnet"), 15_300_884);
-        vm.deal(_buyer, 100 ether);
+        vm.deal(_buyer, INITIAL_ETH_BALANCE);
     }
 
     function testExecuteDirectlySingleOrder() public asPrankedUser(_buyer) {
@@ -65,7 +65,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         assertEq(IERC721(BAYC).ownerOf(2518), _buyer);
     }
 
-    function testExecuteThroughAggregatorSingleOrder() public {
+    function testExecuteThroughAggregatorSingleOrder() public asPrankedUser(_buyer) {
         _aggregatorSetUp();
 
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
@@ -96,7 +96,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         assertEq(IERC721(BAYC).ownerOf(2518), _buyer);
     }
 
-    function testExecuteThroughV0AggregatorSingleOrder() public {
+    function testExecuteThroughV0AggregatorSingleOrder() public asPrankedUser(_buyer) {
         _v0AggregatorSetUp();
 
         BasicOrder memory order = validBAYCId2518Order();
@@ -129,7 +129,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         assertEq(IERC721(BAYC).ownerOf(2518), _buyer);
     }
 
-    function testExecuteDirectlyTwoOrders() public {
+    function testExecuteDirectlyTwoOrders() public asPrankedUser(_buyer) {
         SeaportInterface seaport = SeaportInterface(SEAPORT);
 
         AdvancedOrder[] memory advancedOrders = new AdvancedOrder[](2);
@@ -225,15 +225,15 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         assertEq(IERC721(BAYC).ownerOf(8498), _buyer);
     }
 
-    function testExecuteThroughAggregatorTwoOrdersAtomic() public {
+    function testExecuteThroughAggregatorTwoOrdersAtomic() public asPrankedUser(_buyer) {
         _testExecuteThroughAggregatorTwoOrders(true);
     }
 
-    function testExecuteThroughAggregatorTwoOrdersNonAtomic() public {
+    function testExecuteThroughAggregatorTwoOrdersNonAtomic() public asPrankedUser(_buyer) {
         _testExecuteThroughAggregatorTwoOrders(false);
     }
 
-    function testExecuteThroughV0AggregatorTwoOrders() public {
+    function testExecuteThroughV0AggregatorTwoOrders() public asPrankedUser(_buyer) {
         _v0AggregatorSetUp();
 
         BasicOrder[] memory orders = new BasicOrder[](2);
