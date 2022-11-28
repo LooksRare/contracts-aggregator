@@ -116,7 +116,12 @@ contract MultipleMarketsTest is TestParameters, TestHelpers, SeaportProxyTestHel
 
         bytes[] memory looksRareOrdersExtraData = new bytes[](1);
         {
-            looksRareOrdersExtraData[0] = abi.encode(looksRareOrders[0].price, 9550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE);
+            looksRareOrdersExtraData[0] = abi.encode(
+                looksRareOrders[0].price,
+                9_550,
+                0,
+                LOOKSRARE_STRATEGY_FIXED_PRICE
+            );
         }
 
         tradeData[1] = ILooksRareAggregator.TradeData({

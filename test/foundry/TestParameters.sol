@@ -29,7 +29,7 @@ abstract contract TestParameters {
     uint256 internal constant luckyNumber = 6.9420 ether;
 
     uint256 internal constant INITIAL_ETH_BALANCE = 400 ether;
-    uint256 internal constant INITIAL_USDC_BALANCE = 500000e6;
+    uint256 internal constant INITIAL_USDC_BALANCE = 500_000e6;
 
     event FunctionAdded(address proxy, bytes4 selector);
     event FunctionRemoved(address proxy, bytes4 selector);
