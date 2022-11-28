@@ -24,9 +24,7 @@ contract SeaportProxyERC721Test is TestParameters, TestHelpers, SeaportProxyTest
         seaportProxy = new SeaportProxy(SEAPORT, address(aggregator));
         aggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);
         vm.deal(_buyer, INITIAL_ETH_BALANCE);
-        // Forking from mainnet and the deployed addresses might have balance
         vm.deal(address(aggregator), 1 wei);
-        vm.deal(address(seaportProxy), 0);
     }
 
     function testExecuteRefundFromLooksRareAggregatorAtomic() public asPrankedUser(_buyer) {

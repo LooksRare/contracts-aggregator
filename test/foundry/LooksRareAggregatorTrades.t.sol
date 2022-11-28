@@ -31,8 +31,6 @@ contract LooksRareAggregatorTradesTest is
 
         aggregator = new LooksRareAggregator();
         LooksRareProxy looksRareProxy = new LooksRareProxy(LOOKSRARE_V1, address(aggregator));
-        // Since we are forking mainnet, we have to make sure it has 0 ETH.
-        vm.deal(address(looksRareProxy), 0);
 
         aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
 

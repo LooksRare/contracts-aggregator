@@ -25,10 +25,7 @@ contract SeaportProxySharedStorefrontTest is TestParameters, TestHelpers, Seapor
         aggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);
 
         vm.deal(_buyer, 100 ether);
-
-        // Forking from mainnet and the deployed addresses might have balance
         vm.deal(address(aggregator), 0);
-        vm.deal(address(seaportProxy), 0);
     }
 
     function testExecuteAtomic() public {

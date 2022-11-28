@@ -29,10 +29,7 @@ contract MultipleMarketsTest is TestParameters, TestHelpers, SeaportProxyTestHel
         looksRareProxy = new LooksRareProxy(LOOKSRARE_V1, address(aggregator));
         aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
         vm.deal(_buyer, INITIAL_ETH_BALANCE);
-        // Forking from mainnet and the deployed addresses might have balance
         vm.deal(address(aggregator), 1 wei);
-        vm.deal(address(seaportProxy), 0);
-        vm.deal(address(looksRareProxy), 0);
     }
 
     function testExecuteAtomic() public asPrankedUser(_buyer) {

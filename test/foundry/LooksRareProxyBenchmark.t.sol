@@ -168,20 +168,12 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
     function _aggregatorSetUp() private {
         aggregator = new LooksRareAggregator();
         looksRareProxy = new LooksRareProxy(LOOKSRARE_V1, address(aggregator));
-
-        // Since we are forking mainnet, we have to make sure it has 0 ETH.
-        vm.deal(address(looksRareProxy), 0);
-
         aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
     }
 
     function _v0AggregatorSetUp() private {
         v0Aggregator = new V0Aggregator();
         looksRareProxy = new LooksRareProxy(LOOKSRARE_V1, address(v0Aggregator));
-
-        // Since we are forking mainnet, we have to make sure it has 0 ETH.
-        vm.deal(address(looksRareProxy), 0);
-
         v0Aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
     }
 

@@ -28,10 +28,7 @@ contract LooksRareProxyTest is TestParameters, TestHelpers, LooksRareProxyTestHe
         aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
 
         vm.deal(_buyer, 200 ether);
-
-        // Forking from mainnet and the deployed addresses might have balance
         vm.deal(address(aggregator), 1 wei);
-        vm.deal(address(looksRareProxy), 0);
     }
 
     function testExecuteAtomicFail() public asPrankedUser(_buyer) {

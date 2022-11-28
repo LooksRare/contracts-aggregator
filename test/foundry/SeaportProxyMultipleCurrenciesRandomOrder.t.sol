@@ -31,9 +31,7 @@ contract SeaportProxyMultipleCurrenciesRandomOrderTest is TestParameters, TestHe
         aggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);
         vm.deal(_buyer, INITIAL_ETH_BALANCE);
         deal(USDC, _buyer, INITIAL_USDC_BALANCE);
-        // Forking from mainnet and the deployed addresses might have balance
         vm.deal(address(aggregator), 1 wei);
-        vm.deal(address(seaportProxy), 0);
 
         aggregator.approve(USDC, SEAPORT, type(uint256).max);
         aggregator.setERC20EnabledLooksRareAggregator(address(erc20EnabledAggregator));
