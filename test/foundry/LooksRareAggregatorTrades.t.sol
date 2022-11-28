@@ -26,6 +26,38 @@ contract LooksRareAggregatorTradesTest is
 {
     LooksRareAggregator private aggregator;
 
+    function testExecuteETHTransferFail() public {
+        vm.createSelectFork(vm.rpcUrl("mainnet"), 15_282_897);
+
+        aggregator = new LooksRareAggregator();
+        LooksRareProxy looksRareProxy = new LooksRareProxy(LOOKSRARE_V1, address(aggregator));
+
+        aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
+
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
+        BasicOrder[] memory validOrders = validBAYCOrders();
+        BasicOrder[] memory orders = new BasicOrder[](1);
+        orders[0] = validOrders[0];
+
+        bytes[] memory ordersExtraData = new bytes[](1);
+        ordersExtraData[0] = abi.encode(orders[0].price, 9_550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE);
+
+        ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
+        tradeData[0] = ILooksRareAggregator.TradeData({
+            proxy: address(looksRareProxy),
+            selector: LooksRareProxy.execute.selector,
+            orders: orders,
+            ordersExtraData: ordersExtraData,
+            extraData: ""
+        });
+
+        vm.deal(address(this), orders[0].price);
+        vm.deal(address(aggregator), 2 wei);
+        vm.expectRevert(ILooksRareAggregator.ETHTransferFail.selector);
+        // address(this) is a contract without receive/fallback, so ETH transfer will fail.
+        aggregator.execute{value: orders[0].price}(tokenTransfers, tradeData, address(this), address(this), false);
+    }
+
     function testExecuteZeroOriginator() public {
         vm.createSelectFork(vm.rpcUrl("mainnet"), 15_282_897);
 
