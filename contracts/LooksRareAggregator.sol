@@ -95,7 +95,10 @@ contract LooksRareAggregator is
             }
         }
 
-        if (tokenTransfers.length != 0) _returnERC20TokensIfAny(tokenTransfers, originator);
+        if (tokenTransfers.length != 0) {
+            _returnERC20TokensIfAny(tokenTransfers, originator);
+        }
+
         assembly {
             if gt(selfbalance(), 1) {
                 let status := call(gas(), originator, sub(selfbalance(), 1), 0, 0, 0, 0)
@@ -204,7 +207,9 @@ contract LooksRareAggregator is
         uint256 tokenTransfersLength = tokenTransfers.length;
         for (uint256 i; i < tokenTransfersLength; ) {
             uint256 balance = IERC20(tokenTransfers[i].currency).balanceOf(address(this));
-            if (balance != 0) _executeERC20DirectTransfer(tokenTransfers[i].currency, recipient, balance);
+            if (balance != 0) {
+                _executeERC20DirectTransfer(tokenTransfers[i].currency, recipient, balance);
+            }
 
             unchecked {
                 ++i;
