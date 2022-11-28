@@ -4,7 +4,6 @@ pragma solidity 0.8.17;
 import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
 import {ERC20EnabledLooksRareAggregator} from "../../contracts/ERC20EnabledLooksRareAggregator.sol";
 import {LooksRareProxy} from "../../contracts/proxies/LooksRareProxy.sol";
-import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
 import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggregator.sol";
 import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
 import {IOwnableTwoSteps} from "@looksrare/contracts-libs/contracts/interfaces/IOwnableTwoSteps.sol";
@@ -13,19 +12,16 @@ import {MockERC721} from "./utils/MockERC721.sol";
 import {MockERC1155} from "./utils/MockERC1155.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TestParameters} from "./TestParameters.sol";
-import {TokenRescuerTest} from "./TokenRescuer.t.sol";
 
 /**
  * @notice LooksRareAggregator tests, tests involving actual executions live in other tests
  */
-contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTest {
+contract LooksRareAggregatorTest is TestParameters, TestHelpers {
     LooksRareAggregator private aggregator;
     LooksRareProxy private looksRareProxy;
-    TokenRescuer private tokenRescuer;
 
     function setUp() public {
         aggregator = new LooksRareAggregator();
-        tokenRescuer = TokenRescuer(address(aggregator));
         looksRareProxy = new LooksRareProxy(LOOKSRARE_V1, address(aggregator));
     }
 
@@ -98,22 +94,6 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers, TokenRescuerTes
         vm.prank(_buyer);
         vm.expectRevert(IOwnableTwoSteps.NotOwner.selector);
         aggregator.approve(address(erc20), address(looksRareProxy), type(uint256).max);
-    }
-
-    function testRescueETH() public {
-        _testRescueETH(tokenRescuer);
-    }
-
-    function testRescueETHNotOwner() public {
-        _testRescueETHNotOwner(tokenRescuer);
-    }
-
-    function testRescueERC20() public {
-        _testRescueERC20(tokenRescuer);
-    }
-
-    function testRescueERC20NotOwner() public {
-        _testRescueERC20NotOwner(tokenRescuer);
     }
 
     function testRescueERC721() public {

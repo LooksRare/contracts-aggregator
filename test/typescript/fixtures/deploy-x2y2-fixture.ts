@@ -29,8 +29,11 @@ export default async function deployX2Y2Fixture(): Promise<X2Y2Fixture> {
 
   const functionSelector = await getSignature("X2Y2Proxy.json", "execute");
 
+  // We need to copy the aggregator code to a pre-defined address because
+  // we used that address to be the order taker when requesting X2Y2 to sign
+  // the order.
   const aggregator = Aggregator.attach(predefinedAggregator.address);
-  await send("hardhat_setStorageAt", [aggregator.address, "0x0", ethers.utils.hexZeroPad(owner.address, 32)]);
+  await send("hardhat_setStorageAt", [aggregator.address, "0x1", ethers.utils.hexZeroPad(owner.address, 32)]);
 
   const X2Y2Proxy = await ethers.getContractFactory("X2Y2Proxy");
   const proxy = await X2Y2Proxy.deploy(X2Y2, aggregator.address);

@@ -5,23 +5,20 @@ import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSte
 import {IERC721} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC721.sol";
 import {LooksRareProxy} from "../../contracts/proxies/LooksRareProxy.sol";
 import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
-import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
 import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggregator.sol";
 import {IProxy} from "../../contracts/interfaces/IProxy.sol";
 import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TestParameters} from "./TestParameters.sol";
-import {TokenRescuerTest} from "./TokenRescuer.t.sol";
 import {LooksRareProxyTestHelpers} from "./LooksRareProxyTestHelpers.sol";
 
 /**
  * @notice LooksRareProxy tests, tests involving actual executions live in other tests
  */
-contract LooksRareProxyTest is TestParameters, TestHelpers, TokenRescuerTest, LooksRareProxyTestHelpers {
+contract LooksRareProxyTest is TestParameters, TestHelpers, LooksRareProxyTestHelpers {
     LooksRareAggregator private aggregator;
     LooksRareProxy private looksRareProxy;
-    TokenRescuer private tokenRescuer;
 
     function setUp() public {
         vm.createSelectFork(vm.rpcUrl("mainnet"), 15_282_897);
@@ -30,7 +27,6 @@ contract LooksRareProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Lo
         looksRareProxy = new LooksRareProxy(LOOKSRARE_V1, address(aggregator));
         aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
 
-        tokenRescuer = TokenRescuer(address(looksRareProxy));
         vm.deal(_buyer, 200 ether);
 
         // Forking from mainnet and the deployed addresses might have balance
@@ -123,30 +119,6 @@ contract LooksRareProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Lo
 
         vm.expectRevert(IProxy.InvalidOrderLength.selector);
         aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, true);
-    }
-
-    function testRescueETH() public {
-        _testRescueETH(tokenRescuer);
-    }
-
-    function testRescueETHNotOwner() public {
-        _testRescueETHNotOwner(tokenRescuer);
-    }
-
-    function testRescueETHInsufficientAmount() public {
-        _testRescueETHInsufficientAmount(tokenRescuer);
-    }
-
-    function testRescueERC20() public {
-        _testRescueERC20(tokenRescuer);
-    }
-
-    function testRescueERC20NotOwner() public {
-        _testRescueERC20NotOwner(tokenRescuer);
-    }
-
-    function testRescueERC20InsufficientAmount() public {
-        _testRescueERC20InsufficientAmount(tokenRescuer);
     }
 
     function _generateTradeData() private view returns (ILooksRareAggregator.TradeData[] memory tradeData) {

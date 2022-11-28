@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
+import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
 import {ReentrancyGuard} from "@looksrare/contracts-libs/contracts/ReentrancyGuard.sol";
 import {LowLevelERC20Approve} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelERC20Approve.sol";
+import {LowLevelERC20Transfer} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelERC20Transfer.sol";
 import {LowLevelERC721Transfer} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelERC721Transfer.sol";
 import {LowLevelERC1155Transfer} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelERC1155Transfer.sol";
 import {IERC20} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC20.sol";
-import {TokenRescuer} from "./TokenRescuer.sol";
 import {TokenReceiver} from "./TokenReceiver.sol";
 import {ILooksRareAggregator} from "./interfaces/ILooksRareAggregator.sol";
 import {TokenTransfer} from "./libraries/OrderStructs.sol";
@@ -20,12 +21,13 @@ import {TokenTransfer} from "./libraries/OrderStructs.sol";
  */
 contract LooksRareAggregator is
     ILooksRareAggregator,
-    TokenRescuer,
     TokenReceiver,
     ReentrancyGuard,
     LowLevelERC20Approve,
+    LowLevelERC20Transfer,
     LowLevelERC721Transfer,
-    LowLevelERC1155Transfer
+    LowLevelERC1155Transfer,
+    OwnableTwoSteps
 {
     /**
      * @notice Transactions that only involve ETH orders should be submitted to

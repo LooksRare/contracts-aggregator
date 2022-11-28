@@ -2,8 +2,8 @@
 pragma solidity 0.8.17;
 
 import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
+import {LowLevelETH} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelETH.sol";
 import {TokenReceiver} from "../TokenReceiver.sol";
-import {TokenRescuer} from "../TokenRescuer.sol";
 
 /**
  * @title V0Aggregator
@@ -11,7 +11,7 @@ import {TokenRescuer} from "../TokenRescuer.sol";
  *         by passing bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract V0Aggregator is TokenRescuer, TokenReceiver {
+contract V0Aggregator is TokenReceiver, LowLevelETH, OwnableTwoSteps {
     struct TradeData {
         address proxy;
         bytes data;

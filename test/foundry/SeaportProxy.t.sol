@@ -3,7 +3,6 @@ pragma solidity 0.8.17;
 
 import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
 import {SeaportProxy} from "../../contracts/proxies/SeaportProxy.sol";
-import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
 import {OrderType} from "../../contracts/libraries/seaport/ConsiderationEnums.sol";
 import {AdditionalRecipient, Fulfillment, FulfillmentComponent} from "../../contracts/libraries/seaport/ConsiderationStructs.sol";
 import {IProxy} from "../../contracts/interfaces/IProxy.sol";
@@ -11,20 +10,17 @@ import {BasicOrder} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TestParameters} from "./TestParameters.sol";
-import {TokenRescuerTest} from "./TokenRescuer.t.sol";
 import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
 import {MockERC20} from "./utils/MockERC20.sol";
 
 /**
  * @notice SeaportProxy tests, tests involving actual executions live in other tests
  */
-contract SeaportProxyTest is TestParameters, TestHelpers, TokenRescuerTest, SeaportProxyTestHelpers {
+contract SeaportProxyTest is TestParameters, TestHelpers, SeaportProxyTestHelpers {
     SeaportProxy private seaportProxy;
-    TokenRescuer private tokenRescuer;
 
     function setUp() public {
         seaportProxy = new SeaportProxy(SEAPORT, _fakeAggregator);
-        tokenRescuer = TokenRescuer(address(seaportProxy));
         vm.deal(_buyer, 100 ether);
     }
 
@@ -55,29 +51,5 @@ contract SeaportProxyTest is TestParameters, TestHelpers, TokenRescuerTest, Seap
             _buyer,
             false
         );
-    }
-
-    function testRescueETH() public {
-        _testRescueETH(tokenRescuer);
-    }
-
-    function testRescueETHNotOwner() public {
-        _testRescueETHNotOwner(tokenRescuer);
-    }
-
-    function testRescueETHInsufficientAmount() public {
-        _testRescueETHInsufficientAmount(tokenRescuer);
-    }
-
-    function testRescueERC20() public {
-        _testRescueERC20(tokenRescuer);
-    }
-
-    function testRescueERC20NotOwner() public {
-        _testRescueERC20NotOwner(tokenRescuer);
-    }
-
-    function testRescueERC20InsufficientAmount() public {
-        _testRescueERC20InsufficientAmount(tokenRescuer);
     }
 }

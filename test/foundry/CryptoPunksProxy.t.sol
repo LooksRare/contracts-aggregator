@@ -2,7 +2,6 @@
 pragma solidity 0.8.17;
 
 import {CryptoPunksProxy} from "../../contracts/proxies/CryptoPunksProxy.sol";
-import {TokenRescuer} from "../../contracts/TokenRescuer.sol";
 import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
 import {ICryptoPunks} from "../../contracts/interfaces/ICryptoPunks.sol";
 import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggregator.sol";
@@ -11,12 +10,10 @@ import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TestParameters} from "./TestParameters.sol";
-import {TokenRescuerTest} from "./TokenRescuer.t.sol";
 
-contract CryptoPunksProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
+contract CryptoPunksProxyTest is TestParameters, TestHelpers {
     LooksRareAggregator private aggregator;
     CryptoPunksProxy private cryptoPunksProxy;
-    TokenRescuer private tokenRescuer;
 
     function setUp() public {
         vm.createSelectFork(vm.rpcUrl("mainnet"), 15_358_065);
@@ -24,7 +21,6 @@ contract CryptoPunksProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
         aggregator = new LooksRareAggregator();
         cryptoPunksProxy = new CryptoPunksProxy(CRYPTOPUNKS, address(aggregator));
         aggregator.addFunction(address(cryptoPunksProxy), CryptoPunksProxy.execute.selector);
-        tokenRescuer = TokenRescuer(address(cryptoPunksProxy));
         vm.deal(_buyer, 138 ether);
         // Forking from mainnet and the deployed addresses might have balance
         vm.deal(address(aggregator), 1 wei);
@@ -101,30 +97,6 @@ contract CryptoPunksProxyTest is TestParameters, TestHelpers, TokenRescuerTest {
             recipient: _buyer,
             isAtomic: true
         });
-    }
-
-    function testRescueETH() public {
-        _testRescueETH(tokenRescuer);
-    }
-
-    function testRescueETHNotOwner() public {
-        _testRescueETHNotOwner(tokenRescuer);
-    }
-
-    function testRescueETHInsufficientAmount() public {
-        _testRescueETHInsufficientAmount(tokenRescuer);
-    }
-
-    function testRescueERC20() public {
-        _testRescueERC20(tokenRescuer);
-    }
-
-    function testRescueERC20NotOwner() public {
-        _testRescueERC20NotOwner(tokenRescuer);
-    }
-
-    function testRescueERC20InsufficientAmount() public {
-        _testRescueERC20InsufficientAmount(tokenRescuer);
     }
 
     function validCryptoPunksOrder() private pure returns (BasicOrder[] memory orders) {
