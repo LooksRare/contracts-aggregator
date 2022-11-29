@@ -25,10 +25,7 @@ contract LooksRareProxyERC1155Test is TestParameters, TestHelpers, LooksRareProx
         aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
 
         vm.deal(_buyer, 1 ether);
-
-        // Forking from mainnet and the deployed addresses might have balance
         vm.deal(address(aggregator), 1 wei);
-        vm.deal(address(looksRareProxy), 0);
     }
 
     function testExecuteAtomic() public asPrankedUser(_buyer) {

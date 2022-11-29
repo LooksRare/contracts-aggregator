@@ -58,6 +58,7 @@ interface ILooksRareAggregator {
     event Sweep(address sweeper);
 
     error AlreadySet();
+    error ETHTransferFail();
     error InvalidFunction();
     error InvalidOrderLength();
     error TradeExecutionFailed();

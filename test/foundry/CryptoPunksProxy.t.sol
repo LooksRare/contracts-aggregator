@@ -22,9 +22,7 @@ contract CryptoPunksProxyTest is TestParameters, TestHelpers {
         cryptoPunksProxy = new CryptoPunksProxy(CRYPTOPUNKS, address(aggregator));
         aggregator.addFunction(address(cryptoPunksProxy), CryptoPunksProxy.execute.selector);
         vm.deal(_buyer, 138 ether);
-        // Forking from mainnet and the deployed addresses might have balance
         vm.deal(address(aggregator), 1 wei);
-        vm.deal(address(cryptoPunksProxy), 0);
     }
 
     function testExecuteAtomic() public asPrankedUser(_buyer) {
