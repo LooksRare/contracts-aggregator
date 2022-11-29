@@ -21,39 +21,37 @@ contract SeaportProxy is IProxy, LowLevelETH, LowLevelERC20Transfer {
 
     error TradeExecutionFailed();
 
+    /**
+     * @param offerFulfillments Contains the order and item index of each offer item
+     * @param considerationFulfillments Contains the order and item index of each consideration item
+     */
     struct ExtraData {
-        // Contains the order and item index of each offer item
         FulfillmentComponent[][] offerFulfillments;
-        // Contains the order and item index of each consideration item
         FulfillmentComponent[][] considerationFulfillments;
     }
 
+    /**
+     * @param numerator A fraction to attempt to fill
+     * @param denominator The total size of the order
+     * @param orderType Seaport order type
+     * @param zone A zone can cancel the order or restrict who can fulfill the order
+     *             depending on the type
+     * @param zoneHash An arbitrary 32-byte value that will be supplied to the zone when
+     *                 fulfilling restricted orders that the zone can utilize when making
+     *                 a determination on whether to authorize the order
+     * @param salt An arbitrary source of entropy for the order
+     * @param conduitKey A bytes32 value that indicates what conduit, if any, should be
+     *                   utilized as a source for token approvals when performing transfers
+     * @param recipients Recipients of consideration items
+     */
     struct OrderExtraData {
-        /* A fraction to attempt to fill */
         uint120 numerator;
-        /* The total size of the order */
         uint120 denominator;
-        /* Seaport order type */
         OrderType orderType;
-        /**
-         * A zone can cancel the order or restrict who can fulfill the order
-         * depending on the type
-         */
         address zone;
-        /**
-         * An arbitrary 32-byte value that will be supplied to the zone when
-         * fulfilling restricted orders that the zone can utilize when making
-         * a determination on whether to authorize the order
-         */
         bytes32 zoneHash;
-        /* An arbitrary source of entropy for the order */
         uint256 salt;
-        /**
-         * A bytes32 value that indicates what conduit, if any, should be
-         * utilized as a source for token approvals when performing transfers
-         */
         bytes32 conduitKey;
-        /* Recipients of consideration items */
         AdditionalRecipient[] recipients;
     }
 

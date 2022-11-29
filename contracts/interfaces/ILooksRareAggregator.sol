@@ -4,16 +4,18 @@ pragma solidity 0.8.17;
 import {BasicOrder, TokenTransfer} from "../libraries/OrderStructs.sol";
 
 interface ILooksRareAggregator {
+    /**
+     * @param proxy The marketplace proxy's address
+     * @param selector The marketplace proxy's function selector
+     * @param orders Orders to be executed by the marketplace
+     * @param ordersExtraData Extra data for each order, specific for each marketplace
+     * @param extraData Extra data specific for each marketplace
+     */
     struct TradeData {
-        /* The marketplace proxy's address */
         address proxy;
-        /* The marketplace proxy's function selector */
         bytes4 selector;
-        /* Orders to be executed by the marketplace */
         BasicOrder[] orders;
-        /* Extra data for each order, specific for each marketplace */
         bytes[] ordersExtraData;
-        /* Extra data specific for each marketplace */
         bytes extraData;
     }
 
