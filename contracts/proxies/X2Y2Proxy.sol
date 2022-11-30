@@ -22,33 +22,29 @@ contract X2Y2Proxy is IProxy, TokenTransferrer, SignatureChecker {
     IX2Y2 public immutable marketplace;
     address public immutable aggregator;
 
+    /**
+     * @param salt An arbitrary source of entropy for the order (per trade)
+     * @param itemData The data of the token to be traded (id, address, etc)
+     * @param inputSalt An arbitrary source of entropy for the order (for the whole order)
+     * @param inputDeadline order deadline
+     * @param executionDelegate The contract to execute the trade
+     * @param inputV v parameter of the order signature signed by an authorized signer
+     *               (not the seller)
+     * @param inputR r parameter of the order signature signed by an authorized signer
+     *               (not the seller)
+     * @param inputS s parameter of the order signature signed by an authorized signer
+     *               (not the seller)
+     * @param fees An array of sales proceeds recipient and the % for each of them
+     */
     struct OrderExtraData {
-        /* An arbitrary source of entropy for the order (per trade) */
         uint256 salt;
-        /* The data of the token to be traded (id, address, etc) */
         bytes itemData;
-        /* An arbitrary source of entropy for the order (for the whole order) */
         uint256 inputSalt;
-        /* order deadline */
         uint256 inputDeadline;
-        /* The contract to execute the trade */
         address executionDelegate;
-        /**
-         * v parameter of the order signature signed by an authorized signer
-         * (not the seller)
-         */
         uint8 inputV;
-        /**
-         * r parameter of the order signature signed by an authorized signer
-         * (not the seller)
-         */
         bytes32 inputR;
-        /**
-         * s parameter of the order signature signed by an authorized signer
-         * (not the seller)
-         */
         bytes32 inputS;
-        /* An array of sales proceeds recipient and the % for each of them */
         Market.Fee[] fees;
     }
 

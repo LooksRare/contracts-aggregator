@@ -17,17 +17,17 @@ import {TokenTransferrer} from "../TokenTransferrer.sol";
  * @author LooksRare protocol team (👀,💎)
  */
 contract LooksRareProxy is IProxy, TokenTransferrer, SignatureChecker {
+    /**
+     * @param makerAskPrice Maker ask price, which is not necessarily equal to the
+     *                      taker bid price
+     * @param minPercentageToAsk The maker's minimum % to receive from the sale
+     * @param nonce The maker's nonce
+     * @param strategy LooksRare execution strategy
+     */
     struct OrderExtraData {
-        /**
-         * Maker ask price, which is not necessarily equal to the
-         * taker bid price
-         */
         uint256 makerAskPrice;
-        /* The maker's minimum % to receive from the sale */
         uint256 minPercentageToAsk;
-        /* The maker's nonce */
         uint256 nonce;
-        /* LooksRare execution strategy */
         address strategy;
     }
 
