@@ -9,6 +9,7 @@ import {ERC20EnabledLooksRareAggregator} from "../../contracts/ERC20EnabledLooks
 import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
 import {IProxy} from "../../contracts/interfaces/IProxy.sol";
 import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggregator.sol";
+import {IAllowanceTransfer} from "../../contracts/interfaces/IAllowanceTransfer.sol";
 import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TestParameters} from "./TestParameters.sol";
@@ -21,6 +22,7 @@ contract SeaportProxyERC721USDCTest is TestParameters, TestHelpers, SeaportProxy
     LooksRareAggregator private aggregator;
     ERC20EnabledLooksRareAggregator private erc20EnabledAggregator;
     SeaportProxy private seaportProxy;
+    address private constant PERMIT2 = 0x000000000022D473030F116dDEE9F6B43aC78BA3;
 
     function setUp() public {
         vm.createSelectFork(vm.rpcUrl("mainnet"), 15_491_323);
@@ -36,29 +38,85 @@ contract SeaportProxyERC721USDCTest is TestParameters, TestHelpers, SeaportProxy
         aggregator.setERC20EnabledLooksRareAggregator(address(erc20EnabledAggregator));
     }
 
-    function testExecuteAtomic() public asPrankedUser(_buyer) {
+    function testExecuteAtomic() public {
         _testExecute(true);
     }
 
-    function testExecuteNonAtomic() public asPrankedUser(_buyer) {
+    function testExecuteNonAtomic() public {
         _testExecute(false);
     }
 
     function _testExecute(bool isAtomic) private {
+        uint256 fromPrivateKey = 0x12341234;
+        address _buyer = vm.addr(fromPrivateKey);
+        vm.startPrank(_buyer);
+
         ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData();
         uint256 totalPrice = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
-        IERC20(USDC).approve(address(erc20EnabledAggregator), totalPrice);
+        // IERC20(USDC).approve(address(erc20EnabledAggregator), totalPrice);
+        IERC20(USDC).approve(PERMIT2, totalPrice);
 
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](1);
         tokenTransfers[0].currency = USDC;
         tokenTransfers[0].amount = totalPrice;
 
-        erc20EnabledAggregator.execute(tokenTransfers, tradeData, _buyer, isAtomic);
+        IAllowanceTransfer.PermitDetails memory details = IAllowanceTransfer.PermitDetails({
+            token: USDC,
+            amount: uint160(totalPrice),
+            expiration: uint48(block.timestamp),
+            nonce: 0
+        });
+
+        IAllowanceTransfer.PermitDetails[] memory batchDetails = new IAllowanceTransfer.PermitDetails[](1);
+        batchDetails[0] = details;
+
+        IAllowanceTransfer.PermitBatch memory permit = IAllowanceTransfer.PermitBatch({
+            details: batchDetails,
+            spender: address(this),
+            sigDeadline: block.timestamp
+        });
+
+        IAllowanceTransfer permit2 = IAllowanceTransfer(0x000000000022D473030F116dDEE9F6B43aC78BA3);
+
+        bytes32 domainSeparator = permit2.DOMAIN_SEPARATOR();
+        bytes32 _PERMIT_DETAILS_TYPEHASH = keccak256(
+            "PermitDetails(address token,uint160 amount,uint48 expiration,uint48 nonce)"
+        );
+        bytes32 _PERMIT_BATCH_TYPEHASH = keccak256(
+            "PermitBatch(PermitDetails[] details,address spender,uint256 sigDeadline)PermitDetails(address token,uint160 amount,uint48 expiration,uint48 nonce)"
+        );
+
+        bytes32[] memory permitHashes = new bytes32[](permit.details.length);
+        for (uint256 i = 0; i < permit.details.length; ++i) {
+            permitHashes[i] = keccak256(abi.encode(_PERMIT_DETAILS_TYPEHASH, permit.details[i]));
+        }
+        bytes32 msgHash = keccak256(
+            abi.encodePacked(
+                "\x19\x01",
+                domainSeparator,
+                keccak256(
+                    abi.encode(
+                        _PERMIT_BATCH_TYPEHASH,
+                        keccak256(abi.encodePacked(permitHashes)),
+                        permit.spender,
+                        permit.sigDeadline
+                    )
+                )
+            )
+        );
+
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(fromPrivateKey, msgHash);
+        bytes memory permitSignature = bytes.concat(r, s, bytes1(v));
+
+        // erc20EnabledAggregator.execute(tokenTransfers, tradeData, _buyer, isAtomic);
+        aggregator.execute(permit, permitSignature, tokenTransfers, tradeData, _buyer, _buyer, isAtomic);
 
         assertEq(IERC721(BAYC).balanceOf(_buyer), 2);
         assertEq(IERC721(BAYC).ownerOf(9948), _buyer);
         assertEq(IERC721(BAYC).ownerOf(8350), _buyer);
         assertEq(IERC20(USDC).balanceOf(_buyer), INITIAL_USDC_BALANCE - totalPrice);
+
+        vm.stopPrank();
     }
 
     function _generateTradeData() private view returns (ILooksRareAggregator.TradeData[] memory) {

@@ -10,6 +10,7 @@ import {LowLevelERC1155Transfer} from "@looksrare/contracts-libs/contracts/lowLe
 import {IERC20} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC20.sol";
 import {TokenReceiver} from "./TokenReceiver.sol";
 import {ILooksRareAggregator} from "./interfaces/ILooksRareAggregator.sol";
+import {IAllowanceTransfer} from "./interfaces/IAllowanceTransfer.sol";
 import {TokenTransfer} from "./libraries/OrderStructs.sol";
 
 /**
@@ -47,6 +48,8 @@ contract LooksRareAggregator is
      * @inheritdoc ILooksRareAggregator
      */
     function execute(
+        IAllowanceTransfer.PermitBatch calldata permit,
+        bytes calldata permitSignature,
         TokenTransfer[] calldata tokenTransfers,
         TradeData[] calldata tradeData,
         address originator,
@@ -57,11 +60,27 @@ contract LooksRareAggregator is
         uint256 tradeDataLength = tradeData.length;
         if (tradeDataLength == 0) revert InvalidOrderLength();
 
-        if (tokenTransfers.length == 0) {
-            originator = msg.sender;
-        } else if (msg.sender != erc20EnabledLooksRareAggregator) {
-            revert UseERC20EnabledLooksRareAggregator();
+        if (tokenTransfers.length > 0) {
+            IAllowanceTransfer(0x000000000022D473030F116dDEE9F6B43aC78BA3).permit(msg.sender, permit, permitSignature);
+            for (uint256 i; i < tokenTransfers.length; ) {
+                IAllowanceTransfer(0x000000000022D473030F116dDEE9F6B43aC78BA3).transferFrom(
+                    msg.sender,
+                    address(this),
+                    uint160(tokenTransfers[i].amount),
+                    tokenTransfers[i].currency
+                );
+
+                unchecked {
+                    ++i;
+                }
+            }
         }
+
+        // if (tokenTransfers.length == 0) {
+        //     originator = msg.sender;
+        // } else if (msg.sender != erc20EnabledLooksRareAggregator) {
+        //     revert UseERC20EnabledLooksRareAggregator();
+        // }
 
         for (uint256 i; i < tradeDataLength; ) {
             TradeData calldata singleTradeData = tradeData[i];

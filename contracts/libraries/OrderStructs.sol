@@ -2,6 +2,7 @@
 pragma solidity 0.8.17;
 
 import {CollectionType} from "./OrderEnums.sol";
+import {IAllowanceTransfer} from "../interfaces/IAllowanceTransfer.sol";
 
 /**
  * @param signer The order's maker

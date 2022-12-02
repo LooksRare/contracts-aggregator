@@ -2,6 +2,7 @@
 pragma solidity 0.8.17;
 
 import {BasicOrder, TokenTransfer} from "../libraries/OrderStructs.sol";
+import {IAllowanceTransfer} from "../interfaces/IAllowanceTransfer.sol";
 
 interface ILooksRareAggregator {
     /**
@@ -32,6 +33,8 @@ interface ILooksRareAggregator {
      *                 or partial trades
      */
     function execute(
+        IAllowanceTransfer.PermitBatch calldata permit,
+        bytes calldata permitSignature,
         TokenTransfer[] calldata tokenTransfers,
         TradeData[] calldata tradeData,
         address originator,
