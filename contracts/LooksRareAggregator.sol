@@ -30,6 +30,7 @@ contract LooksRareAggregator is
     LowLevelERC1155Transfer,
     OwnableTwoSteps
 {
+    IAllowanceTransfer private constant PERMIT2 = IAllowanceTransfer(0x000000000022D473030F116dDEE9F6B43aC78BA3);
     /**
      * @notice Transactions that only involve ETH orders should be submitted to
      *         this contract directly. Transactions that involve ERC20 orders
@@ -61,9 +62,9 @@ contract LooksRareAggregator is
         if (tradeDataLength == 0) revert InvalidOrderLength();
 
         if (tokenTransfers.length > 0) {
-            IAllowanceTransfer(0x000000000022D473030F116dDEE9F6B43aC78BA3).permit(msg.sender, permit, permitSignature);
+            PERMIT2.permit(msg.sender, permit, permitSignature);
             for (uint256 i; i < tokenTransfers.length; ) {
-                IAllowanceTransfer(0x000000000022D473030F116dDEE9F6B43aC78BA3).transferFrom(
+                PERMIT2.transferFrom(
                     msg.sender,
                     address(this),
                     uint160(tokenTransfers[i].amount),
