@@ -38,15 +38,15 @@ contract SeaportProxyERC721USDCTest is TestParameters, TestHelpers, SeaportProxy
         aggregator.setERC20EnabledLooksRareAggregator(address(erc20EnabledAggregator));
     }
 
-    function testExecuteAtomic() public {
-        _testExecute(true);
-    }
+    // function testExecuteAtomic() public {
+    //     _testExecute(true);
+    // }
 
     function testExecuteNonAtomic() public {
-        _testExecute(false);
+        _testExecute();
     }
 
-    function _testExecute(bool isAtomic) private {
+    function _testExecute() private {
         uint256 fromPrivateKey = 0x12341234;
         address _buyer = vm.addr(fromPrivateKey);
         vm.startPrank(_buyer);
@@ -76,40 +76,10 @@ contract SeaportProxyERC721USDCTest is TestParameters, TestHelpers, SeaportProxy
             sigDeadline: block.timestamp
         });
 
-        IAllowanceTransfer permit2 = IAllowanceTransfer(0x000000000022D473030F116dDEE9F6B43aC78BA3);
-
-        bytes32 domainSeparator = permit2.DOMAIN_SEPARATOR();
-        bytes32 _PERMIT_DETAILS_TYPEHASH = keccak256(
-            "PermitDetails(address token,uint160 amount,uint48 expiration,uint48 nonce)"
-        );
-        bytes32 _PERMIT_BATCH_TYPEHASH = keccak256(
-            "PermitBatch(PermitDetails[] details,address spender,uint256 sigDeadline)PermitDetails(address token,uint160 amount,uint48 expiration,uint48 nonce)"
-        );
-
-        bytes32[] memory permitHashes = new bytes32[](permit.details.length);
-        for (uint256 i = 0; i < permit.details.length; ++i) {
-            permitHashes[i] = keccak256(abi.encode(_PERMIT_DETAILS_TYPEHASH, permit.details[i]));
-        }
-        bytes32 msgHash = keccak256(
-            abi.encodePacked(
-                "\x19\x01",
-                domainSeparator,
-                keccak256(
-                    abi.encode(
-                        _PERMIT_BATCH_TYPEHASH,
-                        keccak256(abi.encodePacked(permitHashes)),
-                        permit.spender,
-                        permit.sigDeadline
-                    )
-                )
-            )
-        );
-
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(fromPrivateKey, msgHash);
-        bytes memory permitSignature = bytes.concat(r, s, bytes1(v));
+        bytes memory permitSignature = _getPermitSignature(permit);
 
         // erc20EnabledAggregator.execute(tokenTransfers, tradeData, _buyer, isAtomic);
-        aggregator.execute(permit, permitSignature, tokenTransfers, tradeData, _buyer, _buyer, isAtomic);
+        aggregator.execute(permit, permitSignature, tokenTransfers, tradeData, _buyer, _buyer, false);
 
         assertEq(IERC721(BAYC).balanceOf(_buyer), 2);
         assertEq(IERC721(BAYC).ownerOf(9948), _buyer);
@@ -145,5 +115,37 @@ contract SeaportProxyERC721USDCTest is TestParameters, TestHelpers, SeaportProxy
         });
 
         return tradeData;
+    }
+
+    function _getPermitSignature(IAllowanceTransfer.PermitBatch memory permit) private returns (bytes memory) {
+        bytes32 domainSeparator = 0x866a5aba21966af95d6c7ab78eb2b2fc913915c28be3b9aa07cc04ff903e3f28;
+        bytes32 _PERMIT_DETAILS_TYPEHASH = keccak256(
+            "PermitDetails(address token,uint160 amount,uint48 expiration,uint48 nonce)"
+        );
+        bytes32 _PERMIT_BATCH_TYPEHASH = keccak256(
+            "PermitBatch(PermitDetails[] details,address spender,uint256 sigDeadline)PermitDetails(address token,uint160 amount,uint48 expiration,uint48 nonce)"
+        );
+
+        bytes32[] memory permitHashes = new bytes32[](permit.details.length);
+        for (uint256 i = 0; i < permit.details.length; ++i) {
+            permitHashes[i] = keccak256(abi.encode(_PERMIT_DETAILS_TYPEHASH, permit.details[i]));
+        }
+        bytes32 msgHash = keccak256(
+            abi.encodePacked(
+                "\x19\x01",
+                domainSeparator,
+                keccak256(
+                    abi.encode(
+                        _PERMIT_BATCH_TYPEHASH,
+                        keccak256(abi.encodePacked(permitHashes)),
+                        permit.spender,
+                        permit.sigDeadline
+                    )
+                )
+            )
+        );
+
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(0x12341234, msgHash);
+        return bytes.concat(r, s, bytes1(v));
     }
 }

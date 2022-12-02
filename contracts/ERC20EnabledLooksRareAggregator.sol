@@ -32,9 +32,9 @@ contract ERC20EnabledLooksRareAggregator is IERC20EnabledLooksRareAggregator, Lo
         address recipient,
         bool isAtomic
     ) external payable {
-        if (tokenTransfers.length == 0) revert UseLooksRareAggregatorDirectly();
-        _pullERC20Tokens(tokenTransfers, msg.sender);
-        aggregator.execute{value: msg.value}(tokenTransfers, tradeData, msg.sender, recipient, isAtomic);
+        // if (tokenTransfers.length == 0) revert UseLooksRareAggregatorDirectly();
+        // _pullERC20Tokens(tokenTransfers, msg.sender);
+        // aggregator.execute{value: msg.value}(tokenTransfers, tradeData, msg.sender, recipient, isAtomic);
     }
 
     function _pullERC20Tokens(TokenTransfer[] calldata tokenTransfers, address source) private {

@@ -198,6 +198,4 @@ interface IAllowanceTransfer {
         address spender,
         uint48 newNonce
     ) external;
-
-    function DOMAIN_SEPARATOR() external returns (bytes32);
 }
