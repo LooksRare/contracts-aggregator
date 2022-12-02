@@ -10,8 +10,7 @@ import {LowLevelERC1155Transfer} from "@looksrare/contracts-libs/contracts/lowLe
 import {IERC20} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC20.sol";
 import {TokenReceiver} from "./TokenReceiver.sol";
 import {ILooksRareAggregator} from "./interfaces/ILooksRareAggregator.sol";
-import {IAllowanceTransfer} from "./interfaces/IAllowanceTransfer.sol";
-import {TokenTransfer} from "./libraries/OrderStructs.sol";
+import {ISignatureTransfer} from "./interfaces/ISignatureTransfer.sol";
 
 /**
  * @title LooksRareAggregator
@@ -30,30 +29,17 @@ contract LooksRareAggregator is
     LowLevelERC1155Transfer,
     OwnableTwoSteps
 {
-    IAllowanceTransfer private constant PERMIT2 = IAllowanceTransfer(0x000000000022D473030F116dDEE9F6B43aC78BA3);
-    /**
-     * @notice Transactions that only involve ETH orders should be submitted to
-     *         this contract directly. Transactions that involve ERC20 orders
-     *         should be submitted to the contract ERC20EnabledLooksRareAggregator
-     *         and it will call this contract's execution function. The purpose
-     *         is to prevent a malicious proxy from stealing users' ERC20 tokens
-     *         if this contract's ownership is compromised. By not providing any
-     *         allowances to this aggregator, even if a malicious proxy is added,
-     *         it cannot call token.transferFrom(victim, attacker, amount) inside
-     *         the proxy within the context of the aggregator.
-     */
-    address public erc20EnabledLooksRareAggregator;
+    ISignatureTransfer private constant PERMIT2 = ISignatureTransfer(0x000000000022D473030F116dDEE9F6B43aC78BA3);
     mapping(address => mapping(bytes4 => uint256)) private _proxyFunctionSelectors;
 
     /**
      * @inheritdoc ILooksRareAggregator
      */
     function execute(
-        IAllowanceTransfer.PermitBatch calldata permit,
+        ISignatureTransfer.PermitBatchTransferFrom calldata permit,
+        ISignatureTransfer.SignatureTransferDetails[] calldata transferDetails,
         bytes calldata permitSignature,
-        TokenTransfer[] calldata tokenTransfers,
         TradeData[] calldata tradeData,
-        address originator,
         address recipient,
         bool isAtomic
     ) external payable nonReentrant {
@@ -61,27 +47,9 @@ contract LooksRareAggregator is
         uint256 tradeDataLength = tradeData.length;
         if (tradeDataLength == 0) revert InvalidOrderLength();
 
-        if (tokenTransfers.length > 0) {
-            PERMIT2.permit(msg.sender, permit, permitSignature);
-            for (uint256 i; i < tokenTransfers.length; ) {
-                PERMIT2.transferFrom(
-                    msg.sender,
-                    address(this),
-                    uint160(tokenTransfers[i].amount),
-                    tokenTransfers[i].currency
-                );
-
-                unchecked {
-                    ++i;
-                }
-            }
+        if (permit.permitted.length > 0) {
+            PERMIT2.permitTransferFrom(permit, transferDetails, msg.sender, permitSignature);
         }
-
-        // if (tokenTransfers.length == 0) {
-        //     originator = msg.sender;
-        // } else if (msg.sender != erc20EnabledLooksRareAggregator) {
-        //     revert UseERC20EnabledLooksRareAggregator();
-        // }
 
         for (uint256 i; i < tradeDataLength; ) {
             TradeData calldata singleTradeData = tradeData[i];
@@ -117,30 +85,19 @@ contract LooksRareAggregator is
             }
         }
 
-        if (tokenTransfers.length != 0) {
-            _returnERC20TokensIfAny(tokenTransfers, originator);
+        if (permit.permitted.length != 0) {
+            _returnERC20TokensIfAny(permit.permitted);
         }
 
         bool status = true;
         assembly {
             if gt(selfbalance(), 1) {
-                status := call(gas(), originator, sub(selfbalance(), 1), 0, 0, 0, 0)
+                status := call(gas(), caller(), sub(selfbalance(), 1), 0, 0, 0, 0)
             }
         }
         if (!status) revert ETHTransferFail();
 
-        emit Sweep(originator);
-    }
-
-    /**
-     * @notice Enable making ERC20 trades by setting the ERC20 enabled LooksRare aggregator
-     * @dev Must be called by the current owner. It can only be set once to prevent
-     *      a malicious aggregator from being set in case of an ownership compromise.
-     * @param _erc20EnabledLooksRareAggregator The ERC20 enabled LooksRare aggregator's address
-     */
-    function setERC20EnabledLooksRareAggregator(address _erc20EnabledLooksRareAggregator) external onlyOwner {
-        if (erc20EnabledLooksRareAggregator != address(0)) revert AlreadySet();
-        erc20EnabledLooksRareAggregator = _erc20EnabledLooksRareAggregator;
+        emit Sweep(msg.sender);
     }
 
     /**
@@ -227,12 +184,12 @@ contract LooksRareAggregator is
      */
     receive() external payable {}
 
-    function _returnERC20TokensIfAny(TokenTransfer[] calldata tokenTransfers, address recipient) private {
+    function _returnERC20TokensIfAny(ISignatureTransfer.TokenPermissions[] calldata tokenTransfers) private {
         uint256 tokenTransfersLength = tokenTransfers.length;
         for (uint256 i; i < tokenTransfersLength; ) {
-            uint256 balance = IERC20(tokenTransfers[i].currency).balanceOf(address(this));
+            uint256 balance = IERC20(tokenTransfers[i].token).balanceOf(address(this));
             if (balance != 0) {
-                _executeERC20DirectTransfer(tokenTransfers[i].currency, recipient, balance);
+                _executeERC20DirectTransfer(tokenTransfers[i].token, msg.sender, balance);
             }
 
             unchecked {

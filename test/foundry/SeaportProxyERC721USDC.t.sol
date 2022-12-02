@@ -5,12 +5,11 @@ import {IERC20} from "@looksrare/contracts-libs/contracts/interfaces/generic/IER
 import {IERC721} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC721.sol";
 import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
 import {SeaportProxy} from "../../contracts/proxies/SeaportProxy.sol";
-import {ERC20EnabledLooksRareAggregator} from "../../contracts/ERC20EnabledLooksRareAggregator.sol";
 import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
 import {IProxy} from "../../contracts/interfaces/IProxy.sol";
 import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggregator.sol";
-import {IAllowanceTransfer} from "../../contracts/interfaces/IAllowanceTransfer.sol";
-import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
+import {ISignatureTransfer} from "../../contracts/interfaces/ISignatureTransfer.sol";
+import {BasicOrder} from "../../contracts/libraries/OrderStructs.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TestParameters} from "./TestParameters.sol";
 import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
@@ -20,7 +19,6 @@ import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
  */
 contract SeaportProxyERC721USDCTest is TestParameters, TestHelpers, SeaportProxyTestHelpers {
     LooksRareAggregator private aggregator;
-    ERC20EnabledLooksRareAggregator private erc20EnabledAggregator;
     SeaportProxy private seaportProxy;
     address private constant PERMIT2 = 0x000000000022D473030F116dDEE9F6B43aC78BA3;
 
@@ -32,14 +30,12 @@ contract SeaportProxyERC721USDCTest is TestParameters, TestHelpers, SeaportProxy
         );
 
         aggregator = new LooksRareAggregator();
-        erc20EnabledAggregator = new ERC20EnabledLooksRareAggregator(address(aggregator));
         seaportProxy = new SeaportProxy(SEAPORT, address(aggregator));
         aggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);
 
         // deal(USDC, _buyer, INITIAL_USDC_BALANCE);
 
         aggregator.approve(USDC, SEAPORT, type(uint256).max);
-        aggregator.setERC20EnabledLooksRareAggregator(address(erc20EnabledAggregator));
     }
 
     // function testExecuteAtomic() public {
@@ -58,35 +54,27 @@ contract SeaportProxyERC721USDCTest is TestParameters, TestHelpers, SeaportProxy
 
         ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData();
         uint256 totalPrice = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
-        // IERC20(USDC).approve(address(erc20EnabledAggregator), totalPrice);
-        // IERC20(USDC).approve(PERMIT2, totalPrice);
         IERC20(USDC).approve(PERMIT2, type(uint256).max);
 
-        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](1);
-        tokenTransfers[0].currency = USDC;
-        tokenTransfers[0].amount = totalPrice;
+        ISignatureTransfer.TokenPermissions[] memory permitted = new ISignatureTransfer.TokenPermissions[](1);
+        permitted[0].token = USDC;
+        permitted[0].amount = totalPrice;
 
-        IAllowanceTransfer.PermitDetails memory details = IAllowanceTransfer.PermitDetails({
-            token: USDC,
-            amount: uint160(totalPrice),
-            expiration: uint48(block.timestamp),
-            nonce: 0
+        ISignatureTransfer.PermitBatchTransferFrom memory permit = ISignatureTransfer.PermitBatchTransferFrom({
+            permitted: permitted,
+            nonce: 0,
+            deadline: block.timestamp
         });
 
-        IAllowanceTransfer.PermitDetails[] memory batchDetails = new IAllowanceTransfer.PermitDetails[](1);
-        batchDetails[0] = details;
-
-        IAllowanceTransfer.PermitBatch memory permit = IAllowanceTransfer.PermitBatch({
-            details: batchDetails,
-            spender: address(aggregator),
-            sigDeadline: block.timestamp
-        });
+        ISignatureTransfer.SignatureTransferDetails[]
+            memory transferDetails = new ISignatureTransfer.SignatureTransferDetails[](1);
+        transferDetails[0].to = address(aggregator);
+        transferDetails[0].requestedAmount = totalPrice;
 
         bytes memory permitSignature = _getPermitSignature(permit);
 
-        // erc20EnabledAggregator.execute(tokenTransfers, tradeData, _buyer, isAtomic);
         uint256 gasLeft = gasleft();
-        aggregator.execute(permit, permitSignature, tokenTransfers, tradeData, _buyer, _buyer, false);
+        aggregator.execute(permit, transferDetails, permitSignature, tradeData, _buyer, false);
         uint256 gasRemaining = gasleft();
 
         emit log_named_uint("This consumed: ", gasLeft - gasRemaining);
@@ -127,18 +115,18 @@ contract SeaportProxyERC721USDCTest is TestParameters, TestHelpers, SeaportProxy
         return tradeData;
     }
 
-    function _getPermitSignature(IAllowanceTransfer.PermitBatch memory permit) private returns (bytes memory) {
+    function _getPermitSignature(ISignatureTransfer.PermitBatchTransferFrom memory permit)
+        internal
+        returns (bytes memory sig)
+    {
         bytes32 domainSeparator = 0x866a5aba21966af95d6c7ab78eb2b2fc913915c28be3b9aa07cc04ff903e3f28;
-        bytes32 _PERMIT_DETAILS_TYPEHASH = keccak256(
-            "PermitDetails(address token,uint160 amount,uint48 expiration,uint48 nonce)"
+        bytes32[] memory tokenPermissions = new bytes32[](permit.permitted.length);
+        bytes32 _TOKEN_PERMISSIONS_TYPEHASH = keccak256("TokenPermissions(address token,uint256 amount)");
+        bytes32 _PERMIT_BATCH_TRANSFER_FROM_TYPEHASH = keccak256(
+            "PermitBatchTransferFrom(TokenPermissions[] permitted,address spender,uint256 nonce,uint256 deadline)TokenPermissions(address token,uint256 amount)"
         );
-        bytes32 _PERMIT_BATCH_TYPEHASH = keccak256(
-            "PermitBatch(PermitDetails[] details,address spender,uint256 sigDeadline)PermitDetails(address token,uint160 amount,uint48 expiration,uint48 nonce)"
-        );
-
-        bytes32[] memory permitHashes = new bytes32[](permit.details.length);
-        for (uint256 i = 0; i < permit.details.length; ++i) {
-            permitHashes[i] = keccak256(abi.encode(_PERMIT_DETAILS_TYPEHASH, permit.details[i]));
+        for (uint256 i = 0; i < permit.permitted.length; ++i) {
+            tokenPermissions[i] = keccak256(abi.encode(_TOKEN_PERMISSIONS_TYPEHASH, permit.permitted[i]));
         }
         bytes32 msgHash = keccak256(
             abi.encodePacked(
@@ -146,10 +134,11 @@ contract SeaportProxyERC721USDCTest is TestParameters, TestHelpers, SeaportProxy
                 domainSeparator,
                 keccak256(
                     abi.encode(
-                        _PERMIT_BATCH_TYPEHASH,
-                        keccak256(abi.encodePacked(permitHashes)),
-                        permit.spender,
-                        permit.sigDeadline
+                        _PERMIT_BATCH_TRANSFER_FROM_TYPEHASH,
+                        keccak256(abi.encodePacked(tokenPermissions)),
+                        address(aggregator),
+                        permit.nonce,
+                        permit.deadline
                     )
                 )
             )
