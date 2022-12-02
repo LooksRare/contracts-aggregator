@@ -3,7 +3,11 @@ pragma solidity 0.8.17;
 
 import {IERC721} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC721.sol";
 import {IERC1155} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC1155.sol";
+import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggregator.sol";
+import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
+import {LooksRareProxy} from "../../contracts/proxies/LooksRareProxy.sol";
 import {IUniversalRouter} from "../../contracts/interfaces/IUniversalRouter.sol";
+import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TestParameters} from "./TestParameters.sol";
 import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
@@ -53,5 +57,45 @@ contract UniswapBenchmarkTest is TestParameters, TestHelpers, SeaportProxyTestHe
         emit log_named_uint("Uniswap consumed: ", gasConsumed);
 
         assertEq(TWERKY.balanceOf(ALICE, 63), 1);
+    }
+
+    function testBuyERC721FromLooksRareThroughLooksRareAggregator() public {
+        LooksRareAggregator aggregator = new LooksRareAggregator();
+
+        LooksRareProxy looksRareProxy = new LooksRareProxy(LOOKSRARE_V1, address(aggregator));
+        aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
+
+        ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
+
+        {
+            BasicOrder[] memory looksRareOrders = new BasicOrder[](1);
+            looksRareOrders[0] = validCryptoCoven1244Order();
+            bytes[] memory looksRareOrdersExtraData = new bytes[](1);
+            looksRareOrdersExtraData[0] = abi.encode(
+                looksRareOrders[0].price,
+                9_800,
+                97,
+                LOOKSRARE_STRATEGY_FIXED_PRICE_V1B
+            );
+
+            tradeData[0] = ILooksRareAggregator.TradeData({
+                proxy: address(looksRareProxy),
+                selector: LooksRareProxy.execute.selector,
+                orders: looksRareOrders,
+                ordersExtraData: looksRareOrdersExtraData,
+                extraData: new bytes(0)
+            });
+        }
+
+        vm.prank(ALICE);
+        uint256 gasRemaining = gasleft();
+        aggregator.execute{value: 0.1814 ether}(tokenTransfers, tradeData, ALICE, ALICE, false);
+        uint256 gasConsumed = gasRemaining - gasleft();
+
+        emit log_named_uint("LooksRareAggregator consumed: ", gasConsumed);
+
+        assertEq(COVEN.ownerOf(1244), ALICE);
+        assertEq(COVEN.balanceOf(ALICE), 1);
     }
 }

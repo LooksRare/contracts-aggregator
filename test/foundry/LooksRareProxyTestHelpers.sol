@@ -121,4 +121,23 @@ abstract contract LooksRareProxyTestHelpers {
         order
             .signature = hex"b93d585da923afba40af2304fd46cd4f740187b0f6f9b06fbe7409627e9301f15ee3fd2ea3f132d141ea3dfc41539946b9665b17bd16b6d7b264af9a94de779c1b";
     }
+
+    function validCryptoCoven1244Order() internal pure returns (BasicOrder memory order) {
+        uint256[] memory amounts = new uint256[](1);
+        amounts[0] = 1;
+
+        order.signer = 0xfc27C589B33b7a52EB0a304d76c0544CA4B496E6;
+        order.collection = 0x5180db8F5c931aaE63c74266b211F580155ecac8;
+        order.collectionType = CollectionType.ERC721;
+        uint256[] memory tokenIds = new uint256[](1);
+        tokenIds[0] = 1244;
+        order.tokenIds = tokenIds;
+        order.amounts = amounts;
+        order.price = 0.1814 ether;
+        order.currency = WETH;
+        order.startTime = 1668410867;
+        order.endTime = 1671002867;
+        order
+            .signature = hex"08ae20d23fc4efda6ba409ab56a5619a9278c1edc75981a33166001cd9977b07728042faa31f8e945089361e97160af44406c557492d36dae053df3e6fd93f911c";
+    }
 }
