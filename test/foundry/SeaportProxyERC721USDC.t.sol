@@ -85,7 +85,11 @@ contract SeaportProxyERC721USDCTest is TestParameters, TestHelpers, SeaportProxy
         bytes memory permitSignature = _getPermitSignature(permit);
 
         // erc20EnabledAggregator.execute(tokenTransfers, tradeData, _buyer, isAtomic);
+        uint256 gasLeft = gasleft();
         aggregator.execute(permit, permitSignature, tokenTransfers, tradeData, _buyer, _buyer, false);
+        uint256 gasRemaining = gasleft();
+
+        emit log_named_uint("This consumed: ", gasLeft - gasRemaining);
 
         assertEq(IERC721(BAYC).balanceOf(_buyer), 2);
         assertEq(IERC721(BAYC).ownerOf(9948), _buyer);
