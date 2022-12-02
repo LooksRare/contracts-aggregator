@@ -140,4 +140,23 @@ abstract contract LooksRareProxyTestHelpers {
         order
             .signature = hex"08ae20d23fc4efda6ba409ab56a5619a9278c1edc75981a33166001cd9977b07728042faa31f8e945089361e97160af44406c557492d36dae053df3e6fd93f911c";
     }
+
+    function validTwerky63Order() internal pure returns (BasicOrder memory order) {
+        uint256[] memory amounts = new uint256[](1);
+        amounts[0] = 1;
+
+        order.signer = 0x8d894500675C860D86619cC77742b8Dca7eF74e2;
+        order.collection = 0xf4680c917A873E2dd6eAd72f9f433e74EB9c623C;
+        order.collectionType = CollectionType.ERC1155;
+        uint256[] memory tokenIds = new uint256[](1);
+        tokenIds[0] = 63;
+        order.tokenIds = tokenIds;
+        order.amounts = amounts;
+        order.price = 0.0995 ether;
+        order.currency = WETH;
+        order.startTime = 1668716386;
+        order.endTime = 1684264772;
+        order
+            .signature = hex"3ea34f6e25acaeb57f2c043ee5d03213395919e09524d6c004f95f2917880bdc561af73fd982c5e1a1a8c96843a7a195a91a1e86f6952807161f01bba5708f8d1c";
+    }
 }
