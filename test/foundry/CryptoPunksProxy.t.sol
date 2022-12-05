@@ -8,6 +8,7 @@ import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggrega
 import {IProxy} from "../../contracts/interfaces/IProxy.sol";
 import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
+import {InvalidOrderLength, TradeExecutionFailed} from "../../contracts/libraries/SharedErrors.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TestParameters} from "./TestParameters.sol";
 
@@ -40,7 +41,7 @@ contract CryptoPunksProxyTest is TestParameters, TestHelpers {
         // Pay nothing for the second order
         tradeData[0].orders[1].price = 0;
 
-        vm.expectRevert(ILooksRareAggregator.TradeExecutionFailed.selector);
+        vm.expectRevert(TradeExecutionFailed.selector);
         aggregator.execute{value: 68.5 ether}({
             tokenTransfers: tokenTransfers,
             tradeData: tradeData,
@@ -87,7 +88,7 @@ contract CryptoPunksProxyTest is TestParameters, TestHelpers {
             extraData: ""
         });
 
-        vm.expectRevert(IProxy.InvalidOrderLength.selector);
+        vm.expectRevert(InvalidOrderLength.selector);
         aggregator.execute{value: 138 ether}({
             tokenTransfers: tokenTransfers,
             tradeData: tradeData,

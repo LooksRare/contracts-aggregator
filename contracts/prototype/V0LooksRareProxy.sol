@@ -6,6 +6,7 @@ import {OrderTypes} from "@looksrare/contracts-exchange-v1/contracts/libraries/O
 import {IERC165} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC165.sol";
 import {IERC721} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC721.sol";
 import {IERC1155} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC1155.sol";
+import {InvalidOrderLength, ZeroAddress} from "../libraries/SharedErrors.sol";
 
 /**
  * @title V0LooksRareProxy
@@ -18,9 +19,7 @@ contract V0LooksRareProxy {
 
     ILooksRareExchange public constant marketplace = ILooksRareExchange(0x59728544B08AB483533076417FbBB2fD0B17CE3a);
 
-    error InvalidOrderLength();
     error UnrecognizedTokenInterface();
-    error ZeroAddress();
 
     function execute(
         OrderTypes.TakerOrder[] calldata takerBids,

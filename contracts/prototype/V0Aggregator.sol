@@ -4,6 +4,7 @@ pragma solidity 0.8.17;
 import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
 import {LowLevelETH} from "@looksrare/contracts-libs/contracts/lowLevelCallers/LowLevelETH.sol";
 import {TokenReceiver} from "../TokenReceiver.sol";
+import {InvalidOrderLength} from "../libraries/SharedErrors.sol";
 
 /**
  * @title V0Aggregator
@@ -25,7 +26,6 @@ contract V0Aggregator is TokenReceiver, LowLevelETH, OwnableTwoSteps {
     event Sweep(address indexed sweeper);
 
     error InvalidFunction();
-    error InvalidOrderLength();
 
     function execute(TradeData[] calldata tradeData) external payable {
         uint256 tradeCount = tradeData.length;

@@ -4,6 +4,7 @@ pragma solidity 0.8.17;
 import {BasicOrder} from "../libraries/OrderStructs.sol";
 import {IProxy} from "../interfaces/IProxy.sol";
 import {ICryptoPunks} from "../interfaces/ICryptoPunks.sol";
+import {InvalidOrderLength} from "../libraries/SharedErrors.sol";
 
 /**
  * @title CryptoPunksProxy

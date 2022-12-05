@@ -11,6 +11,7 @@ import {IERC20} from "@looksrare/contracts-libs/contracts/interfaces/generic/IER
 import {TokenReceiver} from "./TokenReceiver.sol";
 import {ILooksRareAggregator} from "./interfaces/ILooksRareAggregator.sol";
 import {TokenTransfer} from "./libraries/OrderStructs.sol";
+import {InvalidOrderLength, TradeExecutionFailed, ZeroAddress} from "./libraries/SharedErrors.sol";
 
 /**
  * @title LooksRareAggregator

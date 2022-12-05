@@ -62,8 +62,5 @@ interface ILooksRareAggregator {
     error AlreadySet();
     error ETHTransferFail();
     error InvalidFunction();
-    error InvalidOrderLength();
-    error TradeExecutionFailed();
     error UseERC20EnabledLooksRareAggregator();
-    error ZeroAddress();
 }

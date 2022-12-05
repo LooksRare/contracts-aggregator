@@ -8,6 +8,7 @@ import {AdditionalRecipient, Fulfillment, FulfillmentComponent} from "../../cont
 import {IProxy} from "../../contracts/interfaces/IProxy.sol";
 import {BasicOrder} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
+import {InvalidOrderLength} from "../../contracts/libraries/SharedErrors.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TestParameters} from "./TestParameters.sol";
 import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
@@ -29,7 +30,7 @@ contract SeaportProxyTest is TestParameters, TestHelpers, SeaportProxyTestHelper
         bytes[] memory ordersExtraData = new bytes[](0);
 
         vm.etch(address(_fakeAggregator), address(seaportProxy).code);
-        vm.expectRevert(IProxy.InvalidOrderLength.selector);
+        vm.expectRevert(InvalidOrderLength.selector);
         IProxy(_fakeAggregator).execute(orders, ordersExtraData, validSingleOfferExtraData(3), _buyer, false);
     }
 
@@ -43,7 +44,7 @@ contract SeaportProxyTest is TestParameters, TestHelpers, SeaportProxyTestHelper
         ordersExtraData[1] = validBAYCId8498OrderExtraData();
 
         vm.etch(address(_fakeAggregator), address(seaportProxy).code);
-        vm.expectRevert(IProxy.InvalidOrderLength.selector);
+        vm.expectRevert(InvalidOrderLength.selector);
         IProxy(_fakeAggregator).execute{value: orders[0].price}(
             orders,
             ordersExtraData,

@@ -6,6 +6,7 @@ import {SeaportProxy} from "../../contracts/proxies/SeaportProxy.sol";
 import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
 import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggregator.sol";
 import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
+import {TradeExecutionFailed} from "../../contracts/libraries/SharedErrors.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TestParameters} from "./TestParameters.sol";
 import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
@@ -47,7 +48,7 @@ contract SeaportProxyERC1155Test is TestParameters, TestHelpers, SeaportProxyTes
         ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData(true);
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
 
-        vm.expectRevert(SeaportProxy.TradeExecutionFailed.selector); // InsufficientEtherSupplied
+        vm.expectRevert(TradeExecutionFailed.selector); // InsufficientEtherSupplied
         // Not paying for the second order
         aggregator.execute{value: tradeData[0].orders[0].price}(tokenTransfers, tradeData, _buyer, _buyer, true);
     }

@@ -9,6 +9,7 @@ import {CollectionType} from "../libraries/OrderEnums.sol";
 import {BasicOrder} from "../libraries/OrderStructs.sol";
 import {IProxy} from "../interfaces/IProxy.sol";
 import {TokenTransferrer} from "../TokenTransferrer.sol";
+import {InvalidOrderLength} from "../libraries/SharedErrors.sol";
 
 /**
  * @title LooksRareProxy
