@@ -9,6 +9,7 @@ import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggrega
 import {IProxy} from "../../contracts/interfaces/IProxy.sol";
 import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
+import {InvalidOrderLength} from "../../contracts/libraries/Errors.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TestParameters} from "./TestParameters.sol";
 import {LooksRareProxyTestHelpers} from "./LooksRareProxyTestHelpers.sol";
@@ -91,7 +92,7 @@ contract LooksRareProxyTest is TestParameters, TestHelpers, LooksRareProxyTestHe
             extraData: ""
         });
 
-        vm.expectRevert(IProxy.InvalidOrderLength.selector);
+        vm.expectRevert(InvalidOrderLength.selector);
         aggregator.execute{value: 0}(tokenTransfers, tradeData, _buyer, _buyer, true);
     }
 
@@ -114,7 +115,7 @@ contract LooksRareProxyTest is TestParameters, TestHelpers, LooksRareProxyTestHe
             extraData: ""
         });
 
-        vm.expectRevert(IProxy.InvalidOrderLength.selector);
+        vm.expectRevert(InvalidOrderLength.selector);
         aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, true);
     }
 

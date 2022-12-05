@@ -8,6 +8,7 @@ import {ItemType, OrderType} from "../libraries/seaport/ConsiderationEnums.sol";
 import {AdvancedOrder, CriteriaResolver, OrderParameters, OfferItem, ConsiderationItem, FulfillmentComponent, AdditionalRecipient} from "../libraries/seaport/ConsiderationStructs.sol";
 import {IProxy} from "../interfaces/IProxy.sol";
 import {SeaportInterface} from "../interfaces/SeaportInterface.sol";
+import {InvalidOrderLength, TradeExecutionFailed} from "../libraries/Errors.sol";
 
 /**
  * @title SeaportProxy
@@ -18,8 +19,6 @@ import {SeaportInterface} from "../interfaces/SeaportInterface.sol";
 contract SeaportProxy is IProxy, LowLevelETH, LowLevelERC20Transfer {
     SeaportInterface public immutable marketplace;
     address public immutable aggregator;
-
-    error TradeExecutionFailed();
 
     /**
      * @param offerFulfillments Contains the order and item index of each offer item

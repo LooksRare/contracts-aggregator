@@ -7,6 +7,7 @@ import {IProxy} from "../../contracts/interfaces/IProxy.sol";
 import {BasicOrder} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
 import {Market} from "../../contracts/libraries/x2y2/MarketConsts.sol";
+import {InvalidOrderLength} from "../../contracts/libraries/Errors.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TestParameters} from "./TestParameters.sol";
 
@@ -23,7 +24,7 @@ contract X2Y2ProxyTest is TestParameters, TestHelpers {
         bytes[] memory ordersExtraData = new bytes[](0);
 
         vm.etch(address(_fakeAggregator), address(x2y2Proxy).code);
-        vm.expectRevert(IProxy.InvalidOrderLength.selector);
+        vm.expectRevert(InvalidOrderLength.selector);
         IProxy(_fakeAggregator).execute(orders, ordersExtraData, "", _buyer, false);
     }
 
@@ -35,7 +36,7 @@ contract X2Y2ProxyTest is TestParameters, TestHelpers {
         ordersExtraData[1] = validBAYCOrderExtraData();
 
         vm.etch(address(_fakeAggregator), address(x2y2Proxy).code);
-        vm.expectRevert(IProxy.InvalidOrderLength.selector);
+        vm.expectRevert(InvalidOrderLength.selector);
         IProxy(_fakeAggregator).execute{value: orders[0].price}(orders, ordersExtraData, "", _buyer, false);
     }
 

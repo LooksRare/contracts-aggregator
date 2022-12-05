@@ -6,6 +6,7 @@ import {ERC20EnabledLooksRareAggregator} from "../../contracts/ERC20EnabledLooks
 import {LooksRareProxy} from "../../contracts/proxies/LooksRareProxy.sol";
 import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggregator.sol";
 import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
+import {InvalidOrderLength, ZeroAddress} from "../../contracts/libraries/Errors.sol";
 import {IOwnableTwoSteps} from "@looksrare/contracts-libs/contracts/interfaces/IOwnableTwoSteps.sol";
 import {MockERC20} from "./utils/MockERC20.sol";
 import {MockERC721} from "./utils/MockERC721.sol";
@@ -145,14 +146,14 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers {
     function testExecuteZeroOrders() public {
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](0);
-        vm.expectRevert(ILooksRareAggregator.InvalidOrderLength.selector);
+        vm.expectRevert(InvalidOrderLength.selector);
         aggregator.execute(tokenTransfers, tradeData, _buyer, _buyer, false);
     }
 
     function testExecuteZeroRecipient() public {
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
         ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
-        vm.expectRevert(ILooksRareAggregator.ZeroAddress.selector);
+        vm.expectRevert(ZeroAddress.selector);
         aggregator.execute(tokenTransfers, tradeData, _buyer, address(0), false);
     }
 

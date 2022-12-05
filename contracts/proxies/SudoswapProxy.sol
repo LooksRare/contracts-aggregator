@@ -4,6 +4,7 @@ pragma solidity 0.8.17;
 import {BasicOrder} from "../libraries/OrderStructs.sol";
 import {IProxy} from "../interfaces/IProxy.sol";
 import {ISudoswapRouter} from "../interfaces/ISudoswapRouter.sol";
+import {InvalidOrderLength} from "../libraries/Errors.sol";
 
 /**
  * @title SudoswapProxy

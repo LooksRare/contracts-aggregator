@@ -5,6 +5,7 @@ import {SudoswapProxy} from "../../contracts/proxies/SudoswapProxy.sol";
 import {IProxy} from "../../contracts/interfaces/IProxy.sol";
 import {BasicOrder} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
+import {InvalidOrderLength} from "../../contracts/libraries/Errors.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TestParameters} from "./TestParameters.sol";
 
@@ -21,7 +22,7 @@ contract SudoswapProxyTest is TestParameters, TestHelpers {
         bytes[] memory ordersExtraData = new bytes[](0);
 
         vm.etch(_fakeAggregator, address(sudoswapProxy).code);
-        vm.expectRevert(IProxy.InvalidOrderLength.selector);
+        vm.expectRevert(InvalidOrderLength.selector);
         IProxy(_fakeAggregator).execute(orders, ordersExtraData, "", _buyer, false);
     }
 
