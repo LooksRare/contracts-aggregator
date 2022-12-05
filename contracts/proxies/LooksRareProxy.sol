@@ -17,7 +17,7 @@ import {InvalidOrderLength} from "../libraries/SharedErrors.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract LooksRareProxy is IProxy, TokenTransferrer, SignatureChecker {
+contract LooksRareProxy is IProxy, TokenTransferrer {
     /**
      * @param makerAskPrice Maker ask price, which is not necessarily equal to the
      *                      taker bid price
@@ -84,7 +84,7 @@ contract LooksRareProxy is IProxy, TokenTransferrer, SignatureChecker {
                 makerAsk.startTime = order.startTime;
                 makerAsk.endTime = order.endTime;
 
-                (bytes32 r, bytes32 s, uint8 v) = _splitSignature(order.signature);
+                (bytes32 r, bytes32 s, uint8 v) = SignatureChecker.splitSignature(order.signature);
                 makerAsk.v = v;
                 makerAsk.r = r;
                 makerAsk.s = s;

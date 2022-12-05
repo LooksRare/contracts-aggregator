@@ -19,7 +19,7 @@ import {InvalidOrderLength} from "../libraries/SharedErrors.sol";
  *         by passing high-level structs + low-level bytes as calldata.
  * @author LooksRare protocol team (👀,💎)
  */
-contract X2Y2Proxy is IProxy, TokenTransferrer, SignatureChecker {
+contract X2Y2Proxy is IProxy, TokenTransferrer {
     IX2Y2 public immutable marketplace;
     address public immutable aggregator;
 
@@ -135,7 +135,7 @@ contract X2Y2Proxy is IProxy, TokenTransferrer, SignatureChecker {
         settleDetails[0].fees = orderExtraData.fees;
         runInput.details = settleDetails;
 
-        (bytes32 r, bytes32 s, uint8 v) = _splitSignature(order.signature);
+        (bytes32 r, bytes32 s, uint8 v) = SignatureChecker.splitSignature(order.signature);
         runInput.orders[0].r = r;
         runInput.orders[0].s = s;
         runInput.orders[0].v = v;
