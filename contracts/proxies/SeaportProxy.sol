@@ -8,7 +8,7 @@ import {ItemType, OrderType} from "../libraries/seaport/ConsiderationEnums.sol";
 import {AdvancedOrder, CriteriaResolver, OrderParameters, OfferItem, ConsiderationItem, FulfillmentComponent, AdditionalRecipient} from "../libraries/seaport/ConsiderationStructs.sol";
 import {IProxy} from "../interfaces/IProxy.sol";
 import {SeaportInterface} from "../interfaces/SeaportInterface.sol";
-import {InvalidOrderLength, TradeExecutionFailed} from "../libraries/Errors.sol";
+import {InvalidOrderLength, TradeExecutionFailed} from "../libraries/SharedErrors.sol";
 
 /**
  * @title SeaportProxy

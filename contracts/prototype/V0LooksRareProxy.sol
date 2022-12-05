@@ -6,7 +6,7 @@ import {OrderTypes} from "@looksrare/contracts-exchange-v1/contracts/libraries/O
 import {IERC165} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC165.sol";
 import {IERC721} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC721.sol";
 import {IERC1155} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC1155.sol";
-import {InvalidOrderLength, ZeroAddress} from "../libraries/Errors.sol";
+import {InvalidOrderLength, ZeroAddress} from "../libraries/SharedErrors.sol";
 
 /**
  * @title V0LooksRareProxy

@@ -11,7 +11,7 @@ import {Market} from "../libraries/x2y2/MarketConsts.sol";
 import {IProxy} from "../interfaces/IProxy.sol";
 import {IX2Y2} from "../interfaces/IX2Y2.sol";
 import {TokenTransferrer} from "../TokenTransferrer.sol";
-import {InvalidOrderLength} from "../libraries/Errors.sol";
+import {InvalidOrderLength} from "../libraries/SharedErrors.sol";
 
 /**
  * @title X2Y2Proxy

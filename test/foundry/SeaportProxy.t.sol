@@ -8,7 +8,7 @@ import {AdditionalRecipient, Fulfillment, FulfillmentComponent} from "../../cont
 import {IProxy} from "../../contracts/interfaces/IProxy.sol";
 import {BasicOrder} from "../../contracts/libraries/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
-import {InvalidOrderLength} from "../../contracts/libraries/Errors.sol";
+import {InvalidOrderLength} from "../../contracts/libraries/SharedErrors.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TestParameters} from "./TestParameters.sol";
 import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
