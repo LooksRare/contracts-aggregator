@@ -19,6 +19,27 @@ abstract contract SeaportProxyTestHelpers {
     address internal constant OPENSEA_FEES_3 = 0x0000a26b00c1F0DF003000390027140000fAa719;
     address internal constant YUGA_LABS = 0xA858DDc0445d8131daC4d1DE01f834ffcbA52Ef1;
 
+    function validCryptoCoven8271Order() internal pure returns (BasicOrder memory order) {
+        order.signer = 0x0f1fcc9DA5DB6753c90fBeB46024c056516FBC17;
+        order.collection = 0x5180db8F5c931aaE63c74266b211F580155ecac8;
+        order.collectionType = CollectionType.ERC721;
+
+        uint256[] memory tokenIds = new uint256[](1);
+        tokenIds[0] = 8271;
+        order.tokenIds = tokenIds;
+
+        uint256[] memory amounts = new uint256[](1);
+        amounts[0] = 1;
+        order.amounts = amounts;
+
+        order.price = 33 ether;
+        order.currency = address(0);
+        order.startTime = 1657325657;
+        order.endTime = 1672881257;
+        order
+            .signature = hex"58073c305ffa6daf8b6279050d9837d88040350a004efe3028fd6cda8aef41cd0819bb209b6ef3b3d6df717180677a3916c15ea669f8251471d3d39ee6abdac31b";
+    }
+
     function validOpenseaSharedStorefrontOrders() internal pure returns (BasicOrder[] memory orders) {
         orders = new BasicOrder[](1);
 
@@ -304,6 +325,22 @@ abstract contract SeaportProxyTestHelpers {
         order.endTime = 1662303030;
         order
             .signature = hex"fcdc82cba99c19522af3692070e4649ff573d20f2550eb29f7a24b3c39da74bd6a6c5b8444a2139c529301a8da011af414342d304609f896580e12fbd94d387a1b";
+    }
+
+    function validCryptoCoven8271OrderExtraData() internal pure returns (bytes memory) {
+        AdditionalRecipient[] memory recipients = new AdditionalRecipient[](3);
+        recipients[0].recipient = payable(0x0f1fcc9DA5DB6753c90fBeB46024c056516FBC17);
+        recipients[0].amount = 30.525 ether;
+        recipients[1].recipient = payable(OPENSEA_FEES);
+        recipients[1].amount = 0.825 ether;
+        recipients[2].recipient = payable(0xac9d54ca08740A608B6C474e5CA07d51cA8117Fa);
+        recipients[2].amount = 1.65 ether;
+
+        SeaportProxy.OrderExtraData memory orderExtraData = _baseOrderExtraData();
+        orderExtraData.salt = 196452098662466;
+        orderExtraData.recipients = recipients;
+
+        return abi.encode(orderExtraData);
     }
 
     function validOpenseaSharedStorefrontOrderExtraData() internal pure returns (bytes memory) {
