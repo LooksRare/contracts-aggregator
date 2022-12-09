@@ -26,7 +26,7 @@ interface ILooksRareAggregator {
      * @param tradeData Data object to be passed downstream to each
      *                  marketplace's proxy for execution
      * @param originator The address that originated the transaction,
-     *                   hardcoded as msg.sender if it is called directly
+     *                   hard coded as msg.sender if it is called directly
      * @param recipient The address to receive the purchased NFTs
      * @param isAtomic Flag to enable atomic trades (all or nothing)
      *                 or partial trades
