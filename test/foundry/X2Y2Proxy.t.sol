@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import {OwnableTwoSteps} from "@looksrare/contracts-libs/contracts/OwnableTwoSteps.sol";
 import {X2Y2Proxy} from "../../contracts/proxies/X2Y2Proxy.sol";
 import {IProxy} from "../../contracts/interfaces/IProxy.sol";
 import {BasicOrder} from "../../contracts/libraries/OrderStructs.sol";
