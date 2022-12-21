@@ -19,7 +19,7 @@ contract CryptoPunksProxyTest is TestParameters, TestHelpers {
     function setUp() public {
         vm.createSelectFork(vm.rpcUrl("mainnet"), 15_358_065);
 
-        aggregator = new LooksRareAggregator();
+        aggregator = new LooksRareAggregator(address(this));
         cryptoPunksProxy = new CryptoPunksProxy(CRYPTOPUNKS, address(aggregator));
         aggregator.addFunction(address(cryptoPunksProxy), CryptoPunksProxy.execute.selector);
         vm.deal(_buyer, 138 ether);

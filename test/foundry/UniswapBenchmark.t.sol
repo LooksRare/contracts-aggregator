@@ -61,7 +61,7 @@ contract UniswapBenchmarkTest is TestParameters, TestHelpers, SeaportProxyTestHe
     }
 
     function testBuyERC721FromLooksRareThroughLooksRareAggregator() public {
-        LooksRareAggregator aggregator = new LooksRareAggregator();
+        LooksRareAggregator aggregator = new LooksRareAggregator(address(this));
 
         LooksRareProxy looksRareProxy = new LooksRareProxy(LOOKSRARE_V1, address(aggregator));
         aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
@@ -101,7 +101,7 @@ contract UniswapBenchmarkTest is TestParameters, TestHelpers, SeaportProxyTestHe
     }
 
     function testBuyERC1155FromLooksRareThroughLooksRareAggregator() public {
-        LooksRareAggregator aggregator = new LooksRareAggregator();
+        LooksRareAggregator aggregator = new LooksRareAggregator(address(this));
 
         LooksRareProxy looksRareProxy = new LooksRareProxy(LOOKSRARE_V1, address(aggregator));
         aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
@@ -157,7 +157,7 @@ contract UniswapBenchmarkTest is TestParameters, TestHelpers, SeaportProxyTestHe
     }
 
     function testBuyERC721FromSeaportThroughLooksRareAggregator() public {
-        LooksRareAggregator aggregator = new LooksRareAggregator();
+        LooksRareAggregator aggregator = new LooksRareAggregator(address(this));
 
         SeaportProxy seaportProxy = new SeaportProxy(SEAPORT, address(aggregator));
         aggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);

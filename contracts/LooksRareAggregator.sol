@@ -44,6 +44,8 @@ contract LooksRareAggregator is
     address public erc20EnabledLooksRareAggregator;
     mapping(address => mapping(bytes4 => uint256)) private _proxyFunctionSelectors;
 
+    constructor(address _owner) OwnableTwoSteps(_owner) {}
+
     /**
      * @inheritdoc ILooksRareAggregator
      */
