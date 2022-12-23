@@ -15,7 +15,8 @@ interface SudoswapFixture {
 
 export default async function deploySudoswapFixture(): Promise<SudoswapFixture> {
   const Aggregator = await ethers.getContractFactory("LooksRareAggregator");
-  const aggregator = await Aggregator.deploy();
+  const accounts = await ethers.getSigners();
+  const aggregator = await Aggregator.deploy(accounts[0].address);
   await aggregator.deployed();
 
   const SudoswapProxy = await ethers.getContractFactory("SudoswapProxy");
