@@ -65,7 +65,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         assertEq(IERC721(BAYC).ownerOf(2518), _buyer);
     }
 
-    function testExecuteThroughAggregatorSingleOrder() public asPrankedUser(_buyer) {
+    function testExecuteThroughAggregatorSingleOrder() public {
         _aggregatorSetUp();
 
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
@@ -88,6 +88,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
             extraData: extraData
         });
 
+        vm.prank(_buyer);
         uint256 gasRemaining = gasleft();
         aggregator.execute{value: order.price}(tokenTransfers, tradeData, _buyer, _buyer, true);
         uint256 gasConsumed = gasRemaining - gasleft();
@@ -96,7 +97,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         assertEq(IERC721(BAYC).ownerOf(2518), _buyer);
     }
 
-    function testExecuteThroughV0AggregatorSingleOrder() public asPrankedUser(_buyer) {
+    function testExecuteThroughV0AggregatorSingleOrder() public {
         _v0AggregatorSetUp();
 
         BasicOrder memory order = validBAYCId2518Order();
@@ -121,6 +122,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         V0Aggregator.TradeData[] memory tradeData = new V0Aggregator.TradeData[](1);
         tradeData[0] = V0Aggregator.TradeData({proxy: address(seaportProxy), value: order.price, data: data});
 
+        vm.prank(_buyer);
         uint256 gasRemaining = gasleft();
         v0Aggregator.execute{value: order.price}(tradeData);
         uint256 gasConsumed = gasRemaining - gasleft();
@@ -225,15 +227,15 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         assertEq(IERC721(BAYC).ownerOf(8498), _buyer);
     }
 
-    function testExecuteThroughAggregatorTwoOrdersAtomic() public asPrankedUser(_buyer) {
+    function testExecuteThroughAggregatorTwoOrdersAtomic() public {
         _testExecuteThroughAggregatorTwoOrders(true);
     }
 
-    function testExecuteThroughAggregatorTwoOrdersNonAtomic() public asPrankedUser(_buyer) {
+    function testExecuteThroughAggregatorTwoOrdersNonAtomic() public {
         _testExecuteThroughAggregatorTwoOrders(false);
     }
 
-    function testExecuteThroughV0AggregatorTwoOrders() public asPrankedUser(_buyer) {
+    function testExecuteThroughV0AggregatorTwoOrders() public {
         _v0AggregatorSetUp();
 
         BasicOrder[] memory orders = new BasicOrder[](2);
@@ -260,6 +262,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
         );
         tradeData[0] = V0Aggregator.TradeData({proxy: address(seaportProxy), value: totalPrice, data: data});
 
+        vm.prank(_buyer);
         uint256 gasRemaining = gasleft();
         v0Aggregator.execute{value: totalPrice}(tradeData);
         uint256 gasConsumed = gasRemaining - gasleft();
@@ -270,7 +273,8 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
     }
 
     function _aggregatorSetUp() private {
-        aggregator = new LooksRareAggregator();
+        aggregator = new LooksRareAggregator(address(this));
+        vm.deal(address(aggregator), 1 wei);
         seaportProxy = new SeaportProxy(SEAPORT, address(aggregator));
 
         aggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);
@@ -280,7 +284,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
     }
 
     function _v0AggregatorSetUp() private {
-        v0Aggregator = new V0Aggregator();
+        v0Aggregator = new V0Aggregator(address(this));
         seaportProxy = new SeaportProxy(SEAPORT, address(v0Aggregator));
 
         v0Aggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);
@@ -318,6 +322,7 @@ contract SeaportProxyBenchmarkTest is TestParameters, TestHelpers, SeaportProxyT
             extraData: extraData
         });
 
+        vm.prank(_buyer);
         uint256 gasRemaining = gasleft();
         aggregator.execute{value: totalPrice}(new TokenTransfer[](0), tradeData, _buyer, _buyer, isAtomic);
         uint256 gasConsumed = gasRemaining - gasleft();

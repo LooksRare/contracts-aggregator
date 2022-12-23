@@ -19,12 +19,14 @@ contract Deployment is Script {
     CryptoPunksProxy internal cryptoPunksProxy;
     SudoswapProxy internal sudoswapProxy;
 
+    address private constant OWNER = 0xFf6c307226343fCF96AF2f6B5B05f63F717e68cb;
+
     error WrongChain();
 
     function _run(address looksrare, address seaport) internal {
         vm.startBroadcast();
 
-        looksRareAggregator = new LooksRareAggregator();
+        looksRareAggregator = new LooksRareAggregator(OWNER);
 
         erc20EnabledLooksRareAggregator = new ERC20EnabledLooksRareAggregator(address(looksRareAggregator));
         looksRareAggregator.setERC20EnabledLooksRareAggregator(address(erc20EnabledLooksRareAggregator));

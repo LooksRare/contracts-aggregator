@@ -23,7 +23,7 @@ contract LooksRareProxyTest is TestParameters, TestHelpers, LooksRareProxyTestHe
     function setUp() public {
         vm.createSelectFork(vm.rpcUrl("mainnet"), 15_282_897);
 
-        aggregator = new LooksRareAggregator();
+        aggregator = new LooksRareAggregator(address(this));
         looksRareProxy = new LooksRareProxy(LOOKSRARE_V1, address(aggregator));
         aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
 

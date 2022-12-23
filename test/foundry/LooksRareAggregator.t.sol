@@ -22,7 +22,7 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers {
     LooksRareProxy private looksRareProxy;
 
     function setUp() public {
-        aggregator = new LooksRareAggregator();
+        aggregator = new LooksRareAggregator(address(this));
         looksRareProxy = new LooksRareProxy(LOOKSRARE_V1, address(aggregator));
     }
 

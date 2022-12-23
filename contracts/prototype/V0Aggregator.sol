@@ -27,6 +27,8 @@ contract V0Aggregator is TokenReceiver, LowLevelETHReturnETHIfAny, OwnableTwoSte
 
     error InvalidFunction();
 
+    constructor(address _owner) OwnableTwoSteps(_owner) {}
+
     function execute(TradeData[] calldata tradeData) external payable {
         uint256 tradeCount = tradeData.length;
         if (tradeCount == 0) revert InvalidOrderLength();

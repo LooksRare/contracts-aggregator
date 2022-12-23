@@ -23,7 +23,7 @@ contract MultipleMarketsTest is TestParameters, TestHelpers, SeaportProxyTestHel
     function setUp() public {
         vm.createSelectFork(vm.rpcUrl("mainnet"), 15_326_566);
 
-        aggregator = new LooksRareAggregator();
+        aggregator = new LooksRareAggregator(address(this));
         seaportProxy = new SeaportProxy(SEAPORT, address(aggregator));
         aggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);
         looksRareProxy = new LooksRareProxy(LOOKSRARE_V1, address(aggregator));

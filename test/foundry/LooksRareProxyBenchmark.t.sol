@@ -67,7 +67,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         assertEq(IERC721(BAYC).ownerOf(7139), _buyer);
     }
 
-    function testExecuteThroughAggregatorSingleOrder() public asPrankedUser(_buyer) {
+    function testExecuteThroughAggregatorSingleOrder() public {
         _aggregatorSetUp();
 
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
@@ -87,6 +87,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
             extraData: ""
         });
 
+        vm.prank(_buyer);
         uint256 gasRemaining = gasleft();
         aggregator.execute{value: orders[0].price}(tokenTransfers, tradeData, _buyer, _buyer, false);
         uint256 gasConsumed = gasRemaining - gasleft();
@@ -95,7 +96,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         assertEq(IERC721(BAYC).ownerOf(7139), _buyer);
     }
 
-    function testExecuteThroughV0AggregatorSingleOrder() public asPrankedUser(_buyer) {
+    function testExecuteThroughV0AggregatorSingleOrder() public {
         _v0AggregatorSetUp();
 
         BasicOrder[] memory validOrders = validBAYCOrders();
@@ -117,6 +118,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         V0Aggregator.TradeData[] memory tradeData = new V0Aggregator.TradeData[](1);
         tradeData[0] = V0Aggregator.TradeData({proxy: address(looksRareProxy), data: data, value: orders[0].price});
 
+        vm.prank(_buyer);
         uint256 gasRemaining = gasleft();
         v0Aggregator.execute{value: orders[0].price}(tradeData);
         uint256 gasConsumed = gasRemaining - gasleft();
@@ -125,15 +127,15 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         assertEq(IERC721(BAYC).ownerOf(7139), _buyer);
     }
 
-    function testExecuteThroughAggregatorTwoOrdersAtomic() public asPrankedUser(_buyer) {
+    function testExecuteThroughAggregatorTwoOrdersAtomic() public {
         _testExecuteThroughAggregatorTwoOrders(true);
     }
 
-    function testExecuteThroughAggregatorTwoOrdersNonAtomic() public asPrankedUser(_buyer) {
+    function testExecuteThroughAggregatorTwoOrdersNonAtomic() public {
         _testExecuteThroughAggregatorTwoOrders(false);
     }
 
-    function testExecuteThroughV0AggregatorTwoOrders() public asPrankedUser(_buyer) {
+    function testExecuteThroughV0AggregatorTwoOrders() public {
         _v0AggregatorSetUp();
 
         BasicOrder[] memory orders = validBAYCOrders();
@@ -156,6 +158,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
         V0Aggregator.TradeData[] memory tradeData = new V0Aggregator.TradeData[](1);
         tradeData[0] = V0Aggregator.TradeData({proxy: address(looksRareProxy), data: data, value: totalPrice});
 
+        vm.prank(_buyer);
         uint256 gasRemaining = gasleft();
         v0Aggregator.execute{value: totalPrice}(tradeData);
         uint256 gasConsumed = gasRemaining - gasleft();
@@ -166,13 +169,14 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
     }
 
     function _aggregatorSetUp() private {
-        aggregator = new LooksRareAggregator();
+        aggregator = new LooksRareAggregator(address(this));
+        vm.deal(address(aggregator), 1 wei);
         looksRareProxy = new LooksRareProxy(LOOKSRARE_V1, address(aggregator));
         aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
     }
 
     function _v0AggregatorSetUp() private {
-        v0Aggregator = new V0Aggregator();
+        v0Aggregator = new V0Aggregator(address(this));
         looksRareProxy = new LooksRareProxy(LOOKSRARE_V1, address(v0Aggregator));
         v0Aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
     }
@@ -197,6 +201,7 @@ contract LooksRareProxyBenchmarkTest is TestParameters, TestHelpers, LooksRarePr
             extraData: ""
         });
 
+        vm.prank(_buyer);
         uint256 gasRemaining = gasleft();
         aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, isAtomic);
         uint256 gasConsumed = gasRemaining - gasleft();
