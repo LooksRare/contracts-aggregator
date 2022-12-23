@@ -19,7 +19,7 @@ contract Deployment is Script {
     CryptoPunksProxy internal cryptoPunksProxy;
     SudoswapProxy internal sudoswapProxy;
 
-    address private constant OWNER = 0xBfb6669Ef4C4c71ae6E722526B1B8d7d9ff9a019;
+    address private constant OWNER = 0xFf6c307226343fCF96AF2f6B5B05f63F717e68cb;
 
     error WrongChain();
 
