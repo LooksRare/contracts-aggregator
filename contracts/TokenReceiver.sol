@@ -7,7 +7,7 @@ abstract contract TokenReceiver {
         address,
         uint256,
         bytes calldata
-    ) external pure returns (bytes4) {
+    ) external virtual returns (bytes4) {
         return this.onERC721Received.selector;
     }
 
