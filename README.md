@@ -16,6 +16,9 @@ It is a hybrid [Hardhat](https://hardhat.org/) repo that also requires [Foundry]
 
 ### Architecture
 
+![ETH order](https://user-images.githubusercontent.com/98446738/200664905-b7bd4126-d6bd-4d35-aad0-7b99f1ef84fa.jpeg)
+![ERC20 order](https://user-images.githubusercontent.com/98446738/200664939-f4b21fb3-e045-4b65-95b6-bb5db053ea47.jpeg)
+
 - `LooksRareAggregator` is the entrypoint for a batch transaction with orders paid only in ETH. Clients should submit a list of trade data for different marketplaces to the aggregator.
 
 - `ERC20EnabledLooksRareAggregator` is the entrypoint for a batch transaction with orders paid in ERC20 tokens. Clients should submit a list of trade data for different marketplaces to the aggregator. The purpose of this aggregator is to prevent malicious proxies from stealing client funds since ERC20 approvals are not given to `LooksRareAggregator`.
