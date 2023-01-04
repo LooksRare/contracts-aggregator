@@ -73,10 +73,14 @@ contract X2Y2Proxy is IProxy, TokenTransferrer {
         address recipient,
         bool isAtomic
     ) external payable override {
-        if (address(this) != aggregator) revert InvalidCaller();
+        if (address(this) != aggregator) {
+            revert InvalidCaller();
+        }
 
         uint256 ordersLength = orders.length;
-        if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();
+        if (ordersLength == 0 || ordersLength != ordersExtraData.length) {
+            revert InvalidOrderLength();
+        }
 
         for (uint256 i; i < ordersLength; ) {
             OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[i], (OrderExtraData));

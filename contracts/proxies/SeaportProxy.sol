@@ -76,10 +76,14 @@ contract SeaportProxy is IProxy {
         address recipient,
         bool isAtomic
     ) external payable override {
-        if (address(this) != aggregator) revert InvalidCaller();
+        if (address(this) != aggregator) {
+            revert InvalidCaller();
+        }
 
         uint256 ordersLength = orders.length;
-        if (ordersLength == 0 || ordersLength != ordersExtraData.length) revert InvalidOrderLength();
+        if (ordersLength == 0 || ordersLength != ordersExtraData.length) {
+            revert InvalidOrderLength();
+        }
 
         if (isAtomic) {
             _executeAtomicOrders(orders, ordersExtraData, extraData, recipient);
@@ -127,7 +131,9 @@ contract SeaportProxy is IProxy {
         );
 
         for (uint256 i; i < availableOrders.length; ) {
-            if (!availableOrders[i]) revert TradeExecutionFailed();
+            if (!availableOrders[i]) {
+                revert TradeExecutionFailed();
+            }
             unchecked {
                 ++i;
             }

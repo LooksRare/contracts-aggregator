@@ -31,7 +31,9 @@ contract V0Aggregator is TokenReceiver, LowLevelETHReturnETHIfAny, OwnableTwoSte
 
     function execute(TradeData[] calldata tradeData) external payable {
         uint256 tradeCount = tradeData.length;
-        if (tradeCount == 0) revert InvalidOrderLength();
+        if (tradeCount == 0) {
+            revert InvalidOrderLength();
+        }
 
         for (uint256 i; i < tradeCount; ) {
             bytes calldata data = tradeData[i].data;
@@ -42,7 +44,9 @@ contract V0Aggregator is TokenReceiver, LowLevelETHReturnETHIfAny, OwnableTwoSte
             }
 
             address proxy = tradeData[i].proxy;
-            if (!_proxyFunctionSelectors[proxy][selector]) revert InvalidFunction();
+            if (!_proxyFunctionSelectors[proxy][selector]) {
+                revert InvalidFunction();
+            }
 
             (bool success, bytes memory returnData) = proxy.delegatecall(data);
 
