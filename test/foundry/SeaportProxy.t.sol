@@ -24,6 +24,18 @@ contract SeaportProxyTest is TestParameters, TestHelpers, SeaportProxyTestHelper
         vm.deal(_buyer, 100 ether);
     }
 
+    function testExecuteCallerNotAggregator() public {
+        BasicOrder memory order = validBAYCId2518Order();
+        BasicOrder[] memory orders = new BasicOrder[](1);
+        orders[0] = order;
+
+        bytes[] memory ordersExtraData = new bytes[](1);
+        ordersExtraData[0] = validBAYCId2518OrderExtraData();
+
+        vm.expectRevert(IProxy.InvalidCaller.selector);
+        seaportProxy.execute(orders, ordersExtraData, validSingleOfferExtraData(3), _buyer, false);
+    }
+
     function testExecuteZeroOrders() public asPrankedUser(_buyer) {
         BasicOrder[] memory orders = new BasicOrder[](0);
         bytes[] memory ordersExtraData = new bytes[](0);
