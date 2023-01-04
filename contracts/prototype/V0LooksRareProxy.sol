@@ -27,7 +27,9 @@ contract V0LooksRareProxy {
         address recipient
     ) external payable {
         uint256 takerBidsLength = takerBids.length;
-        if (takerBidsLength == 0 || takerBidsLength != makerAsks.length) revert InvalidOrderLength();
+        if (takerBidsLength == 0 || takerBidsLength != makerAsks.length) {
+            revert InvalidOrderLength();
+        }
 
         for (uint256 i; i < takerBidsLength; ) {
             _matchSingleOrder(takerBids[i], makerAsks[i], recipient);

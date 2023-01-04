@@ -39,10 +39,14 @@ contract CryptoPunksProxy is IProxy {
         address recipient,
         bool isAtomic
     ) external payable override {
-        if (address(this) != aggregator) revert InvalidCaller();
+        if (address(this) != aggregator) {
+            revert InvalidCaller();
+        }
 
         uint256 ordersLength = orders.length;
-        if (ordersLength == 0) revert InvalidOrderLength();
+        if (ordersLength == 0) {
+            revert InvalidOrderLength();
+        }
 
         for (uint256 i; i < ordersLength; ) {
             uint256 punkId = orders[i].tokenIds[0];

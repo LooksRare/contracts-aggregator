@@ -39,10 +39,14 @@ contract SudoswapProxy is IProxy {
         address recipient,
         bool isAtomic
     ) external payable override {
-        if (address(this) != aggregator) revert InvalidCaller();
+        if (address(this) != aggregator) {
+            revert InvalidCaller();
+        }
 
         uint256 ordersLength = orders.length;
-        if (ordersLength == 0) revert InvalidOrderLength();
+        if (ordersLength == 0) {
+            revert InvalidOrderLength();
+        }
 
         uint256 ethValue;
 

@@ -56,9 +56,13 @@ contract LooksRareAggregator is
         address recipient,
         bool isAtomic
     ) external payable nonReentrant {
-        if (recipient == address(0)) revert ZeroAddress();
+        if (recipient == address(0)) {
+            revert ZeroAddress();
+        }
         uint256 tradeDataLength = tradeData.length;
-        if (tradeDataLength == 0) revert InvalidOrderLength();
+        if (tradeDataLength == 0) {
+            revert InvalidOrderLength();
+        }
 
         if (tokenTransfers.length == 0) {
             originator = msg.sender;
@@ -69,7 +73,9 @@ contract LooksRareAggregator is
         for (uint256 i; i < tradeDataLength; ) {
             TradeData calldata singleTradeData = tradeData[i];
             address proxy = singleTradeData.proxy;
-            if (_proxyFunctionSelectors[proxy][singleTradeData.selector] != 1) revert InvalidFunction();
+            if (_proxyFunctionSelectors[proxy][singleTradeData.selector] != 1) {
+                revert InvalidFunction();
+            }
 
             (bool success, bytes memory returnData) = proxy.delegatecall(
                 abi.encodeWithSelector(
@@ -110,7 +116,9 @@ contract LooksRareAggregator is
                 status := call(gas(), originator, sub(selfbalance(), 1), 0, 0, 0, 0)
             }
         }
-        if (!status) revert ETHTransferFail();
+        if (!status) {
+            revert ETHTransferFail();
+        }
 
         emit Sweep(originator);
     }
@@ -122,7 +130,9 @@ contract LooksRareAggregator is
      * @param _erc20EnabledLooksRareAggregator The ERC20 enabled LooksRare aggregator's address
      */
     function setERC20EnabledLooksRareAggregator(address _erc20EnabledLooksRareAggregator) external onlyOwner {
-        if (erc20EnabledLooksRareAggregator != address(0)) revert AlreadySet();
+        if (erc20EnabledLooksRareAggregator != address(0)) {
+            revert AlreadySet();
+        }
         erc20EnabledLooksRareAggregator = _erc20EnabledLooksRareAggregator;
     }
 

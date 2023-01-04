@@ -8,7 +8,9 @@ contract MainnetDeployment is Deployment {
     address private constant SEAPORT = 0x00000000006c3852cbEf3e08E8dF289169EdE581;
 
     function run() public {
-        if (block.chainid != 1) revert WrongChain();
+        if (block.chainid != 1) {
+            revert WrongChain();
+        }
         _run(LOOKSRARE, SEAPORT);
     }
 }
