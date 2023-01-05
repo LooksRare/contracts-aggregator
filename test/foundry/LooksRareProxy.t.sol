@@ -31,6 +31,19 @@ contract LooksRareProxyTest is TestParameters, TestHelpers, LooksRareProxyTestHe
         vm.deal(address(aggregator), 1 wei);
     }
 
+    function testExecuteCallerNotAggregator() public {
+        looksRareProxy = new LooksRareProxy(LOOKSRARE_V1, address(1));
+        aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
+
+        ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData();
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
+
+        uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
+
+        vm.expectRevert(IProxy.InvalidCaller.selector);
+        aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, true);
+    }
+
     function testExecuteAtomicFail() public asPrankedUser(_buyer) {
         ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData();
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
