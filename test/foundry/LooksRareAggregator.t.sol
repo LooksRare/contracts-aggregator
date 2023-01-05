@@ -157,6 +157,13 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers {
         aggregator.execute(tokenTransfers, tradeData, _buyer, address(0), false);
     }
 
+    function testExecuteInvalidFunction() public {
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
+        ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
+        vm.expectRevert(ILooksRareAggregator.InvalidFunction.selector);
+        aggregator.execute(tokenTransfers, tradeData, _buyer, _buyer, false);
+    }
+
     function testBuyWithERC20ButMsgSenderIsNotERC20EnabledLooksRareAggregator() public {
         MockERC20 erc20 = new MockERC20();
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](1);
