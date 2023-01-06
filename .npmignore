@@ -12,7 +12,8 @@ artifacts
 hardhat.config.ts
 contracts/test
 test/
+docs/
 
-# Others 
+# Others
 lib
 .DS_Store
