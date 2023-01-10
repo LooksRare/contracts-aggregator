@@ -154,9 +154,29 @@ contract LooksRareProtocolV2Proxy is IProxy {
                 }
             }
 
+            // TODO: keep track of total value if currency == address(0)
+
             // Execute taker bid orders
             if (numberConsecutiveOrders == 1) {
-                marketplace.executeTakerBid(takerBids[0], makerAsks[0], makerSignatures[0], merkleTrees[0], affiliate);
+                if (isAtomic) {
+                    marketplace.executeTakerBid(
+                        takerBids[0],
+                        makerAsks[0],
+                        makerSignatures[0],
+                        merkleTrees[0],
+                        affiliate
+                    );
+                } else {
+                    try
+                        marketplace.executeTakerBid(
+                            takerBids[0],
+                            makerAsks[0],
+                            makerSignatures[0],
+                            merkleTrees[0],
+                            affiliate
+                        )
+                    {} catch {}
+                }
             } else {
                 marketplace.executeMultipleTakerBids(
                     takerBids,
