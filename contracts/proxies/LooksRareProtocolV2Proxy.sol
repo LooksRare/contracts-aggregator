@@ -97,14 +97,16 @@ contract LooksRareProtocolV2Proxy is IProxy {
         address affiliate = abi.decode(extraData, (address));
 
         for (uint256 i; i < ordersLength; ) {
-            uint256 numberConsecutiveOrders;
+            uint256 numberConsecutiveOrders = 1;
             address currency = orders[i].currency;
 
             // Count how many orders to execute
-            while (i != ordersLength - 1 || currency == orders[i + 1].currency) {
-                unchecked {
-                    ++numberConsecutiveOrders;
-                    ++i;
+            if (i != ordersLength - 1) {
+                while (i != ordersLength - 1 && currency == orders[i + 1].currency) {
+                    unchecked {
+                        ++numberConsecutiveOrders;
+                        ++i;
+                    }
                 }
             }
 
@@ -193,6 +195,10 @@ contract LooksRareProtocolV2Proxy is IProxy {
                     affiliate,
                     isAtomic
                 );
+            }
+
+            unchecked {
+                ++i;
             }
         }
     }
