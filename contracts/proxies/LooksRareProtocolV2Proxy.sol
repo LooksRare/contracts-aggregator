@@ -122,10 +122,10 @@ contract LooksRareProtocolV2Proxy is IProxy {
             // Loop again over each consecutive order
             for (uint256 k = 0; k < numberConsecutiveOrders; ) {
                 OrderExtraData memory orderExtraData = abi.decode(
-                    ordersExtraData[i + k - numberConsecutiveOrders],
+                    ordersExtraData[i + k + 1 - numberConsecutiveOrders],
                     (OrderExtraData)
                 );
-                BasicOrder memory basicOrder = orders[i + k - numberConsecutiveOrders];
+                BasicOrder memory basicOrder = orders[i + k + 1 - numberConsecutiveOrders];
 
                 // Fill taker bid parameters
                 takerBids[k].recipient = recipient;
