@@ -101,7 +101,7 @@ contract LooksRareProtocolV2Proxy is IProxy {
             address currency = orders[i].currency;
 
             // Count how many orders to execute
-            while (i != ordersLength - 1 || currency != orders[i + 1].currency) {
+            while (i != ordersLength - 1 || currency == orders[i + 1].currency) {
                 unchecked {
                     ++numberConsecutiveOrders;
                     ++i;
