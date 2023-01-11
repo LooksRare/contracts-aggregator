@@ -98,9 +98,10 @@ contract LooksRareProtocolV2Proxy is IProxy {
 
         for (uint256 i; i < ordersLength; ) {
             uint256 numberConsecutiveOrders;
+            address currency = orders[i].currency;
 
             // Count how many orders to execute
-            while (i != ordersLength - 1 || orders[i].currency != orders[i + 1].currency) {
+            while (i != ordersLength - 1 || currency != orders[i + 1].currency) {
                 unchecked {
                     ++numberConsecutiveOrders;
                     ++i;
@@ -112,6 +113,9 @@ contract LooksRareProtocolV2Proxy is IProxy {
             OrderStructs.MakerAsk[] memory makerAsks = new OrderStructs.MakerAsk[](numberConsecutiveOrders);
             OrderStructs.MerkleTree[] memory merkleTrees = new OrderStructs.MerkleTree[](numberConsecutiveOrders);
             bytes[] memory makerSignatures = new bytes[](numberConsecutiveOrders);
+
+            // Initialize ethValue
+            uint256 ethValue;
 
             // Loop again over each consecutive order
             for (uint256 k = 0; k < numberConsecutiveOrders; ) {
@@ -149,17 +153,20 @@ contract LooksRareProtocolV2Proxy is IProxy {
 
                 // Merkle tree
                 merkleTrees[k] = orderExtraData.merkleTree;
+
+                if (currency == address(0)) {
+                    ethValue += basicOrder.price;
+                }
+
                 unchecked {
                     ++k;
                 }
             }
 
-            // TODO: keep track of total value if currency == address(0)
-
             // Execute taker bid orders
             if (numberConsecutiveOrders == 1) {
                 if (isAtomic) {
-                    marketplace.executeTakerBid(
+                    marketplace.executeTakerBid{value: ethValue}(
                         takerBids[0],
                         makerAsks[0],
                         makerSignatures[0],
@@ -168,7 +175,7 @@ contract LooksRareProtocolV2Proxy is IProxy {
                     );
                 } else {
                     try
-                        marketplace.executeTakerBid(
+                        marketplace.executeTakerBid{value: ethValue}(
                             takerBids[0],
                             makerAsks[0],
                             makerSignatures[0],
@@ -178,7 +185,7 @@ contract LooksRareProtocolV2Proxy is IProxy {
                     {} catch {}
                 }
             } else {
-                marketplace.executeMultipleTakerBids(
+                marketplace.executeMultipleTakerBids{value: ethValue}(
                     takerBids,
                     makerAsks,
                     makerSignatures,
