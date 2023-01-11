@@ -21,7 +21,7 @@ import {InvalidOrderLength} from "../libraries/SharedErrors.sol";
 contract LooksRareProtocolV2Proxy is IProxy {
     /**
      * @notice This struct contains the fields specific to the overall execution of all orders.
-     * @param sameCurrency Whether all trades have the same currency
+     * @param affiliate Address of the affiliate
      */
     struct ExtraData {
         address affiliate;
