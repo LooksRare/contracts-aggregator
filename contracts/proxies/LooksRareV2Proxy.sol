@@ -119,6 +119,19 @@ contract LooksRareV2Proxy is IProxy {
 
             // Loop again over each consecutive order
             for (uint256 k = 0; k < numberOfConsecutiveOrders; ) {
+                /**
+                 * @dev i = iterator in the main loop of all orders to be processed with the proxy
+                 *      k = iterator in the current loop of all orders sharing the same currency
+                 *      numberOfConsecutiveOrders = next count of maker orders that should be executed in a batch with v2
+                 *      (i + 1 - numberOfConsecutiveOrders) = first maker ask order position in the array that was not executed
+                 *      For instance, if there are 4 orders with the first one denominated in USDC and the next 3 being in ETH.
+                 *      1 - USDC
+                 *      i = 0, numberOfConsecutiveOrders = 1, k = 0
+                 *      --> i + k + 1 - numberOfConsecutiveOrders = 0;
+                 *      2 - ETH
+                 *      i = 3, numberOfConsecutiveOrders = 3, k = 0/1/2
+                 *      i + k + 1 - numberOfConsecutiveOrders = 1/2/3
+                 */
                 OrderExtraData memory orderExtraData = abi.decode(
                     ordersExtraData[i + k + 1 - numberOfConsecutiveOrders],
                     (OrderExtraData)
