@@ -36,7 +36,7 @@ verbosity = 0
 via_ir = true
 
 [profile.local]
-via_ir = true
+via_ir = false
 
 [profile.local.optimizer_details.yulDetails]
 stackAllocation = true
