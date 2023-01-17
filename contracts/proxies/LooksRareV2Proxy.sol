@@ -79,7 +79,7 @@ contract LooksRareV2Proxy is IProxy {
     function execute(
         BasicOrder[] calldata orders,
         bytes[] calldata ordersExtraData,
-        bytes memory extraData,
+        bytes calldata extraData,
         address recipient,
         bool isAtomic
     ) external payable override {
@@ -98,13 +98,16 @@ contract LooksRareV2Proxy is IProxy {
 
         for (uint256 i; i < ordersLength; ) {
             uint256 numberOfConsecutiveOrders = 1;
-            address currency = orders[i].currency;
 
-            // Count how many orders to execute
-            while (i != ordersLength - 1 && currency == orders[i + 1].currency) {
-                unchecked {
-                    ++numberOfConsecutiveOrders;
-                    ++i;
+            {
+                address currency = orders[i].currency;
+
+                // Count how many orders to execute
+                while (i != ordersLength - 1 && currency == orders[i + 1].currency) {
+                    unchecked {
+                        ++numberOfConsecutiveOrders;
+                        ++i;
+                    }
                 }
             }
 
@@ -117,8 +120,11 @@ contract LooksRareV2Proxy is IProxy {
             // Initialize ethValue
             uint256 ethValue;
 
-            // Loop again over each consecutive order
-            for (uint256 k = 0; k < numberOfConsecutiveOrders; ) {
+            /**
+             * @dev This loop rewinds from the current pointer back to the start of the subset of orders sharing the same currency.
+             *      Then, it loops through the subset with a new iterator (k).
+             */
+            for (uint256 k = 1; k <= numberOfConsecutiveOrders; ) {
                 /**
                  * @dev i = iterator in the main loop of all orders to be processed with the proxy
                  *      k = iterator in the current loop of all orders sharing the same currency
@@ -126,17 +132,18 @@ contract LooksRareV2Proxy is IProxy {
                  *      (i + 1 - numberOfConsecutiveOrders) = first maker ask order position in the array that was not executed
                  *      For instance, if there are 4 orders with the first one denominated in USDC and the next 3 being in ETH.
                  *      1 - USDC
-                 *      i = 0, numberOfConsecutiveOrders = 1, k = 0
-                 *      --> i + k + 1 - numberOfConsecutiveOrders = 0;
+                 *      i = 0, numberOfConsecutiveOrders = 1, k = 1
+                 *      --> i + k - numberOfConsecutiveOrders = 0;
                  *      2 - ETH
-                 *      i = 3, numberOfConsecutiveOrders = 3, k = 0/1/2
-                 *      i + k + 1 - numberOfConsecutiveOrders = 1/2/3
+                 *      i = 3, numberOfConsecutiveOrders = 3, k = 1/2/3
+                 *      i + k - numberOfConsecutiveOrders = 1/2/3
                  */
                 OrderExtraData memory orderExtraData = abi.decode(
-                    ordersExtraData[i + k + 1 - numberOfConsecutiveOrders],
+                    ordersExtraData[i - numberOfConsecutiveOrders + k],
                     (OrderExtraData)
                 );
-                BasicOrder memory basicOrder = orders[i + k + 1 - numberOfConsecutiveOrders];
+
+                BasicOrder calldata basicOrder = orders[i - numberOfConsecutiveOrders + k];
 
                 // Fill taker bid parameters
                 takerBids[k].recipient = recipient;
@@ -167,7 +174,7 @@ contract LooksRareV2Proxy is IProxy {
                 // Merkle tree
                 merkleTrees[k] = orderExtraData.merkleTree;
 
-                if (currency == address(0)) {
+                if (basicOrder.currency == address(0)) {
                     // IR gas savings
                     ethValue = ethValue + basicOrder.price;
                 }
