@@ -1,8 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import {OrderStructs} from "../libraries/looksrare-v2/OrderStructs.sol";
+// Libraries
+import {Maker, Taker, MerkleTree} from "../libraries/looksrare-v2/OrderStructs.sol";
 
+/**
+ * @title ILooksRareProtocolV2
+ * @author LooksRare protocol team (👀,💎)
+ */
 interface ILooksRareProtocolV2 {
     /**
      * @notice This function allows a user to execute a taker bid (against a maker ask).
@@ -13,10 +18,10 @@ interface ILooksRareProtocolV2 {
      * @param affiliate Affiliate address
      */
     function executeTakerBid(
-        OrderStructs.TakerBid calldata takerBid,
-        OrderStructs.MakerAsk calldata makerAsk,
+        Taker calldata takerBid,
+        Maker calldata makerAsk,
         bytes calldata makerSignature,
-        OrderStructs.MerkleTree calldata merkleTree,
+        MerkleTree calldata merkleTree,
         address affiliate
     ) external payable;
 
@@ -27,13 +32,14 @@ interface ILooksRareProtocolV2 {
      * @param makerSignatures Array of maker signatures
      * @param merkleTrees Array of merkle tree structs if the signature contains multiple maker orders
      * @param affiliate Affiliate address
-     * @param isAtomic Whether the execution should be atomic i.e. whether it should revert if 1 or more transactions fail
+     * @param isAtomic Whether the execution should be atomic
+     *        i.e. whether it should revert if 1 or more transactions fail
      */
     function executeMultipleTakerBids(
-        OrderStructs.TakerBid[] calldata takerBids,
-        OrderStructs.MakerAsk[] calldata makerAsks,
+        Taker[] calldata takerBids,
+        Maker[] calldata makerAsks,
         bytes[] calldata makerSignatures,
-        OrderStructs.MerkleTree[] calldata merkleTrees,
+        MerkleTree[] calldata merkleTrees,
         address affiliate,
         bool isAtomic
     ) external payable;

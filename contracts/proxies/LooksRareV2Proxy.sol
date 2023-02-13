@@ -6,7 +6,7 @@ import {ILooksRareProtocolV2} from "../interfaces/ILooksRareProtocolV2.sol";
 import {IProxy} from "../interfaces/IProxy.sol";
 
 // Libraries
-import {OrderStructs} from "../libraries/looksrare-v2/OrderStructs.sol";
+import {Maker, Taker, MerkleTree, QuoteType} from "../libraries/looksrare-v2/OrderStructs.sol";
 import {BasicOrder} from "../libraries/OrderStructs.sol";
 
 // Shared errors
@@ -30,21 +30,21 @@ contract LooksRareV2Proxy is IProxy {
     /**
      * @notice This struct contains the fields specific to the execution of each single order.
      * @param merkleTree Merkle tree struct
-     * @param askNonce Ask nonce of the maker ask order
+     * @param globalNonce Global ask nonce of the maker ask order
      * @param subsetNonce Subset nonce of the maker ask order
      * @param orderNonce Order nonce of the maker ask order
      * @param strategyId Strategy id
-     * @param minMakerAskPrice Minimum maker ask price
+     * @param price Minimum maker ask price
      * @param takerBidAdditionalParameters Additional parameters for taker bid order
      * @param makerAskAdditionalParameters Additional parameters for maker ask order
      */
     struct OrderExtraData {
-        OrderStructs.MerkleTree merkleTree;
-        uint256 askNonce;
+        MerkleTree merkleTree;
+        uint256 globalNonce;
         uint256 subsetNonce;
         uint256 orderNonce;
         uint256 strategyId;
-        uint256 minMakerAskPrice;
+        uint256 price;
         bytes takerBidAdditionalParameters;
         bytes makerAskAdditionalParameters;
     }
@@ -93,9 +93,6 @@ contract LooksRareV2Proxy is IProxy {
             revert InvalidOrderLength();
         }
 
-        // Extract the affiliate address
-        address affiliate = abi.decode(extraData, (address));
-
         for (uint256 i; i < ordersLength; ) {
             uint256 numberOfConsecutiveOrders = 1;
 
@@ -112,9 +109,9 @@ contract LooksRareV2Proxy is IProxy {
             }
 
             // Initialize structs
-            OrderStructs.TakerBid[] memory takerBids = new OrderStructs.TakerBid[](numberOfConsecutiveOrders);
-            OrderStructs.MakerAsk[] memory makerAsks = new OrderStructs.MakerAsk[](numberOfConsecutiveOrders);
-            OrderStructs.MerkleTree[] memory merkleTrees = new OrderStructs.MerkleTree[](numberOfConsecutiveOrders);
+            Taker[] memory takerBids = new Taker[](numberOfConsecutiveOrders);
+            Maker[] memory makerAsks = new Maker[](numberOfConsecutiveOrders);
+            MerkleTree[] memory merkleTrees = new MerkleTree[](numberOfConsecutiveOrders);
             bytes[] memory makerSignatures = new bytes[](numberOfConsecutiveOrders);
 
             // Initialize ethValue
@@ -138,45 +135,41 @@ contract LooksRareV2Proxy is IProxy {
                  *      i = 3, numberOfConsecutiveOrders = 3, k = 1/2/3
                  *      i + k - numberOfConsecutiveOrders = 1/2/3
                  */
-                OrderExtraData memory orderExtraData = abi.decode(
-                    ordersExtraData[i - numberOfConsecutiveOrders + k],
-                    (OrderExtraData)
-                );
 
-                BasicOrder calldata basicOrder = orders[i - numberOfConsecutiveOrders + k];
+                uint256 slicer = i - numberOfConsecutiveOrders + k;
+
+                OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[slicer], (OrderExtraData));
 
                 // Fill taker bid parameters
                 takerBids[k].recipient = recipient;
-                takerBids[k].maxPrice = basicOrder.price;
-                takerBids[k].itemIds = basicOrder.tokenIds;
-                takerBids[k].amounts = basicOrder.amounts;
                 takerBids[k].additionalParameters = orderExtraData.takerBidAdditionalParameters;
 
                 // Fill maker ask parameters
-                makerAsks[k].askNonce = orderExtraData.askNonce;
+                makerAsks[k].quoteType = QuoteType.Ask;
+                makerAsks[k].globalNonce = orderExtraData.globalNonce;
+                makerAsks[k].orderNonce = orderExtraData.orderNonce;
                 makerAsks[k].subsetNonce = orderExtraData.subsetNonce;
                 makerAsks[k].strategyId = orderExtraData.strategyId;
-                makerAsks[k].assetType = uint256(basicOrder.collectionType);
-                makerAsks[k].orderNonce = orderExtraData.orderNonce;
-                makerAsks[k].collection = basicOrder.collection;
-                makerAsks[k].currency = basicOrder.currency;
-                makerAsks[k].signer = basicOrder.signer;
-                makerAsks[k].startTime = basicOrder.startTime;
-                makerAsks[k].endTime = basicOrder.endTime;
-                makerAsks[k].minPrice = orderExtraData.minMakerAskPrice;
-                makerAsks[k].itemIds = basicOrder.tokenIds;
-                makerAsks[k].amounts = basicOrder.amounts;
+                makerAsks[k].price = orderExtraData.price;
                 makerAsks[k].additionalParameters = orderExtraData.makerAskAdditionalParameters;
+                makerAsks[k].collectionType = orders[slicer].collectionType;
+                makerAsks[k].collection = orders[slicer].collection;
+                makerAsks[k].currency = orders[slicer].currency;
+                makerAsks[k].signer = orders[slicer].signer;
+                makerAsks[k].startTime = orders[slicer].startTime;
+                makerAsks[k].endTime = orders[slicer].endTime;
+                makerAsks[k].itemIds = orders[slicer].tokenIds;
+                makerAsks[k].amounts = orders[slicer].amounts;
 
-                // Maker signatures
-                makerSignatures[k] = basicOrder.signature;
+                // Maker signature
+                makerSignatures[k] = orders[slicer].signature;
 
                 // Merkle tree
                 merkleTrees[k] = orderExtraData.merkleTree;
 
-                if (basicOrder.currency == address(0)) {
+                if (orders[slicer].currency == address(0)) {
                     // IR gas savings
-                    ethValue = ethValue + basicOrder.price;
+                    ethValue = ethValue + orders[slicer].price;
                 }
 
                 unchecked {
@@ -192,7 +185,7 @@ contract LooksRareV2Proxy is IProxy {
                         makerAsks[0],
                         makerSignatures[0],
                         merkleTrees[0],
-                        affiliate
+                        abi.decode(extraData, (address)) // affiliate
                     );
                 } else {
                     try
@@ -201,7 +194,7 @@ contract LooksRareV2Proxy is IProxy {
                             makerAsks[0],
                             makerSignatures[0],
                             merkleTrees[0],
-                            affiliate
+                            abi.decode(extraData, (address)) // affiliate
                         )
                     {} catch {}
                 }
@@ -211,7 +204,7 @@ contract LooksRareV2Proxy is IProxy {
                     makerAsks,
                     makerSignatures,
                     merkleTrees,
-                    affiliate,
+                    abi.decode(extraData, (address)), // affiliate
                     isAtomic
                 );
             }
