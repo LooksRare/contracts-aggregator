@@ -34,6 +34,8 @@ contract Deployment is Script {
         _deployLooksRareProxy(looksrare);
         _deploySeaportProxy(seaport);
 
+        adddress(looksRareAggregator).transfer(1 wei);
+
         vm.stopBroadcast();
     }
 
