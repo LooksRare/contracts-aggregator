@@ -123,13 +123,11 @@ contract LooksRareV2Proxy is IProxy {
             }
 
             // Initialize structs
-            CalldataParams memory calldataParams = CalldataParams({
-                takerBids: new Taker[](numberOfConsecutiveOrders),
-                makerAsks: new Maker[](numberOfConsecutiveOrders),
-                makerSignatures: new bytes[](numberOfConsecutiveOrders),
-                merkleTrees: new MerkleTree[](numberOfConsecutiveOrders),
-                ethValue: 0
-            });
+            CalldataParams memory calldataParams;
+            calldataParams.takerBids = new Taker[](numberOfConsecutiveOrders);
+            calldataParams.makerAsks = new Maker[](numberOfConsecutiveOrders);
+            calldataParams.makerSignatures = new bytes[](numberOfConsecutiveOrders);
+            calldataParams.merkleTrees = new MerkleTree[](numberOfConsecutiveOrders);
 
             /**
              * @dev This loop rewinds from the current pointer back to the start of the subset of orders sharing the same currency.
