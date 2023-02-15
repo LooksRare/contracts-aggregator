@@ -112,15 +112,13 @@ contract LooksRareV2Proxy is IProxy {
         for (uint256 i; i < ordersLength; ) {
             uint256 numberOfConsecutiveOrders = 1;
 
-            {
-                address currency = orders[i].currency;
+            address currency = orders[i].currency;
 
-                // Count how many orders to execute
-                while (i != ordersLength - 1 && currency == orders[i + 1].currency) {
-                    unchecked {
-                        ++numberOfConsecutiveOrders;
-                        ++i;
-                    }
+            // Count how many orders to execute
+            while (i != ordersLength - 1 && currency == orders[i + 1].currency) {
+                unchecked {
+                    ++numberOfConsecutiveOrders;
+                    ++i;
                 }
             }
 
@@ -170,7 +168,7 @@ contract LooksRareV2Proxy is IProxy {
                 calldataParams.makerAsks[k].additionalParameters = orderExtraData.makerAskAdditionalParameters;
                 calldataParams.makerAsks[k].collectionType = orders[slicer].collectionType;
                 calldataParams.makerAsks[k].collection = orders[slicer].collection;
-                calldataParams.makerAsks[k].currency = orders[slicer].currency;
+                calldataParams.makerAsks[k].currency = currency;
                 calldataParams.makerAsks[k].signer = orders[slicer].signer;
                 calldataParams.makerAsks[k].startTime = orders[slicer].startTime;
                 calldataParams.makerAsks[k].endTime = orders[slicer].endTime;
@@ -183,7 +181,7 @@ contract LooksRareV2Proxy is IProxy {
                 // Merkle tree
                 calldataParams.merkleTrees[k] = orderExtraData.merkleTree;
 
-                if (calldataParams.makerAsks[k].currency == address(0)) {
+                if (currency == address(0)) {
                     // IR gas savings
                     calldataParams.ethValue = calldataParams.ethValue + orders[slicer].price;
                 }
