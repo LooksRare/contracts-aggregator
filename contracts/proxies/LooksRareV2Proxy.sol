@@ -20,7 +20,7 @@ import {InvalidOrderLength} from "../libraries/SharedErrors.sol";
  */
 contract LooksRareV2Proxy is IProxy {
     /**
-     * @dev A struct to merge the 4 calldata variables to prevent stack too deep error.
+     * @dev A struct to merge the 5 calldata variables to prevent stack too deep error.
      * @param takerBids Taker bids to be used as function argument when calling LooksRare V2
      * @param makerAsks Maker asks to be used as function argument when calling LooksRare V2
      * @param makerSignatures Maker signatures to be used as function argument when calling LooksRare V2
