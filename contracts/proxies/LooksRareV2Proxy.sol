@@ -21,16 +21,18 @@ import {InvalidOrderLength} from "../libraries/SharedErrors.sol";
 contract LooksRareV2Proxy is IProxy {
     /**
      * @dev A struct to merge the 4 calldata variables to prevent stack too deep error.
-     * @param takerBids taker bids to be used as function argument when calling LooksRare V2
-     * @param makerAsks maker asks to be used as function argument when calling LooksRare V2
-     * @param makerSignatures maker signatures to be used as function argument when calling LooksRare V2
-     * @param merkleTrees merkle trees to be used as function argument when calling LooksRare V2
+     * @param takerBids Taker bids to be used as function argument when calling LooksRare V2
+     * @param makerAsks Maker asks to be used as function argument when calling LooksRare V2
+     * @param makerSignatures Maker signatures to be used as function argument when calling LooksRare V2
+     * @param merkleTrees Merkle trees to be used as function argument when calling LooksRare V2
+     * @param ethValue The ETH value to be passed as msg.value when calling LooksRare V2
      */
     struct CalldataParams {
         Taker[] takerBids;
         Maker[] makerAsks;
         bytes[] makerSignatures;
         MerkleTree[] merkleTrees;
+        uint256 ethValue;
     }
 
     /**
@@ -127,11 +129,9 @@ contract LooksRareV2Proxy is IProxy {
                 takerBids: new Taker[](numberOfConsecutiveOrders),
                 makerAsks: new Maker[](numberOfConsecutiveOrders),
                 makerSignatures: new bytes[](numberOfConsecutiveOrders),
-                merkleTrees: new MerkleTree[](numberOfConsecutiveOrders)
+                merkleTrees: new MerkleTree[](numberOfConsecutiveOrders),
+                ethValue: 0
             });
-
-            // Initialize ethValue
-            uint256 ethValue;
 
             /**
              * @dev This loop rewinds from the current pointer back to the start of the subset of orders sharing the same currency.
@@ -185,7 +185,7 @@ contract LooksRareV2Proxy is IProxy {
 
                 if (calldataParams.makerAsks[k].currency == address(0)) {
                     // IR gas savings
-                    ethValue = ethValue + orders[slicer].price;
+                    calldataParams.ethValue = calldataParams.ethValue + orders[slicer].price;
                 }
 
                 unchecked {
@@ -196,7 +196,7 @@ contract LooksRareV2Proxy is IProxy {
             // Execute taker bid orders
             if (numberOfConsecutiveOrders == 1) {
                 if (isAtomic) {
-                    marketplace.executeTakerBid{value: ethValue}(
+                    marketplace.executeTakerBid{value: calldataParams.ethValue}(
                         calldataParams.takerBids[0],
                         calldataParams.makerAsks[0],
                         calldataParams.makerSignatures[0],
@@ -205,7 +205,7 @@ contract LooksRareV2Proxy is IProxy {
                     );
                 } else {
                     try
-                        marketplace.executeTakerBid{value: ethValue}(
+                        marketplace.executeTakerBid{value: calldataParams.ethValue}(
                             calldataParams.takerBids[0],
                             calldataParams.makerAsks[0],
                             calldataParams.makerSignatures[0],
@@ -215,7 +215,7 @@ contract LooksRareV2Proxy is IProxy {
                     {} catch {}
                 }
             } else {
-                marketplace.executeMultipleTakerBids{value: ethValue}(
+                marketplace.executeMultipleTakerBids{value: calldataParams.ethValue}(
                     calldataParams.takerBids,
                     calldataParams.makerAsks,
                     calldataParams.makerSignatures,
