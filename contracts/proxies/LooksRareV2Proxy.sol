@@ -20,6 +20,20 @@ import {InvalidOrderLength} from "../libraries/SharedErrors.sol";
  */
 contract LooksRareV2Proxy is IProxy {
     /**
+     * @dev A struct to merge the 4 calldata variables to prevent stack too deep error.
+     * @param takerBids taker bids to be used as function argument when calling LooksRare V2
+     * @param makerAsks maker asks to be used as function argument when calling LooksRare V2
+     * @param makerSignatures maker signatures to be used as function argument when calling LooksRare V2
+     * @param merkleTrees merkle trees to be used as function argument when calling LooksRare V2
+     */
+    struct CalldataParams {
+        Taker[] takerBids;
+        Maker[] makerAsks;
+        bytes[] makerSignatures;
+        MerkleTree[] merkleTrees;
+    }
+
+    /**
      * @notice This struct contains the fields specific to the overall execution of all orders.
      * @param affiliate Address of the affiliate
      */
@@ -109,10 +123,12 @@ contract LooksRareV2Proxy is IProxy {
             }
 
             // Initialize structs
-            Taker[] memory takerBids = new Taker[](numberOfConsecutiveOrders);
-            Maker[] memory makerAsks = new Maker[](numberOfConsecutiveOrders);
-            MerkleTree[] memory merkleTrees = new MerkleTree[](numberOfConsecutiveOrders);
-            bytes[] memory makerSignatures = new bytes[](numberOfConsecutiveOrders);
+            CalldataParams memory calldataParams = CalldataParams({
+                takerBids: new Taker[](numberOfConsecutiveOrders),
+                makerAsks: new Maker[](numberOfConsecutiveOrders),
+                makerSignatures: new bytes[](numberOfConsecutiveOrders),
+                merkleTrees: new MerkleTree[](numberOfConsecutiveOrders)
+            });
 
             // Initialize ethValue
             uint256 ethValue;
@@ -141,33 +157,33 @@ contract LooksRareV2Proxy is IProxy {
                 OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[slicer], (OrderExtraData));
 
                 // Fill taker bid parameters
-                takerBids[k].recipient = recipient;
-                takerBids[k].additionalParameters = orderExtraData.takerBidAdditionalParameters;
+                calldataParams.takerBids[k].recipient = recipient;
+                calldataParams.takerBids[k].additionalParameters = orderExtraData.takerBidAdditionalParameters;
 
                 // Fill maker ask parameters
-                makerAsks[k].quoteType = QuoteType.Ask;
-                makerAsks[k].globalNonce = orderExtraData.globalNonce;
-                makerAsks[k].orderNonce = orderExtraData.orderNonce;
-                makerAsks[k].subsetNonce = orderExtraData.subsetNonce;
-                makerAsks[k].strategyId = orderExtraData.strategyId;
-                makerAsks[k].price = orderExtraData.price;
-                makerAsks[k].additionalParameters = orderExtraData.makerAskAdditionalParameters;
-                makerAsks[k].collectionType = orders[slicer].collectionType;
-                makerAsks[k].collection = orders[slicer].collection;
-                makerAsks[k].currency = orders[slicer].currency;
-                makerAsks[k].signer = orders[slicer].signer;
-                makerAsks[k].startTime = orders[slicer].startTime;
-                makerAsks[k].endTime = orders[slicer].endTime;
-                makerAsks[k].itemIds = orders[slicer].tokenIds;
-                makerAsks[k].amounts = orders[slicer].amounts;
+                calldataParams.makerAsks[k].quoteType = QuoteType.Ask;
+                calldataParams.makerAsks[k].globalNonce = orderExtraData.globalNonce;
+                calldataParams.makerAsks[k].orderNonce = orderExtraData.orderNonce;
+                calldataParams.makerAsks[k].subsetNonce = orderExtraData.subsetNonce;
+                calldataParams.makerAsks[k].strategyId = orderExtraData.strategyId;
+                calldataParams.makerAsks[k].price = orderExtraData.price;
+                calldataParams.makerAsks[k].additionalParameters = orderExtraData.makerAskAdditionalParameters;
+                calldataParams.makerAsks[k].collectionType = orders[slicer].collectionType;
+                calldataParams.makerAsks[k].collection = orders[slicer].collection;
+                calldataParams.makerAsks[k].currency = orders[slicer].currency;
+                calldataParams.makerAsks[k].signer = orders[slicer].signer;
+                calldataParams.makerAsks[k].startTime = orders[slicer].startTime;
+                calldataParams.makerAsks[k].endTime = orders[slicer].endTime;
+                calldataParams.makerAsks[k].itemIds = orders[slicer].tokenIds;
+                calldataParams.makerAsks[k].amounts = orders[slicer].amounts;
 
                 // Maker signature
-                makerSignatures[k] = orders[slicer].signature;
+                calldataParams.makerSignatures[k] = orders[slicer].signature;
 
                 // Merkle tree
-                merkleTrees[k] = orderExtraData.merkleTree;
+                calldataParams.merkleTrees[k] = orderExtraData.merkleTree;
 
-                if (orders[slicer].currency == address(0)) {
+                if (calldataParams.makerAsks[k].currency == address(0)) {
                     // IR gas savings
                     ethValue = ethValue + orders[slicer].price;
                 }
@@ -181,29 +197,29 @@ contract LooksRareV2Proxy is IProxy {
             if (numberOfConsecutiveOrders == 1) {
                 if (isAtomic) {
                     marketplace.executeTakerBid{value: ethValue}(
-                        takerBids[0],
-                        makerAsks[0],
-                        makerSignatures[0],
-                        merkleTrees[0],
+                        calldataParams.takerBids[0],
+                        calldataParams.makerAsks[0],
+                        calldataParams.makerSignatures[0],
+                        calldataParams.merkleTrees[0],
                         abi.decode(extraData, (address)) // affiliate
                     );
                 } else {
                     try
                         marketplace.executeTakerBid{value: ethValue}(
-                            takerBids[0],
-                            makerAsks[0],
-                            makerSignatures[0],
-                            merkleTrees[0],
+                            calldataParams.takerBids[0],
+                            calldataParams.makerAsks[0],
+                            calldataParams.makerSignatures[0],
+                            calldataParams.merkleTrees[0],
                             abi.decode(extraData, (address)) // affiliate
                         )
                     {} catch {}
                 }
             } else {
                 marketplace.executeMultipleTakerBids{value: ethValue}(
-                    takerBids,
-                    makerAsks,
-                    makerSignatures,
-                    merkleTrees,
+                    calldataParams.takerBids,
+                    calldataParams.makerAsks,
+                    calldataParams.makerSignatures,
+                    calldataParams.merkleTrees,
                     abi.decode(extraData, (address)), // affiliate
                     isAtomic
                 );
