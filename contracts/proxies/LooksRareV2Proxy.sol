@@ -193,6 +193,8 @@ contract LooksRareV2Proxy is IProxy {
                 }
             }
 
+            address affiliate = abi.decode(extraData, (address));
+
             // Execute taker bid orders
             if (numberOfConsecutiveOrders == 1) {
                 if (isAtomic) {
@@ -201,7 +203,7 @@ contract LooksRareV2Proxy is IProxy {
                         calldataParams.makerAsks[0],
                         calldataParams.makerSignatures[0],
                         calldataParams.merkleTrees[0],
-                        abi.decode(extraData, (address)) // affiliate
+                        affiliate
                     );
                 } else {
                     try
@@ -210,7 +212,7 @@ contract LooksRareV2Proxy is IProxy {
                             calldataParams.makerAsks[0],
                             calldataParams.makerSignatures[0],
                             calldataParams.merkleTrees[0],
-                            abi.decode(extraData, (address)) // affiliate
+                            affiliate
                         )
                     {} catch {}
                 }
@@ -220,7 +222,7 @@ contract LooksRareV2Proxy is IProxy {
                     calldataParams.makerAsks,
                     calldataParams.makerSignatures,
                     calldataParams.merkleTrees,
-                    abi.decode(extraData, (address)), // affiliate
+                    affiliate,
                     isAtomic
                 );
             }
