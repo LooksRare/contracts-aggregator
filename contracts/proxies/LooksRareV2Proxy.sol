@@ -148,7 +148,7 @@ contract LooksRareV2Proxy is IProxy {
                  *      i + k - numberOfConsecutiveOrders = 1/2/3
                  */
 
-                uint256 slicer = i - numberOfConsecutiveOrders + k;
+                uint256 slicer = i + k - numberOfConsecutiveOrders;
 
                 OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[slicer], (OrderExtraData));
 
