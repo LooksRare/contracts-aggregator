@@ -37,6 +37,7 @@
     "generate:docs": "rm -f -R docs && hardhat docgen",
     "lint": "eslint '**/*.{js,jsx,ts,tsx}'",
     "prepare": "husky install",
+    "prepublishOnly": "yarn build",
     "release": "release-it",
     "test:hardhat": "hardhat test",
     "test:forge": "forge test"
