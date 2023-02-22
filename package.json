@@ -28,6 +28,10 @@
     "type": "git",
     "url": "https://github.com/LooksRare/contracts-aggregator.git"
   },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
   "scripts": {
     "compile": "hardhat compile",
     "compile:force": "hardhat compile --force",
@@ -36,7 +40,7 @@
     "generate:docs": "rm -f -R docs && hardhat docgen",
     "lint": "eslint '**/*.{js,jsx,ts,tsx}'",
     "prepare": "husky install",
-    "prepublishOnly": "yarn build",
+    "prepublishOnly": "yarn compile",
     "release": "release-it",
     "test:hardhat": "hardhat test",
     "test:forge": "forge test"
