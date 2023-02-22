@@ -4,7 +4,6 @@
   "description": "LooksRare aggregator smart contracts",
   "author": "LooksRare",
   "license": "MIT",
-  "private": true,
   "files": [
     "/abis/*.json",
     "/contracts/*.sol",
