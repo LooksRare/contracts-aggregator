@@ -27,9 +27,10 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         aggregator.addFunction(address(looksRareV2Proxy), LooksRareV2Proxy.execute.selector);
 
         vm.deal(_buyer, 200 ether);
+        vm.deal(0x7c741AD1dd7Ce77E88e7717De1cC20e3314b4F38, 200 ether);
         vm.deal(address(aggregator), 1 wei);
 
-        vm.startPrank(0x7c741AD1dd7Ce77E88e7717De1cC20e3314b4F38);
+        vm.startPrank(MULTIFACET_NFT_OWNER);
         IERC721(MULTIFACET_NFT).setApprovalForAll(LOOKSRARE_V2_TRANSFER_MANAGER_GOERLI, true);
         address[] memory operators = new address[](1);
         operators[0] = LOOKSRARE_V2_GOERLI;
@@ -41,15 +42,18 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData();
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
 
-        uint256 value = tradeData[0].orders[0].price;
+        uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
 
         vm.expectEmit(false, false, false, true);
         emit Sweep(_buyer);
         aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, false);
 
-        assertEq(IERC721(MULTIFACET_NFT).balanceOf(_buyer), 1);
+        assertEq(IERC721(MULTIFACET_NFT).balanceOf(_buyer), 3);
         assertEq(IERC721(MULTIFACET_NFT).ownerOf(2828266), _buyer);
+        assertEq(IERC721(MULTIFACET_NFT).ownerOf(2828267), _buyer);
+        assertEq(IERC721(MULTIFACET_NFT).ownerOf(2828268), _buyer);
         assertEq(_buyer.balance, 200 ether - value);
+        assertEq(address(MULTIFACET_NFT_OWNER).balance, 200 ether + (value * 9_800) / 10_000);
     }
 
     // function testExecuteCallerNotAggregator() public {
@@ -156,7 +160,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         BasicOrder[] memory orders = validGoerliTestERC721Orders();
         MerkleTree memory merkleTree;
 
-        bytes[] memory ordersExtraData = new bytes[](1);
+        bytes[] memory ordersExtraData = new bytes[](2);
         ordersExtraData[0] = abi.encode(
             LooksRareV2Proxy.OrderExtraData({
                 merkleTree: merkleTree,
@@ -165,6 +169,19 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
                 orderNonce: 0,
                 strategyId: 0,
                 price: orders[0].price,
+                takerBidAdditionalParameters: new bytes(0),
+                makerAskAdditionalParameters: new bytes(0)
+            })
+        );
+
+        ordersExtraData[1] = abi.encode(
+            LooksRareV2Proxy.OrderExtraData({
+                merkleTree: merkleTree,
+                globalNonce: 0,
+                subsetNonce: 1,
+                orderNonce: 1,
+                strategyId: 0,
+                price: orders[1].price,
                 takerBidAdditionalParameters: new bytes(0),
                 makerAskAdditionalParameters: new bytes(0)
             })
