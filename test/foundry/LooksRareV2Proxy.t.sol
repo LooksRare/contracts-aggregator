@@ -10,7 +10,7 @@ import {ITransferManager} from "../../contracts/interfaces/ITransferManager.sol"
 import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
 import {MerkleTree} from "../../contracts/libraries/looksrare-v2/OrderStructs.sol";
 import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
-import {InvalidOrderLength} from "../../contracts/libraries/SharedErrors.sol";
+import {InvalidOrderLength, TradeExecutionFailed} from "../../contracts/libraries/SharedErrors.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TestParameters} from "./TestParameters.sol";
 import {LooksRareV2ProxyTestHelpers} from "./LooksRareV2ProxyTestHelpers.sol";
@@ -22,12 +22,14 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
     function setUp() public {
         vm.createSelectFork(vm.rpcUrl("goerli"), 8_542_878);
 
+        vm.deal(LOOKSRARE_V2_GOERLI, 1 wei);
+
         aggregator = new LooksRareAggregator(address(this));
         looksRareV2Proxy = new LooksRareV2Proxy(LOOKSRARE_V2_GOERLI, address(aggregator));
         aggregator.addFunction(address(looksRareV2Proxy), LooksRareV2Proxy.execute.selector);
 
         vm.deal(_buyer, 200 ether);
-        vm.deal(0x7c741AD1dd7Ce77E88e7717De1cC20e3314b4F38, 200 ether);
+        vm.deal(MULTIFACET_NFT_OWNER, 200 ether);
         vm.deal(address(aggregator), 1 wei);
 
         vm.startPrank(MULTIFACET_NFT_OWNER);
@@ -56,105 +58,123 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         assertEq(address(MULTIFACET_NFT_OWNER).balance, 200 ether + (value * 9_800) / 10_000);
     }
 
-    // function testExecuteCallerNotAggregator() public {
-    //     looksRareV2Proxy = new looksRareV2Proxy(LOOKSRARE_V1, address(1));
-    //     aggregator.addFunction(address(looksRareV2Proxy), looksRareV2Proxy.execute.selector);
+    function testExecuteCallerNotAggregator() public {
+        looksRareV2Proxy = new LooksRareV2Proxy(LOOKSRARE_V2_GOERLI, address(1));
+        aggregator.addFunction(address(looksRareV2Proxy), looksRareV2Proxy.execute.selector);
 
-    //     ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData();
-    //     TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
+        ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData();
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
 
-    //     uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
+        uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
 
-    //     vm.expectRevert(IProxy.InvalidCaller.selector);
-    //     aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, true);
-    // }
+        vm.expectRevert(IProxy.InvalidCaller.selector);
+        vm.prank(_buyer);
+        aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, true);
+    }
 
-    // function testExecuteAtomicFail() public asPrankedUser(_buyer) {
-    //     ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData();
-    //     TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
+    function testExecuteAtomicFail() public asPrankedUser(_buyer) {
+        ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData();
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
 
-    //     // Pay less for order 0
-    //     tradeData[0].orders[0].price -= 0.1 ether;
-    //     uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
+        uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price - 0.01 ether;
 
-    //     vm.expectRevert("Strategy: Execution invalid");
-    //     aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, true);
-    // }
+        vm.expectRevert(TradeExecutionFailed.selector);
+        aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, true);
+    }
 
-    // function testExecutePartialSuccess() public asPrankedUser(_buyer) {
-    //     ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData();
-    //     TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
+    function testExecutePartialSuccess() public {
+        ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData();
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
 
-    //     // Pay less for order 0
-    //     tradeData[0].orders[0].price -= 0.1 ether;
-    //     uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
+        uint256 firstOrderPrice = tradeData[0].orders[0].price;
+        uint256 value = firstOrderPrice + tradeData[0].orders[1].price;
 
-    //     vm.expectEmit(false, false, false, true);
-    //     emit Sweep(_buyer);
-    //     aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, false);
+        // Seller no longer owns one of the NFTs in the second order
+        vm.prank(MULTIFACET_NFT_OWNER);
+        IERC721(MULTIFACET_NFT).transferFrom(MULTIFACET_NFT_OWNER, address(69), 2828267);
 
-    //     assertEq(IERC721(BAYC).balanceOf(_buyer), 1);
-    //     assertEq(IERC721(BAYC).ownerOf(3939), _buyer);
-    //     assertEq(_buyer.balance, 200 ether - tradeData[0].orders[1].price);
-    // }
+        vm.expectEmit(false, false, false, true);
+        emit Sweep(_buyer);
+        vm.prank(_buyer);
+        aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, false);
 
-    // function testExecuteRefundExtraPaid() public asPrankedUser(_buyer) {
-    //     ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData();
-    //     TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
+        assertEq(IERC721(MULTIFACET_NFT).balanceOf(_buyer), 1);
+        assertEq(IERC721(MULTIFACET_NFT).ownerOf(2828266), _buyer);
+        assertEq(_buyer.balance, 200 ether - firstOrderPrice);
+        assertEq(address(MULTIFACET_NFT_OWNER).balance, 200 ether + (firstOrderPrice * 9_800) / 10_000);
+    }
 
-    //     uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price + 0.1 ether;
+    function testExecuteRefundExtraPaid() public asPrankedUser(_buyer) {
+        ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData();
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
 
-    //     vm.expectEmit(false, false, false, true);
-    //     emit Sweep(_buyer);
-    //     aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, false);
+        uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
 
-    //     assertEq(IERC721(BAYC).balanceOf(_buyer), 2);
-    //     assertEq(IERC721(BAYC).ownerOf(7139), _buyer);
-    //     assertEq(IERC721(BAYC).ownerOf(3939), _buyer);
-    //     assertEq(_buyer.balance, 200 ether - value + 0.1 ether);
-    // }
+        vm.expectEmit(false, false, false, true);
+        emit Sweep(_buyer);
+        aggregator.execute{value: value + 0.1 ether}(tokenTransfers, tradeData, _buyer, _buyer, false);
 
-    // function testExecuteZeroOrders() public asPrankedUser(_buyer) {
-    //     BasicOrder[] memory orders = new BasicOrder[](0);
-    //     bytes[] memory ordersExtraData = new bytes[](0);
+        assertEq(IERC721(MULTIFACET_NFT).balanceOf(_buyer), 3);
+        assertEq(IERC721(MULTIFACET_NFT).ownerOf(2828266), _buyer);
+        assertEq(IERC721(MULTIFACET_NFT).ownerOf(2828267), _buyer);
+        assertEq(IERC721(MULTIFACET_NFT).ownerOf(2828268), _buyer);
+        assertEq(_buyer.balance, 200 ether - value);
+        assertEq(address(MULTIFACET_NFT_OWNER).balance, 200 ether + (value * 9_800) / 10_000);
+    }
 
-    //     TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
+    function testExecuteZeroOrders() public asPrankedUser(_buyer) {
+        BasicOrder[] memory orders = new BasicOrder[](0);
+        bytes[] memory ordersExtraData = new bytes[](0);
 
-    //     ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
-    //     tradeData[0] = ILooksRareAggregator.TradeData({
-    //         proxy: address(looksRareV2Proxy),
-    //         selector: LooksRareProxy.execute.selector,
-    //         orders: orders,
-    //         ordersExtraData: ordersExtraData,
-    //         extraData: ""
-    //     });
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
 
-    //     vm.expectRevert(InvalidOrderLength.selector);
-    //     aggregator.execute{value: 0}(tokenTransfers, tradeData, _buyer, _buyer, true);
-    // }
+        ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
+        tradeData[0] = ILooksRareAggregator.TradeData({
+            proxy: address(looksRareV2Proxy),
+            selector: LooksRareV2Proxy.execute.selector,
+            orders: orders,
+            ordersExtraData: ordersExtraData,
+            extraData: abi.encode(address(0)) // affiliate
+        });
 
-    // function testExecuteOrdersLengthMismatch() public asPrankedUser(_buyer) {
-    //     BasicOrder[] memory orders = validBAYCOrders();
+        vm.expectRevert(InvalidOrderLength.selector);
+        aggregator.execute{value: 0}(tokenTransfers, tradeData, _buyer, _buyer, true);
+    }
 
-    //     bytes[] memory ordersExtraData = new bytes[](1);
-    //     ordersExtraData[0] = abi.encode(orders[0].price, 9_550, 0, LOOKSRARE_STRATEGY_FIXED_PRICE);
+    function testExecuteOrdersLengthMismatch() public asPrankedUser(_buyer) {
+        BasicOrder[] memory orders = validGoerliTestERC721Orders();
+        MerkleTree memory merkleTree;
 
-    //     TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
+        bytes[] memory ordersExtraData = new bytes[](1);
+        ordersExtraData[0] = abi.encode(
+            LooksRareV2Proxy.OrderExtraData({
+                merkleTree: merkleTree,
+                globalNonce: 0,
+                subsetNonce: 0,
+                orderNonce: 0,
+                strategyId: 0,
+                price: orders[0].price,
+                takerBidAdditionalParameters: new bytes(0),
+                makerAskAdditionalParameters: new bytes(0)
+            })
+        );
 
-    //     uint256 value = orders[0].price + orders[1].price;
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
 
-    //     ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
-    //     tradeData[0] = ILooksRareAggregator.TradeData({
-    //         proxy: address(looksRareV2Proxy),
-    //         selector: LooksRareProxy.execute.selector,
-    //         orders: orders,
-    //         ordersExtraData: ordersExtraData,
-    //         extraData: ""
-    //     });
+        uint256 value = orders[0].price + orders[1].price;
 
-    //     vm.expectRevert(InvalidOrderLength.selector);
-    //     aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, true);
-    // }
+        ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
+        tradeData[0] = ILooksRareAggregator.TradeData({
+            proxy: address(looksRareV2Proxy),
+            selector: LooksRareV2Proxy.execute.selector,
+            orders: orders,
+            ordersExtraData: ordersExtraData,
+            extraData: abi.encode(address(0)) // affiliate
+        });
+
+        vm.expectRevert(InvalidOrderLength.selector);
+        aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, true);
+    }
 
     function _generateTradeData() private view returns (ILooksRareAggregator.TradeData[] memory tradeData) {
         BasicOrder[] memory orders = validGoerliTestERC721Orders();
