@@ -153,31 +153,31 @@ contract LooksRareV2Proxy is IProxy {
                 OrderExtraData memory orderExtraData = abi.decode(ordersExtraData[slicer], (OrderExtraData));
 
                 // Fill taker bid parameters
-                calldataParams.takerBids[k].recipient = recipient;
-                calldataParams.takerBids[k].additionalParameters = orderExtraData.takerBidAdditionalParameters;
+                calldataParams.takerBids[k - 1].recipient = recipient;
+                calldataParams.takerBids[k - 1].additionalParameters = orderExtraData.takerBidAdditionalParameters;
 
                 // Fill maker ask parameters
-                calldataParams.makerAsks[k].quoteType = QuoteType.Ask;
-                calldataParams.makerAsks[k].globalNonce = orderExtraData.globalNonce;
-                calldataParams.makerAsks[k].orderNonce = orderExtraData.orderNonce;
-                calldataParams.makerAsks[k].subsetNonce = orderExtraData.subsetNonce;
-                calldataParams.makerAsks[k].strategyId = orderExtraData.strategyId;
-                calldataParams.makerAsks[k].price = orderExtraData.price;
-                calldataParams.makerAsks[k].additionalParameters = orderExtraData.makerAskAdditionalParameters;
-                calldataParams.makerAsks[k].collectionType = orders[slicer].collectionType;
-                calldataParams.makerAsks[k].collection = orders[slicer].collection;
-                calldataParams.makerAsks[k].currency = currency;
-                calldataParams.makerAsks[k].signer = orders[slicer].signer;
-                calldataParams.makerAsks[k].startTime = orders[slicer].startTime;
-                calldataParams.makerAsks[k].endTime = orders[slicer].endTime;
-                calldataParams.makerAsks[k].itemIds = orders[slicer].tokenIds;
-                calldataParams.makerAsks[k].amounts = orders[slicer].amounts;
+                calldataParams.makerAsks[k - 1].quoteType = QuoteType.Ask;
+                calldataParams.makerAsks[k - 1].globalNonce = orderExtraData.globalNonce;
+                calldataParams.makerAsks[k - 1].orderNonce = orderExtraData.orderNonce;
+                calldataParams.makerAsks[k - 1].subsetNonce = orderExtraData.subsetNonce;
+                calldataParams.makerAsks[k - 1].strategyId = orderExtraData.strategyId;
+                calldataParams.makerAsks[k - 1].price = orderExtraData.price;
+                calldataParams.makerAsks[k - 1].additionalParameters = orderExtraData.makerAskAdditionalParameters;
+                calldataParams.makerAsks[k - 1].collectionType = orders[slicer].collectionType;
+                calldataParams.makerAsks[k - 1].collection = orders[slicer].collection;
+                calldataParams.makerAsks[k - 1].currency = currency;
+                calldataParams.makerAsks[k - 1].signer = orders[slicer].signer;
+                calldataParams.makerAsks[k - 1].startTime = orders[slicer].startTime;
+                calldataParams.makerAsks[k - 1].endTime = orders[slicer].endTime;
+                calldataParams.makerAsks[k - 1].itemIds = orders[slicer].tokenIds;
+                calldataParams.makerAsks[k - 1].amounts = orders[slicer].amounts;
 
                 // Maker signature
-                calldataParams.makerSignatures[k] = orders[slicer].signature;
+                calldataParams.makerSignatures[k - 1] = orders[slicer].signature;
 
                 // Merkle tree
-                calldataParams.merkleTrees[k] = orderExtraData.merkleTree;
+                calldataParams.merkleTrees[k - 1] = orderExtraData.merkleTree;
 
                 if (currency == address(0)) {
                     // IR gas savings
