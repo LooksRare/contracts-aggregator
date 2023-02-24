@@ -71,7 +71,7 @@ abstract contract LooksRareV2ProxyTestHelpers {
         orders[0].startTime = 1677166047;
         orders[0].endTime = 1679796047;
         orders[0]
-            .signature = hex"e85ab1c7f2e6ecf36aae078489195e86a4f9f4f14f24cb05776e154751e6da5f5d218cd3c1a3821a6613fd611185ac914a3da75861980c42ddeb20a0a6c244791b";
+            .signature = hex"37be2cc97492f3f2cc4acf0f4355b686fb3278bea04e8b7402364ae836455d0d015df879228f9baba5efdac5f99837e91b0eca3cb5267139609b74c59f86ceba1b";
 
         orders[1].signer = NFT_OWNER;
         orders[1].collection = TEST_ERC1155;
@@ -85,7 +85,7 @@ abstract contract LooksRareV2ProxyTestHelpers {
         orders[1].startTime = 1677166047;
         orders[1].endTime = 1679796047;
         orders[1]
-            .signature = hex"ad100b06a29212b754ffc782dfdcf755c7b13f4b061b41e94ae453526ec5ff737f02422cc11d464abc8e6c541cab04ea27de98ffe9eef5cb332d244aeecd95951c";
+            .signature = hex"6b42188574e6565eed6b3d005cb16257e8949bd2ee02dc6be91a4945e1d0fd8d20e072b3679ee5969663321bd170526b43b1b9b5f14ce18e20dc48ecf0c2c7581c";
     }
 
     function validGoerliTestERC721WETHOrders() internal pure returns (BasicOrder[] memory orders) {
@@ -105,10 +105,10 @@ abstract contract LooksRareV2ProxyTestHelpers {
 
         orders[0].currency = WETH_GOERLI;
         orders[0]
-            .signature = hex"db93805759e7a0ac7bc297a05c8fd95f331bcf3a3879dc65d99f1c51a54211943238a262a987db0366933b5d29d68ee476db03448e04103623798fdb9f9b24621b";
+            .signature = hex"2d0b804e00dc419d61057d73425464c357de4a1b16621d61c70b568ab2ee04165f7e1a92f3383eca70c7a5972766518614088cc2d99c4524e9c6ec027f7b74cd1c";
 
         orders[1].currency = WETH_GOERLI;
         orders[1]
-            .signature = hex"e7d566e7e8ea36c6906f35fa76713c5f51d635a6b88df67e22dd8f59a7632e126079d1e9e8b91a893e426272297f440c8c8c0fdf1300bb1b87eb90b7e13117cc1b";
+            .signature = hex"0682b145af4981e9a865ce767e57f46401f7fb75b98ab713dd37c9f803bd576932d14ee8bb652335115fee341f8d5badfae160177fca92bc606275a0875621731c";
     }
 }
