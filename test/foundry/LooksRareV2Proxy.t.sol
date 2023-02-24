@@ -299,8 +299,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         emit Sweep(_buyer);
         aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, isAtomic);
 
-        assertEq(IERC1155(TEST_ERC1155).balanceOf(_buyer, 69), 5);
-        assertEq(IERC1155(TEST_ERC1155).balanceOf(_buyer, 420), 5);
+        _assertERC1155OwnershipChangedHands();
         assertEq(_buyer.balance, 200 ether - value);
         assertEq(address(NFT_OWNER).balance, 200 ether + (value * 9_800) / 10_000);
     }
@@ -369,8 +368,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         emit Sweep(_buyer);
         erc20EnabledLooksRareAggregator.execute(tokenTransfers, tradeData, _buyer, isAtomic);
 
-        assertEq(IERC1155(TEST_ERC1155).balanceOf(_buyer, 69), 5);
-        assertEq(IERC1155(TEST_ERC1155).balanceOf(_buyer, 420), 5);
+        _assertERC1155OwnershipChangedHands();
         assertEq(IERC20(WETH_GOERLI).balanceOf(_buyer), 200 ether - value);
         assertEq(IERC20(WETH_GOERLI).balanceOf(NFT_OWNER), 200 ether + (value * 9_800) / 10_000);
     }
@@ -389,10 +387,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, isAtomic);
 
         _assertERC721OwnershipChangedHands();
-
-        assertEq(IERC1155(TEST_ERC1155).balanceOf(_buyer, 69), 5);
-        assertEq(IERC1155(TEST_ERC1155).balanceOf(_buyer, 420), 5);
-
+        _assertERC1155OwnershipChangedHands();
         assertEq(_buyer.balance, 200 ether - value);
         assertEq(address(NFT_OWNER).balance, 200 ether + (value * 9_800) / 10_000);
     }
@@ -413,10 +408,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         erc20EnabledLooksRareAggregator.execute(tokenTransfers, tradeData, _buyer, isAtomic);
 
         _assertERC721OwnershipChangedHands();
-
-        assertEq(IERC1155(TEST_ERC1155).balanceOf(_buyer, 69), 5);
-        assertEq(IERC1155(TEST_ERC1155).balanceOf(_buyer, 420), 5);
-
+        _assertERC1155OwnershipChangedHands();
         assertEq(IERC20(WETH_GOERLI).balanceOf(_buyer), 200 ether - value);
         assertEq(IERC20(WETH_GOERLI).balanceOf(NFT_OWNER), 200 ether + (value * 9_800) / 10_000);
     }
@@ -438,9 +430,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
 
         _assertERC721OwnershipChangedHands();
 
-        assertEq(IERC1155(TEST_ERC1155).balanceOf(_buyer, 69), 5);
-        assertEq(IERC1155(TEST_ERC1155).balanceOf(_buyer, 420), 5);
-
+        _assertERC1155OwnershipChangedHands();
         assertEq(IERC20(WETH_GOERLI).balanceOf(_buyer), 200 ether - wethValue);
         assertEq(IERC20(WETH_GOERLI).balanceOf(NFT_OWNER), 200 ether + (wethValue * 9_800) / 10_000);
 
@@ -729,5 +719,10 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         assertEq(IERC721(MULTIFACET_NFT).ownerOf(2828266), _buyer);
         assertEq(IERC721(MULTIFACET_NFT).ownerOf(2828267), _buyer);
         assertEq(IERC721(MULTIFACET_NFT).ownerOf(2828268), _buyer);
+    }
+
+    function _assertERC1155OwnershipChangedHands() private {
+        assertEq(IERC1155(TEST_ERC1155).balanceOf(_buyer, 69), 5);
+        assertEq(IERC1155(TEST_ERC1155).balanceOf(_buyer, 420), 5);
     }
 }
