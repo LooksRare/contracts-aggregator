@@ -433,14 +433,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         bytes[] memory ordersExtraData = new bytes[](1);
         ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 0});
 
-        tradeData = new ILooksRareAggregator.TradeData[](1);
-        tradeData[0] = ILooksRareAggregator.TradeData({
-            proxy: address(looksRareV2Proxy),
-            selector: LooksRareV2Proxy.execute.selector,
-            orders: orders,
-            ordersExtraData: ordersExtraData,
-            extraData: abi.encode(address(0)) // affiliate
-        });
+        tradeData = _tradeData(orders, ordersExtraData);
     }
 
     function _generateERC721MultipleMakerAsksTradeData()
@@ -454,14 +447,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 0});
         ordersExtraData[1] = _orderExtraData({price: orders[1].price, orderNonce: 1});
 
-        tradeData = new ILooksRareAggregator.TradeData[](1);
-        tradeData[0] = ILooksRareAggregator.TradeData({
-            proxy: address(looksRareV2Proxy),
-            selector: LooksRareV2Proxy.execute.selector,
-            orders: orders,
-            ordersExtraData: ordersExtraData,
-            extraData: abi.encode(address(0)) // affiliate
-        });
+        tradeData = _tradeData(orders, ordersExtraData);
     }
 
     function _generateERC1155SingleMakerAskTradeData()
@@ -475,14 +461,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         bytes[] memory ordersExtraData = new bytes[](1);
         ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 2});
 
-        tradeData = new ILooksRareAggregator.TradeData[](1);
-        tradeData[0] = ILooksRareAggregator.TradeData({
-            proxy: address(looksRareV2Proxy),
-            selector: LooksRareV2Proxy.execute.selector,
-            orders: orders,
-            ordersExtraData: ordersExtraData,
-            extraData: abi.encode(address(0)) // affiliate
-        });
+        tradeData = _tradeData(orders, ordersExtraData);
     }
 
     function _generateERC1155MultipleMakerAsksTradeData()
@@ -496,14 +475,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 2});
         ordersExtraData[1] = _orderExtraData({price: orders[1].price, orderNonce: 3});
 
-        tradeData = new ILooksRareAggregator.TradeData[](1);
-        tradeData[0] = ILooksRareAggregator.TradeData({
-            proxy: address(looksRareV2Proxy),
-            selector: LooksRareV2Proxy.execute.selector,
-            orders: orders,
-            ordersExtraData: ordersExtraData,
-            extraData: abi.encode(address(0)) // affiliate
-        });
+        tradeData = _tradeData(orders, ordersExtraData);
     }
 
     function _generateERC721WETHSingleMakerAskTradeData()
@@ -517,14 +489,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         bytes[] memory ordersExtraData = new bytes[](1);
         ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 0});
 
-        tradeData = new ILooksRareAggregator.TradeData[](1);
-        tradeData[0] = ILooksRareAggregator.TradeData({
-            proxy: address(looksRareV2Proxy),
-            selector: LooksRareV2Proxy.execute.selector,
-            orders: orders,
-            ordersExtraData: ordersExtraData,
-            extraData: abi.encode(address(0)) // affiliate
-        });
+        tradeData = _tradeData(orders, ordersExtraData);
     }
 
     function _generateERC721WETHMultipleMakerAsksTradeData()
@@ -538,14 +503,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 0});
         ordersExtraData[1] = _orderExtraData({price: orders[1].price, orderNonce: 1});
 
-        tradeData = new ILooksRareAggregator.TradeData[](1);
-        tradeData[0] = ILooksRareAggregator.TradeData({
-            proxy: address(looksRareV2Proxy),
-            selector: LooksRareV2Proxy.execute.selector,
-            orders: orders,
-            ordersExtraData: ordersExtraData,
-            extraData: abi.encode(address(0)) // affiliate
-        });
+        tradeData = _tradeData(orders, ordersExtraData);
     }
 
     function _generateERC1155WETHSingleMakerAskTradeData()
@@ -559,14 +517,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         bytes[] memory ordersExtraData = new bytes[](1);
         ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 2});
 
-        tradeData = new ILooksRareAggregator.TradeData[](1);
-        tradeData[0] = ILooksRareAggregator.TradeData({
-            proxy: address(looksRareV2Proxy),
-            selector: LooksRareV2Proxy.execute.selector,
-            orders: orders,
-            ordersExtraData: ordersExtraData,
-            extraData: abi.encode(address(0)) // affiliate
-        });
+        tradeData = _tradeData(orders, ordersExtraData);
     }
 
     function _generateERC1155WETHMultipleMakerAsksTradeData()
@@ -580,14 +531,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 2});
         ordersExtraData[1] = _orderExtraData({price: orders[1].price, orderNonce: 3});
 
-        tradeData = new ILooksRareAggregator.TradeData[](1);
-        tradeData[0] = ILooksRareAggregator.TradeData({
-            proxy: address(looksRareV2Proxy),
-            selector: LooksRareV2Proxy.execute.selector,
-            orders: orders,
-            ordersExtraData: ordersExtraData,
-            extraData: abi.encode(address(0)) // affiliate
-        });
+        tradeData = _tradeData(orders, ordersExtraData);
     }
 
     function _generateMultipleMakerAsksTradeData()
@@ -609,14 +553,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         ordersExtraData[2] = _orderExtraData({price: orders[2].price, orderNonce: 2});
         ordersExtraData[3] = _orderExtraData({price: orders[3].price, orderNonce: 3});
 
-        tradeData = new ILooksRareAggregator.TradeData[](1);
-        tradeData[0] = ILooksRareAggregator.TradeData({
-            proxy: address(looksRareV2Proxy),
-            selector: LooksRareV2Proxy.execute.selector,
-            orders: orders,
-            ordersExtraData: ordersExtraData,
-            extraData: abi.encode(address(0)) // affiliate
-        });
+        tradeData = _tradeData(orders, ordersExtraData);
     }
 
     function _generateWETHMultipleMakerAsksTradeData()
@@ -638,14 +575,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         ordersExtraData[2] = _orderExtraData({price: orders[2].price, orderNonce: 2});
         ordersExtraData[3] = _orderExtraData({price: orders[3].price, orderNonce: 3});
 
-        tradeData = new ILooksRareAggregator.TradeData[](1);
-        tradeData[0] = ILooksRareAggregator.TradeData({
-            proxy: address(looksRareV2Proxy),
-            selector: LooksRareV2Proxy.execute.selector,
-            orders: orders,
-            ordersExtraData: ordersExtraData,
-            extraData: abi.encode(address(0)) // affiliate
-        });
+        tradeData = _tradeData(orders, ordersExtraData);
     }
 
     function _generateMixedCurrenciesMultipleMakerAsksTradeData()
@@ -667,6 +597,14 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         ordersExtraData[2] = _orderExtraData({price: orders[2].price, orderNonce: 1});
         ordersExtraData[3] = _orderExtraData({price: orders[3].price, orderNonce: 3});
 
+        tradeData = _tradeData(orders, ordersExtraData);
+    }
+
+    function _tradeData(BasicOrder[] memory orders, bytes[] memory ordersExtraData)
+        private
+        view
+        returns (ILooksRareAggregator.TradeData[] memory tradeData)
+    {
         tradeData = new ILooksRareAggregator.TradeData[](1);
         tradeData[0] = ILooksRareAggregator.TradeData({
             proxy: address(looksRareV2Proxy),
