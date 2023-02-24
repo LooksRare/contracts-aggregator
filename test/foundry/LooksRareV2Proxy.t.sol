@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
+import {IERC20} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC20.sol";
 import {IERC721} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC721.sol";
 import {IERC1155} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC1155.sol";
 import {LooksRareV2Proxy} from "../../contracts/proxies/LooksRareV2Proxy.sol";
+import {ERC20EnabledLooksRareAggregator} from "../../contracts/ERC20EnabledLooksRareAggregator.sol";
 import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
 import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggregator.sol";
 import {IProxy} from "../../contracts/interfaces/IProxy.sol";
@@ -18,6 +20,7 @@ import {LooksRareV2ProxyTestHelpers} from "./LooksRareV2ProxyTestHelpers.sol";
 
 contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTestHelpers {
     LooksRareAggregator private aggregator;
+    ERC20EnabledLooksRareAggregator private erc20EnabledLooksRareAggregator;
     LooksRareV2Proxy private looksRareV2Proxy;
 
     function setUp() public {
@@ -29,8 +32,15 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         looksRareV2Proxy = new LooksRareV2Proxy(LOOKSRARE_V2_GOERLI, address(aggregator));
         aggregator.addFunction(address(looksRareV2Proxy), LooksRareV2Proxy.execute.selector);
 
+        erc20EnabledLooksRareAggregator = new ERC20EnabledLooksRareAggregator(address(aggregator));
+        aggregator.setERC20EnabledLooksRareAggregator(address(erc20EnabledLooksRareAggregator));
+
+        aggregator.approve(WETH_GOERLI, LOOKSRARE_V2_GOERLI, type(uint256).max);
+
         vm.deal(_buyer, 200 ether);
         vm.deal(NFT_OWNER, 200 ether);
+        deal(WETH_GOERLI, _buyer, 200 ether);
+        deal(WETH_GOERLI, NFT_OWNER, 200 ether);
         vm.deal(address(aggregator), 1 wei);
 
         vm.startPrank(NFT_OWNER);
@@ -72,6 +82,38 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
 
     function testExecuteERC1155MultipleMakerAsksNonAtomic() public asPrankedUser(_buyer) {
         _testExecuteERC1155MultipleMakerAsks(false);
+    }
+
+    function testExecuteERC721WETHSingleMakerAskAtomic() public asPrankedUser(_buyer) {
+        _testExecuteERC721WETHSingleMakerAsk(true);
+    }
+
+    function testExecuteERC721WETHSingleMakerAskNonAtomic() public asPrankedUser(_buyer) {
+        _testExecuteERC721WETHSingleMakerAsk(false);
+    }
+
+    function testExecuteERC721WETHMultipleMakerAsksAtomic() public asPrankedUser(_buyer) {
+        _testExecuteERC721WETHMultipleMakerAsks(true);
+    }
+
+    function testExecuteERC721WETHMultipleMakerAsksNonAtomic() public asPrankedUser(_buyer) {
+        _testExecuteERC721WETHMultipleMakerAsks(false);
+    }
+
+    function testExecuteERC1155WETHSingleMakerAskAtomic() public asPrankedUser(_buyer) {
+        _testExecuteERC1155WETHSingleMakerAsk(true);
+    }
+
+    function testExecuteERC1155WETHSingleMakerAskNonAtomic() public asPrankedUser(_buyer) {
+        _testExecuteERC1155WETHSingleMakerAsk(false);
+    }
+
+    function testExecuteERC1155WETHMultipleMakerAsksAtomic() public asPrankedUser(_buyer) {
+        _testExecuteERC1155WETHMultipleMakerAsks(true);
+    }
+
+    function testExecuteERC1155WETHMultipleMakerAsksNonAtomic() public asPrankedUser(_buyer) {
+        _testExecuteERC1155WETHMultipleMakerAsks(false);
     }
 
     function testExecuteCallerNotAggregator() public {
@@ -245,6 +287,79 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         assertEq(address(NFT_OWNER).balance, 200 ether + (value * 9_800) / 10_000);
     }
 
+    function _testExecuteERC721WETHSingleMakerAsk(bool isAtomic) private {
+        ILooksRareAggregator.TradeData[] memory tradeData = _generateERC721WETHSingleMakerAskTradeData();
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](1);
+        uint256 value = tradeData[0].orders[0].price;
+        tokenTransfers[0] = TokenTransfer({amount: value, currency: WETH_GOERLI});
+
+        IERC20(WETH_GOERLI).approve(address(erc20EnabledLooksRareAggregator), value);
+
+        vm.expectEmit(false, false, false, true);
+        emit Sweep(_buyer);
+        erc20EnabledLooksRareAggregator.execute(tokenTransfers, tradeData, _buyer, isAtomic);
+
+        assertEq(IERC721(MULTIFACET_NFT).balanceOf(_buyer), 1);
+        assertEq(IERC721(MULTIFACET_NFT).ownerOf(2828266), _buyer);
+        assertEq(IERC20(WETH_GOERLI).balanceOf(_buyer), 200 ether - value);
+        assertEq(IERC20(WETH_GOERLI).balanceOf(NFT_OWNER), 200 ether + (value * 9_800) / 10_000);
+    }
+
+    function _testExecuteERC721WETHMultipleMakerAsks(bool isAtomic) private {
+        ILooksRareAggregator.TradeData[] memory tradeData = _generateERC721WETHMultipleMakerAsksTradeData();
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](1);
+        uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
+        tokenTransfers[0] = TokenTransfer({amount: value, currency: WETH_GOERLI});
+
+        IERC20(WETH_GOERLI).approve(address(erc20EnabledLooksRareAggregator), value);
+
+        vm.expectEmit(false, false, false, true);
+        emit Sweep(_buyer);
+        erc20EnabledLooksRareAggregator.execute(tokenTransfers, tradeData, _buyer, isAtomic);
+
+        assertEq(IERC721(MULTIFACET_NFT).balanceOf(_buyer), 3);
+        assertEq(IERC721(MULTIFACET_NFT).ownerOf(2828266), _buyer);
+        assertEq(IERC721(MULTIFACET_NFT).ownerOf(2828267), _buyer);
+        assertEq(IERC721(MULTIFACET_NFT).ownerOf(2828268), _buyer);
+        assertEq(IERC20(WETH_GOERLI).balanceOf(_buyer), 200 ether - value);
+        assertEq(IERC20(WETH_GOERLI).balanceOf(NFT_OWNER), 200 ether + (value * 9_800) / 10_000);
+    }
+
+    function _testExecuteERC1155WETHSingleMakerAsk(bool isAtomic) private {
+        ILooksRareAggregator.TradeData[] memory tradeData = _generateERC1155WETHSingleMakerAskTradeData();
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](1);
+        uint256 value = tradeData[0].orders[0].price;
+        tokenTransfers[0] = TokenTransfer({amount: value, currency: WETH_GOERLI});
+
+        IERC20(WETH_GOERLI).approve(address(erc20EnabledLooksRareAggregator), value);
+
+        vm.expectEmit(false, false, false, true);
+        emit Sweep(_buyer);
+        erc20EnabledLooksRareAggregator.execute(tokenTransfers, tradeData, _buyer, isAtomic);
+
+        assertEq(IERC1155(TEST_ERC1155).balanceOf(_buyer, 69), 5);
+        assertEq(IERC20(WETH_GOERLI).balanceOf(_buyer), 200 ether - value);
+        assertEq(IERC20(WETH_GOERLI).balanceOf(NFT_OWNER), 200 ether + (value * 9_800) / 10_000);
+    }
+
+    function _testExecuteERC1155WETHMultipleMakerAsks(bool isAtomic) private {
+        ILooksRareAggregator.TradeData[] memory tradeData = _generateERC1155WETHMultipleMakerAsksTradeData();
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](1);
+        uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
+        tokenTransfers[0] = TokenTransfer({amount: value, currency: WETH_GOERLI});
+
+        IERC20(WETH_GOERLI).approve(address(erc20EnabledLooksRareAggregator), value);
+
+        vm.expectEmit(false, false, false, true);
+        emit Sweep(_buyer);
+        erc20EnabledLooksRareAggregator.execute(tokenTransfers, tradeData, _buyer, isAtomic);
+
+        assertEq(IERC1155(TEST_ERC1155).balanceOf(_buyer, 69), 5);
+        assertEq(IERC1155(TEST_ERC1155).balanceOf(_buyer, 420), 5);
+        assertEq(IERC20(WETH_GOERLI).balanceOf(_buyer), 200 ether - value);
+        assertEq(IERC20(WETH_GOERLI).balanceOf(NFT_OWNER), 200 ether + (value * 9_800) / 10_000);
+    }
+
     function _generateERC721SingleMakerAskTradeData()
         private
         view
@@ -314,6 +429,90 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         returns (ILooksRareAggregator.TradeData[] memory tradeData)
     {
         BasicOrder[] memory orders = validGoerliTestERC1155Orders();
+
+        bytes[] memory ordersExtraData = new bytes[](2);
+        ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 0, subsetNonce: 0});
+        ordersExtraData[1] = _orderExtraData({price: orders[1].price, orderNonce: 1, subsetNonce: 1});
+
+        tradeData = new ILooksRareAggregator.TradeData[](1);
+        tradeData[0] = ILooksRareAggregator.TradeData({
+            proxy: address(looksRareV2Proxy),
+            selector: LooksRareV2Proxy.execute.selector,
+            orders: orders,
+            ordersExtraData: ordersExtraData,
+            extraData: abi.encode(address(0)) // affiliate
+        });
+    }
+
+    function _generateERC721WETHSingleMakerAskTradeData()
+        private
+        view
+        returns (ILooksRareAggregator.TradeData[] memory tradeData)
+    {
+        BasicOrder[] memory orders = new BasicOrder[](1);
+        orders[0] = validGoerliTestERC721WETHOrders()[0];
+
+        bytes[] memory ordersExtraData = new bytes[](1);
+        ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 0, subsetNonce: 0});
+
+        tradeData = new ILooksRareAggregator.TradeData[](1);
+        tradeData[0] = ILooksRareAggregator.TradeData({
+            proxy: address(looksRareV2Proxy),
+            selector: LooksRareV2Proxy.execute.selector,
+            orders: orders,
+            ordersExtraData: ordersExtraData,
+            extraData: abi.encode(address(0)) // affiliate
+        });
+    }
+
+    function _generateERC721WETHMultipleMakerAsksTradeData()
+        private
+        view
+        returns (ILooksRareAggregator.TradeData[] memory tradeData)
+    {
+        BasicOrder[] memory orders = validGoerliTestERC721WETHOrders();
+
+        bytes[] memory ordersExtraData = new bytes[](2);
+        ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 0, subsetNonce: 0});
+        ordersExtraData[1] = _orderExtraData({price: orders[1].price, orderNonce: 1, subsetNonce: 1});
+
+        tradeData = new ILooksRareAggregator.TradeData[](1);
+        tradeData[0] = ILooksRareAggregator.TradeData({
+            proxy: address(looksRareV2Proxy),
+            selector: LooksRareV2Proxy.execute.selector,
+            orders: orders,
+            ordersExtraData: ordersExtraData,
+            extraData: abi.encode(address(0)) // affiliate
+        });
+    }
+
+    function _generateERC1155WETHSingleMakerAskTradeData()
+        private
+        view
+        returns (ILooksRareAggregator.TradeData[] memory tradeData)
+    {
+        BasicOrder[] memory orders = new BasicOrder[](1);
+        orders[0] = validGoerliTestERC1155WETHOrders()[0];
+
+        bytes[] memory ordersExtraData = new bytes[](1);
+        ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 0, subsetNonce: 0});
+
+        tradeData = new ILooksRareAggregator.TradeData[](1);
+        tradeData[0] = ILooksRareAggregator.TradeData({
+            proxy: address(looksRareV2Proxy),
+            selector: LooksRareV2Proxy.execute.selector,
+            orders: orders,
+            ordersExtraData: ordersExtraData,
+            extraData: abi.encode(address(0)) // affiliate
+        });
+    }
+
+    function _generateERC1155WETHMultipleMakerAsksTradeData()
+        private
+        view
+        returns (ILooksRareAggregator.TradeData[] memory tradeData)
+    {
+        BasicOrder[] memory orders = validGoerliTestERC1155WETHOrders();
 
         bytes[] memory ordersExtraData = new bytes[](2);
         ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 0, subsetNonce: 0});

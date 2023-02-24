@@ -11,6 +11,7 @@ abstract contract LooksRareV2ProxyTestHelpers {
     address internal constant NFT_OWNER = 0x7c741AD1dd7Ce77E88e7717De1cC20e3314b4F38;
     address internal constant MULTIFACET_NFT = 0xf5de760f2e916647fd766B4AD9E85ff943cE3A2b;
     address internal constant TEST_ERC1155 = 0x58c3c2547084CC1C94130D6fd750A3877c7Ca5D2;
+    address private constant WETH_GOERLI = 0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6;
 
     function validGoerliTestERC721Orders() internal pure returns (BasicOrder[] memory orders) {
         orders = new BasicOrder[](2);
@@ -85,5 +86,29 @@ abstract contract LooksRareV2ProxyTestHelpers {
         orders[1].endTime = 1679796047;
         orders[1]
             .signature = hex"ad100b06a29212b754ffc782dfdcf755c7b13f4b061b41e94ae453526ec5ff737f02422cc11d464abc8e6c541cab04ea27de98ffe9eef5cb332d244aeecd95951c";
+    }
+
+    function validGoerliTestERC721WETHOrders() internal pure returns (BasicOrder[] memory orders) {
+        orders = validGoerliTestERC721Orders();
+
+        orders[0].currency = WETH_GOERLI;
+        orders[0]
+            .signature = hex"1f83beb857d1f66a25d127aa6a0eeb3f2061267fb97211435c4029faebd892aa4480d9bfb464a97ed75ca3834de7bff247bc72b6fe283eda323b4d733a66c0961c";
+
+        orders[1].currency = WETH_GOERLI;
+        orders[1]
+            .signature = hex"b4df57a39d80d7b6676ffeb3319268f2f3d551f959930c9d209b7f2b9eeda3fd00bfd25bb4ba2c35a9443349c460fe09b6efcfc730a39f11f15f79962400de411b";
+    }
+
+    function validGoerliTestERC1155WETHOrders() internal pure returns (BasicOrder[] memory orders) {
+        orders = validGoerliTestERC1155Orders();
+
+        orders[0].currency = WETH_GOERLI;
+        orders[0]
+            .signature = hex"db93805759e7a0ac7bc297a05c8fd95f331bcf3a3879dc65d99f1c51a54211943238a262a987db0366933b5d29d68ee476db03448e04103623798fdb9f9b24621b";
+
+        orders[1].currency = WETH_GOERLI;
+        orders[1]
+            .signature = hex"e7d566e7e8ea36c6906f35fa76713c5f51d635a6b88df67e22dd8f59a7632e126079d1e9e8b91a893e426272297f440c8c8c0fdf1300bb1b87eb90b7e13117cc1b";
     }
 }
