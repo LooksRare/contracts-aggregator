@@ -42,27 +42,27 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         vm.stopPrank();
     }
 
-    function testExecuteERC721Atomic() public asPrankedUser(_buyer) {
-        _testExecuteERC721(true);
+    function testExecuteERC721MultipleMakerAsksAtomic() public asPrankedUser(_buyer) {
+        _testExecuteERC721MultipleMakerAsks(true);
     }
 
-    function testExecuteERC721NonAtomic() public asPrankedUser(_buyer) {
-        _testExecuteERC721(false);
+    function testExecuteERC721MultipleMakerAsksNonAtomic() public asPrankedUser(_buyer) {
+        _testExecuteERC721MultipleMakerAsks(false);
     }
 
-    function testExecuteERC1155Atomic() public asPrankedUser(_buyer) {
-        _testExecuteERC1155(true);
+    function testExecuteERC1155MultipleMakerAsksAtomic() public asPrankedUser(_buyer) {
+        _testExecuteERC1155MultipleMakerAsks(true);
     }
 
-    function testExecuteERC1155NonAtomic() public asPrankedUser(_buyer) {
-        _testExecuteERC1155(false);
+    function testExecuteERC1155MultipleMakerAsksNonAtomic() public asPrankedUser(_buyer) {
+        _testExecuteERC1155MultipleMakerAsks(false);
     }
 
     function testExecuteCallerNotAggregator() public {
         looksRareV2Proxy = new LooksRareV2Proxy(LOOKSRARE_V2_GOERLI, address(1));
         aggregator.addFunction(address(looksRareV2Proxy), looksRareV2Proxy.execute.selector);
 
-        ILooksRareAggregator.TradeData[] memory tradeData = _generateERC721TradeData();
+        ILooksRareAggregator.TradeData[] memory tradeData = _generateERC721MultipleMakerAsksTradeData();
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
 
         uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
@@ -73,7 +73,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
     }
 
     function testExecuteAtomicFail() public asPrankedUser(_buyer) {
-        ILooksRareAggregator.TradeData[] memory tradeData = _generateERC721TradeData();
+        ILooksRareAggregator.TradeData[] memory tradeData = _generateERC721MultipleMakerAsksTradeData();
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
 
         uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price - 0.01 ether;
@@ -83,7 +83,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
     }
 
     function testExecutePartialSuccess() public {
-        ILooksRareAggregator.TradeData[] memory tradeData = _generateERC721TradeData();
+        ILooksRareAggregator.TradeData[] memory tradeData = _generateERC721MultipleMakerAsksTradeData();
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
 
         uint256 firstOrderPrice = tradeData[0].orders[0].price;
@@ -105,7 +105,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
     }
 
     function testExecuteRefundExtraPaid() public asPrankedUser(_buyer) {
-        ILooksRareAggregator.TradeData[] memory tradeData = _generateERC721TradeData();
+        ILooksRareAggregator.TradeData[] memory tradeData = _generateERC721MultipleMakerAsksTradeData();
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
 
         uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
@@ -176,8 +176,8 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, true);
     }
 
-    function _testExecuteERC721(bool isAtomic) private {
-        ILooksRareAggregator.TradeData[] memory tradeData = _generateERC721TradeData();
+    function _testExecuteERC721MultipleMakerAsks(bool isAtomic) private {
+        ILooksRareAggregator.TradeData[] memory tradeData = _generateERC721MultipleMakerAsksTradeData();
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
 
         uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
@@ -194,8 +194,8 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         assertEq(address(NFT_OWNER).balance, 200 ether + (value * 9_800) / 10_000);
     }
 
-    function _testExecuteERC1155(bool isAtomic) private {
-        ILooksRareAggregator.TradeData[] memory tradeData = _generateERC1155TradeData();
+    function _testExecuteERC1155MultipleMakerAsks(bool isAtomic) private {
+        ILooksRareAggregator.TradeData[] memory tradeData = _generateERC1155MultipleMakerAsksTradeData();
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
 
         uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
@@ -210,7 +210,11 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         assertEq(address(NFT_OWNER).balance, 200 ether + (value * 9_800) / 10_000);
     }
 
-    function _generateERC721TradeData() private view returns (ILooksRareAggregator.TradeData[] memory tradeData) {
+    function _generateERC721MultipleMakerAsksTradeData()
+        private
+        view
+        returns (ILooksRareAggregator.TradeData[] memory tradeData)
+    {
         BasicOrder[] memory orders = validGoerliTestERC721Orders();
         MerkleTree memory merkleTree;
 
@@ -251,7 +255,11 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         });
     }
 
-    function _generateERC1155TradeData() private view returns (ILooksRareAggregator.TradeData[] memory tradeData) {
+    function _generateERC1155MultipleMakerAsksTradeData()
+        private
+        view
+        returns (ILooksRareAggregator.TradeData[] memory tradeData)
+    {
         BasicOrder[] memory orders = validGoerliTestERC1155Orders();
         MerkleTree memory merkleTree;
 
