@@ -222,7 +222,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         BasicOrder[] memory orders = validGoerliTestERC721Orders();
 
         bytes[] memory ordersExtraData = new bytes[](1);
-        ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 0, subsetNonce: 0});
+        ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 0});
 
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
 
@@ -431,7 +431,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         orders[0] = validGoerliTestERC721Orders()[0];
 
         bytes[] memory ordersExtraData = new bytes[](1);
-        ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 0, subsetNonce: 0});
+        ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 0});
 
         tradeData = new ILooksRareAggregator.TradeData[](1);
         tradeData[0] = ILooksRareAggregator.TradeData({
@@ -451,8 +451,8 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         BasicOrder[] memory orders = validGoerliTestERC721Orders();
 
         bytes[] memory ordersExtraData = new bytes[](2);
-        ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 0, subsetNonce: 0});
-        ordersExtraData[1] = _orderExtraData({price: orders[1].price, orderNonce: 1, subsetNonce: 0});
+        ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 0});
+        ordersExtraData[1] = _orderExtraData({price: orders[1].price, orderNonce: 1});
 
         tradeData = new ILooksRareAggregator.TradeData[](1);
         tradeData[0] = ILooksRareAggregator.TradeData({
@@ -473,7 +473,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         orders[0] = validGoerliTestERC1155Orders()[0];
 
         bytes[] memory ordersExtraData = new bytes[](1);
-        ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 2, subsetNonce: 0});
+        ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 2});
 
         tradeData = new ILooksRareAggregator.TradeData[](1);
         tradeData[0] = ILooksRareAggregator.TradeData({
@@ -493,8 +493,8 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         BasicOrder[] memory orders = validGoerliTestERC1155Orders();
 
         bytes[] memory ordersExtraData = new bytes[](2);
-        ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 2, subsetNonce: 0});
-        ordersExtraData[1] = _orderExtraData({price: orders[1].price, orderNonce: 3, subsetNonce: 0});
+        ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 2});
+        ordersExtraData[1] = _orderExtraData({price: orders[1].price, orderNonce: 3});
 
         tradeData = new ILooksRareAggregator.TradeData[](1);
         tradeData[0] = ILooksRareAggregator.TradeData({
@@ -515,7 +515,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         orders[0] = validGoerliTestERC721WETHOrders()[0];
 
         bytes[] memory ordersExtraData = new bytes[](1);
-        ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 0, subsetNonce: 0});
+        ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 0});
 
         tradeData = new ILooksRareAggregator.TradeData[](1);
         tradeData[0] = ILooksRareAggregator.TradeData({
@@ -535,8 +535,8 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         BasicOrder[] memory orders = validGoerliTestERC721WETHOrders();
 
         bytes[] memory ordersExtraData = new bytes[](2);
-        ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 0, subsetNonce: 0});
-        ordersExtraData[1] = _orderExtraData({price: orders[1].price, orderNonce: 1, subsetNonce: 0});
+        ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 0});
+        ordersExtraData[1] = _orderExtraData({price: orders[1].price, orderNonce: 1});
 
         tradeData = new ILooksRareAggregator.TradeData[](1);
         tradeData[0] = ILooksRareAggregator.TradeData({
@@ -557,7 +557,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         orders[0] = validGoerliTestERC1155WETHOrders()[0];
 
         bytes[] memory ordersExtraData = new bytes[](1);
-        ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 2, subsetNonce: 0});
+        ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 2});
 
         tradeData = new ILooksRareAggregator.TradeData[](1);
         tradeData[0] = ILooksRareAggregator.TradeData({
@@ -577,8 +577,8 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         BasicOrder[] memory orders = validGoerliTestERC1155WETHOrders();
 
         bytes[] memory ordersExtraData = new bytes[](2);
-        ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 2, subsetNonce: 0});
-        ordersExtraData[1] = _orderExtraData({price: orders[1].price, orderNonce: 3, subsetNonce: 0});
+        ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 2});
+        ordersExtraData[1] = _orderExtraData({price: orders[1].price, orderNonce: 3});
 
         tradeData = new ILooksRareAggregator.TradeData[](1);
         tradeData[0] = ILooksRareAggregator.TradeData({
@@ -604,10 +604,10 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         orders[3] = erc1155Orders[1];
 
         bytes[] memory ordersExtraData = new bytes[](4);
-        ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 0, subsetNonce: 0});
-        ordersExtraData[1] = _orderExtraData({price: orders[1].price, orderNonce: 1, subsetNonce: 0});
-        ordersExtraData[2] = _orderExtraData({price: orders[2].price, orderNonce: 2, subsetNonce: 0});
-        ordersExtraData[3] = _orderExtraData({price: orders[3].price, orderNonce: 3, subsetNonce: 0});
+        ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 0});
+        ordersExtraData[1] = _orderExtraData({price: orders[1].price, orderNonce: 1});
+        ordersExtraData[2] = _orderExtraData({price: orders[2].price, orderNonce: 2});
+        ordersExtraData[3] = _orderExtraData({price: orders[3].price, orderNonce: 3});
 
         tradeData = new ILooksRareAggregator.TradeData[](1);
         tradeData[0] = ILooksRareAggregator.TradeData({
@@ -633,10 +633,10 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         orders[3] = erc1155Orders[1];
 
         bytes[] memory ordersExtraData = new bytes[](4);
-        ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 0, subsetNonce: 0});
-        ordersExtraData[1] = _orderExtraData({price: orders[1].price, orderNonce: 1, subsetNonce: 0});
-        ordersExtraData[2] = _orderExtraData({price: orders[2].price, orderNonce: 2, subsetNonce: 0});
-        ordersExtraData[3] = _orderExtraData({price: orders[3].price, orderNonce: 3, subsetNonce: 0});
+        ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 0});
+        ordersExtraData[1] = _orderExtraData({price: orders[1].price, orderNonce: 1});
+        ordersExtraData[2] = _orderExtraData({price: orders[2].price, orderNonce: 2});
+        ordersExtraData[3] = _orderExtraData({price: orders[3].price, orderNonce: 3});
 
         tradeData = new ILooksRareAggregator.TradeData[](1);
         tradeData[0] = ILooksRareAggregator.TradeData({
@@ -662,10 +662,10 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         orders[3] = erc1155Orders[1];
 
         bytes[] memory ordersExtraData = new bytes[](4);
-        ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 0, subsetNonce: 0});
-        ordersExtraData[1] = _orderExtraData({price: orders[1].price, orderNonce: 2, subsetNonce: 0});
-        ordersExtraData[2] = _orderExtraData({price: orders[2].price, orderNonce: 1, subsetNonce: 0});
-        ordersExtraData[3] = _orderExtraData({price: orders[3].price, orderNonce: 3, subsetNonce: 0});
+        ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 0});
+        ordersExtraData[1] = _orderExtraData({price: orders[1].price, orderNonce: 2});
+        ordersExtraData[2] = _orderExtraData({price: orders[2].price, orderNonce: 1});
+        ordersExtraData[3] = _orderExtraData({price: orders[3].price, orderNonce: 3});
 
         tradeData = new ILooksRareAggregator.TradeData[](1);
         tradeData[0] = ILooksRareAggregator.TradeData({
@@ -677,18 +677,14 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         });
     }
 
-    function _orderExtraData(
-        uint256 price,
-        uint256 orderNonce,
-        uint256 subsetNonce
-    ) private pure returns (bytes memory) {
+    function _orderExtraData(uint256 price, uint256 orderNonce) private pure returns (bytes memory) {
         MerkleTree memory merkleTree;
         return
             abi.encode(
                 LooksRareV2Proxy.OrderExtraData({
                     merkleTree: merkleTree,
                     globalNonce: 0,
-                    subsetNonce: subsetNonce,
+                    subsetNonce: 0,
                     orderNonce: orderNonce,
                     strategyId: 0,
                     price: price,
