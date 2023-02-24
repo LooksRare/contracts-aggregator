@@ -182,8 +182,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
 
         assertEq(IERC721(MULTIFACET_NFT).balanceOf(_buyer), 1);
         assertEq(IERC721(MULTIFACET_NFT).ownerOf(2828266), _buyer);
-        assertEq(_buyer.balance, 200 ether - firstOrderPrice);
-        assertEq(address(NFT_OWNER).balance, 200 ether + (firstOrderPrice * 9_800) / 10_000);
+        _assertETHChangedHands(firstOrderPrice);
     }
 
     function testExecuteRefundExtraPaid() public asPrankedUser(_buyer) {
@@ -197,8 +196,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         aggregator.execute{value: value + 0.1 ether}(tokenTransfers, tradeData, _buyer, _buyer, false);
 
         _assertERC721OwnershipChangedHands();
-        assertEq(_buyer.balance, 200 ether - value);
-        assertEq(address(NFT_OWNER).balance, 200 ether + (value * 9_800) / 10_000);
+        _assertETHChangedHands(value);
     }
 
     function testExecuteZeroOrders() public asPrankedUser(_buyer) {
@@ -255,8 +253,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
 
         assertEq(IERC721(MULTIFACET_NFT).balanceOf(_buyer), 1);
         assertEq(IERC721(MULTIFACET_NFT).ownerOf(2828266), _buyer);
-        assertEq(_buyer.balance, 200 ether - value);
-        assertEq(address(NFT_OWNER).balance, 200 ether + (value * 9_800) / 10_000);
+        _assertETHChangedHands(value);
     }
 
     function _testExecuteERC721MultipleMakerAsks(bool isAtomic) private {
@@ -270,8 +267,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, isAtomic);
 
         _assertERC721OwnershipChangedHands();
-        assertEq(_buyer.balance, 200 ether - value);
-        assertEq(address(NFT_OWNER).balance, 200 ether + (value * 9_800) / 10_000);
+        _assertETHChangedHands(value);
     }
 
     function _testExecuteERC1155SingleMakerAsk(bool isAtomic) private {
@@ -285,8 +281,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, isAtomic);
 
         assertEq(IERC1155(TEST_ERC1155).balanceOf(_buyer, 69), 5);
-        assertEq(_buyer.balance, 200 ether - value);
-        assertEq(address(NFT_OWNER).balance, 200 ether + (value * 9_800) / 10_000);
+        _assertETHChangedHands(value);
     }
 
     function _testExecuteERC1155MultipleMakerAsks(bool isAtomic) private {
@@ -300,8 +295,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, isAtomic);
 
         _assertERC1155OwnershipChangedHands();
-        assertEq(_buyer.balance, 200 ether - value);
-        assertEq(address(NFT_OWNER).balance, 200 ether + (value * 9_800) / 10_000);
+        _assertETHChangedHands(value);
     }
 
     function _testExecuteERC721WETHSingleMakerAsk(bool isAtomic) private {
@@ -388,8 +382,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
 
         _assertERC721OwnershipChangedHands();
         _assertERC1155OwnershipChangedHands();
-        assertEq(_buyer.balance, 200 ether - value);
-        assertEq(address(NFT_OWNER).balance, 200 ether + (value * 9_800) / 10_000);
+        _assertETHChangedHands(value);
     }
 
     function _testExecuteWETHMultipleMakerAsks(bool isAtomic) private {
@@ -434,8 +427,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         assertEq(IERC20(WETH_GOERLI).balanceOf(_buyer), 200 ether - wethValue);
         assertEq(IERC20(WETH_GOERLI).balanceOf(NFT_OWNER), 200 ether + (wethValue * 9_800) / 10_000);
 
-        assertEq(_buyer.balance, 200 ether - ethValue);
-        assertEq(NFT_OWNER.balance, 200 ether + (ethValue * 9_800) / 10_000);
+        _assertETHChangedHands(ethValue);
     }
 
     function _generateERC721SingleMakerAskTradeData()
@@ -724,5 +716,10 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
     function _assertERC1155OwnershipChangedHands() private {
         assertEq(IERC1155(TEST_ERC1155).balanceOf(_buyer, 69), 5);
         assertEq(IERC1155(TEST_ERC1155).balanceOf(_buyer, 420), 5);
+    }
+
+    function _assertETHChangedHands(uint256 value) private {
+        assertEq(_buyer.balance, 200 ether - value);
+        assertEq(address(NFT_OWNER).balance, 200 ether + (value * 9_800) / 10_000);
     }
 }
