@@ -42,38 +42,20 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         vm.stopPrank();
     }
 
-    function testExecuteERC721() public asPrankedUser(_buyer) {
-        ILooksRareAggregator.TradeData[] memory tradeData = _generateERC721TradeData();
-        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
-
-        uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
-
-        vm.expectEmit(false, false, false, true);
-        emit Sweep(_buyer);
-        aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, false);
-
-        assertEq(IERC721(MULTIFACET_NFT).balanceOf(_buyer), 3);
-        assertEq(IERC721(MULTIFACET_NFT).ownerOf(2828266), _buyer);
-        assertEq(IERC721(MULTIFACET_NFT).ownerOf(2828267), _buyer);
-        assertEq(IERC721(MULTIFACET_NFT).ownerOf(2828268), _buyer);
-        assertEq(_buyer.balance, 200 ether - value);
-        assertEq(address(NFT_OWNER).balance, 200 ether + (value * 9_800) / 10_000);
+    function testExecuteERC721Atomic() public asPrankedUser(_buyer) {
+        _testExecuteERC721(true);
     }
 
-    function testExecuteERC1155() public asPrankedUser(_buyer) {
-        ILooksRareAggregator.TradeData[] memory tradeData = _generateERC1155TradeData();
-        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
+    function testExecuteERC721NonAtomic() public asPrankedUser(_buyer) {
+        _testExecuteERC721(false);
+    }
 
-        uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
+    function testExecuteERC1155Atomic() public asPrankedUser(_buyer) {
+        _testExecuteERC1155(true);
+    }
 
-        vm.expectEmit(false, false, false, true);
-        emit Sweep(_buyer);
-        aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, false);
-
-        assertEq(IERC1155(TEST_ERC1155).balanceOf(_buyer, 69), 5);
-        assertEq(IERC1155(TEST_ERC1155).balanceOf(_buyer, 420), 5);
-        assertEq(_buyer.balance, 200 ether - value);
-        assertEq(address(NFT_OWNER).balance, 200 ether + (value * 9_800) / 10_000);
+    function testExecuteERC1155NonAtomic() public asPrankedUser(_buyer) {
+        _testExecuteERC1155(false);
     }
 
     function testExecuteCallerNotAggregator() public {
@@ -192,6 +174,40 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
 
         vm.expectRevert(InvalidOrderLength.selector);
         aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, true);
+    }
+
+    function _testExecuteERC721(bool isAtomic) private {
+        ILooksRareAggregator.TradeData[] memory tradeData = _generateERC721TradeData();
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
+
+        uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
+
+        vm.expectEmit(false, false, false, true);
+        emit Sweep(_buyer);
+        aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, isAtomic);
+
+        assertEq(IERC721(MULTIFACET_NFT).balanceOf(_buyer), 3);
+        assertEq(IERC721(MULTIFACET_NFT).ownerOf(2828266), _buyer);
+        assertEq(IERC721(MULTIFACET_NFT).ownerOf(2828267), _buyer);
+        assertEq(IERC721(MULTIFACET_NFT).ownerOf(2828268), _buyer);
+        assertEq(_buyer.balance, 200 ether - value);
+        assertEq(address(NFT_OWNER).balance, 200 ether + (value * 9_800) / 10_000);
+    }
+
+    function _testExecuteERC1155(bool isAtomic) private {
+        ILooksRareAggregator.TradeData[] memory tradeData = _generateERC1155TradeData();
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
+
+        uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
+
+        vm.expectEmit(false, false, false, true);
+        emit Sweep(_buyer);
+        aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, isAtomic);
+
+        assertEq(IERC1155(TEST_ERC1155).balanceOf(_buyer, 69), 5);
+        assertEq(IERC1155(TEST_ERC1155).balanceOf(_buyer, 420), 5);
+        assertEq(_buyer.balance, 200 ether - value);
+        assertEq(address(NFT_OWNER).balance, 200 ether + (value * 9_800) / 10_000);
     }
 
     function _generateERC721TradeData() private view returns (ILooksRareAggregator.TradeData[] memory tradeData) {
