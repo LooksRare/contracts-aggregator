@@ -147,7 +147,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         ILooksRareAggregator.TradeData[] memory tradeData = _generateERC721MultipleMakerAsksTradeData();
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
 
-        uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
+        uint256 value = _orderValue(tradeData[0], address(0));
 
         vm.expectRevert(IProxy.InvalidCaller.selector);
         vm.prank(_buyer);
@@ -158,7 +158,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         ILooksRareAggregator.TradeData[] memory tradeData = _generateERC721MultipleMakerAsksTradeData();
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
 
-        uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price - 0.01 ether;
+        uint256 value = _orderValue(tradeData[0], address(0)) - 0.01 ether;
 
         vm.expectRevert(TradeExecutionFailed.selector);
         aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, true);
@@ -168,8 +168,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         ILooksRareAggregator.TradeData[] memory tradeData = _generateERC721MultipleMakerAsksTradeData();
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
 
-        uint256 firstOrderPrice = tradeData[0].orders[0].price;
-        uint256 value = firstOrderPrice + tradeData[0].orders[1].price;
+        uint256 value = _orderValue(tradeData[0], address(0));
 
         // Seller no longer owns one of the NFTs in the second order
         vm.prank(NFT_OWNER);
@@ -182,14 +181,14 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
 
         assertEq(IERC721(MULTIFACET_NFT).balanceOf(_buyer), 1);
         assertEq(IERC721(MULTIFACET_NFT).ownerOf(2828266), _buyer);
-        _assertETHChangedHands(firstOrderPrice);
+        _assertETHChangedHands(tradeData[0].orders[0].price);
     }
 
     function testExecuteRefundExtraPaid() public asPrankedUser(_buyer) {
         ILooksRareAggregator.TradeData[] memory tradeData = _generateERC721MultipleMakerAsksTradeData();
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
 
-        uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
+        uint256 value = _orderValue(tradeData[0], address(0));
 
         vm.expectEmit(false, false, false, true);
         emit Sweep(_buyer);
@@ -226,16 +225,9 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
 
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
 
-        uint256 value = orders[0].price + orders[1].price;
+        ILooksRareAggregator.TradeData[] memory tradeData = _tradeData(orders, ordersExtraData);
 
-        ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
-        tradeData[0] = ILooksRareAggregator.TradeData({
-            proxy: address(looksRareV2Proxy),
-            selector: LooksRareV2Proxy.execute.selector,
-            orders: orders,
-            ordersExtraData: ordersExtraData,
-            extraData: abi.encode(address(0)) // affiliate
-        });
+        uint256 value = _orderValue(tradeData[0], address(0));
 
         vm.expectRevert(InvalidOrderLength.selector);
         aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, true);
@@ -245,7 +237,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         ILooksRareAggregator.TradeData[] memory tradeData = _generateERC721SingleMakerAskTradeData();
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
 
-        uint256 value = tradeData[0].orders[0].price;
+        uint256 value = _orderValue(tradeData[0], address(0));
 
         vm.expectEmit(false, false, false, true);
         emit Sweep(_buyer);
@@ -260,7 +252,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         ILooksRareAggregator.TradeData[] memory tradeData = _generateERC721MultipleMakerAsksTradeData();
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
 
-        uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
+        uint256 value = _orderValue(tradeData[0], address(0));
 
         vm.expectEmit(false, false, false, true);
         emit Sweep(_buyer);
@@ -274,7 +266,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         ILooksRareAggregator.TradeData[] memory tradeData = _generateERC1155SingleMakerAskTradeData();
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
 
-        uint256 value = tradeData[0].orders[0].price;
+        uint256 value = _orderValue(tradeData[0], address(0));
 
         vm.expectEmit(false, false, false, true);
         emit Sweep(_buyer);
@@ -288,7 +280,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         ILooksRareAggregator.TradeData[] memory tradeData = _generateERC1155MultipleMakerAsksTradeData();
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
 
-        uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
+        uint256 value = _orderValue(tradeData[0], address(0));
 
         vm.expectEmit(false, false, false, true);
         emit Sweep(_buyer);
@@ -301,7 +293,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
     function _testExecuteERC721WETHSingleMakerAsk(bool isAtomic) private {
         ILooksRareAggregator.TradeData[] memory tradeData = _generateERC721WETHSingleMakerAskTradeData();
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](1);
-        uint256 value = tradeData[0].orders[0].price;
+        uint256 value = _orderValue(tradeData[0], WETH_GOERLI);
         tokenTransfers[0] = TokenTransfer({amount: value, currency: WETH_GOERLI});
 
         IERC20(WETH_GOERLI).approve(address(erc20EnabledLooksRareAggregator), value);
@@ -318,7 +310,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
     function _testExecuteERC721WETHMultipleMakerAsks(bool isAtomic) private {
         ILooksRareAggregator.TradeData[] memory tradeData = _generateERC721WETHMultipleMakerAsksTradeData();
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](1);
-        uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
+        uint256 value = _orderValue(tradeData[0], WETH_GOERLI);
         tokenTransfers[0] = TokenTransfer({amount: value, currency: WETH_GOERLI});
 
         IERC20(WETH_GOERLI).approve(address(erc20EnabledLooksRareAggregator), value);
@@ -334,7 +326,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
     function _testExecuteERC1155WETHSingleMakerAsk(bool isAtomic) private {
         ILooksRareAggregator.TradeData[] memory tradeData = _generateERC1155WETHSingleMakerAskTradeData();
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](1);
-        uint256 value = tradeData[0].orders[0].price;
+        uint256 value = _orderValue(tradeData[0], WETH_GOERLI);
         tokenTransfers[0] = TokenTransfer({amount: value, currency: WETH_GOERLI});
 
         IERC20(WETH_GOERLI).approve(address(erc20EnabledLooksRareAggregator), value);
@@ -350,7 +342,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
     function _testExecuteERC1155WETHMultipleMakerAsks(bool isAtomic) private {
         ILooksRareAggregator.TradeData[] memory tradeData = _generateERC1155WETHMultipleMakerAsksTradeData();
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](1);
-        uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
+        uint256 value = _orderValue(tradeData[0], WETH_GOERLI);
         tokenTransfers[0] = TokenTransfer({amount: value, currency: WETH_GOERLI});
 
         IERC20(WETH_GOERLI).approve(address(erc20EnabledLooksRareAggregator), value);
@@ -367,10 +359,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         ILooksRareAggregator.TradeData[] memory tradeData = _generateMultipleMakerAsksTradeData();
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
 
-        uint256 value = tradeData[0].orders[0].price +
-            tradeData[0].orders[1].price +
-            tradeData[0].orders[2].price +
-            tradeData[0].orders[3].price;
+        uint256 value = _orderValue(tradeData[0], address(0));
 
         vm.expectEmit(false, false, false, true);
         emit Sweep(_buyer);
@@ -383,10 +372,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
 
     function _testExecuteWETHMultipleMakerAsks(bool isAtomic) private {
         ILooksRareAggregator.TradeData[] memory tradeData = _generateWETHMultipleMakerAsksTradeData();
-        uint256 value = tradeData[0].orders[0].price +
-            tradeData[0].orders[1].price +
-            tradeData[0].orders[2].price +
-            tradeData[0].orders[3].price;
+        uint256 value = _orderValue(tradeData[0], WETH_GOERLI);
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](1);
         tokenTransfers[0] = TokenTransfer({amount: value, currency: WETH_GOERLI});
 
@@ -404,8 +390,8 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
     function _testExecuteMixedCurrenciesMultipleMakerAsks(bool isAtomic) private {
         ILooksRareAggregator.TradeData[] memory tradeData = _generateMixedCurrenciesMultipleMakerAsksTradeData();
 
-        uint256 ethValue = tradeData[0].orders[0].price + tradeData[0].orders[2].price;
-        uint256 wethValue = tradeData[0].orders[1].price + tradeData[0].orders[3].price;
+        uint256 ethValue = _orderValue(tradeData[0], address(0));
+        uint256 wethValue = _orderValue(tradeData[0], WETH_GOERLI);
 
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](1);
         tokenTransfers[0] = TokenTransfer({amount: wethValue, currency: WETH_GOERLI});
@@ -598,6 +584,20 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         ordersExtraData[3] = _orderExtraData({price: orders[3].price, orderNonce: 3});
 
         tradeData = _tradeData(orders, ordersExtraData);
+    }
+
+    function _orderValue(ILooksRareAggregator.TradeData memory tradeData, address currency)
+        private
+        pure
+        returns (uint256 value)
+    {
+        BasicOrder[] memory orders = tradeData.orders;
+        uint256 length = orders.length;
+        for (uint256 i; i < length; i++) {
+            if (orders[i].currency == currency) {
+                value += orders[i].price;
+            }
+        }
     }
 
     function _tradeData(BasicOrder[] memory orders, bytes[] memory ordersExtraData)
