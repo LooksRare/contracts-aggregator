@@ -42,6 +42,14 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         vm.stopPrank();
     }
 
+    function testExecuteERC721SingleMakerAskAtomic() public asPrankedUser(_buyer) {
+        _testExecuteERC721SingleMakerAsk(true);
+    }
+
+    function testExecuteERC721SingleMakerAskNonAtomic() public asPrankedUser(_buyer) {
+        _testExecuteERC721SingleMakerAsk(false);
+    }
+
     function testExecuteERC721MultipleMakerAsksAtomic() public asPrankedUser(_buyer) {
         _testExecuteERC721MultipleMakerAsks(true);
     }
@@ -176,6 +184,22 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, true);
     }
 
+    function _testExecuteERC721SingleMakerAsk(bool isAtomic) private {
+        ILooksRareAggregator.TradeData[] memory tradeData = _generateERC721SingleMakerAskTradeData();
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
+
+        uint256 value = tradeData[0].orders[0].price;
+
+        vm.expectEmit(false, false, false, true);
+        emit Sweep(_buyer);
+        aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, isAtomic);
+
+        assertEq(IERC721(MULTIFACET_NFT).balanceOf(_buyer), 1);
+        assertEq(IERC721(MULTIFACET_NFT).ownerOf(2828266), _buyer);
+        assertEq(_buyer.balance, 200 ether - value);
+        assertEq(address(NFT_OWNER).balance, 200 ether + (value * 9_800) / 10_000);
+    }
+
     function _testExecuteERC721MultipleMakerAsks(bool isAtomic) private {
         ILooksRareAggregator.TradeData[] memory tradeData = _generateERC721MultipleMakerAsksTradeData();
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
@@ -208,6 +232,39 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         assertEq(IERC1155(TEST_ERC1155).balanceOf(_buyer, 420), 5);
         assertEq(_buyer.balance, 200 ether - value);
         assertEq(address(NFT_OWNER).balance, 200 ether + (value * 9_800) / 10_000);
+    }
+
+    function _generateERC721SingleMakerAskTradeData()
+        private
+        view
+        returns (ILooksRareAggregator.TradeData[] memory tradeData)
+    {
+        BasicOrder[] memory orders = new BasicOrder[](1);
+        orders[0] = validGoerliTestERC721Orders()[0];
+        MerkleTree memory merkleTree;
+
+        bytes[] memory ordersExtraData = new bytes[](1);
+        ordersExtraData[0] = abi.encode(
+            LooksRareV2Proxy.OrderExtraData({
+                merkleTree: merkleTree,
+                globalNonce: 0,
+                subsetNonce: 0,
+                orderNonce: 0,
+                strategyId: 0,
+                price: orders[0].price,
+                takerBidAdditionalParameters: new bytes(0),
+                makerAskAdditionalParameters: new bytes(0)
+            })
+        );
+
+        tradeData = new ILooksRareAggregator.TradeData[](1);
+        tradeData[0] = ILooksRareAggregator.TradeData({
+            proxy: address(looksRareV2Proxy),
+            selector: LooksRareV2Proxy.execute.selector,
+            orders: orders,
+            ordersExtraData: ordersExtraData,
+            extraData: abi.encode(address(0)) // affiliate
+        });
     }
 
     function _generateERC721MultipleMakerAsksTradeData()
