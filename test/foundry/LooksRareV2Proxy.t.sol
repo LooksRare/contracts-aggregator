@@ -124,6 +124,14 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         _testExecuteMultipleMakerAsks(false);
     }
 
+    function testExecuteWETHMultipleMakerAsksAtomic() public asPrankedUser(_buyer) {
+        _testExecuteWETHMultipleMakerAsks(true);
+    }
+
+    function testExecuteWETHMultipleMakerAsksNonAtomic() public asPrankedUser(_buyer) {
+        _testExecuteWETHMultipleMakerAsks(false);
+    }
+
     function testExecuteCallerNotAggregator() public {
         looksRareV2Proxy = new LooksRareV2Proxy(LOOKSRARE_V2_GOERLI, address(1));
         aggregator.addFunction(address(looksRareV2Proxy), looksRareV2Proxy.execute.selector);
@@ -393,6 +401,33 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         assertEq(address(NFT_OWNER).balance, 200 ether + (value * 9_800) / 10_000);
     }
 
+    function _testExecuteWETHMultipleMakerAsks(bool isAtomic) private {
+        ILooksRareAggregator.TradeData[] memory tradeData = _generateWETHMultipleMakerAsksTradeData();
+        uint256 value = tradeData[0].orders[0].price +
+            tradeData[0].orders[1].price +
+            tradeData[0].orders[2].price +
+            tradeData[0].orders[3].price;
+        TokenTransfer[] memory tokenTransfers = new TokenTransfer[](1);
+        tokenTransfers[0] = TokenTransfer({amount: value, currency: WETH_GOERLI});
+
+        IERC20(WETH_GOERLI).approve(address(erc20EnabledLooksRareAggregator), value);
+
+        vm.expectEmit(false, false, false, true);
+        emit Sweep(_buyer);
+        erc20EnabledLooksRareAggregator.execute(tokenTransfers, tradeData, _buyer, isAtomic);
+
+        assertEq(IERC721(MULTIFACET_NFT).balanceOf(_buyer), 3);
+        assertEq(IERC721(MULTIFACET_NFT).ownerOf(2828266), _buyer);
+        assertEq(IERC721(MULTIFACET_NFT).ownerOf(2828267), _buyer);
+        assertEq(IERC721(MULTIFACET_NFT).ownerOf(2828268), _buyer);
+
+        assertEq(IERC1155(TEST_ERC1155).balanceOf(_buyer, 69), 5);
+        assertEq(IERC1155(TEST_ERC1155).balanceOf(_buyer, 420), 5);
+
+        assertEq(IERC20(WETH_GOERLI).balanceOf(_buyer), 200 ether - value);
+        assertEq(IERC20(WETH_GOERLI).balanceOf(NFT_OWNER), 200 ether + (value * 9_800) / 10_000);
+    }
+
     function _generateERC721SingleMakerAskTradeData()
         private
         view
@@ -568,6 +603,35 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
     {
         BasicOrder[] memory erc721Orders = validGoerliTestERC721Orders();
         BasicOrder[] memory erc1155Orders = validGoerliTestERC1155Orders();
+        BasicOrder[] memory orders = new BasicOrder[](4);
+        orders[0] = erc721Orders[0];
+        orders[1] = erc721Orders[1];
+        orders[2] = erc1155Orders[0];
+        orders[3] = erc1155Orders[1];
+
+        bytes[] memory ordersExtraData = new bytes[](4);
+        ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 0, subsetNonce: 0});
+        ordersExtraData[1] = _orderExtraData({price: orders[1].price, orderNonce: 1, subsetNonce: 0});
+        ordersExtraData[2] = _orderExtraData({price: orders[2].price, orderNonce: 2, subsetNonce: 0});
+        ordersExtraData[3] = _orderExtraData({price: orders[3].price, orderNonce: 3, subsetNonce: 0});
+
+        tradeData = new ILooksRareAggregator.TradeData[](1);
+        tradeData[0] = ILooksRareAggregator.TradeData({
+            proxy: address(looksRareV2Proxy),
+            selector: LooksRareV2Proxy.execute.selector,
+            orders: orders,
+            ordersExtraData: ordersExtraData,
+            extraData: abi.encode(address(0)) // affiliate
+        });
+    }
+
+    function _generateWETHMultipleMakerAsksTradeData()
+        private
+        view
+        returns (ILooksRareAggregator.TradeData[] memory tradeData)
+    {
+        BasicOrder[] memory erc721Orders = validGoerliTestERC721WETHOrders();
+        BasicOrder[] memory erc1155Orders = validGoerliTestERC1155WETHOrders();
         BasicOrder[] memory orders = new BasicOrder[](4);
         orders[0] = erc721Orders[0];
         orders[1] = erc721Orders[1];
