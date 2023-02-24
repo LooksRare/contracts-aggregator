@@ -18,7 +18,11 @@ contract Deployment is Script {
 
     error WrongChain();
 
-    function _run(address looksrare, address seaport) internal {
+    function _run(
+        address looksrare,
+        address looksrareV2,
+        address seaport
+    ) internal {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
 
@@ -42,6 +46,7 @@ contract Deployment is Script {
         looksRareAggregator.setERC20EnabledLooksRareAggregator(erc20EnabledLooksRareAggregatorAddress);
 
         _deployLooksRareProxy(looksrare);
+        _deployLooksRareV2Proxy(looksrareV2);
         _deploySeaportProxy(seaport);
 
         payable(address(looksRareAggregator)).transfer(1 wei);
@@ -61,6 +66,20 @@ contract Deployment is Script {
             )
         });
         looksRareAggregator.addFunction(looksRareProxyAddress, LooksRareProxy.execute.selector);
+    }
+
+    function _deployLooksRareV2Proxy(address marketplace) private {
+        // Just going to use the same salt for mainnet and goerli even though they will result
+        // in 2 different contract addresses, as LooksRareProtocol's contract address is different
+        // for mainnet and goerli.
+        address looksRareV2ProxyAddress = CREATE2_FACTORY.safeCreate2({
+            salt: vm.envBytes32("LOOKS_RARE_V2_PROXY_SALT"),
+            initializationCode: abi.encodePacked(
+                type(LooksRareV2Proxy).creationCode,
+                abi.encode(marketplace, address(looksRareAggregator))
+            )
+        });
+        looksRareAggregator.addFunction(looksRareV2ProxyAddress, LooksRareV2Proxy.execute.selector);
     }
 
     function _deploySeaportProxy(address marketplace) private {
