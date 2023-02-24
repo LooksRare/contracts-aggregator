@@ -159,21 +159,9 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
 
     function testExecuteOrdersLengthMismatch() public asPrankedUser(_buyer) {
         BasicOrder[] memory orders = validGoerliTestERC721Orders();
-        MerkleTree memory merkleTree;
 
         bytes[] memory ordersExtraData = new bytes[](1);
-        ordersExtraData[0] = abi.encode(
-            LooksRareV2Proxy.OrderExtraData({
-                merkleTree: merkleTree,
-                globalNonce: 0,
-                subsetNonce: 0,
-                orderNonce: 0,
-                strategyId: 0,
-                price: orders[0].price,
-                takerBidAdditionalParameters: new bytes(0),
-                makerAskAdditionalParameters: new bytes(0)
-            })
-        );
+        ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 0, subsetNonce: 0});
 
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
 
@@ -264,21 +252,9 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
     {
         BasicOrder[] memory orders = new BasicOrder[](1);
         orders[0] = validGoerliTestERC721Orders()[0];
-        MerkleTree memory merkleTree;
 
         bytes[] memory ordersExtraData = new bytes[](1);
-        ordersExtraData[0] = abi.encode(
-            LooksRareV2Proxy.OrderExtraData({
-                merkleTree: merkleTree,
-                globalNonce: 0,
-                subsetNonce: 0,
-                orderNonce: 0,
-                strategyId: 0,
-                price: orders[0].price,
-                takerBidAdditionalParameters: new bytes(0),
-                makerAskAdditionalParameters: new bytes(0)
-            })
-        );
+        ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 0, subsetNonce: 0});
 
         tradeData = new ILooksRareAggregator.TradeData[](1);
         tradeData[0] = ILooksRareAggregator.TradeData({
@@ -296,34 +272,10 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         returns (ILooksRareAggregator.TradeData[] memory tradeData)
     {
         BasicOrder[] memory orders = validGoerliTestERC721Orders();
-        MerkleTree memory merkleTree;
 
         bytes[] memory ordersExtraData = new bytes[](2);
-        ordersExtraData[0] = abi.encode(
-            LooksRareV2Proxy.OrderExtraData({
-                merkleTree: merkleTree,
-                globalNonce: 0,
-                subsetNonce: 0,
-                orderNonce: 0,
-                strategyId: 0,
-                price: orders[0].price,
-                takerBidAdditionalParameters: new bytes(0),
-                makerAskAdditionalParameters: new bytes(0)
-            })
-        );
-
-        ordersExtraData[1] = abi.encode(
-            LooksRareV2Proxy.OrderExtraData({
-                merkleTree: merkleTree,
-                globalNonce: 0,
-                subsetNonce: 1,
-                orderNonce: 1,
-                strategyId: 0,
-                price: orders[1].price,
-                takerBidAdditionalParameters: new bytes(0),
-                makerAskAdditionalParameters: new bytes(0)
-            })
-        );
+        ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 0, subsetNonce: 0});
+        ordersExtraData[1] = _orderExtraData({price: orders[1].price, orderNonce: 1, subsetNonce: 1});
 
         tradeData = new ILooksRareAggregator.TradeData[](1);
         tradeData[0] = ILooksRareAggregator.TradeData({
@@ -342,21 +294,9 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
     {
         BasicOrder[] memory orders = new BasicOrder[](1);
         orders[0] = validGoerliTestERC1155Orders()[0];
-        MerkleTree memory merkleTree;
 
         bytes[] memory ordersExtraData = new bytes[](1);
-        ordersExtraData[0] = abi.encode(
-            LooksRareV2Proxy.OrderExtraData({
-                merkleTree: merkleTree,
-                globalNonce: 0,
-                subsetNonce: 0,
-                orderNonce: 0,
-                strategyId: 0,
-                price: orders[0].price,
-                takerBidAdditionalParameters: new bytes(0),
-                makerAskAdditionalParameters: new bytes(0)
-            })
-        );
+        ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 0, subsetNonce: 0});
 
         tradeData = new ILooksRareAggregator.TradeData[](1);
         tradeData[0] = ILooksRareAggregator.TradeData({
@@ -374,34 +314,10 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         returns (ILooksRareAggregator.TradeData[] memory tradeData)
     {
         BasicOrder[] memory orders = validGoerliTestERC1155Orders();
-        MerkleTree memory merkleTree;
 
         bytes[] memory ordersExtraData = new bytes[](2);
-        ordersExtraData[0] = abi.encode(
-            LooksRareV2Proxy.OrderExtraData({
-                merkleTree: merkleTree,
-                globalNonce: 0,
-                subsetNonce: 0,
-                orderNonce: 0,
-                strategyId: 0,
-                price: orders[0].price,
-                takerBidAdditionalParameters: new bytes(0),
-                makerAskAdditionalParameters: new bytes(0)
-            })
-        );
-
-        ordersExtraData[1] = abi.encode(
-            LooksRareV2Proxy.OrderExtraData({
-                merkleTree: merkleTree,
-                globalNonce: 0,
-                subsetNonce: 1,
-                orderNonce: 1,
-                strategyId: 0,
-                price: orders[1].price,
-                takerBidAdditionalParameters: new bytes(0),
-                makerAskAdditionalParameters: new bytes(0)
-            })
-        );
+        ordersExtraData[0] = _orderExtraData({price: orders[0].price, orderNonce: 0, subsetNonce: 0});
+        ordersExtraData[1] = _orderExtraData({price: orders[1].price, orderNonce: 1, subsetNonce: 1});
 
         tradeData = new ILooksRareAggregator.TradeData[](1);
         tradeData[0] = ILooksRareAggregator.TradeData({
@@ -411,5 +327,26 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
             ordersExtraData: ordersExtraData,
             extraData: abi.encode(address(0)) // affiliate
         });
+    }
+
+    function _orderExtraData(
+        uint256 price,
+        uint256 orderNonce,
+        uint256 subsetNonce
+    ) private pure returns (bytes memory) {
+        MerkleTree memory merkleTree;
+        return
+            abi.encode(
+                LooksRareV2Proxy.OrderExtraData({
+                    merkleTree: merkleTree,
+                    globalNonce: 0,
+                    subsetNonce: subsetNonce,
+                    orderNonce: orderNonce,
+                    strategyId: 0,
+                    price: price,
+                    takerBidAdditionalParameters: new bytes(0),
+                    makerAskAdditionalParameters: new bytes(0)
+                })
+            );
     }
 }
