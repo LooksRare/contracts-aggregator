@@ -141,11 +141,11 @@ contract LooksRareV2Proxy is IProxy {
                  *      (i + 1 - numberOfConsecutiveOrders) = first maker ask order position in the array that was not executed
                  *      For instance, if there are 4 orders with the first one denominated in USDC and the next 3 being in ETH.
                  *      1 - USDC
-                 *      i = 0, numberOfConsecutiveOrders = 1, k = 1
-                 *      --> i + k - numberOfConsecutiveOrders = 0;
+                 *      i = 0, numberOfConsecutiveOrders = 1, k = 0
+                 *      --> i + (k + 1) - numberOfConsecutiveOrders = 0;
                  *      2 - ETH
-                 *      i = 3, numberOfConsecutiveOrders = 3, k = 1/2/3
-                 *      i + k - numberOfConsecutiveOrders = 1/2/3
+                 *      i = 3, numberOfConsecutiveOrders = 3, k = 0/1/2
+                 *      i + (k + 1) - numberOfConsecutiveOrders = 1/2/3
                  *
                  *      k starts with 0 instead of 1 to prevent us having to do k - 1
                  *      every line. If we push k - 1 as a variable onto the stack,
