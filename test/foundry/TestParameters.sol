@@ -6,11 +6,14 @@ abstract contract TestParameters {
     address internal constant CRYPTOPUNKS = 0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB;
     address internal constant GEMSWAP = 0x83C8F28c26bF6aaca652Df1DbBE0e1b56F8baBa2;
     address internal constant LOOKSRARE_V1 = 0x59728544B08AB483533076417FbBB2fD0B17CE3a;
+    address internal constant LOOKSRARE_V2_GOERLI = 0x35C2215F2FFe8917B06454eEEaba189877F200cf;
+    address internal constant LOOKSRARE_V2_TRANSFER_MANAGER_GOERLI = 0xC20E0CeAD98abBBEb626B77efb8Dc1E5D781f90c;
     address internal constant LOOKSRARE_STRATEGY_FIXED_PRICE = 0x56244Bb70CbD3EA9Dc8007399F61dFC065190031;
     address internal constant LOOKSRARE_STRATEGY_FIXED_PRICE_V1B = 0x579af6FD30BF83a5Ac0D636bc619f98DBdeb930c;
     address internal constant MOODIE = 0x0F23939EE95350F26D9C1B818Ee0Cc1C8Fd2b99D;
     address internal constant SUDOSWAP = 0x2B2e8cDA09bBA9660dCA5cB6233787738Ad68329;
     address internal constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
+    address internal constant WETH_GOERLI = 0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6;
     address internal constant X2Y2 = 0x74312363e45DCaBA76c59ec49a7Aa8A65a67EeD3;
 
     // keccak256(_buyer)
