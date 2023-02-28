@@ -93,7 +93,7 @@
   },
   "dependencies": {
     "@looksrare/contracts-exchange-v1": "^1.3.0",
-    "@looksrare/contracts-libs": "^2.5.0",
+    "@looksrare/contracts-libs": "^3.0.3",
     "solmate": "^6.6.1"
   }
 }
