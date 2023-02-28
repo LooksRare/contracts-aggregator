@@ -14,6 +14,7 @@
     "/contracts/interfaces/SeaportInterface.sol",
     "/contracts/interfaces/IProxy.sol",
     "/contracts/proxies/LooksRareProxy.sol",
+    "/contracts/proxies/LooksRareV2Proxy.sol",
     "/contracts/proxies/SeaportProxy.sol"
   ],
   "keywords": [
