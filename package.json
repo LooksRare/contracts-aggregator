@@ -9,6 +9,7 @@
     "/contracts/*.sol",
     "/contracts/libraries/*.sol",
     "/contracts/libraries/seaport/*.sol",
+    "/contracts/libraries/looksrare-v2/OrderStructs.sol",
     "/contracts/interfaces/ILooksRareAggregator.sol",
     "/contracts/interfaces/ILooksRareProtocolV2.sol",
     "/contracts/interfaces/IERC20EnabledLooksRareAggregator.sol",
