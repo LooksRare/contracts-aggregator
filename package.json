@@ -1,6 +1,6 @@
 {
   "name": "@looksrare/contracts-aggregator",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "LooksRare aggregator smart contracts",
   "author": "LooksRare",
   "license": "MIT",
