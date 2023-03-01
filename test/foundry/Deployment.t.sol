@@ -13,20 +13,21 @@ import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
 contract DeploymentTest is TestParameters, TestHelpers, SeaportProxyTestHelpers {
     IImmutableCreate2Factory private constant CREATE2_FACTORY =
         IImmutableCreate2Factory(0x0000000000FFe8B47B3e2130213B802212439497);
-    address private constant OWNER = 0x3ab105F0e4A22ec4A96a9b0Ca90c5C534d21f3a7;
 
     function testDeploymentAddresses() public {
         vm.createSelectFork(vm.rpcUrl("mainnet"));
 
-        vm.startPrank(vm.envAddress("LOOKS_RARE_DEPLOYER"));
+        address deployer = vm.envAddress("LOOKS_RARE_DEPLOYER");
+
+        vm.startPrank(deployer);
 
         address looksRareAggregatorAddress = CREATE2_FACTORY.safeCreate2({
             salt: vm.envBytes32("LOOKS_RARE_AGGREGATOR_SALT"),
-            initializationCode: abi.encodePacked(type(LooksRareAggregator).creationCode, abi.encode(OWNER))
+            initializationCode: abi.encodePacked(type(LooksRareAggregator).creationCode, abi.encode(deployer))
         });
 
         assertEq(looksRareAggregatorAddress, 0x00000000005162DeeE2164C04bf38D07e8CCb58C);
-        assertEq(LooksRareAggregator(payable(looksRareAggregatorAddress)).owner(), OWNER);
+        assertEq(LooksRareAggregator(payable(looksRareAggregatorAddress)).owner(), deployer);
 
         address erc20EnabledLooksRareAggregatorAddress = CREATE2_FACTORY.safeCreate2({
             salt: vm.envBytes32("ERC20_ENABLED_LOOKS_RARE_AGGREGATOR_SALT"),
