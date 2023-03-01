@@ -108,7 +108,7 @@ contract SeaportProxyMultipleCurrenciesRandomOrderTest is TestParameters, TestHe
         tokenTransfers[0].amount = usdcAmount;
         tokenTransfers[0].currency = USDC;
 
-        vm.expectEmit(false, false, false, true);
+        vm.expectEmit({checkTopic1: false, checkTopic2: false, checkTopic3: false, checkData: true});
         emit Sweep(_buyer);
         erc20EnabledAggregator.execute{value: ethAmount}(tokenTransfers, tradeData, _buyer, isAtomic);
 
@@ -154,7 +154,7 @@ contract SeaportProxyMultipleCurrenciesRandomOrderTest is TestParameters, TestHe
         tokenTransfers[0].amount = usdcAmount;
         tokenTransfers[0].currency = USDC;
 
-        vm.expectEmit(false, false, false, true);
+        vm.expectEmit({checkTopic1: false, checkTopic2: false, checkTopic3: false, checkData: true});
         emit Sweep(_buyer);
         erc20EnabledAggregator.execute{value: ethAmount}(tokenTransfers, tradeData, _buyer, isAtomic);
 
@@ -200,7 +200,7 @@ contract SeaportProxyMultipleCurrenciesRandomOrderTest is TestParameters, TestHe
         tokenTransfers[0].amount = usdcAmount;
         tokenTransfers[0].currency = USDC;
 
-        vm.expectEmit(false, false, false, true);
+        vm.expectEmit({checkTopic1: false, checkTopic2: false, checkTopic3: false, checkData: true});
         emit Sweep(_buyer);
         erc20EnabledAggregator.execute{value: ethAmount}(tokenTransfers, tradeData, _buyer, isAtomic);
 
@@ -246,7 +246,7 @@ contract SeaportProxyMultipleCurrenciesRandomOrderTest is TestParameters, TestHe
         tokenTransfers[0].amount = usdcAmount;
         tokenTransfers[0].currency = USDC;
 
-        vm.expectEmit(false, false, false, true);
+        vm.expectEmit({checkTopic1: false, checkTopic2: false, checkTopic3: false, checkData: true});
         emit Sweep(_buyer);
         erc20EnabledAggregator.execute{value: ethAmount}(tokenTransfers, tradeData, _buyer, isAtomic);
 

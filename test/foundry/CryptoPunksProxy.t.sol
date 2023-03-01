@@ -58,7 +58,7 @@ contract CryptoPunksProxyTest is TestParameters, TestHelpers {
         // Pay nothing for the second order
         tradeData[0].orders[1].price = 0;
 
-        vm.expectEmit(false, false, false, true);
+        vm.expectEmit({checkTopic1: false, checkTopic2: false, checkTopic3: false, checkData: true});
         emit Sweep(_buyer);
 
         aggregator.execute{value: 68.5 ether}({
@@ -139,7 +139,7 @@ contract CryptoPunksProxyTest is TestParameters, TestHelpers {
         ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData();
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
 
-        vm.expectEmit(false, false, false, true);
+        vm.expectEmit({checkTopic1: false, checkTopic2: false, checkTopic3: false, checkData: true});
         emit Sweep(_buyer);
 
         aggregator.execute{value: 138 ether}({
