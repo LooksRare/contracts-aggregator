@@ -51,7 +51,7 @@ contract DeploymentTest is TestParameters, TestHelpers, SeaportProxyTestHelpers 
             )
         });
 
-        assertEq(looksRareProxyAddress, 0x000000000049b6299DaD91D63B996c7b91e56457);
+        assertEq(looksRareProxyAddress, 0x000000000016bc517901ACeB561180C7aE5Bd4D7);
         LooksRareProxy looksRareProxy = LooksRareProxy(payable(looksRareProxyAddress));
         assertEq(address(looksRareProxy.marketplace()), LOOKSRARE_V1);
         assertEq(looksRareProxy.aggregator(), looksRareAggregatorAddress);
