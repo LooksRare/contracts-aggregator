@@ -5,31 +5,46 @@ import {Script} from "forge-std/Script.sol";
 import {ERC20EnabledLooksRareAggregator} from "../../contracts/ERC20EnabledLooksRareAggregator.sol";
 import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
 import {LooksRareProxy} from "../../contracts/proxies/LooksRareProxy.sol";
+import {LooksRareV2Proxy} from "../../contracts/proxies/LooksRareV2Proxy.sol";
 import {SeaportProxy} from "../../contracts/proxies/SeaportProxy.sol";
-import {X2Y2Proxy} from "../../contracts/proxies/X2Y2Proxy.sol";
-import {CryptoPunksProxy} from "../../contracts/proxies/CryptoPunksProxy.sol";
-import {SudoswapProxy} from "../../contracts/proxies/SudoswapProxy.sol";
+import {IImmutableCreate2Factory} from "../../contracts/interfaces/IImmutableCreate2Factory.sol";
 
 contract Deployment is Script {
-    ERC20EnabledLooksRareAggregator internal erc20EnabledLooksRareAggregator;
     LooksRareAggregator internal looksRareAggregator;
     LooksRareProxy internal looksRareProxy;
     SeaportProxy internal seaportProxy;
-    X2Y2Proxy internal x2y2Proxy;
-    CryptoPunksProxy internal cryptoPunksProxy;
-    SudoswapProxy internal sudoswapProxy;
 
-    address private constant OWNER = 0xFf6c307226343fCF96AF2f6B5B05f63F717e68cb;
+    IImmutableCreate2Factory private constant CREATE2_FACTORY =
+        IImmutableCreate2Factory(0x0000000000FFe8B47B3e2130213B802212439497);
 
     error WrongChain();
 
-    function _run(address looksrare, address seaport) internal {
-        vm.startBroadcast();
+    function _run(
+        address looksrare,
+        address looksrareV2,
+        address seaport
+    ) internal {
+        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+        vm.startBroadcast(deployerPrivateKey);
 
-        looksRareAggregator = new LooksRareAggregator(OWNER);
+        address looksRareAggregatorAddress = CREATE2_FACTORY.safeCreate2({
+            salt: vm.envBytes32("LOOKS_RARE_AGGREGATOR_SALT"),
+            initializationCode: abi.encodePacked(
+                type(LooksRareAggregator).creationCode,
+                abi.encode(vm.envAddress("LOOKS_RARE_DEPLOYER"))
+            )
+        });
 
-        erc20EnabledLooksRareAggregator = new ERC20EnabledLooksRareAggregator(address(looksRareAggregator));
-        looksRareAggregator.setERC20EnabledLooksRareAggregator(address(erc20EnabledLooksRareAggregator));
+        address erc20EnabledLooksRareAggregatorAddress = CREATE2_FACTORY.safeCreate2({
+            salt: vm.envBytes32("ERC20_ENABLED_LOOKS_RARE_AGGREGATOR_SALT"),
+            initializationCode: abi.encodePacked(
+                type(ERC20EnabledLooksRareAggregator).creationCode,
+                abi.encode(looksRareAggregatorAddress)
+            )
+        });
+
+        looksRareAggregator = LooksRareAggregator(looksRareAggregatorAddress);
+        looksRareAggregator.setERC20EnabledLooksRareAggregator(erc20EnabledLooksRareAggregatorAddress);
 
         _deployLooksRareProxy(looksrare);
         _deploySeaportProxy(seaport);
@@ -40,28 +55,27 @@ contract Deployment is Script {
     }
 
     function _deployLooksRareProxy(address marketplace) private {
-        looksRareProxy = new LooksRareProxy(marketplace, address(looksRareAggregator));
-        looksRareAggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
+        // Just going to use the same salt for mainnet and goerli even though they will result
+        // in 2 different contract addresses, as LooksRareExchange's contract address is different
+        // for mainnet and goerli.
+        address looksRareProxyAddress = CREATE2_FACTORY.safeCreate2({
+            salt: vm.envBytes32("LOOKS_RARE_PROXY_SALT"),
+            initializationCode: abi.encodePacked(
+                type(LooksRareProxy).creationCode,
+                abi.encode(marketplace, address(looksRareAggregator))
+            )
+        });
+        looksRareAggregator.addFunction(looksRareProxyAddress, LooksRareProxy.execute.selector);
     }
 
     function _deploySeaportProxy(address marketplace) private {
-        seaportProxy = new SeaportProxy(marketplace, address(looksRareAggregator));
-        looksRareAggregator.addFunction(address(seaportProxy), SeaportProxy.execute.selector);
-    }
-
-    function _deployX2Y2Proxy(address marketplace) private {
-        x2y2Proxy = new X2Y2Proxy(marketplace, address(looksRareAggregator));
-        looksRareAggregator.addFunction(address(x2y2Proxy), X2Y2Proxy.execute.selector);
-    }
-
-    function _deployCryptoPunksProxy(address marketplace) private {
-        cryptoPunksProxy = new CryptoPunksProxy(marketplace, address(looksRareAggregator));
-        looksRareAggregator.addFunction(address(cryptoPunksProxy), CryptoPunksProxy.execute.selector);
-    }
-
-    function _deploySudoswapProxy(address marketplace) private {
-        require(false, "Wait until Sudoswap router V2 is available");
-        sudoswapProxy = new SudoswapProxy(marketplace, address(looksRareAggregator));
-        looksRareAggregator.addFunction(address(sudoswapProxy), SudoswapProxy.execute.selector);
+        address seaportProxyAddress = CREATE2_FACTORY.safeCreate2({
+            salt: vm.envBytes32("SEAPORT_PROXY_SALT"),
+            initializationCode: abi.encodePacked(
+                type(SeaportProxy).creationCode,
+                abi.encode(marketplace, address(looksRareAggregator))
+            )
+        });
+        looksRareAggregator.addFunction(seaportProxyAddress, SeaportProxy.execute.selector);
     }
 }
