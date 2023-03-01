@@ -11,7 +11,7 @@ import {TestParameters} from "./TestParameters.sol";
 import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
 
 contract DeploymentTest is TestParameters, TestHelpers, SeaportProxyTestHelpers {
-    IImmutableCreate2Factory private constant CREATE2_FACTORY =
+    IImmutableCreate2Factory private constant IMMUTABLE_CREATE2_FACTORY =
         IImmutableCreate2Factory(0x0000000000FFe8B47B3e2130213B802212439497);
 
     function testDeploymentAddresses() public {
@@ -21,7 +21,7 @@ contract DeploymentTest is TestParameters, TestHelpers, SeaportProxyTestHelpers 
 
         vm.startPrank(deployer);
 
-        address looksRareAggregatorAddress = CREATE2_FACTORY.safeCreate2({
+        address looksRareAggregatorAddress = IMMUTABLE_CREATE2_FACTORY.safeCreate2({
             salt: vm.envBytes32("LOOKS_RARE_AGGREGATOR_SALT"),
             initializationCode: abi.encodePacked(type(LooksRareAggregator).creationCode, abi.encode(deployer))
         });
@@ -29,7 +29,7 @@ contract DeploymentTest is TestParameters, TestHelpers, SeaportProxyTestHelpers 
         assertEq(looksRareAggregatorAddress, 0x0000000000b83f088A8F61D8a792cBA2A672239a);
         assertEq(LooksRareAggregator(payable(looksRareAggregatorAddress)).owner(), deployer);
 
-        address erc20EnabledLooksRareAggregatorAddress = CREATE2_FACTORY.safeCreate2({
+        address erc20EnabledLooksRareAggregatorAddress = IMMUTABLE_CREATE2_FACTORY.safeCreate2({
             salt: vm.envBytes32("ERC20_ENABLED_LOOKS_RARE_AGGREGATOR_SALT"),
             initializationCode: abi.encodePacked(
                 type(ERC20EnabledLooksRareAggregator).creationCode,
@@ -43,7 +43,7 @@ contract DeploymentTest is TestParameters, TestHelpers, SeaportProxyTestHelpers 
             looksRareAggregatorAddress
         );
 
-        address looksRareProxyAddress = CREATE2_FACTORY.safeCreate2({
+        address looksRareProxyAddress = IMMUTABLE_CREATE2_FACTORY.safeCreate2({
             salt: vm.envBytes32("LOOKS_RARE_PROXY_SALT"),
             initializationCode: abi.encodePacked(
                 type(LooksRareProxy).creationCode,
@@ -56,7 +56,7 @@ contract DeploymentTest is TestParameters, TestHelpers, SeaportProxyTestHelpers 
         assertEq(address(looksRareProxy.marketplace()), LOOKSRARE_V1);
         assertEq(looksRareProxy.aggregator(), looksRareAggregatorAddress);
 
-        address seaportProxyAddress = CREATE2_FACTORY.safeCreate2({
+        address seaportProxyAddress = IMMUTABLE_CREATE2_FACTORY.safeCreate2({
             salt: vm.envBytes32("SEAPORT_PROXY_SALT"),
             initializationCode: abi.encodePacked(
                 type(SeaportProxy).creationCode,
