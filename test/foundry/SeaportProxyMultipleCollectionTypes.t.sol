@@ -41,7 +41,7 @@ contract SeaportProxyMultipleCollectionTypesTest is TestParameters, TestHelpers,
         ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData(isAtomic);
         uint256 totalPrice = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
 
-        vm.expectEmit(false, false, false, true);
+        vm.expectEmit({checkTopic1: false, checkTopic2: false, checkTopic3: false, checkData: true});
         emit Sweep(_buyer);
         aggregator.execute{value: totalPrice}(new TokenTransfer[](0), tradeData, _buyer, _buyer, isAtomic);
 

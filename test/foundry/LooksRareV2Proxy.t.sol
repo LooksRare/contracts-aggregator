@@ -174,7 +174,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         vm.prank(NFT_OWNER);
         IERC721(MULTIFACET_NFT).transferFrom(NFT_OWNER, address(69), 2828267);
 
-        vm.expectEmit(false, false, false, true);
+        vm.expectEmit({checkTopic1: false, checkTopic2: false, checkTopic3: false, checkData: true});
         emit Sweep(_buyer);
         vm.prank(_buyer);
         aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, false);
@@ -190,7 +190,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
 
         uint256 value = _orderValue(tradeData[0], address(0));
 
-        vm.expectEmit(false, false, false, true);
+        vm.expectEmit({checkTopic1: false, checkTopic2: false, checkTopic3: false, checkData: true});
         emit Sweep(_buyer);
         aggregator.execute{value: value + 0.1 ether}(tokenTransfers, tradeData, _buyer, _buyer, false);
 
@@ -239,7 +239,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
 
         uint256 value = _orderValue(tradeData[0], address(0));
 
-        vm.expectEmit(false, false, false, true);
+        vm.expectEmit({checkTopic1: false, checkTopic2: false, checkTopic3: false, checkData: true});
         emit Sweep(_buyer);
         aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, isAtomic);
 
@@ -254,7 +254,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
 
         uint256 value = _orderValue(tradeData[0], address(0));
 
-        vm.expectEmit(false, false, false, true);
+        vm.expectEmit({checkTopic1: false, checkTopic2: false, checkTopic3: false, checkData: true});
         emit Sweep(_buyer);
         aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, isAtomic);
 
@@ -268,7 +268,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
 
         uint256 value = _orderValue(tradeData[0], address(0));
 
-        vm.expectEmit(false, false, false, true);
+        vm.expectEmit({checkTopic1: false, checkTopic2: false, checkTopic3: false, checkData: true});
         emit Sweep(_buyer);
         aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, isAtomic);
 
@@ -282,7 +282,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
 
         uint256 value = _orderValue(tradeData[0], address(0));
 
-        vm.expectEmit(false, false, false, true);
+        vm.expectEmit({checkTopic1: false, checkTopic2: false, checkTopic3: false, checkData: true});
         emit Sweep(_buyer);
         aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, isAtomic);
 
@@ -298,7 +298,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
 
         IERC20(WETH_GOERLI).approve(address(erc20EnabledLooksRareAggregator), value);
 
-        vm.expectEmit(false, false, false, true);
+        vm.expectEmit({checkTopic1: false, checkTopic2: false, checkTopic3: false, checkData: true});
         emit Sweep(_buyer);
         erc20EnabledLooksRareAggregator.execute(tokenTransfers, tradeData, _buyer, isAtomic);
 
@@ -315,7 +315,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
 
         IERC20(WETH_GOERLI).approve(address(erc20EnabledLooksRareAggregator), value);
 
-        vm.expectEmit(false, false, false, true);
+        vm.expectEmit({checkTopic1: false, checkTopic2: false, checkTopic3: false, checkData: true});
         emit Sweep(_buyer);
         erc20EnabledLooksRareAggregator.execute(tokenTransfers, tradeData, _buyer, isAtomic);
 
@@ -331,7 +331,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
 
         IERC20(WETH_GOERLI).approve(address(erc20EnabledLooksRareAggregator), value);
 
-        vm.expectEmit(false, false, false, true);
+        vm.expectEmit({checkTopic1: false, checkTopic2: false, checkTopic3: false, checkData: true});
         emit Sweep(_buyer);
         erc20EnabledLooksRareAggregator.execute(tokenTransfers, tradeData, _buyer, isAtomic);
 
@@ -347,7 +347,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
 
         IERC20(WETH_GOERLI).approve(address(erc20EnabledLooksRareAggregator), value);
 
-        vm.expectEmit(false, false, false, true);
+        vm.expectEmit({checkTopic1: false, checkTopic2: false, checkTopic3: false, checkData: true});
         emit Sweep(_buyer);
         erc20EnabledLooksRareAggregator.execute(tokenTransfers, tradeData, _buyer, isAtomic);
 
@@ -361,7 +361,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
 
         uint256 value = _orderValue(tradeData[0], address(0));
 
-        vm.expectEmit(false, false, false, true);
+        vm.expectEmit({checkTopic1: false, checkTopic2: false, checkTopic3: false, checkData: true});
         emit Sweep(_buyer);
         aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, isAtomic);
 
@@ -378,7 +378,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
 
         IERC20(WETH_GOERLI).approve(address(erc20EnabledLooksRareAggregator), value);
 
-        vm.expectEmit(false, false, false, true);
+        vm.expectEmit({checkTopic1: false, checkTopic2: false, checkTopic3: false, checkData: true});
         emit Sweep(_buyer);
         erc20EnabledLooksRareAggregator.execute(tokenTransfers, tradeData, _buyer, isAtomic);
 
@@ -398,7 +398,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
 
         IERC20(WETH_GOERLI).approve(address(erc20EnabledLooksRareAggregator), wethValue);
 
-        vm.expectEmit(false, false, false, true);
+        vm.expectEmit({checkTopic1: false, checkTopic2: false, checkTopic3: false, checkData: true});
         emit Sweep(_buyer);
         erc20EnabledLooksRareAggregator.execute{value: ethValue}(tokenTransfers, tradeData, _buyer, isAtomic);
 
