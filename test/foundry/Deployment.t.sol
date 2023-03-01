@@ -26,7 +26,7 @@ contract DeploymentTest is TestParameters, TestHelpers, SeaportProxyTestHelpers 
             initializationCode: abi.encodePacked(type(LooksRareAggregator).creationCode, abi.encode(deployer))
         });
 
-        assertEq(looksRareAggregatorAddress, 0x00000000005162DeeE2164C04bf38D07e8CCb58C);
+        assertEq(looksRareAggregatorAddress, 0x0000000000b83f088A8F61D8a792cBA2A672239a);
         assertEq(LooksRareAggregator(payable(looksRareAggregatorAddress)).owner(), deployer);
 
         address erc20EnabledLooksRareAggregatorAddress = CREATE2_FACTORY.safeCreate2({
@@ -37,7 +37,7 @@ contract DeploymentTest is TestParameters, TestHelpers, SeaportProxyTestHelpers 
             )
         });
 
-        assertEq(erc20EnabledLooksRareAggregatorAddress, 0x0000000000a1fB13De019b2C97dF69D962Ee44f7);
+        assertEq(erc20EnabledLooksRareAggregatorAddress, 0x00000000008dc76706d35a7A032105798266B89D);
         assertEq(
             address(ERC20EnabledLooksRareAggregator(payable(erc20EnabledLooksRareAggregatorAddress)).aggregator()),
             looksRareAggregatorAddress
