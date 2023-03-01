@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import {SignatureChecker} from "@looksrare/contracts-libs/contracts/SignatureChecker.sol";
+import {SignatureCheckerCalldata} from "@looksrare/contracts-libs/contracts/SignatureCheckerCalldata.sol";
 import {IERC721} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC721.sol";
 import {IERC1155} from "@looksrare/contracts-libs/contracts/interfaces/generic/IERC1155.sol";
 
@@ -139,7 +139,7 @@ contract X2Y2Proxy is IProxy, TokenTransferrer {
         settleDetails[0].fees = orderExtraData.fees;
         runInput.details = settleDetails;
 
-        (bytes32 r, bytes32 s, uint8 v) = SignatureChecker.splitSignature(order.signature);
+        (bytes32 r, bytes32 s, uint8 v) = SignatureCheckerCalldata.splitSignature(order.signature);
         runInput.orders[0].r = r;
         runInput.orders[0].s = s;
         runInput.orders[0].v = v;

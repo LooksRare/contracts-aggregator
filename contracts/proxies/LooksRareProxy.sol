@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import {SignatureChecker} from "@looksrare/contracts-libs/contracts/SignatureChecker.sol";
+import {SignatureCheckerCalldata} from "@looksrare/contracts-libs/contracts/SignatureCheckerCalldata.sol";
 import {ILooksRareExchange} from "@looksrare/contracts-exchange-v1/contracts/interfaces/ILooksRareExchange.sol";
 import {OrderTypes} from "@looksrare/contracts-exchange-v1/contracts/libraries/OrderTypes.sol";
 
@@ -88,7 +88,7 @@ contract LooksRareProxy is IProxy, TokenTransferrer {
                 makerAsk.startTime = order.startTime;
                 makerAsk.endTime = order.endTime;
 
-                (bytes32 r, bytes32 s, uint8 v) = SignatureChecker.splitSignature(order.signature);
+                (bytes32 r, bytes32 s, uint8 v) = SignatureCheckerCalldata.splitSignature(order.signature);
                 makerAsk.v = v;
                 makerAsk.r = r;
                 makerAsk.s = s;
