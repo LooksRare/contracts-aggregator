@@ -64,7 +64,7 @@ contract DeploymentTest is TestParameters, TestHelpers, SeaportProxyTestHelpers 
             )
         });
 
-        assertEq(seaportProxyAddress, 0x00000000001181E39bE168843EA652a8959AF21B);
+        assertEq(seaportProxyAddress, 0x0000000000B356f6B4DfDA6de3735d5099c2aF2b);
         SeaportProxy seaportProxy = SeaportProxy(payable(seaportProxyAddress));
         assertEq(address(seaportProxy.marketplace()), SEAPORT);
         assertEq(seaportProxy.aggregator(), looksRareAggregatorAddress);
