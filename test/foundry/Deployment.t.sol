@@ -13,7 +13,7 @@ import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
 contract DeploymentTest is TestParameters, TestHelpers, SeaportProxyTestHelpers {
     IImmutableCreate2Factory private constant CREATE2_FACTORY =
         IImmutableCreate2Factory(0x0000000000FFe8B47B3e2130213B802212439497);
-    address private constant OWNER = 0xFf6c307226343fCF96AF2f6B5B05f63F717e68cb;
+    address private constant OWNER = 0x3ab105F0e4A22ec4A96a9b0Ca90c5C534d21f3a7;
 
     function testDeploymentAddresses() public {
         vm.createSelectFork(vm.rpcUrl("mainnet"));
