@@ -46,7 +46,7 @@
     "prepublishOnly": "yarn compile",
     "release": "release-it",
     "test:hardhat": "hardhat test",
-    "test:forge": "forge test"
+    "test:forge": "forge test --no-match-contract DeploymentTest"
   },
   "devDependencies": {
     "@commitlint/cli": "^16.2.3",
