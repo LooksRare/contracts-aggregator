@@ -26,7 +26,7 @@ contract DeploymentTest is TestParameters, TestHelpers, SeaportProxyTestHelpers 
             initializationCode: abi.encodePacked(type(LooksRareAggregator).creationCode, abi.encode(deployer))
         });
 
-        assertEq(looksRareAggregatorAddress, 0x0000000000b83f088A8F61D8a792cBA2A672239a);
+        assertEq(looksRareAggregatorAddress, 0x00000000005228B791a99a61f36A130d50600106);
         assertEq(LooksRareAggregator(payable(looksRareAggregatorAddress)).owner(), deployer);
 
         address erc20EnabledLooksRareAggregatorAddress = IMMUTABLE_CREATE2_FACTORY.safeCreate2({
@@ -37,7 +37,7 @@ contract DeploymentTest is TestParameters, TestHelpers, SeaportProxyTestHelpers 
             )
         });
 
-        assertEq(erc20EnabledLooksRareAggregatorAddress, 0x00000000008dc76706d35a7A032105798266B89D);
+        assertEq(erc20EnabledLooksRareAggregatorAddress, 0x0000000000a35231D7706BD1eE827d43245655aB);
         assertEq(
             address(ERC20EnabledLooksRareAggregator(payable(erc20EnabledLooksRareAggregatorAddress)).aggregator()),
             looksRareAggregatorAddress
@@ -51,7 +51,7 @@ contract DeploymentTest is TestParameters, TestHelpers, SeaportProxyTestHelpers 
             )
         });
 
-        assertEq(looksRareProxyAddress, 0x000000000016bc517901ACeB561180C7aE5Bd4D7);
+        assertEq(looksRareProxyAddress, 0x0000000000DA151039Ed034d1C5BACb47C284Ed1);
         LooksRareProxy looksRareProxy = LooksRareProxy(payable(looksRareProxyAddress));
         assertEq(address(looksRareProxy.marketplace()), LOOKSRARE_V1);
         assertEq(looksRareProxy.aggregator(), looksRareAggregatorAddress);
@@ -64,7 +64,7 @@ contract DeploymentTest is TestParameters, TestHelpers, SeaportProxyTestHelpers 
             )
         });
 
-        assertEq(seaportProxyAddress, 0x0000000000B356f6B4DfDA6de3735d5099c2aF2b);
+        assertEq(seaportProxyAddress, 0x000000000047cCC309795330672CF0861302Fe3c);
         SeaportProxy seaportProxy = SeaportProxy(payable(seaportProxyAddress));
         assertEq(address(seaportProxy.marketplace()), SEAPORT);
         assertEq(seaportProxy.aggregator(), looksRareAggregatorAddress);
