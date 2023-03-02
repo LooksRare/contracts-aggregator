@@ -14,7 +14,7 @@ contract Deployment is Script {
     LooksRareProxy internal looksRareProxy;
     SeaportProxy internal seaportProxy;
 
-    IImmutableCreate2Factory private constant CREATE2_FACTORY =
+    IImmutableCreate2Factory private constant IMMUTABLE_CREATE2_FACTORY =
         IImmutableCreate2Factory(0x0000000000FFe8B47B3e2130213B802212439497);
 
     error WrongChain();
@@ -27,7 +27,7 @@ contract Deployment is Script {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
 
-        address looksRareAggregatorAddress = CREATE2_FACTORY.safeCreate2({
+        address looksRareAggregatorAddress = IMMUTABLE_CREATE2_FACTORY.safeCreate2({
             salt: vm.envBytes32("LOOKS_RARE_AGGREGATOR_SALT"),
             initializationCode: abi.encodePacked(
                 type(LooksRareAggregator).creationCode,
@@ -35,7 +35,7 @@ contract Deployment is Script {
             )
         });
 
-        address erc20EnabledLooksRareAggregatorAddress = CREATE2_FACTORY.safeCreate2({
+        address erc20EnabledLooksRareAggregatorAddress = IMMUTABLE_CREATE2_FACTORY.safeCreate2({
             salt: vm.envBytes32("ERC20_ENABLED_LOOKS_RARE_AGGREGATOR_SALT"),
             initializationCode: abi.encodePacked(
                 type(ERC20EnabledLooksRareAggregator).creationCode,
@@ -43,7 +43,7 @@ contract Deployment is Script {
             )
         });
 
-        looksRareAggregator = LooksRareAggregator(looksRareAggregatorAddress);
+        looksRareAggregator = LooksRareAggregator(payable(looksRareAggregatorAddress));
         looksRareAggregator.setERC20EnabledLooksRareAggregator(erc20EnabledLooksRareAggregatorAddress);
 
         _deployLooksRareProxy(looksrare);
@@ -58,7 +58,7 @@ contract Deployment is Script {
         // Just going to use the same salt for mainnet and goerli even though they will result
         // in 2 different contract addresses, as LooksRareExchange's contract address is different
         // for mainnet and goerli.
-        address looksRareProxyAddress = CREATE2_FACTORY.safeCreate2({
+        address looksRareProxyAddress = IMMUTABLE_CREATE2_FACTORY.safeCreate2({
             salt: vm.envBytes32("LOOKS_RARE_PROXY_SALT"),
             initializationCode: abi.encodePacked(
                 type(LooksRareProxy).creationCode,
@@ -69,7 +69,7 @@ contract Deployment is Script {
     }
 
     function _deploySeaportProxy(address marketplace) private {
-        address seaportProxyAddress = CREATE2_FACTORY.safeCreate2({
+        address seaportProxyAddress = IMMUTABLE_CREATE2_FACTORY.safeCreate2({
             salt: vm.envBytes32("SEAPORT_PROXY_SALT"),
             initializationCode: abi.encodePacked(
                 type(SeaportProxy).creationCode,

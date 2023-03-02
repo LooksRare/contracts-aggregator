@@ -14,7 +14,7 @@ contract LooksRareV2ProxyDeployment is Script {
     LooksRareProxy internal looksRareProxy;
     SeaportProxy internal seaportProxy;
 
-    IImmutableCreate2Factory private constant CREATE2_FACTORY =
+    IImmutableCreate2Factory private constant IMMUTABLE_CREATE2_FACTORY =
         IImmutableCreate2Factory(0x0000000000FFe8B47B3e2130213B802212439497);
 
     error WrongChain();
@@ -35,7 +35,7 @@ contract LooksRareV2ProxyDeployment is Script {
         // Just going to use the same salt for mainnet and goerli even though they will result
         // in 2 different contract addresses, as LooksRareProtocol's contract address is different
         // for mainnet and goerli.
-        address looksRareV2ProxyAddress = CREATE2_FACTORY.safeCreate2({
+        address looksRareV2ProxyAddress = IMMUTABLE_CREATE2_FACTORY.safeCreate2({
             salt: vm.envBytes32("LOOKS_RARE_V2_PROXY_SALT"),
             initializationCode: abi.encodePacked(
                 type(LooksRareV2Proxy).creationCode,
