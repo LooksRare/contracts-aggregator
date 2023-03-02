@@ -19,11 +19,7 @@ contract Deployment is Script {
 
     error WrongChain();
 
-    function _run(
-        address looksrare,
-        address looksrareV2,
-        address seaport
-    ) internal {
+    function _run(address looksrare, address seaport) internal {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
 
