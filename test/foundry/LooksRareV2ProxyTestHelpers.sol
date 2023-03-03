@@ -9,7 +9,7 @@ import {CollectionType} from "../../contracts/libraries/OrderEnums.sol";
  */
 abstract contract LooksRareV2ProxyTestHelpers {
     address internal constant NFT_OWNER = 0x7c741AD1dd7Ce77E88e7717De1cC20e3314b4F38;
-    address internal constant MULTIFACET_NFT = 0xf5de760f2e916647fd766B4AD9E85ff943cE3A2b;
+    address internal constant MULTIFAUCET_NFT = 0xf5de760f2e916647fd766B4AD9E85ff943cE3A2b;
     address internal constant TEST_ERC1155 = 0x58c3c2547084CC1C94130D6fd750A3877c7Ca5D2;
     address private constant WETH_GOERLI = 0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6;
 
@@ -20,7 +20,7 @@ abstract contract LooksRareV2ProxyTestHelpers {
         amounts[0] = 1;
 
         orders[0].signer = NFT_OWNER;
-        orders[0].collection = MULTIFACET_NFT;
+        orders[0].collection = MULTIFAUCET_NFT;
         orders[0].collectionType = CollectionType.ERC721;
         uint256[] memory tokenIds = new uint256[](1);
         tokenIds[0] = 2828266;
@@ -38,7 +38,7 @@ abstract contract LooksRareV2ProxyTestHelpers {
         amounts[1] = 1;
 
         orders[1].signer = NFT_OWNER;
-        orders[1].collection = MULTIFACET_NFT;
+        orders[1].collection = MULTIFAUCET_NFT;
         orders[1].collectionType = CollectionType.ERC721;
         tokenIds = new uint256[](2);
         tokenIds[0] = 2828267;

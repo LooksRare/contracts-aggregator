@@ -44,7 +44,7 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         vm.deal(address(aggregator), 1 wei);
 
         vm.startPrank(NFT_OWNER);
-        IERC721(MULTIFACET_NFT).setApprovalForAll(LOOKSRARE_V2_TRANSFER_MANAGER_GOERLI, true);
+        IERC721(MULTIFAUCET_NFT).setApprovalForAll(LOOKSRARE_V2_TRANSFER_MANAGER_GOERLI, true);
         IERC1155(TEST_ERC1155).setApprovalForAll(LOOKSRARE_V2_TRANSFER_MANAGER_GOERLI, true);
         address[] memory operators = new address[](1);
         operators[0] = LOOKSRARE_V2_GOERLI;
@@ -172,15 +172,15 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
 
         // Seller no longer owns one of the NFTs in the second order
         vm.prank(NFT_OWNER);
-        IERC721(MULTIFACET_NFT).transferFrom(NFT_OWNER, address(69), 2828267);
+        IERC721(MULTIFAUCET_NFT).transferFrom(NFT_OWNER, address(69), 2828267);
 
         vm.expectEmit({checkTopic1: false, checkTopic2: false, checkTopic3: false, checkData: true});
         emit Sweep(_buyer);
         vm.prank(_buyer);
         aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, false);
 
-        assertEq(IERC721(MULTIFACET_NFT).balanceOf(_buyer), 1);
-        assertEq(IERC721(MULTIFACET_NFT).ownerOf(2828266), _buyer);
+        assertEq(IERC721(MULTIFAUCET_NFT).balanceOf(_buyer), 1);
+        assertEq(IERC721(MULTIFAUCET_NFT).ownerOf(2828266), _buyer);
         _assertETHChangedHands(tradeData[0].orders[0].price);
     }
 
@@ -243,8 +243,8 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         emit Sweep(_buyer);
         aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, isAtomic);
 
-        assertEq(IERC721(MULTIFACET_NFT).balanceOf(_buyer), 1);
-        assertEq(IERC721(MULTIFACET_NFT).ownerOf(2828266), _buyer);
+        assertEq(IERC721(MULTIFAUCET_NFT).balanceOf(_buyer), 1);
+        assertEq(IERC721(MULTIFAUCET_NFT).ownerOf(2828266), _buyer);
         _assertETHChangedHands(value);
     }
 
@@ -302,8 +302,8 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
         emit Sweep(_buyer);
         erc20EnabledLooksRareAggregator.execute(tokenTransfers, tradeData, _buyer, isAtomic);
 
-        assertEq(IERC721(MULTIFACET_NFT).balanceOf(_buyer), 1);
-        assertEq(IERC721(MULTIFACET_NFT).ownerOf(2828266), _buyer);
+        assertEq(IERC721(MULTIFAUCET_NFT).balanceOf(_buyer), 1);
+        assertEq(IERC721(MULTIFAUCET_NFT).ownerOf(2828266), _buyer);
         _assertWETHChangedHands(value);
     }
 
@@ -633,10 +633,10 @@ contract LooksRareV2ProxyTest is TestParameters, TestHelpers, LooksRareV2ProxyTe
     }
 
     function _assertERC721OwnershipChangedHands() private {
-        assertEq(IERC721(MULTIFACET_NFT).balanceOf(_buyer), 3);
-        assertEq(IERC721(MULTIFACET_NFT).ownerOf(2828266), _buyer);
-        assertEq(IERC721(MULTIFACET_NFT).ownerOf(2828267), _buyer);
-        assertEq(IERC721(MULTIFACET_NFT).ownerOf(2828268), _buyer);
+        assertEq(IERC721(MULTIFAUCET_NFT).balanceOf(_buyer), 3);
+        assertEq(IERC721(MULTIFAUCET_NFT).ownerOf(2828266), _buyer);
+        assertEq(IERC721(MULTIFAUCET_NFT).ownerOf(2828267), _buyer);
+        assertEq(IERC721(MULTIFAUCET_NFT).ownerOf(2828268), _buyer);
     }
 
     function _assertERC1155OwnershipChangedHands() private {
