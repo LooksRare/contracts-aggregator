@@ -18,143 +18,87 @@ abstract contract Seaport_V1_4_ProxyTestHelpers {
     address private constant WETH_GOERLI = 0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6;
 
     function validMultifaucetId2828266Order() internal pure returns (BasicOrder memory order) {
-        order.signer = OFFERER;
-        order.collection = MULTIFAUCET_NFT;
-        order.collectionType = CollectionType.ERC721;
-
-        uint256[] memory tokenIds = new uint256[](1);
-        tokenIds[0] = 2828266;
-        order.tokenIds = tokenIds;
-
-        uint256[] memory amounts = new uint256[](1);
-        amounts[0] = 1;
-        order.amounts = amounts;
-
-        order.price = 4 ether;
-        order.currency = WETH_GOERLI;
-        order.startTime = 1677851098;
-        order.endTime = 1680525898;
-        order
-            .signature = hex"3b225a5f375ebc4ed6aeded35373e2154332289b442a8b1e5559788aea61b1b9d24e7446affaeba7ea2c46e343b35b5d2008d36a9b912274d96fe336a1cacca6";
+        return
+            _validMultifaucetNFTOrder({
+                tokenId: 2828266,
+                price: 4 ether,
+                currency: WETH_GOERLI,
+                startTime: 1677851098,
+                endTime: 1680525898,
+                signature: hex"3b225a5f375ebc4ed6aeded35373e2154332289b442a8b1e5559788aea61b1b9d24e7446affaeba7ea2c46e343b35b5d2008d36a9b912274d96fe336a1cacca6"
+            });
     }
 
     function validMultifaucetId2828267Order() internal pure returns (BasicOrder memory order) {
-        order.signer = OFFERER;
-        order.collection = MULTIFAUCET_NFT;
-        order.collectionType = CollectionType.ERC721;
-
-        uint256[] memory tokenIds = new uint256[](1);
-        tokenIds[0] = 2828267;
-        order.tokenIds = tokenIds;
-
-        uint256[] memory amounts = new uint256[](1);
-        amounts[0] = 1;
-        order.amounts = amounts;
-
-        order.price = 3 ether;
-        order.currency = WETH_GOERLI;
-        order.startTime = 1677846317;
-        order.endTime = 1680521117;
-        order
-            .signature = hex"2c41838edbb10aaf552d6b80082153f3e1dd580f806be4c3e29f42bd7d576223e9d4f1ea094b49ad162088dd6c2b1a13425572497322d1b03fccfc2e2abeb2b1";
+        return
+            _validMultifaucetNFTOrder({
+                tokenId: 2828267,
+                price: 3 ether,
+                currency: WETH_GOERLI,
+                startTime: 1677846317,
+                endTime: 1680521117,
+                signature: hex"2c41838edbb10aaf552d6b80082153f3e1dd580f806be4c3e29f42bd7d576223e9d4f1ea094b49ad162088dd6c2b1a13425572497322d1b03fccfc2e2abeb2b1"
+            });
     }
 
     function validMultifaucetId2828268Order() internal pure returns (BasicOrder memory order) {
-        order.signer = OFFERER;
-        order.collection = MULTIFAUCET_NFT;
-        order.collectionType = CollectionType.ERC721;
-
-        uint256[] memory tokenIds = new uint256[](1);
-        tokenIds[0] = 2828268;
-        order.tokenIds = tokenIds;
-
-        uint256[] memory amounts = new uint256[](1);
-        amounts[0] = 1;
-        order.amounts = amounts;
-
-        order.price = 2 ether;
-        order.currency = address(0);
-        order.startTime = 1677843106;
-        order.endTime = 1680517906;
-        order
-            .signature = hex"788cc332bec33bdf52e3506ef727a6e33c1ef583d6ee8323cabd4c055f4a3bbef6fb259264fdae65fbc00c80292e85b60d51c8dd6a496d448ad224b12a4aebd1";
+        return
+            _validMultifaucetNFTOrder({
+                tokenId: 2828268,
+                price: 2 ether,
+                currency: address(0),
+                startTime: 1677843106,
+                endTime: 1680517906,
+                signature: hex"788cc332bec33bdf52e3506ef727a6e33c1ef583d6ee8323cabd4c055f4a3bbef6fb259264fdae65fbc00c80292e85b60d51c8dd6a496d448ad224b12a4aebd1"
+            });
     }
 
     function validMultifaucetId2828270Order() internal pure returns (BasicOrder memory order) {
-        order.signer = OFFERER;
-        order.collection = MULTIFAUCET_NFT;
-        order.collectionType = CollectionType.ERC721;
-
-        uint256[] memory tokenIds = new uint256[](1);
-        tokenIds[0] = 2828270;
-        order.tokenIds = tokenIds;
-
-        uint256[] memory amounts = new uint256[](1);
-        amounts[0] = 1;
-        order.amounts = amounts;
-
-        order.price = 1 ether;
-        order.currency = address(0);
-        order.startTime = 1677842451;
-        order.endTime = 1680517251;
-        order
-            .signature = hex"e73cfc9d62d01cc4b7ff5aa31e0632b5ccd8ff2dd010d31a1464306bd0b5a6bd6494e202edb2f16e085e0aa0573afa5213180453a4c312edad97e11f39826671";
+        return
+            _validMultifaucetNFTOrder({
+                tokenId: 2828270,
+                price: 1 ether,
+                currency: address(0),
+                startTime: 1677842451,
+                endTime: 1680517251,
+                signature: hex"e73cfc9d62d01cc4b7ff5aa31e0632b5ccd8ff2dd010d31a1464306bd0b5a6bd6494e202edb2f16e085e0aa0573afa5213180453a4c312edad97e11f39826671"
+            });
     }
 
     function validMultifaucetId2828266OrderExtraData() internal pure returns (bytes memory) {
-        AdditionalRecipient[] memory recipients = new AdditionalRecipient[](2);
-        recipients[0].recipient = payable(OFFERER);
-        recipients[0].amount = 3980000000000000000;
-        recipients[1].recipient = payable(FEES);
-        recipients[1].amount = 20000000000000000;
-
-        SeaportProxy.OrderExtraData memory orderExtraData = _baseOrderExtraData();
-        orderExtraData.salt = 0x360c6ebe000000000000000000000000000000000000000077d23ecfb2815436;
-        orderExtraData.recipients = recipients;
-
-        return abi.encode(orderExtraData);
+        return
+            _validMultifaucetNFTOrderExtraData({
+                amount0: 3980000000000000000,
+                amount1: 20000000000000000,
+                salt: 0x360c6ebe000000000000000000000000000000000000000077d23ecfb2815436
+            });
     }
 
     function validMultifaucetId2828267OrderExtraData() internal pure returns (bytes memory) {
-        AdditionalRecipient[] memory recipients = new AdditionalRecipient[](2);
-        recipients[0].recipient = payable(OFFERER);
-        recipients[0].amount = 2985000000000000000;
-        recipients[1].recipient = payable(FEES);
-        recipients[1].amount = 15000000000000000;
-
-        SeaportProxy.OrderExtraData memory orderExtraData = _baseOrderExtraData();
-        orderExtraData.salt = 0x360c6ebe0000000000000000000000000000000000000000b6397b96d24fe3df;
-        orderExtraData.recipients = recipients;
-
-        return abi.encode(orderExtraData);
+        return
+            _validMultifaucetNFTOrderExtraData({
+                amount0: 2985000000000000000,
+                amount1: 15000000000000000,
+                salt: 0x360c6ebe0000000000000000000000000000000000000000b6397b96d24fe3df
+            });
     }
 
     function validMultifaucetId2828268OrderExtraData() internal pure returns (bytes memory) {
-        AdditionalRecipient[] memory recipients = new AdditionalRecipient[](2);
-        recipients[0].recipient = payable(OFFERER);
-        recipients[0].amount = 1990000000000000000;
-        recipients[1].recipient = payable(FEES);
-        recipients[1].amount = 10000000000000000;
-
-        SeaportProxy.OrderExtraData memory orderExtraData = _baseOrderExtraData();
-        orderExtraData.salt = 0x360c6ebe00000000000000000000000000000000000000004d531ffe9843708d;
-        orderExtraData.recipients = recipients;
-
-        return abi.encode(orderExtraData);
+        return
+            _validMultifaucetNFTOrderExtraData({
+                amount0: 1990000000000000000,
+                amount1: 10000000000000000,
+                salt: 0x360c6ebe00000000000000000000000000000000000000004d531ffe9843708d
+            });
     }
 
     function validMultifaucetId2828270OrderExtraData() internal pure returns (bytes memory) {
-        AdditionalRecipient[] memory recipients = new AdditionalRecipient[](2);
-        recipients[0].recipient = payable(OFFERER);
-        recipients[0].amount = 995000000000000000;
-        recipients[1].recipient = payable(FEES);
-        recipients[1].amount = 5000000000000000;
-
-        SeaportProxy.OrderExtraData memory orderExtraData = _baseOrderExtraData();
-        orderExtraData.salt = 0x360c6ebe00000000000000000000000000000000000000007bb02b6dac7688cf;
-        orderExtraData.recipients = recipients;
-
-        return abi.encode(orderExtraData);
+        return
+            _validMultifaucetNFTOrderExtraData({
+                amount0: 995000000000000000,
+                amount1: 5000000000000000,
+                salt: 0x360c6ebe00000000000000000000000000000000000000007bb02b6dac7688cf
+            });
     }
 
     function _baseOrderExtraData() private pure returns (SeaportProxy.OrderExtraData memory orderExtraData) {
@@ -219,5 +163,50 @@ abstract contract Seaport_V1_4_ProxyTestHelpers {
         considerationFulfillments[3][0].itemIndex = 2;
         considerationFulfillments[3][1].orderIndex = 1;
         considerationFulfillments[3][1].itemIndex = 2;
+    }
+
+    function _validMultifaucetNFTOrder(
+        uint256 tokenId,
+        uint256 price,
+        address currency,
+        uint256 startTime,
+        uint256 endTime,
+        bytes memory signature
+    ) private pure returns (BasicOrder memory order) {
+        order.signer = OFFERER;
+        order.collection = MULTIFAUCET_NFT;
+        order.collectionType = CollectionType.ERC721;
+
+        uint256[] memory tokenIds = new uint256[](1);
+        tokenIds[0] = tokenId;
+        order.tokenIds = tokenIds;
+
+        uint256[] memory amounts = new uint256[](1);
+        amounts[0] = 1;
+        order.amounts = amounts;
+
+        order.price = price;
+        order.currency = currency;
+        order.startTime = startTime;
+        order.endTime = endTime;
+        order.signature = signature;
+    }
+
+    function _validMultifaucetNFTOrderExtraData(
+        uint256 amount0,
+        uint256 amount1,
+        uint256 salt
+    ) internal pure returns (bytes memory) {
+        AdditionalRecipient[] memory recipients = new AdditionalRecipient[](2);
+        recipients[0].recipient = payable(OFFERER);
+        recipients[0].amount = amount0;
+        recipients[1].recipient = payable(FEES);
+        recipients[1].amount = amount1;
+
+        SeaportProxy.OrderExtraData memory orderExtraData = _baseOrderExtraData();
+        orderExtraData.salt = salt;
+        orderExtraData.recipients = recipients;
+
+        return abi.encode(orderExtraData);
     }
 }
