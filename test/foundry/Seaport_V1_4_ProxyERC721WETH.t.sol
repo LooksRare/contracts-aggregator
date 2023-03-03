@@ -22,7 +22,7 @@ contract Seaport_V1_4_ProxyERC721WETHTest is TestParameters, TestHelpers, Seapor
     SeaportProxy private seaportProxy;
 
     function setUp() public {
-        vm.createSelectFork(vm.rpcUrl("goerli"), 8_590_048);
+        vm.createSelectFork(vm.rpcUrl("goerli"), 8_590_245);
 
         aggregator = new LooksRareAggregator(address(this));
         erc20EnabledAggregator = new ERC20EnabledLooksRareAggregator(address(aggregator));
@@ -55,13 +55,13 @@ contract Seaport_V1_4_ProxyERC721WETHTest is TestParameters, TestHelpers, Seapor
         erc20EnabledAggregator.execute(tokenTransfers, tradeData, _buyer, isAtomic);
 
         assertEq(IERC721(MULTIFAUCET_NFT).balanceOf(_buyer), 2);
-        assertEq(IERC721(MULTIFAUCET_NFT).ownerOf(2828266), _buyer);
+        assertEq(IERC721(MULTIFAUCET_NFT).ownerOf(2828269), _buyer);
         assertEq(IERC721(MULTIFAUCET_NFT).ownerOf(2828267), _buyer);
         assertEq(IERC20(WETH_GOERLI).balanceOf(_buyer), INITIAL_ETH_BALANCE - totalPrice);
     }
 
     function _generateTradeData() private view returns (ILooksRareAggregator.TradeData[] memory) {
-        BasicOrder memory orderOne = validMultifaucetId2828266Order();
+        BasicOrder memory orderOne = validMultifaucetId2828269Order();
         BasicOrder memory orderTwo = validMultifaucetId2828267Order();
         BasicOrder[] memory orders = new BasicOrder[](2);
         orders[0] = orderOne;
@@ -69,7 +69,7 @@ contract Seaport_V1_4_ProxyERC721WETHTest is TestParameters, TestHelpers, Seapor
 
         bytes[] memory ordersExtraData = new bytes[](2);
         {
-            bytes memory orderOneExtraData = validMultifaucetId2828266OrderExtraData();
+            bytes memory orderOneExtraData = validMultifaucetId2828269OrderExtraData();
             bytes memory orderTwoExtraData = validMultifaucetId2828267OrderExtraData();
             ordersExtraData[0] = orderOneExtraData;
             ordersExtraData[1] = orderTwoExtraData;

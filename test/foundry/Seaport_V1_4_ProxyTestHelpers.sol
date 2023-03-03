@@ -17,18 +17,6 @@ abstract contract Seaport_V1_4_ProxyTestHelpers {
     address internal constant SEAPORT = 0x00000000000001ad428e4906aE43D8F9852d0dD6;
     address private constant WETH_GOERLI = 0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6;
 
-    function validMultifaucetId2828266Order() internal pure returns (BasicOrder memory order) {
-        return
-            _validMultifaucetNFTOrder({
-                tokenId: 2828266,
-                price: 4 ether,
-                currency: WETH_GOERLI,
-                startTime: 1677851098,
-                endTime: 1680525898,
-                signature: hex"3b225a5f375ebc4ed6aeded35373e2154332289b442a8b1e5559788aea61b1b9d24e7446affaeba7ea2c46e343b35b5d2008d36a9b912274d96fe336a1cacca6"
-            });
-    }
-
     function validMultifaucetId2828267Order() internal pure returns (BasicOrder memory order) {
         return
             _validMultifaucetNFTOrder({
@@ -53,6 +41,18 @@ abstract contract Seaport_V1_4_ProxyTestHelpers {
             });
     }
 
+    function validMultifaucetId2828269Order() internal pure returns (BasicOrder memory order) {
+        return
+            _validMultifaucetNFTOrder({
+                tokenId: 2828269,
+                price: 4 ether,
+                currency: WETH_GOERLI,
+                startTime: 1677854116,
+                endTime: 1680528916,
+                signature: hex"a502918ef738ffa861464535c51296f1119d3f8f092f90dc4836b728d81368c48eb33aed6fcd47fdc2b22fe16aae8ceca08ca04ca42c7adbd7eaa5827d3f284a"
+            });
+    }
+
     function validMultifaucetId2828270Order() internal pure returns (BasicOrder memory order) {
         return
             _validMultifaucetNFTOrder({
@@ -62,15 +62,6 @@ abstract contract Seaport_V1_4_ProxyTestHelpers {
                 startTime: 1677842451,
                 endTime: 1680517251,
                 signature: hex"e73cfc9d62d01cc4b7ff5aa31e0632b5ccd8ff2dd010d31a1464306bd0b5a6bd6494e202edb2f16e085e0aa0573afa5213180453a4c312edad97e11f39826671"
-            });
-    }
-
-    function validMultifaucetId2828266OrderExtraData() internal pure returns (bytes memory) {
-        return
-            _validMultifaucetNFTOrderExtraData({
-                amount0: 3980000000000000000,
-                amount1: 20000000000000000,
-                salt: 0x360c6ebe000000000000000000000000000000000000000077d23ecfb2815436
             });
     }
 
@@ -89,6 +80,15 @@ abstract contract Seaport_V1_4_ProxyTestHelpers {
                 amount0: 1990000000000000000,
                 amount1: 10000000000000000,
                 salt: 0x360c6ebe00000000000000000000000000000000000000004d531ffe9843708d
+            });
+    }
+
+    function validMultifaucetId2828269OrderExtraData() internal pure returns (bytes memory) {
+        return
+            _validMultifaucetNFTOrderExtraData({
+                amount0: 3980000000000000000,
+                amount1: 20000000000000000,
+                salt: 0x360c6ebe0000000000000000000000000000000000000000defce98e0fd2e9a8
             });
     }
 
