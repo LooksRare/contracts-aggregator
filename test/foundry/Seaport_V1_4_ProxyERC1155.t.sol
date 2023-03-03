@@ -12,7 +12,7 @@ import {TestParameters} from "./TestParameters.sol";
 import {Seaport_V1_4_ProxyTestHelpers} from "./Seaport_V1_4_ProxyTestHelpers.sol";
 
 /**
- * @notice Seaport_V1_4_Proxy ERC1155 tests (refund, atomic fail/partial success)
+ * @notice SeaportProxy ERC1155 tests (refund, atomic fail/partial success)
  */
 contract Seaport_V1_4_ProxyERC1155Test is TestParameters, TestHelpers, Seaport_V1_4_ProxyTestHelpers {
     LooksRareAggregator private aggregator;
