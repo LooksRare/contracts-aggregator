@@ -9,17 +9,17 @@ import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.
 import {TradeExecutionFailed} from "../../contracts/libraries/SharedErrors.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TestParameters} from "./TestParameters.sol";
-import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
+import {Seaport_V1_4_ProxyTestHelpers} from "./Seaport_V1_4_ProxyTestHelpers.sol";
 
 /**
- * @notice SeaportProxy ERC1155 tests (refund, atomic fail/partial success)
+ * @notice Seaport_V1_4_Proxy ERC1155 tests (refund, atomic fail/partial success)
  */
-contract SeaportProxyERC1155Test is TestParameters, TestHelpers, SeaportProxyTestHelpers {
+contract Seaport_V1_4_ProxyERC1155Test is TestParameters, TestHelpers, Seaport_V1_4_ProxyTestHelpers {
     LooksRareAggregator private aggregator;
     SeaportProxy private seaportProxy;
 
     function setUp() public {
-        vm.createSelectFork(vm.rpcUrl("mainnet"), 15_320_038);
+        vm.createSelectFork(vm.rpcUrl("goerli"), 8_590_906);
 
         aggregator = new LooksRareAggregator(address(this));
         seaportProxy = new SeaportProxy(SEAPORT, address(aggregator));
@@ -62,7 +62,8 @@ contract SeaportProxyERC1155Test is TestParameters, TestHelpers, SeaportProxyTes
 
         // Not paying for the second order
         aggregator.execute{value: tradeData[0].orders[0].price}(tokenTransfers, tradeData, _buyer, _buyer, false);
-        assertEq(IERC1155(CITY_DAO).balanceOf(_buyer, 42), 1);
+        assertEq(IERC1155(TEST_ERC1155).balanceOf(_buyer, 0), 2);
+        assertEq(IERC1155(TEST_ERC1155).balanceOf(_buyer, 420), 0);
         assertEq(_buyer.balance, INITIAL_ETH_BALANCE - tradeData[0].orders[0].price);
     }
 
@@ -75,7 +76,8 @@ contract SeaportProxyERC1155Test is TestParameters, TestHelpers, SeaportProxyTes
 
         uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
         aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, isAtomic);
-        assertEq(IERC1155(CITY_DAO).balanceOf(_buyer, 42), 2);
+        assertEq(IERC1155(TEST_ERC1155).balanceOf(_buyer, 0), 2);
+        assertEq(IERC1155(TEST_ERC1155).balanceOf(_buyer, 420), 3);
         assertEq(_buyer.balance, INITIAL_ETH_BALANCE - value);
     }
 
@@ -88,7 +90,8 @@ contract SeaportProxyERC1155Test is TestParameters, TestHelpers, SeaportProxyTes
 
         uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
         aggregator.execute{value: value + 0.1 ether}(tokenTransfers, tradeData, _buyer, _buyer, isAtomic);
-        assertEq(IERC1155(CITY_DAO).balanceOf(_buyer, 42), 2);
+        assertEq(IERC1155(TEST_ERC1155).balanceOf(_buyer, 0), 2);
+        assertEq(IERC1155(TEST_ERC1155).balanceOf(_buyer, 420), 3);
         assertEq(_buyer.balance, INITIAL_ETH_BALANCE - value);
     }
 
@@ -97,8 +100,14 @@ contract SeaportProxyERC1155Test is TestParameters, TestHelpers, SeaportProxyTes
         view
         returns (ILooksRareAggregator.TradeData[] memory tradeData)
     {
-        BasicOrder[] memory orders = validCityDaoOrders();
-        bytes[] memory ordersExtraData = validCityDaoOrdersExtraData();
+        BasicOrder[] memory orders = new BasicOrder[](2);
+        orders[0] = validTestERC1155Id0Order();
+        orders[1] = validTestERC1155Id420Order();
+
+        bytes[] memory ordersExtraData = new bytes[](2);
+        ordersExtraData[0] = validTestERC1155Id0OrderExtraData();
+        ordersExtraData[1] = validTestERC1155Id420OrderExtraData();
+
         bytes memory extraData = isAtomic ? validMultipleItemsSameCollectionExtraData() : new bytes(0);
 
         tradeData = new ILooksRareAggregator.TradeData[](1);
