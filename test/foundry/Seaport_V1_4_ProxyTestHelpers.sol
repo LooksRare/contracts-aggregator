@@ -273,6 +273,47 @@ abstract contract Seaport_V1_4_ProxyTestHelpers {
         considerationFulfillments[4][0].itemIndex = 2;
     }
 
+    function validMultipleItemsSameCollectionMultipleCurrenciesExtraData() internal pure returns (bytes memory) {
+        SeaportProxy.ExtraData memory extraData;
+
+        extraData.offerFulfillments = validMultipleOfferFulfillments(2);
+        extraData.considerationFulfillments = validMultipleCurrenciesConsiderationFulfillments();
+
+        return abi.encode(extraData);
+    }
+
+    function validMultipleCurrenciesConsiderationFulfillments()
+        internal
+        pure
+        returns (FulfillmentComponent[][] memory considerationFulfillments)
+    {
+        considerationFulfillments = new FulfillmentComponent[][](6);
+
+        considerationFulfillments[0] = new FulfillmentComponent[](1);
+        considerationFulfillments[0][0].orderIndex = 0;
+        considerationFulfillments[0][0].itemIndex = 0;
+
+        considerationFulfillments[1] = new FulfillmentComponent[](1);
+        considerationFulfillments[1][0].orderIndex = 1;
+        considerationFulfillments[1][0].itemIndex = 0;
+
+        considerationFulfillments[2] = new FulfillmentComponent[](1);
+        considerationFulfillments[2][0].orderIndex = 0;
+        considerationFulfillments[2][0].itemIndex = 1;
+
+        considerationFulfillments[3] = new FulfillmentComponent[](1);
+        considerationFulfillments[3][0].orderIndex = 1;
+        considerationFulfillments[3][0].itemIndex = 1;
+
+        considerationFulfillments[4] = new FulfillmentComponent[](1);
+        considerationFulfillments[4][0].orderIndex = 0;
+        considerationFulfillments[4][0].itemIndex = 2;
+
+        considerationFulfillments[5] = new FulfillmentComponent[](1);
+        considerationFulfillments[5][0].orderIndex = 1;
+        considerationFulfillments[5][0].itemIndex = 2;
+    }
+
     function _validMultifaucetNFTOrder(
         uint256 tokenId,
         uint256 price,
