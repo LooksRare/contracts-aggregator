@@ -2,9 +2,9 @@
 pragma solidity 0.8.17;
 
 import {Script} from "forge-std/Script.sol";
-import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
-import {LooksRareV2Proxy} from "../../contracts/proxies/LooksRareV2Proxy.sol";
-import {IImmutableCreate2Factory} from "../../contracts/interfaces/IImmutableCreate2Factory.sol";
+import {LooksRareAggregator} from "../../../contracts/LooksRareAggregator.sol";
+import {LooksRareV2Proxy} from "../../../contracts/proxies/LooksRareV2Proxy.sol";
+import {IImmutableCreate2Factory} from "../../../contracts/interfaces/IImmutableCreate2Factory.sol";
 
 contract LooksRareV2ProxyDeployment is Script {
     LooksRareAggregator internal looksRareAggregator;

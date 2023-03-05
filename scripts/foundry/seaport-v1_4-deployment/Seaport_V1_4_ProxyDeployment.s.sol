@@ -2,9 +2,9 @@
 pragma solidity 0.8.17;
 
 import {Script} from "forge-std/Script.sol";
-import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
-import {SeaportProxy} from "../../contracts/proxies/SeaportProxy.sol";
-import {IImmutableCreate2Factory} from "../../contracts/interfaces/IImmutableCreate2Factory.sol";
+import {LooksRareAggregator} from "../../../contracts/LooksRareAggregator.sol";
+import {SeaportProxy} from "../../../contracts/proxies/SeaportProxy.sol";
+import {IImmutableCreate2Factory} from "../../../contracts/interfaces/IImmutableCreate2Factory.sol";
 
 contract Seaport_V1_4_ProxyDeployment is Script {
     IImmutableCreate2Factory private constant IMMUTABLE_CREATE2_FACTORY =
