@@ -8,14 +8,14 @@ import {LooksRareProxy} from "../../contracts/proxies/LooksRareProxy.sol";
 import {SeaportProxy} from "../../contracts/proxies/SeaportProxy.sol";
 import {TestHelpers} from "./TestHelpers.sol";
 import {TestParameters} from "./TestParameters.sol";
-import {SeaportProxyTestHelpers} from "./SeaportProxyTestHelpers.sol";
+import {Seaport_V1_4_ProxyTestHelpers} from "./Seaport_V1_4_ProxyTestHelpers.sol";
 
-contract DeploymentTest is TestParameters, TestHelpers, SeaportProxyTestHelpers {
+contract DeploymentTest is TestParameters, TestHelpers, Seaport_V1_4_ProxyTestHelpers {
     IImmutableCreate2Factory private constant IMMUTABLE_CREATE2_FACTORY =
         IImmutableCreate2Factory(0x0000000000FFe8B47B3e2130213B802212439497);
 
     function testDeploymentAddresses() public {
-        vm.createSelectFork(vm.rpcUrl("mainnet"));
+        vm.createSelectFork(vm.rpcUrl("mainnet"), 16_744_216);
 
         address deployer = vm.envAddress("LOOKS_RARE_DEPLOYER");
 
@@ -64,7 +64,7 @@ contract DeploymentTest is TestParameters, TestHelpers, SeaportProxyTestHelpers 
             )
         });
 
-        assertEq(seaportProxyAddress, 0x000000000047cCC309795330672CF0861302Fe3c);
+        assertEq(seaportProxyAddress, 0x0000000000aD2C5a35209EeAb701B2CD49BA3A0D);
         SeaportProxy seaportProxy = SeaportProxy(payable(seaportProxyAddress));
         assertEq(address(seaportProxy.marketplace()), SEAPORT);
         assertEq(seaportProxy.aggregator(), looksRareAggregatorAddress);

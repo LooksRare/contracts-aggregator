@@ -66,7 +66,7 @@ contract Deployment is Script {
 
     function _deploySeaportProxy(address marketplace) private {
         address seaportProxyAddress = IMMUTABLE_CREATE2_FACTORY.safeCreate2({
-            salt: vm.envBytes32("SEAPORT_PROXY_SALT"),
+            salt: vm.envBytes32("SEAPORT_V1_4_PROXY_SALT"),
             initializationCode: abi.encodePacked(
                 type(SeaportProxy).creationCode,
                 abi.encode(marketplace, address(looksRareAggregator))
