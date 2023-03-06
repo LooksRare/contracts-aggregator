@@ -2,17 +2,12 @@
 pragma solidity 0.8.17;
 
 import {Script} from "forge-std/Script.sol";
-import {ERC20EnabledLooksRareAggregator} from "../../contracts/ERC20EnabledLooksRareAggregator.sol";
-import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
-import {LooksRareProxy} from "../../contracts/proxies/LooksRareProxy.sol";
-import {LooksRareV2Proxy} from "../../contracts/proxies/LooksRareV2Proxy.sol";
-import {SeaportProxy} from "../../contracts/proxies/SeaportProxy.sol";
-import {IImmutableCreate2Factory} from "../../contracts/interfaces/IImmutableCreate2Factory.sol";
+import {LooksRareAggregator} from "../../../contracts/LooksRareAggregator.sol";
+import {LooksRareV2Proxy} from "../../../contracts/proxies/LooksRareV2Proxy.sol";
+import {IImmutableCreate2Factory} from "../../../contracts/interfaces/IImmutableCreate2Factory.sol";
 
 contract LooksRareV2ProxyDeployment is Script {
     LooksRareAggregator internal looksRareAggregator;
-    LooksRareProxy internal looksRareProxy;
-    SeaportProxy internal seaportProxy;
 
     IImmutableCreate2Factory private constant IMMUTABLE_CREATE2_FACTORY =
         IImmutableCreate2Factory(0x0000000000FFe8B47B3e2130213B802212439497);
@@ -23,8 +18,7 @@ contract LooksRareV2ProxyDeployment is Script {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
 
-        // TODO: Replace address later
-        looksRareAggregator = LooksRareAggregator(payable(address(0)));
+        looksRareAggregator = LooksRareAggregator(payable(0x00000000005228B791a99a61f36A130d50600106));
 
         _deployLooksRareV2Proxy(looksrareV2);
 

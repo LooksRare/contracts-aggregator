@@ -2,12 +2,12 @@
 pragma solidity 0.8.17;
 
 import {Script} from "forge-std/Script.sol";
-import {ERC20EnabledLooksRareAggregator} from "../../contracts/ERC20EnabledLooksRareAggregator.sol";
-import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
-import {LooksRareProxy} from "../../contracts/proxies/LooksRareProxy.sol";
-import {LooksRareV2Proxy} from "../../contracts/proxies/LooksRareV2Proxy.sol";
-import {SeaportProxy} from "../../contracts/proxies/SeaportProxy.sol";
-import {IImmutableCreate2Factory} from "../../contracts/interfaces/IImmutableCreate2Factory.sol";
+import {ERC20EnabledLooksRareAggregator} from "../../../contracts/ERC20EnabledLooksRareAggregator.sol";
+import {LooksRareAggregator} from "../../../contracts/LooksRareAggregator.sol";
+import {LooksRareProxy} from "../../../contracts/proxies/LooksRareProxy.sol";
+import {LooksRareV2Proxy} from "../../../contracts/proxies/LooksRareV2Proxy.sol";
+import {SeaportProxy} from "../../../contracts/proxies/SeaportProxy.sol";
+import {IImmutableCreate2Factory} from "../../../contracts/interfaces/IImmutableCreate2Factory.sol";
 
 contract Deployment is Script {
     LooksRareAggregator internal looksRareAggregator;
@@ -66,7 +66,7 @@ contract Deployment is Script {
 
     function _deploySeaportProxy(address marketplace) private {
         address seaportProxyAddress = IMMUTABLE_CREATE2_FACTORY.safeCreate2({
-            salt: vm.envBytes32("SEAPORT_PROXY_SALT"),
+            salt: vm.envBytes32("SEAPORT_V1_4_PROXY_SALT"),
             initializationCode: abi.encodePacked(
                 type(SeaportProxy).creationCode,
                 abi.encode(marketplace, address(looksRareAggregator))
