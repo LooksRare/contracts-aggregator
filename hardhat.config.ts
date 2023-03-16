@@ -28,6 +28,14 @@ const config: HardhatUserConfig = {
       },
       gasPrice: "auto",
     },
+    mainnet: {
+      chainId: 1,
+      url: "https://rpc.ankr.com/eth",
+    },
+    goerli: {
+      chainId: 5,
+      url: "https://rpc.ankr.com/eth_goerli",
+    },
   },
   etherscan: {
     apiKey: process.env.ETHERSCAN_KEY,
