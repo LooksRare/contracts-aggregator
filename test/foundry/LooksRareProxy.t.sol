@@ -64,7 +64,8 @@ contract LooksRareProxyTest is TestParameters, TestHelpers, LooksRareProxyTestHe
         tradeData[0].orders[0].price -= 0.1 ether;
         uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
 
-        vm.expectEmit({checkTopic1: false, checkTopic2: false, checkTopic3: false, checkData: true});
+        vm.expectEmit({checkTopic1: true, checkTopic2: true, checkTopic3: true, checkData: true});
+
         emit Sweep(_buyer);
         aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, false);
 
@@ -79,7 +80,8 @@ contract LooksRareProxyTest is TestParameters, TestHelpers, LooksRareProxyTestHe
 
         uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price + 0.1 ether;
 
-        vm.expectEmit({checkTopic1: false, checkTopic2: false, checkTopic3: false, checkData: true});
+        vm.expectEmit({checkTopic1: true, checkTopic2: true, checkTopic3: true, checkData: true});
+
         emit Sweep(_buyer);
         aggregator.execute{value: value}(tokenTransfers, tradeData, _buyer, _buyer, false);
 

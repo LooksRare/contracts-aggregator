@@ -53,7 +53,8 @@ contract SeaportProxyERC721Test is TestParameters, TestHelpers, SeaportProxyTest
     function testExecutePartialSuccess() public asPrankedUser(_buyer) {
         ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData();
 
-        vm.expectEmit({checkTopic1: false, checkTopic2: false, checkTopic3: false, checkData: true});
+        vm.expectEmit({checkTopic1: true, checkTopic2: true, checkTopic3: true, checkData: true});
+
         emit Sweep(_buyer);
         // Not paying for the second order
         aggregator.execute{value: tradeData[0].orders[0].price}(
@@ -73,7 +74,8 @@ contract SeaportProxyERC721Test is TestParameters, TestHelpers, SeaportProxyTest
         ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData();
         uint256 totalPrice = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
 
-        vm.expectEmit({checkTopic1: false, checkTopic2: false, checkTopic3: false, checkData: true});
+        vm.expectEmit({checkTopic1: true, checkTopic2: true, checkTopic3: true, checkData: true});
+
         emit Sweep(_buyer);
         aggregator.execute{value: totalPrice + 1 ether}(new TokenTransfer[](0), tradeData, _buyer, _buyer, isAtomic);
 
