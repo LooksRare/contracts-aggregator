@@ -51,7 +51,8 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers {
 
     function testAddFunction() public {
         assertTrue(!aggregator.supportsProxyFunction(address(looksRareProxy), LooksRareProxy.execute.selector));
-        vm.expectEmit({checkTopic1: false, checkTopic2: false, checkTopic3: false, checkData: true});
+        vm.expectEmit({checkTopic1: true, checkTopic2: true, checkTopic3: true, checkData: true});
+
         emit FunctionAdded(address(looksRareProxy), LooksRareProxy.execute.selector);
         aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
         assertTrue(aggregator.supportsProxyFunction(address(looksRareProxy), LooksRareProxy.execute.selector));
@@ -68,7 +69,8 @@ contract LooksRareAggregatorTest is TestParameters, TestHelpers {
         aggregator.addFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
         assertTrue(aggregator.supportsProxyFunction(address(looksRareProxy), LooksRareProxy.execute.selector));
 
-        vm.expectEmit({checkTopic1: false, checkTopic2: false, checkTopic3: false, checkData: true});
+        vm.expectEmit({checkTopic1: true, checkTopic2: true, checkTopic3: true, checkData: true});
+
         emit FunctionRemoved(address(looksRareProxy), LooksRareProxy.execute.selector);
         aggregator.removeFunction(address(looksRareProxy), LooksRareProxy.execute.selector);
         assertTrue(!aggregator.supportsProxyFunction(address(looksRareProxy), LooksRareProxy.execute.selector));

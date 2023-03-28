@@ -65,7 +65,8 @@ contract SeaportProxyMultipleCurrenciesTest is TestParameters, TestHelpers, Seap
 
         IERC20(USDC).approve(address(erc20EnabledAggregator), usdcAmount);
 
-        vm.expectEmit({checkTopic1: false, checkTopic2: false, checkTopic3: false, checkData: true});
+        vm.expectEmit({checkTopic1: true, checkTopic2: true, checkTopic3: true, checkData: true});
+
         emit Sweep(_buyer);
         erc20EnabledAggregator.execute{value: ethAmount}(tokenTransfers, tradeData, _buyer, isAtomic);
 
@@ -92,7 +93,8 @@ contract SeaportProxyMultipleCurrenciesTest is TestParameters, TestHelpers, Seap
 
         IERC20(USDC).approve(address(erc20EnabledAggregator), usdcAmount);
 
-        vm.expectEmit({checkTopic1: false, checkTopic2: false, checkTopic3: false, checkData: true});
+        vm.expectEmit({checkTopic1: true, checkTopic2: true, checkTopic3: true, checkData: true});
+
         emit Sweep(_buyer);
         erc20EnabledAggregator.execute{value: ethAmount}(tokenTransfers, tradeData, _buyer, isAtomic);
 

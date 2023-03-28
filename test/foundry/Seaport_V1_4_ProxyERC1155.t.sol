@@ -57,7 +57,8 @@ contract Seaport_V1_4_ProxyERC1155Test is TestParameters, TestHelpers, Seaport_V
         ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData(false);
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
 
-        vm.expectEmit({checkTopic1: false, checkTopic2: false, checkTopic3: false, checkData: true});
+        vm.expectEmit({checkTopic1: true, checkTopic2: true, checkTopic3: true, checkData: true});
+
         emit Sweep(_buyer);
 
         // Not paying for the second order
@@ -71,7 +72,8 @@ contract Seaport_V1_4_ProxyERC1155Test is TestParameters, TestHelpers, Seaport_V
         ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData(isAtomic);
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
 
-        vm.expectEmit({checkTopic1: false, checkTopic2: false, checkTopic3: false, checkData: true});
+        vm.expectEmit({checkTopic1: true, checkTopic2: true, checkTopic3: true, checkData: true});
+
         emit Sweep(_buyer);
 
         uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
@@ -85,7 +87,8 @@ contract Seaport_V1_4_ProxyERC1155Test is TestParameters, TestHelpers, Seaport_V
         ILooksRareAggregator.TradeData[] memory tradeData = _generateTradeData(isAtomic);
         TokenTransfer[] memory tokenTransfers = new TokenTransfer[](0);
 
-        vm.expectEmit({checkTopic1: false, checkTopic2: false, checkTopic3: false, checkData: true});
+        vm.expectEmit({checkTopic1: true, checkTopic2: true, checkTopic3: true, checkData: true});
+
         emit Sweep(_buyer);
 
         uint256 value = tradeData[0].orders[0].price + tradeData[0].orders[1].price;
