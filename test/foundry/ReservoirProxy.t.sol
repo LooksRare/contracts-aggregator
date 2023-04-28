@@ -5,6 +5,7 @@ import {IERC721} from "@looksrare/contracts-libs/contracts/interfaces/generic/IE
 import {ReservoirProxy} from "../../contracts/proxies/ReservoirProxy.sol";
 import {LooksRareAggregator} from "../../contracts/LooksRareAggregator.sol";
 import {ILooksRareAggregator} from "../../contracts/interfaces/ILooksRareAggregator.sol";
+import {IProxy} from "../../contracts/interfaces/IProxy.sol";
 import {BasicOrder, TokenTransfer} from "../../contracts/libraries/OrderStructs.sol";
 import {InvalidOrderLength} from "../../contracts/libraries/SharedErrors.sol";
 import {TestHelpers} from "./TestHelpers.sol";
@@ -89,6 +90,31 @@ contract ReservoirProxyTest is TestParameters, TestHelpers {
 
         vm.prank(_buyer);
         vm.expectRevert(InvalidOrderLength.selector);
+        aggregator.execute{value: price}({
+            tokenTransfers: new TokenTransfer[](0),
+            tradeData: tradeData,
+            originator: address(0),
+            recipient: _buyer,
+            isAtomic: true
+        });
+    }
+
+    function test_execute_RevertIf_InvalidCaller() public {
+        reservoirProxy = new ReservoirProxy(RESERVOIR_ROUTER, address(1));
+        aggregator.addFunction(address(reservoirProxy), ReservoirProxy.execute.selector);
+
+        uint256 price = 0x02b5e3af16b1880000;
+        vm.deal(_buyer, price);
+        BasicOrder[] memory orders = new BasicOrder[](1);
+        orders[0].price = price;
+        ILooksRareAggregator.TradeData[] memory tradeData = new ILooksRareAggregator.TradeData[](1);
+        tradeData[0].orders = orders;
+        tradeData[0].proxy = address(reservoirProxy);
+        tradeData[0].selector = ReservoirProxy.execute.selector;
+        tradeData[0].extraData = _singleX2Y2OrderCalldata();
+
+        vm.prank(_buyer);
+        vm.expectRevert(IProxy.InvalidCaller.selector);
         aggregator.execute{value: price}({
             tokenTransfers: new TokenTransfer[](0),
             tradeData: tradeData,
